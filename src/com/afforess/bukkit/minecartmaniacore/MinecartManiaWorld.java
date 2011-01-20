@@ -1,6 +1,5 @@
 package com.afforess.bukkit.minecartmaniacore;
-
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -9,8 +8,8 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.material.Redstone;
 
 public class MinecartManiaWorld {
-	private static HashMap<Integer,MinecartManiaMinecart> minecarts = new HashMap<Integer,MinecartManiaMinecart>();
-	private static HashMap<String, Object> configuration = new HashMap<String,Object>();
+	private static ConcurrentHashMap<Integer,MinecartManiaMinecart> minecarts = new ConcurrentHashMap<Integer,MinecartManiaMinecart>();
+	private static ConcurrentHashMap<String, Object> configuration = new ConcurrentHashMap<String,Object>();
 	
 	/**
 	 ** Returns a new MinecartManiaMinecart from storage if it already exists, or creates and stores a new MinecartManiaMinecart object, and returns it
@@ -56,7 +55,12 @@ public class MinecartManiaWorld {
 	 ** @param the value to store
 	 **/	 
 	 public static void setConfigurationValue(String key, Object value) {
-		 configuration.put(key, value);
+		 if (value == null) {
+			 configuration.remove(key);
+		 }
+		 else {
+			 configuration.put(key, value);
+		 }
 	 }
 	 
 	/**

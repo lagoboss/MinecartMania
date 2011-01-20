@@ -1,7 +1,8 @@
 package com.afforess.bukkit.minecartmaniacore;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Calendar;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -11,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import com.afforess.bukkit.minecartmaniacore.DirectionUtils.CompassDirection;
+import com.afforess.bukkit.minecartmaniacore.event.MinecartTimeEvent;
 
 
 public class MinecartManiaMinecart {
@@ -18,14 +20,16 @@ public class MinecartManiaMinecart {
 	private static final double maxMomentum = 1E308;
 	private Vector previousLocation;
 	private Vector previousMotion;
+	private Calendar cal;
 	private DirectionUtils.CompassDirection previousFacingDir = DirectionUtils.CompassDirection.NO_DIRECTION;
 	
-	private HashMap<String, Object> data = new HashMap<String,Object>();
+	private ConcurrentHashMap<String, Object> data = new ConcurrentHashMap<String,Object>();
 	
 	public MinecartManiaMinecart(Minecart cart) {
 		minecart = cart;
 		previousMotion = cart.getVelocity().clone();
 		previousLocation = cart.getLocation().toVector().clone();
+		cal = Calendar.getInstance();
 	}
 	
 	public Vector getPreviousLocation() {
@@ -138,7 +142,11 @@ public class MinecartManiaMinecart {
 	 ** @param the value to store
 	 **/	 
 	 public void setDataValue(String key, Object value) {
-		 data.put(key, value);
+		 if (value == null) {
+			 data.remove(key);
+		 }else {
+			 data.put(key, value);
+		 }
 	 }
 	
 	public int getBlockIdBeneath() {
@@ -355,6 +363,14 @@ public class MinecartManiaMinecart {
 					}
 				}
 	    	}
+		}
+	}
+
+	public void updateCalendar() {
+		Calendar current = Calendar.getInstance();
+		if (cal.get(Calendar.SECOND) != current.get(Calendar.SECOND)) {
+			MinecartTimeEvent e = new MinecartTimeEvent(this, cal, current);
+			MinecartManiaCore.server.getPluginManager().callEvent(e);
 		}
 	}
 }
