@@ -35,7 +35,7 @@ public class MinecartManiaCore extends JavaPlugin {
     //    pm.registerEvent(Event.Type.VEHICLE_DAMAGE, listener, Priority.Normal, this);
     //    pm.registerEvent(Event.Type.VEHICLE_ENTER, listener, Priority.Normal, this);
      //   pm.registerEvent(Event.Type.VEHICLE_EXIT, listener, Priority.Normal, this);
-        getServer().getPluginManager().registerEvent(Event.Type.VEHICLE_MOVE, listener, Priority.Highest, this);
+        getServer().getPluginManager().registerEvent(Event.Type.VEHICLE_MOVE, listener, Priority.Normal, this);
         getServer().getPluginManager().registerEvent(Event.Type.VEHICLE_COLLISION_ENTITY, listener, Priority.Normal, this);
      //   pm.registerEvent(Event.Type.PLAYER_COMMAND, listener, Priority.Normal, this);
      //   pm.registerEvent(Event.Type.BLOCK_PLACED, listener, Priority.Normal, this);

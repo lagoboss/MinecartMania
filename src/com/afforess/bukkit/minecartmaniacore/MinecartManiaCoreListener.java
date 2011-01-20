@@ -9,6 +9,7 @@ import org.bukkit.event.vehicle.VehicleListener;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
 
 import com.afforess.bukkit.minecartmaniacore.event.MinecartActionEvent;
+import com.afforess.bukkit.minecartmaniacore.event.MinecartIntersectionEvent;
 
 @SuppressWarnings("unused")
 public class MinecartManiaCoreListener extends VehicleListener{
@@ -29,10 +30,21 @@ public class MinecartManiaCoreListener extends VehicleListener{
 			if (minecart.isMoving()) {
 				minecart.setPreviousFacingDir(minecart.getDirectionOfMotion());
 			}
-			else {
-				minecart.doCatcherBlock();
+			
+			if (minecart.wasMovingLastTick() && !minecart.isMoving()) {
+				
 			}
+			else if (!minecart.wasMovingLastTick() && minecart.isMoving()) {
+				
+			}
+			
+			minecart.doCatcherBlock();
 			if (minecart.hasChangedPosition()) {
+				
+				if (minecart.isAtIntersection()) {
+					MinecartIntersectionEvent mie = new MinecartIntersectionEvent(minecart);
+					MinecartManiaCore.server.getPluginManager().callEvent(mie);
+				}
 				
 				MinecartActionEvent e = new MinecartActionEvent(minecart);
 				MinecartManiaCore.server.getPluginManager().callEvent(e);

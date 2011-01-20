@@ -30,6 +30,34 @@ public class MinecartManiaListener implements CustomEventListener, Listener{
 	}
 	
 	/**
+     * Called when a minecart that was not moving last tick began moving this tick
+     * 
+     * @param event
+     */
+	public void onMinecartMotionStartEvent(MinecartMotionStartEvent event) {
+		
+	}
+	
+	/**
+     * Called when a minecart that was moving last tick stopped moving this tick
+     * 
+     * @param event
+     */
+	public void onMinecartMotionStopEvent(MinecartMotionStopEvent event) {
+		
+	}
+	
+	/**
+     * Called when a minecart reaches an intersection
+     * An intersection is considered any point where there is at least 3 minecart tracks intersecting, one forward, one backward, one perpendicular.
+     * 
+     * @param event
+     */
+	public void onMinecartIntersectionEvent(MinecartIntersectionEvent event) {
+		
+	}
+	
+	/**
      * Avoid using.
      * 
      * @param event
@@ -40,6 +68,15 @@ public class MinecartManiaListener implements CustomEventListener, Listener{
 		}
 		else if (event instanceof MinecartTimeEvent) {
 			onMinecartTimeEvent((MinecartTimeEvent)event);
+		}
+		else if (event instanceof MinecartIntersectionEvent) {
+			onMinecartIntersectionEvent((MinecartIntersectionEvent)event);
+		}
+		else if (event instanceof MinecartMotionStartEvent) {
+			onMinecartMotionStartEvent((MinecartMotionStartEvent)event);
+		}
+		else if (event instanceof MinecartMotionStopEvent) {
+			onMinecartMotionStopEvent((MinecartMotionStopEvent)event);
 		}
 	}
 

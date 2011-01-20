@@ -22,6 +22,7 @@ public class MinecartManiaMinecart {
 	private Vector previousMotion;
 	private Calendar cal;
 	private DirectionUtils.CompassDirection previousFacingDir = DirectionUtils.CompassDirection.NO_DIRECTION;
+	private boolean wasMovingLastTick;
 	
 	private ConcurrentHashMap<String, Object> data = new ConcurrentHashMap<String,Object>();
 	
@@ -30,6 +31,7 @@ public class MinecartManiaMinecart {
 		previousMotion = cart.getVelocity().clone();
 		previousLocation = cart.getLocation().toVector().clone();
 		cal = Calendar.getInstance();
+		setWasMovingLastTick(isMoving());
 	}
 	
 	public Vector getPreviousLocation() {
@@ -372,5 +374,13 @@ public class MinecartManiaMinecart {
 			MinecartTimeEvent e = new MinecartTimeEvent(this, cal, current);
 			MinecartManiaCore.server.getPluginManager().callEvent(e);
 		}
+	}
+
+	public void setWasMovingLastTick(boolean wasMovingLastTick) {
+		this.wasMovingLastTick = wasMovingLastTick;
+	}
+
+	public boolean wasMovingLastTick() {
+		return wasMovingLastTick;
 	}
 }
