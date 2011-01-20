@@ -21,6 +21,15 @@ public class MinecartManiaListener implements CustomEventListener, Listener{
 	}
 	
 	/**
+     * Called when the internal clock of a minecart is updated (each second)
+     * 
+     * @param event
+     */
+	public void onMinecartTimeEvent(MinecartTimeEvent event) {
+		
+	}
+	
+	/**
      * Avoid using.
      * 
      * @param event
@@ -28,6 +37,9 @@ public class MinecartManiaListener implements CustomEventListener, Listener{
 	public void onCustomEvent(Event event) {
 		if (event instanceof MinecartActionEvent) {
 			onMinecartActionEvent((MinecartActionEvent)event);
+		}
+		else if (event instanceof MinecartTimeEvent) {
+			onMinecartTimeEvent((MinecartTimeEvent)event);
 		}
 	}
 
