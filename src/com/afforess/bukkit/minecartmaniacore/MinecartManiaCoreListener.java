@@ -4,12 +4,15 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
+import org.bukkit.event.vehicle.VehicleDamageEvent;
 import org.bukkit.event.vehicle.VehicleEntityCollisionEvent;
 import org.bukkit.event.vehicle.VehicleListener;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
 
 import com.afforess.bukkit.minecartmaniacore.event.MinecartActionEvent;
 import com.afforess.bukkit.minecartmaniacore.event.MinecartIntersectionEvent;
+import com.afforess.bukkit.minecartmaniacore.event.MinecartMotionStartEvent;
+import com.afforess.bukkit.minecartmaniacore.event.MinecartMotionStopEvent;
 
 @SuppressWarnings("unused")
 public class MinecartManiaCoreListener extends VehicleListener{
@@ -32,11 +35,15 @@ public class MinecartManiaCoreListener extends VehicleListener{
 			}
 			
 			if (minecart.wasMovingLastTick() && !minecart.isMoving()) {
-				
+				MinecartMotionStopEvent mmse = new MinecartMotionStopEvent(minecart);
+				MinecartManiaCore.server.getPluginManager().callEvent(mmse);
 			}
 			else if (!minecart.wasMovingLastTick() && minecart.isMoving()) {
-				
+				MinecartMotionStartEvent mmse = new MinecartMotionStartEvent(minecart);
+				MinecartManiaCore.server.getPluginManager().callEvent(mmse);
 			}
+			minecart.setWasMovingLastTick(minecart.isMoving());
+			
 			
 			minecart.doCatcherBlock();
 			if (minecart.hasChangedPosition()) {
@@ -78,26 +85,36 @@ public class MinecartManiaCoreListener extends VehicleListener{
 		}
     }
 	
+	public void onVehicleDamage(VehicleDamageEvent event) {
+		if (event.getVehicle() instanceof Minecart) {
+    		MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart((Minecart)event.getVehicle());
+    		if (!event.isCancelled()) {
+	    		if ((event.getDamage() * 10) + minecart.minecart.getDamage() > 40) {
+	    			MinecartManiaWorld.delMinecartManiaMinecart(minecart.minecart.getEntityId());
+	    		}
+    		}
+		}
+    }
+	
 	public void onVehicleEntityCollision(VehicleEntityCollisionEvent event) {
     	if (event.getVehicle() instanceof Minecart) {
     		Minecart cart = (Minecart)event.getVehicle();
     		MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart(cart);
 			Entity collisioner = event.getEntity();
 			
-			//TODO entity health does not appear to set correctly.
-			/*if (collisioner instanceof LivingEntity) {
-				LivingEntity victom = (LivingEntity)(collisioner);
-				if (!(victom instanceof Player)) {
+			if (collisioner instanceof LivingEntity) {
+				LivingEntity victim = (LivingEntity)(collisioner);
+				if (!(victim instanceof Player)) {
 					if (MinecartManiaWorld.isMinecartsKillMobs()) {
 						if (minecart.isMoving()) {
-							victom.setHealth(0);
+							victim.setHealth(0);
 							event.setCancelled(true);
 							event.setCollisionCancelled(true);
 							event.setPickupCancelled(true);
 						}
 					}
 				}
-			}*/
+			}
 			
 			//TODO remove - Autocart can handle itself
 			/*if (collisioner.getLocation().getBlockX() == cart.getLocation().getBlockX()) {

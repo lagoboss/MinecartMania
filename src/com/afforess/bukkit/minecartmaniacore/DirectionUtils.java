@@ -39,7 +39,6 @@ public abstract class DirectionUtils {
 	        public static CompassDirection fromId(final int type) {
 	            return map.get(type);
 	        }
-	
 	    }
 	 
 	 public static boolean isEqualOrNoDirection(CompassDirection e1, CompassDirection e2)

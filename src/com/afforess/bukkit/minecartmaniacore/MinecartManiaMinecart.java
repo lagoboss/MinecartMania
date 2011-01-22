@@ -9,8 +9,9 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.StorageMinecart;
+import org.bukkit.entity.PoweredMinecart;
 import org.bukkit.util.Vector;
-
 import com.afforess.bukkit.minecartmaniacore.DirectionUtils.CompassDirection;
 import com.afforess.bukkit.minecartmaniacore.event.MinecartTimeEvent;
 
@@ -156,14 +157,29 @@ public class MinecartManiaMinecart {
 	}
 	
 	public boolean isPoweredBeneath() {
-		return MinecartManiaWorld.isBlockIndirectlyPowered(getX(), getY()-1, getZ()) || MinecartManiaWorld.isBlockIndirectlyPowered(getX(), getY(), getZ());
+		if (MinecartManiaWorld.isBlockIndirectlyPowered(getX(), getY()-1, getZ()) || MinecartManiaWorld.isBlockIndirectlyPowered(getX(), getY(), getZ())) {
+			return true;
+		}
+		//Temporary Fix for Pressure Plates, since they are NYI
+		if (getBlockIdBeneath() == Material.WOOD_PLATE.getId()) {
+			return true;
+		}
+		if (getBlockIdBeneath() == Material.STONE_PLATE.getId()) {
+			return this.minecart.getPassenger() != null;
+		}
+		return false;
+	}
+	
+	public void reverse() {
+		setMotionX(getMotionX() * -1);
+		setMotionY(getMotionY() * -1);
+		setMotionZ(getMotionZ() * -1);
 	}
 	
 	public boolean doReverse() {
 		if (getBlockIdBeneath() == MinecartManiaWorld.getReverseBlockId() && !isPoweredBeneath())
     	{
-    		setMotionX(getMotionX() * -1);
-    		setMotionZ(getMotionZ() * -1);
+			reverse();
     		return true;
     	}
 		return false;
@@ -356,15 +372,19 @@ public class MinecartManiaMinecart {
 		if (MinecartManiaWorld.isPressurePlateRails()) {
 			if (MinecartManiaWorld.getBlockAt(getX(), getY(), getZ()).getType().equals(Material.STONE_PLATE)
 			|| MinecartManiaWorld.getBlockAt(getX(), getY(), getZ()).getType().equals(Material.WOOD_PLATE)) {
-				setMotionX(getMotionX() / 0.535D);
-				setMotionZ(getMotionZ() / 0.535D);
-				if (getBlockTypeAhead() != null) {
-					if (getBlockTypeAhead().getType().equals(Material.STONE_PLATE) || getBlockTypeAhead().getType().equals(Material.WOOD_PLATE)){
-						setMotionX(getMotionX() * 2.5D);
-						setMotionZ(getMotionZ() * 2.5D);
-					}
-				}
+				setMotionX(getMotionX() * 3);
+				setMotionZ(getMotionZ() * 3);
 	    	}
+			else if (getBlockTypeAhead() != null && (getBlockTypeAhead().getType().equals(Material.STONE_PLATE) || getBlockTypeAhead().getType().equals(Material.WOOD_PLATE))) {
+				setDataValue("pre-ppr velocity", this.minecart.getVelocity());
+			}
+			else if (getBlockTypeBehind() != null && (getBlockTypeBehind().getType().equals(Material.STONE_PLATE) || getBlockTypeBehind().getType().equals(Material.WOOD_PLATE))) {
+				Vector velocity = (Vector) getDataValue("pre-ppr velocity");
+				if (velocity != null) {
+					this.minecart.setVelocity(velocity);
+					setDataValue("pre-ppr velocity", null);
+				}
+			}
 		}
 	}
 
@@ -375,6 +395,22 @@ public class MinecartManiaMinecart {
 			MinecartManiaCore.server.getPluginManager().callEvent(e);
 		}
 	}
+	
+	public MinecartManiaMinecart getAdjacentMinecartFromDirection(DirectionUtils.CompassDirection direction) {
+		if (direction == DirectionUtils.CompassDirection.NORTH) return MinecartManiaWorld.getMinecartManiaMinecartAt(getX()-1, getY(), getZ());
+		if (direction == DirectionUtils.CompassDirection.EAST) return MinecartManiaWorld.getMinecartManiaMinecartAt(getX(), getY(), getZ()-1);
+		if (direction == DirectionUtils.CompassDirection.SOUTH) return MinecartManiaWorld.getMinecartManiaMinecartAt(getX()+1, getY(), getZ());
+		if (direction == DirectionUtils.CompassDirection.WEST) return MinecartManiaWorld.getMinecartManiaMinecartAt(getX(), getY(), getZ()+1);
+		return null;
+	}
+	
+	public MinecartManiaMinecart getMinecartAhead() {
+		return getAdjacentMinecartFromDirection(getDirectionOfMotion());
+	}
+	
+	public MinecartManiaMinecart getMinecartBehind() {
+		return getAdjacentMinecartFromDirection(DirectionUtils.getOppositeDirection(getDirectionOfMotion()));
+	}
 
 	public void setWasMovingLastTick(boolean wasMovingLastTick) {
 		this.wasMovingLastTick = wasMovingLastTick;
@@ -382,5 +418,17 @@ public class MinecartManiaMinecart {
 
 	public boolean wasMovingLastTick() {
 		return wasMovingLastTick;
+	}
+	
+	public boolean isPoweredMinecart() {
+		return minecart instanceof PoweredMinecart;
+	}
+	
+	public boolean isStorageMinecart() {
+		return minecart instanceof StorageMinecart;
+	}
+	
+	public boolean isStandardMinecart() {
+		return !isPoweredMinecart() && !isStorageMinecart();
 	}
 }

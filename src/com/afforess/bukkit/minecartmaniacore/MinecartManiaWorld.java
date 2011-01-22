@@ -1,4 +1,6 @@
 package com.afforess.bukkit.minecartmaniacore;
+import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.World;
@@ -37,6 +39,28 @@ public class MinecartManiaWorld {
         }
         return false;
     }
+	 
+	 /**
+	 ** Returns any minecart at the given location, or null if none is present
+	 ** @param the x - coordinate to check
+	 ** @param the y - coordinate to check
+	 ** @param the z - coordinate to check
+	 **/
+	 public static MinecartManiaMinecart getMinecartManiaMinecartAt(int x, int y, int z) {
+		 Iterator<Entry<Integer, MinecartManiaMinecart>> i = minecarts.entrySet().iterator();
+		 while (i.hasNext()) {
+			 Entry<Integer, MinecartManiaMinecart> e = i.next();
+			 if (e.getValue().minecart.getLocation().getBlockX() == x) {
+				 if (e.getValue().minecart.getLocation().getBlockY() == y) {
+					 if (e.getValue().minecart.getLocation().getBlockZ() == z) {
+						 return e.getValue();
+					 }
+				 }
+			 }
+		 }
+		
+		 return null;
+	 }
 	 
 	/**
 	 ** Returns the value from the loaded configuration
@@ -169,6 +193,8 @@ public class MinecartManiaWorld {
 	 ** @param new data to set
 	 **/
 	public static void setBlockData(int x, int y, int z, int data) {
+		//Better to crash than to write bad data!
+		if (data == -1 || data > Byte.MAX_VALUE) throw new IllegalArgumentException();
 		getWorld().getBlockAt(x, y, z).setData((byte) (data));
 	}
 	

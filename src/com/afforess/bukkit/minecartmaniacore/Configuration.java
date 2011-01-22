@@ -22,8 +22,10 @@ public class Configuration {
 	public static void readFile() {	
 		
 		
-		new File("MinecartMania/").mkdir();
-		File options = new File("MinecartMania/MinecartManiaCoreSettings.txt");
+		File directory = new File("MinecartMania" + File.separator);
+		if (!directory.exists())
+			directory.mkdir();
+		File options = new File("MinecartMania" + File.separator + "MinecartManiaCoreSettings.txt");
 		if (!options.exists() || invalidFile(options))
 		{
 			WriteFile(options);
