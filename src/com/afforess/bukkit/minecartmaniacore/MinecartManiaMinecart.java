@@ -161,10 +161,10 @@ public class MinecartManiaMinecart {
 			return true;
 		}
 		//Temporary Fix for Pressure Plates, since they are NYI
-		if (getBlockIdBeneath() == Material.WOOD_PLATE.getId()) {
+		if (MinecartManiaWorld.getBlockAt(getX(), getY(), getZ()).getTypeId() == Material.WOOD_PLATE.getId()) {
 			return true;
 		}
-		if (getBlockIdBeneath() == Material.STONE_PLATE.getId()) {
+		if (MinecartManiaWorld.getBlockAt(getX(), getY(), getZ()).getTypeId() == Material.STONE_PLATE.getId()) {
 			return this.minecart.getPassenger() != null;
 		}
 		return false;
