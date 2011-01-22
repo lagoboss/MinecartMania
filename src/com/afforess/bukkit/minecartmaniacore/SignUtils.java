@@ -17,7 +17,7 @@ public class SignUtils {
 	}
 	
 	public static ArrayList<Sign> getAdjacentSignList(MinecartManiaMinecart minecart, int range) {
-		return getAdjacentSignList(minecart.getX(), minecart.getY(), minecart.getZ(), range);
+		return getAdjacentSignList(minecart.getX(), minecart.getY()-1, minecart.getZ(), range);
 	}
 	
 	public static ArrayList<Sign> getAdjacentSignList(int x, int y, int z, int range) {
