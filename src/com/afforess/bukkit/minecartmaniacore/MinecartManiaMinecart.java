@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
@@ -243,6 +244,7 @@ public class MinecartManiaMinecart {
 	}
 	
 	private void launchCart() {
+
 		ArrayList<Sign> signList = SignUtils.getAdjacentSignList(this, 1);
 		for (Sign sign : signList) {
 			for (int i = 0; i < 4; i++) {
@@ -278,9 +280,29 @@ public class MinecartManiaMinecart {
 						return;
 					}
 				}
+				if (sign.getLine(i).toLowerCase().indexOf("facing dir") > -1) {
+					if (minecart.getPassenger() != null) {
+						DirectionUtils.CompassDirection facingDir = DirectionUtils.getDirectionFromMinecartRotation((minecart.getPassenger().getLocation().getYaw() - 90.0F) % 360.0F);
+						if (MinecartUtils.validMinecartTrack(getX(), getY(), getZ()+1, 2, facingDir)) {
+							sign.setLine(i, "[Facing Dir]");
+							sign.update();
+							setMotion(facingDir, 0.6D);
+							return;
+						}
+					}
+				}
+				if (sign.getLine(i).toLowerCase().indexOf("previous dir") > -1) {
+					if (!this.getPreviousFacingDir().equals(DirectionUtils.CompassDirection.NO_DIRECTION)) {
+						if (MinecartUtils.validMinecartTrack(getX(), getY(), getZ()+1, 2, this.getPreviousFacingDir())) {
+							sign.setLine(i, "[Previous Dir]");
+							sign.update();
+							setMotion(this.getPreviousFacingDir(), 0.6D);
+							return;
+						}
+					}
+				}
 			}
 		}
-		
 		if (MinecartUtils.validMinecartTrack(getX()-1, getY(), getZ(), 2, DirectionUtils.CompassDirection.NORTH)) {
 			setMotion(DirectionUtils.CompassDirection.NORTH, 0.6D);
 		}
@@ -292,14 +314,6 @@ public class MinecartManiaMinecart {
 		}
 		else if (MinecartUtils.validMinecartTrack(getX(), getY(), getZ()+1, 2, DirectionUtils.CompassDirection.WEST)) {
 			setMotion(DirectionUtils.CompassDirection.WEST, 0.6D);
-		}
-		
-		//Successful Launch
-		if (isMoving()) {
-			if (MinecartManiaWorld.getBlockAt(getX(), getY(), getZ()).getType().equals(Material.STONE_PLATE)
-					|| MinecartManiaWorld.getBlockAt(getX(), getY(), getZ()).getType().equals(Material.WOOD_PLATE)) {
-				setDataValue("pre-ppr velocity", this.minecart.getVelocity());
-			}
 		}
 	}
 
@@ -383,13 +397,15 @@ public class MinecartManiaMinecart {
 				setMotionX(getMotionX() * 3);
 				setMotionZ(getMotionZ() * 3);
 	    	}
-			else if (hasChangedPosition() && getBlockTypeAhead() != null && (getBlockTypeAhead().getType().equals(Material.STONE_PLATE) || getBlockTypeAhead().getType().equals(Material.WOOD_PLATE))) {
+			else if (getBlockTypeAhead() != null && (getBlockTypeAhead().getType().equals(Material.STONE_PLATE) || getBlockTypeAhead().getType().equals(Material.WOOD_PLATE))) {
 				setDataValue("pre-ppr velocity", this.minecart.getVelocity());
 			}
-			else if (hasChangedPosition() && getBlockTypeBehind() != null && (getBlockTypeBehind().getType().equals(Material.STONE_PLATE) || getBlockTypeBehind().getType().equals(Material.WOOD_PLATE))) {
+			else if (getBlockTypeBehind() != null && (getBlockTypeBehind().getType().equals(Material.STONE_PLATE) || getBlockTypeBehind().getType().equals(Material.WOOD_PLATE))) {
 				Vector velocity = (Vector) getDataValue("pre-ppr velocity");
 				if (velocity != null) {
-					this.minecart.setVelocity(velocity);
+					if (getBlockTypeBehind().getFace(BlockFace.DOWN).getTypeId() != MinecartManiaWorld.getCatcherBlockId()) {
+						this.minecart.setVelocity(velocity);
+					}
 					setDataValue("pre-ppr velocity", null);
 				}
 			}
