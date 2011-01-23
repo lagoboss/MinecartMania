@@ -293,6 +293,14 @@ public class MinecartManiaMinecart {
 		else if (MinecartUtils.validMinecartTrack(getX(), getY(), getZ()+1, 2, DirectionUtils.CompassDirection.WEST)) {
 			setMotion(DirectionUtils.CompassDirection.WEST, 0.6D);
 		}
+		
+		//Successful Launch
+		if (isMoving()) {
+			if (MinecartManiaWorld.getBlockAt(getX(), getY(), getZ()).getType().equals(Material.STONE_PLATE)
+					|| MinecartManiaWorld.getBlockAt(getX(), getY(), getZ()).getType().equals(Material.WOOD_PLATE)) {
+				setDataValue("pre-ppr velocity", this.minecart.getVelocity());
+			}
+		}
 	}
 
 	public void setMotion(CompassDirection direction, double speed) {
@@ -375,10 +383,10 @@ public class MinecartManiaMinecart {
 				setMotionX(getMotionX() * 3);
 				setMotionZ(getMotionZ() * 3);
 	    	}
-			else if (getBlockTypeAhead() != null && (getBlockTypeAhead().getType().equals(Material.STONE_PLATE) || getBlockTypeAhead().getType().equals(Material.WOOD_PLATE))) {
+			else if (hasChangedPosition() && getBlockTypeAhead() != null && (getBlockTypeAhead().getType().equals(Material.STONE_PLATE) || getBlockTypeAhead().getType().equals(Material.WOOD_PLATE))) {
 				setDataValue("pre-ppr velocity", this.minecart.getVelocity());
 			}
-			else if (getBlockTypeBehind() != null && (getBlockTypeBehind().getType().equals(Material.STONE_PLATE) || getBlockTypeBehind().getType().equals(Material.WOOD_PLATE))) {
+			else if (hasChangedPosition() && getBlockTypeBehind() != null && (getBlockTypeBehind().getType().equals(Material.STONE_PLATE) || getBlockTypeBehind().getType().equals(Material.WOOD_PLATE))) {
 				Vector velocity = (Vector) getDataValue("pre-ppr velocity");
 				if (velocity != null) {
 					this.minecart.setVelocity(velocity);

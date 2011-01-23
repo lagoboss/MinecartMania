@@ -107,7 +107,10 @@ public class MinecartManiaCoreListener extends VehicleListener{
 				if (!(victim instanceof Player)) {
 					if (MinecartManiaWorld.isMinecartsKillMobs()) {
 						if (minecart.isMoving()) {
-							victim.setHealth(0);
+							if (victim.getHealth() > 0) {
+								victim.setHealth(0);
+							}
+							
 							event.setCancelled(true);
 							event.setCollisionCancelled(true);
 							event.setPickupCancelled(true);
