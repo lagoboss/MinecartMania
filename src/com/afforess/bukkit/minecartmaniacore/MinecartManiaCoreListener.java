@@ -45,7 +45,7 @@ public class MinecartManiaCoreListener extends VehicleListener{
 			minecart.setWasMovingLastTick(minecart.isMoving());
 			
 			
-			minecart.doCatcherBlock();
+			
 			if (minecart.hasChangedPosition()) {
 				
 				if (minecart.isAtIntersection()) {
@@ -81,6 +81,12 @@ public class MinecartManiaCoreListener extends VehicleListener{
 				
 				minecart.updateMotion();
 				minecart.updateLocation();
+			}
+			
+			
+			//Allow other mods to disable this
+			if (minecart.getDataValue("Do Catcher Block") == null) {
+				minecart.doCatcherBlock();
 			}
 		}
     }

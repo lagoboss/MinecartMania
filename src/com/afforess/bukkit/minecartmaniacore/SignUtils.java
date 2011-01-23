@@ -35,7 +35,7 @@ public class SignUtils {
 		return signList;
 	}
 	
-	public static ArrayList<Sign> getParallelSign(int x, int y, int z)
+	public static ArrayList<Sign> getParallelSignList(int x, int y, int z)
 	{
 		int range = 1;
 		ArrayList<Sign> signList = new ArrayList<Sign>();

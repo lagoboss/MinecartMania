@@ -417,6 +417,7 @@ public class MinecartManiaMinecart {
 		if (cal.get(Calendar.SECOND) != current.get(Calendar.SECOND)) {
 			MinecartTimeEvent e = new MinecartTimeEvent(this, cal, current);
 			MinecartManiaCore.server.getPluginManager().callEvent(e);
+			cal = current;
 		}
 	}
 	
