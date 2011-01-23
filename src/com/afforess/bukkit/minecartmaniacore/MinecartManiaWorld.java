@@ -5,12 +5,14 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.Chest;
 import org.bukkit.entity.Minecart;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.Redstone;
 
 public class MinecartManiaWorld {
 	private static ConcurrentHashMap<Integer,MinecartManiaMinecart> minecarts = new ConcurrentHashMap<Integer,MinecartManiaMinecart>();
+	private static ConcurrentHashMap<Integer,MinecartManiaChest> chests = new ConcurrentHashMap<Integer,MinecartManiaChest>();
 	private static ConcurrentHashMap<String, Object> configuration = new ConcurrentHashMap<String,Object>();
 	
 	/**
@@ -61,6 +63,33 @@ public class MinecartManiaWorld {
 		
 		 return null;
 	 }
+	 
+	 /**
+	 ** Returns a new MinecartManiaChest from storage if it already exists, or creates and stores a new MinecartManiaChest object, and returns it
+	 ** @param the chest to wrap
+	 **/
+	 public static MinecartManiaChest getMinecartManiaChest(Chest chest) {
+        MinecartManiaChest testChest = chests.get(new Integer(chest.hashCode()));
+        if (testChest == null) {
+        	MinecartManiaChest newChest = new MinecartManiaChest(chest);
+        	chests.put(new Integer(chest.hashCode()), newChest);
+        	return newChest;
+        } else {
+           return testChest;
+        }
+    }
+	 
+	/**
+	 ** Returns true if the chest with the given entityID was deleted, false if not.
+	 ** @param the id of the chest to delete
+	 **/
+	 public static boolean delMinecartManiaChest(int entityID) {
+        if (chests.containsKey(new Integer(entityID))) {
+            chests.remove(new Integer(entityID));
+            return true;
+        }
+        return false;
+    }
 	 
 	/**
 	 ** Returns the value from the loaded configuration
