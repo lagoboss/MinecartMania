@@ -120,15 +120,19 @@ public class MinecartManiaChest {
 			}
 		}
 		
-		if (getNeighborChest() != null && getDataValue("neighbor") == null) {
-			//prevent infinite recursion
-			getNeighborChest().setDataValue("neighbor", Boolean.TRUE);
-			if (getNeighborChest().addItem(item)) {
-				return true;
+		MinecartManiaChest neighbor = getNeighborChest();
+		if (neighbor != null) {
+			//flag to prevent infinite recursion
+			if (getDataValue("neighbor") == null) {
+				neighbor.setDataValue("neighbor", Boolean.TRUE);
+				if (getNeighborChest().addItem(item)) {
+					return true;
+				}
 			}
-		}
-		else {
-			setDataValue("neighbor", null);
+			else {
+				//set flag
+				setDataValue("neighbor", null);
+			}
 		}
 			
 		//if we fail, reset the inventory and item back to previous values
@@ -183,16 +187,21 @@ public class MinecartManiaChest {
 			}
 		}
 		
-		if (getNeighborChest() != null && getDataValue("neighbor") == null) {
-			//prevent infinite recursion
-			getNeighborChest().setDataValue("neighbor", Boolean.TRUE);
-			if (getNeighborChest().removeItem(type, amount)) {
-				return true;
+		MinecartManiaChest neighbor = getNeighborChest();
+		if (neighbor != null) {
+			//flag to prevent infinite recursion
+			if (getDataValue("neighbor") == null) {
+				neighbor.setDataValue("neighbor", Boolean.TRUE);
+				if (neighbor.removeItem(type, amount)) {
+					return true;
+				}
+			}
+			else {
+				//set flag
+				setDataValue("neighbor", null);
 			}
 		}
-		else {
-			setDataValue("neighbor", null);
-		}
+		
 			
 		//if we fail, reset the inventory back to previous values
 		inventory.setContents(backup);
