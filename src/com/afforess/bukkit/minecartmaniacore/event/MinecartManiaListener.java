@@ -58,6 +58,15 @@ public class MinecartManiaListener implements CustomEventListener, Listener{
 	}
 	
 	/**
+     * Called when the redstone power state adjacent to any chest changes.
+     * 
+     * @param event
+     */
+	public void onChestPoweredEvent(ChestPoweredEvent event) {
+		
+	}
+	
+	/**
      * Avoid using.
      * 
      * @param event
@@ -77,6 +86,9 @@ public class MinecartManiaListener implements CustomEventListener, Listener{
 		}
 		else if (event instanceof MinecartMotionStopEvent) {
 			onMinecartMotionStopEvent((MinecartMotionStopEvent)event);
+		}
+		else if (event instanceof ChestPoweredEvent) {
+			onChestPoweredEvent((ChestPoweredEvent)event);
 		}
 	}
 

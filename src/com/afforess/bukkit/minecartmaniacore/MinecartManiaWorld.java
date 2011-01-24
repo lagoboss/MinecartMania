@@ -9,10 +9,11 @@ import org.bukkit.block.Chest;
 import org.bukkit.entity.Minecart;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.Redstone;
+import org.bukkit.util.Vector;
 
 public class MinecartManiaWorld {
 	private static ConcurrentHashMap<Integer,MinecartManiaMinecart> minecarts = new ConcurrentHashMap<Integer,MinecartManiaMinecart>();
-	private static ConcurrentHashMap<Integer,MinecartManiaChest> chests = new ConcurrentHashMap<Integer,MinecartManiaChest>();
+	private static ConcurrentHashMap<Vector,MinecartManiaChest> chests = new ConcurrentHashMap<Vector,MinecartManiaChest>();
 	private static ConcurrentHashMap<String, Object> configuration = new ConcurrentHashMap<String,Object>();
 	
 	/**
@@ -69,13 +70,13 @@ public class MinecartManiaWorld {
 	 ** @param the chest to wrap
 	 **/
 	 public static MinecartManiaChest getMinecartManiaChest(Chest chest) {
-        MinecartManiaChest testChest = chests.get(new Integer(chest.hashCode()));
+        MinecartManiaChest testChest = chests.get(new Vector(chest.getX(), chest.getY(), chest.getZ()));
         if (testChest == null) {
-        	MinecartManiaChest newChest = new MinecartManiaChest(chest);
-        	chests.put(new Integer(chest.hashCode()), newChest);
-        	return newChest;
+	        MinecartManiaChest newChest = new MinecartManiaChest(chest);
+	        chests.put(new Vector(chest.getX(), chest.getY(), chest.getZ()), newChest);
+	        return newChest;
         } else {
-           return testChest;
+        	return testChest;
         }
     }
 	 

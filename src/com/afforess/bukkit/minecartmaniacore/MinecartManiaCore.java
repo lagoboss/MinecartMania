@@ -19,6 +19,7 @@ public class MinecartManiaCore extends JavaPlugin {
 	}
 
 	public final MinecartManiaCoreListener listener = new MinecartManiaCoreListener(this);
+	public final MinecartManiaCoreBlockListener blockListener = new MinecartManiaCoreBlockListener();
 	public static Logger log;
 	public static Server server;
 	public static PluginDescriptionFile description;
@@ -28,24 +29,11 @@ public class MinecartManiaCore extends JavaPlugin {
 	public void onEnable(){
 		log = Logger.getLogger("Minecraft");
 		Configuration.loadConfiguration();
-		 // Register our events
-     //   pm.registerEvent(Event.Type.REDSTONE_CHANGE, listener, Priority.Normal, this);
-     //   pm.registerEvent(Event.Type.VEHICLE_COLLISION_ENTITY, listener, Priority.Normal, this);
-     //   pm.registerEvent(Event.Type.VEHICLE_CREATE, listener, Priority.Normal, this);
-    //    pm.registerEvent(Event.Type.VEHICLE_DAMAGE, listener, Priority.Normal, this);
-    //    pm.registerEvent(Event.Type.VEHICLE_ENTER, listener, Priority.Normal, this);
-     //   pm.registerEvent(Event.Type.VEHICLE_EXIT, listener, Priority.Normal, this);
+
         getServer().getPluginManager().registerEvent(Event.Type.VEHICLE_MOVE, listener, Priority.Normal, this);
         getServer().getPluginManager().registerEvent(Event.Type.VEHICLE_COLLISION_ENTITY, listener, Priority.Normal, this);
         getServer().getPluginManager().registerEvent(Event.Type.VEHICLE_DAMAGE, listener, Priority.Monitor, this);
-     //   pm.registerEvent(Event.Type.PLAYER_COMMAND, listener, Priority.Normal, this);
-     //   pm.registerEvent(Event.Type.BLOCK_PLACED, listener, Priority.Normal, this);
-		//etc.getLoader().addListener(PluginLoader.Hook.VEHICLE_DESTROYED, listener, this, PluginListener.Priority.MEDIUM);
-		//etc.getLoader().addListener(PluginLoader.Hook.VEHICLE_UPDATE, listener, this, PluginListener.Priority.MEDIUM);
-        //etc.getLoader().addListener(PluginLoader.Hook.OPEN_INVENTORY, listener, this, PluginListener.Priority.MEDIUM);
-	//	etc.getLoader().addListener(PluginLoader.Hook.DISCONNECT, listener, this, PluginListener.Priority.MEDIUM);
-        
-        //getServer().getPluginManager().callEvent(arg0)
+        getServer().getPluginManager().registerEvent(Event.Type.REDSTONE_CHANGE, blockListener, Priority.Monitor, this);
 
         PluginDescriptionFile pdfFile = this.getDescription();
         log.info( pdfFile.getName() + " version " + pdfFile.getVersion() + " is enabled!" );

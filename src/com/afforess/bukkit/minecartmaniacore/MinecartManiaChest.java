@@ -10,9 +10,11 @@ import org.bukkit.inventory.ItemStack;
 public class MinecartManiaChest {
 
 	private Chest chest;
+	private boolean RedstonePower;
 	private ConcurrentHashMap<String, Object> data = new ConcurrentHashMap<String,Object>();
 	public MinecartManiaChest(Chest chest) {
 		this.chest = chest;
+		setRedstonePower(MinecartManiaWorld.isBlockIndirectlyPowered(getX(), getY(), getZ()));
 	}
 	
 	/**
@@ -202,6 +204,14 @@ public class MinecartManiaChest {
 	 **/
 	public boolean removeItem(int type) {
 		return removeItem(type, 1);
+	}
+
+	public void setRedstonePower(boolean redstonePower) {
+		RedstonePower = redstonePower;
+	}
+
+	public boolean isRedstonePower() {
+		return RedstonePower;
 	}
 
 }
