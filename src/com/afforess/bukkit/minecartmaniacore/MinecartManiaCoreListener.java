@@ -1,11 +1,19 @@
 package com.afforess.bukkit.minecartmaniacore;
 
+import java.util.Calendar;
+
+import net.minecraft.server.EntityLiving;
+
+import org.bukkit.craftbukkit.entity.CraftLivingEntity;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event.Type;
 import org.bukkit.event.vehicle.VehicleDamageEvent;
+import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.event.vehicle.VehicleEntityCollisionEvent;
+import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.event.vehicle.VehicleListener;
 import org.bukkit.event.block.BlockListener;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
@@ -45,7 +53,35 @@ public class MinecartManiaCoreListener extends VehicleListener{
 			}
 			minecart.setWasMovingLastTick(minecart.isMoving());
 			
-			
+			//Workaround until VehicleEnter and VehicleExit work
+			Object data = minecart.getDataValue("PrevPassenger");
+			if (data != null) {
+				LivingEntity prevPassenger = (LivingEntity)data;
+				//Passenger disembarked
+				if (minecart.minecart.getPassenger() == null) {
+					VehicleExitEvent vee = new VehicleExitEvent(Type.VEHICLE_EXIT, minecart.minecart, prevPassenger);
+					MinecartManiaCore.server.getPluginManager().callEvent(vee);
+					//
+					minecart.setDataValue("PrevPassenger", null);
+				}
+				//Changed passenger
+				else if (!minecart.minecart.getPassenger().equals(prevPassenger)) {
+					VehicleExitEvent vee = new VehicleExitEvent(Type.VEHICLE_EXIT, minecart.minecart, prevPassenger);
+					MinecartManiaCore.server.getPluginManager().callEvent(vee);
+					VehicleEnterEvent vee2 = new VehicleEnterEvent(Type.VEHICLE_ENTER, minecart.minecart, (LivingEntity) minecart.minecart.getPassenger());
+					MinecartManiaCore.server.getPluginManager().callEvent(vee2);
+					minecart.setDataValue("PrevPassenger", minecart.minecart.getPassenger());
+				}
+			}
+			else if (data == null) {
+				//New Passenger
+				if (minecart.minecart.getPassenger() != null) {
+					VehicleEnterEvent vee = new VehicleEnterEvent(Type.VEHICLE_ENTER, minecart.minecart, (LivingEntity) minecart.minecart.getPassenger());
+					MinecartManiaCore.server.getPluginManager().callEvent(vee);
+					minecart.setDataValue("PrevPassenger", minecart.minecart.getPassenger());
+				}
+			}
+			//End Workaround
 			
 			if (minecart.hasChangedPosition()) {
 				
@@ -114,7 +150,13 @@ public class MinecartManiaCoreListener extends VehicleListener{
 				if (!(victim instanceof Player)) {
 					if (MinecartManiaWorld.isMinecartsKillMobs()) {
 						if (minecart.isMoving()) {
-							if (victim.getHealth() > 0) {
+							
+							try {
+								CraftLivingEntity e = (CraftLivingEntity)victim;
+								EntityLiving el = e.getHandle();
+								el.q();
+							}
+							catch (Exception e) {
 								victim.setHealth(0);
 							}
 							

@@ -1,13 +1,15 @@
 package com.afforess.bukkit.minecartmaniacore;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.concurrent.ConcurrentHashMap;
+
+import net.minecraft.server.EntityMinecart;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
+import org.bukkit.craftbukkit.entity.CraftMinecart;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.StorageMinecart;
@@ -455,5 +457,19 @@ public class MinecartManiaMinecart {
 	
 	public boolean isStandardMinecart() {
 		return !isPoweredMinecart() && !isStorageMinecart();
+	}
+	
+	public void kill() {
+
+		try {
+			CraftMinecart cart = (CraftMinecart)minecart;
+			EntityMinecart em = (EntityMinecart) cart.getHandle();
+			em.q();
+			
+		}
+		catch (Exception e) {
+			//Failed to kill minecart
+		}
+
 	}
 }

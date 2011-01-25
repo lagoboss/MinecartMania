@@ -2,26 +2,24 @@ package com.afforess.bukkit.minecartmaniacore;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import net.minecraft.server.TileEntity;
+import net.minecraft.server.TileEntityChest;
+import net.minecraft.server.World;
+
 import org.bukkit.Material;
 import org.bukkit.block.Chest;
+import org.bukkit.craftbukkit.block.CraftChest;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 public class MinecartManiaChest {
 
-	private Chest chest;
+	public final Chest chest;
 	private boolean RedstonePower;
 	private ConcurrentHashMap<String, Object> data = new ConcurrentHashMap<String,Object>();
 	public MinecartManiaChest(Chest chest) {
 		this.chest = chest;
 		setRedstonePower(MinecartManiaWorld.isBlockIndirectlyPowered(getX(), getY(), getZ()));
-	}
-	
-	/**
-	 ** returns the chest we are wrapping
-	 **/
-	public Chest getChest() {
-		return chest;
 	}
 	
 	public int getX() {
@@ -109,6 +107,7 @@ public class MinecartManiaChest {
 				if (inventory.getItem(i).getTypeId() == item.getTypeId()) {
 					if (inventory.getItem(i).getAmount() + item.getAmount() <= 64) {
 						inventory.setItem(i, new ItemStack(item.getTypeId(), inventory.getItem(i).getAmount() + item.getAmount()));
+						//chest.update();
 						return true;
 					}
 					else {
@@ -126,6 +125,7 @@ public class MinecartManiaChest {
 			if (getDataValue("neighbor") == null) {
 				neighbor.setDataValue("neighbor", Boolean.TRUE);
 				if (getNeighborChest().addItem(item)) {
+					//chest.update();
 					return true;
 				}
 			}
@@ -173,10 +173,12 @@ public class MinecartManiaChest {
 				if (inventory.getItem(i).getTypeId() == type) {
 					if (inventory.getItem(i).getAmount() - amount > 0) {
 						inventory.setItem(i, new ItemStack(type, inventory.getItem(i).getAmount() - amount));
+						//chest.update();
 						return true;
 					}
 					else if (inventory.getItem(i).getAmount() - amount == 0) {
 						inventory.remove(i);
+						//chest.update();
 						return true;
 					}
 					else{
@@ -193,6 +195,7 @@ public class MinecartManiaChest {
 			if (getDataValue("neighbor") == null) {
 				neighbor.setDataValue("neighbor", Boolean.TRUE);
 				if (neighbor.removeItem(type, amount)) {
+					//chest.update();
 					return true;
 				}
 			}
@@ -222,5 +225,18 @@ public class MinecartManiaChest {
 	public boolean isRedstonePower() {
 		return RedstonePower;
 	}
+	
+	//Chest.update() throws null pointers, so temporary method of our own until that is fixed
+	public void update() {
+		/*try{
+			CraftChest c = (CraftChest)chest;
+			World w = c.getWorld().;
+			TileEntity te = w.m(getX(), getY(), getZ());
+			te.d(); //update()
+		} catch (Exception e){
+			
+		}*/
+	}
+	
 
 }
