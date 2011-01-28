@@ -50,16 +50,6 @@ public class SignUtils {
 		return signList;
 	}
 	
-	public static String getNumber(String s)
-	{
-		String n = "";
-		for (int i = 0; i < s.length(); i++)
-		{
-			char c = s.charAt(i);
-			if (Character.isDigit(c) || c == '.' || c == '-')
-				n += c;
-		}
-		return n;
-	}
+	
 	
 }

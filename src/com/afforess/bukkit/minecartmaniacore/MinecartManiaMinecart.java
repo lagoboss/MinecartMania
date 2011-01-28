@@ -27,6 +27,8 @@ public class MinecartManiaMinecart {
 	private Calendar cal;
 	private DirectionUtils.CompassDirection previousFacingDir = DirectionUtils.CompassDirection.NO_DIRECTION;
 	private boolean wasMovingLastTick;
+	@SuppressWarnings("unused")
+	private String owner;
 	
 	private ConcurrentHashMap<String, Object> data = new ConcurrentHashMap<String,Object>();
 	
@@ -36,8 +38,25 @@ public class MinecartManiaMinecart {
 		previousLocation = cart.getLocation().toVector().clone();
 		cal = Calendar.getInstance();
 		setWasMovingLastTick(isMoving());
+		findOwner();
 	}
 	
+	/**
+	 ** Attempts to find the player that spawned this minecart.
+	 **
+	 */
+	private void findOwner() {
+		int range = 4;
+		for (int dx = -(range); dx <= range; dx++){
+			for (int dy = -(range); dy <= range; dy++){
+				for (int dz = -(range); dz <= range; dz++){
+					
+				}
+			}
+		}
+		
+	}
+
 	public Vector getPreviousLocation() {
 		return previousLocation.clone();
 	}
@@ -462,9 +481,11 @@ public class MinecartManiaMinecart {
 	public void kill() {
 
 		try {
+			MinecartManiaWorld.delMinecartManiaMinecart(minecart.getEntityId());
 			CraftMinecart cart = (CraftMinecart)minecart;
 			EntityMinecart em = (EntityMinecart) cart.getHandle();
 			em.q();
+			
 			
 		}
 		catch (Exception e) {

@@ -1,4 +1,5 @@
 package com.afforess.bukkit.minecartmaniacore;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -65,6 +66,15 @@ public class MinecartManiaWorld {
 		 return null;
 	 }
 	 
+	 public static ArrayList<MinecartManiaMinecart> getMinecartManiaMinecartList() {
+		 Iterator<Entry<Integer, MinecartManiaMinecart>> i = minecarts.entrySet().iterator();
+		 ArrayList<MinecartManiaMinecart> minecartList = new ArrayList<MinecartManiaMinecart>(minecarts.size());
+		 while (i.hasNext()) {
+			 minecartList.add(i.next().getValue());
+		 }
+		 return minecartList;
+	 }
+	 
 	 /**
 	 ** Returns a new MinecartManiaChest from storage if it already exists, or creates and stores a new MinecartManiaChest object, and returns it
 	 ** @param the chest to wrap
@@ -115,6 +125,10 @@ public class MinecartManiaWorld {
 		 else {
 			 configuration.put(key, value);
 		 }
+	 }
+	 
+	 public static ConcurrentHashMap<String, Object> getConfiguration() {
+		 return configuration;
 	 }
 	 
 	/**

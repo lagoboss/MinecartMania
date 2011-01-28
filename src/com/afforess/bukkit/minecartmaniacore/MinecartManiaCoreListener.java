@@ -61,16 +61,12 @@ public class MinecartManiaCoreListener extends VehicleListener{
 				if (minecart.minecart.getPassenger() == null) {
 					VehicleExitEvent vee = new VehicleExitEvent(Type.VEHICLE_EXIT, minecart.minecart, prevPassenger);
 					MinecartManiaCore.server.getPluginManager().callEvent(vee);
-					//
-					minecart.setDataValue("PrevPassenger", null);
-				}
-				//Changed passenger
-				else if (!minecart.minecart.getPassenger().equals(prevPassenger)) {
-					VehicleExitEvent vee = new VehicleExitEvent(Type.VEHICLE_EXIT, minecart.minecart, prevPassenger);
-					MinecartManiaCore.server.getPluginManager().callEvent(vee);
-					VehicleEnterEvent vee2 = new VehicleEnterEvent(Type.VEHICLE_ENTER, minecart.minecart, (LivingEntity) minecart.minecart.getPassenger());
-					MinecartManiaCore.server.getPluginManager().callEvent(vee2);
-					minecart.setDataValue("PrevPassenger", minecart.minecart.getPassenger());
+					if (vee.isCancelled()) {
+						minecart.minecart.setPassenger(prevPassenger);
+					}
+					else {
+						minecart.setDataValue("PrevPassenger", null);
+					}
 				}
 			}
 			else if (data == null) {
@@ -78,7 +74,12 @@ public class MinecartManiaCoreListener extends VehicleListener{
 				if (minecart.minecart.getPassenger() != null) {
 					VehicleEnterEvent vee = new VehicleEnterEvent(Type.VEHICLE_ENTER, minecart.minecart, (LivingEntity) minecart.minecart.getPassenger());
 					MinecartManiaCore.server.getPluginManager().callEvent(vee);
-					minecart.setDataValue("PrevPassenger", minecart.minecart.getPassenger());
+					if (vee.isCancelled()) {
+						minecart.minecart.eject();
+					}
+					else {
+						minecart.setDataValue("PrevPassenger", minecart.minecart.getPassenger());
+					}
 				}
 			}
 			//End Workaround

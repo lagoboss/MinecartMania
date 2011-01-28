@@ -113,7 +113,6 @@ public class MinecartManiaFlatFile {
 		return defaultVal;
 	}
 	
-	
 	public static String getNumber(String s)
 	{
 		String n = "";

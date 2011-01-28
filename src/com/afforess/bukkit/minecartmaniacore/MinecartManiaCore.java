@@ -2,6 +2,8 @@ package com.afforess.bukkit.minecartmaniacore;
 import java.io.File;
 import java.util.logging.Logger;
 import org.bukkit.Server;
+import org.bukkit.command.Command;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -41,5 +43,12 @@ public class MinecartManiaCore extends JavaPlugin {
 	
 	public void onDisable(){
 		
+	}
+	
+	public boolean onCommand(Player player, Command c, String s, String[] list) {
+		if (s.contains("reloadconfig")) {
+			Configuration.loadConfiguration();
+		}
+		return true;
 	}
 }

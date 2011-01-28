@@ -1,14 +1,8 @@
 package com.afforess.bukkit.minecartmaniacore;
 
 import java.util.concurrent.ConcurrentHashMap;
-
-import net.minecraft.server.TileEntity;
-import net.minecraft.server.TileEntityChest;
-import net.minecraft.server.World;
-
 import org.bukkit.Material;
 import org.bukkit.block.Chest;
-import org.bukkit.craftbukkit.block.CraftChest;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -107,7 +101,7 @@ public class MinecartManiaChest {
 				if (inventory.getItem(i).getTypeId() == item.getTypeId()) {
 					if (inventory.getItem(i).getAmount() + item.getAmount() <= 64) {
 						inventory.setItem(i, new ItemStack(item.getTypeId(), inventory.getItem(i).getAmount() + item.getAmount()));
-						//chest.update();
+						update();
 						return true;
 					}
 					else {
@@ -125,7 +119,7 @@ public class MinecartManiaChest {
 			if (getDataValue("neighbor") == null) {
 				neighbor.setDataValue("neighbor", Boolean.TRUE);
 				if (getNeighborChest().addItem(item)) {
-					//chest.update();
+					update();
 					return true;
 				}
 			}
@@ -173,12 +167,12 @@ public class MinecartManiaChest {
 				if (inventory.getItem(i).getTypeId() == type) {
 					if (inventory.getItem(i).getAmount() - amount > 0) {
 						inventory.setItem(i, new ItemStack(type, inventory.getItem(i).getAmount() - amount));
-						//chest.update();
+						update();
 						return true;
 					}
 					else if (inventory.getItem(i).getAmount() - amount == 0) {
 						inventory.remove(i);
-						//chest.update();
+						update();
 						return true;
 					}
 					else{
@@ -195,7 +189,7 @@ public class MinecartManiaChest {
 			if (getDataValue("neighbor") == null) {
 				neighbor.setDataValue("neighbor", Boolean.TRUE);
 				if (neighbor.removeItem(type, amount)) {
-					//chest.update();
+					update();
 					return true;
 				}
 			}
@@ -226,16 +220,9 @@ public class MinecartManiaChest {
 		return RedstonePower;
 	}
 	
-	//Chest.update() throws null pointers, so temporary method of our own until that is fixed
 	public void update() {
-		/*try{
-			CraftChest c = (CraftChest)chest;
-			World w = c.getWorld().;
-			TileEntity te = w.m(getX(), getY(), getZ());
-			te.d(); //update()
-		} catch (Exception e){
-			
-		}*/
+		//TODO does not work
+		//chest.update(); Does not work ATM
 	}
 	
 

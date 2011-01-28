@@ -112,7 +112,6 @@ public class Configuration {
 					Material.valueOf(MinecartManiaFlatFile.getValueFromSetting(file, "Catcher Block", Material.OBSIDIAN.toString())).getId()));
 			MinecartManiaWorld.setConfigurationValue("ejector block", new Integer(
 					Material.valueOf(MinecartManiaFlatFile.getValueFromSetting(file, "Ejector Block", Material.IRON_BLOCK.toString())).getId()));
-
 		}
 		catch (Exception exception)
 		{
