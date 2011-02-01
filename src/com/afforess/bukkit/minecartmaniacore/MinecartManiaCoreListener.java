@@ -13,6 +13,7 @@ import org.bukkit.event.Event.Type;
 import org.bukkit.event.vehicle.VehicleDamageEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.event.vehicle.VehicleEntityCollisionEvent;
+import org.bukkit.event.vehicle.VehicleEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.event.vehicle.VehicleListener;
 import org.bukkit.event.block.BlockListener;
@@ -31,7 +32,7 @@ public class MinecartManiaCoreListener extends VehicleListener{
 		core = instance;
 	}
 	
-	public void onVehicleMove(VehicleMoveEvent event) {
+	 public void onVehicleUpdate(VehicleEvent event) {
 		if (event.getVehicle() instanceof Minecart) {
 			Minecart cart = (Minecart)event.getVehicle();
 			MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart(cart);
@@ -59,14 +60,14 @@ public class MinecartManiaCoreListener extends VehicleListener{
 				LivingEntity prevPassenger = (LivingEntity)data;
 				//Passenger disembarked
 				if (minecart.minecart.getPassenger() == null) {
-					VehicleExitEvent vee = new VehicleExitEvent(Type.VEHICLE_EXIT, minecart.minecart, prevPassenger);
-					MinecartManiaCore.server.getPluginManager().callEvent(vee);
-					if (vee.isCancelled()) {
-						minecart.minecart.setPassenger(prevPassenger);
-					}
-					else {
+					//VehicleExitEvent vee = new VehicleExitEvent(Type.VEHICLE_EXIT, minecart.minecart, prevPassenger);
+					//MinecartManiaCore.server.getPluginManager().callEvent(vee);
+					//if (vee.isCancelled()) {
+					//	minecart.minecart.setPassenger(prevPassenger);
+					//}
+					//else {
 						minecart.setDataValue("PrevPassenger", null);
-					}
+					//}
 				}
 			}
 			else if (data == null) {
@@ -123,6 +124,7 @@ public class MinecartManiaCoreListener extends VehicleListener{
 			
 			
 			//Allow other mods to disable this
+			//TODO better way to do this?
 			if (minecart.getDataValue("Do Catcher Block") == null) {
 				minecart.doCatcherBlock();
 			}
@@ -134,7 +136,7 @@ public class MinecartManiaCoreListener extends VehicleListener{
     		MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart((Minecart)event.getVehicle());
     		if (!event.isCancelled()) {
 	    		if ((event.getDamage() * 10) + minecart.minecart.getDamage() > 40) {
-	    			MinecartManiaWorld.delMinecartManiaMinecart(minecart.minecart.getEntityId());
+	    			minecart.kill();
 	    		}
     		}
 		}
@@ -168,16 +170,6 @@ public class MinecartManiaCoreListener extends VehicleListener{
 					}
 				}
 			}
-			
-			//TODO remove - Autocart can handle itself
-			/*if (collisioner.getLocation().getBlockX() == cart.getLocation().getBlockX()) {
-				if (collisioner.getLocation().getBlockY() == cart.getLocation().getBlockY()) {
-					if (collisioner.getLocation().getBlockZ() == cart.getLocation().getBlockZ()) {
-						event.setCancelled(true);
-						event.setCollisionCancelled(true);
-					}
-				}
-			}*/
     	}
     }
 

@@ -8,8 +8,6 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.entity.Minecart;
-import org.bukkit.material.MaterialData;
-import org.bukkit.material.Redstone;
 import org.bukkit.util.Vector;
 
 public class MinecartManiaWorld {
@@ -144,37 +142,64 @@ public class MinecartManiaWorld {
 		return 0;
 	 }
 	 
+	 public static double getDoubleValue(Object o) {
+		 if (o != null) {
+			if (o instanceof Double) {
+				return ((Double)o).doubleValue();
+			}
+			//Attempt integer value
+			return getIntValue(o);
+		}
+		return 0;
+	 }
+	 
 
 	public static int getReverseBlockId() {
-		return getIntValue(getConfigurationValue("reverse block"));
+		return getIntValue(getConfigurationValue("Reverse Block"));
 	}
 	
 	public static int getHighSpeedBoosterBlockId() {
-		return getIntValue(getConfigurationValue("high speed booster block"));
+		return getIntValue(getConfigurationValue("High Speed Booster Block"));
+	}
+	
+	public static double getHighSpeedBoosterBlockMultiplier() {
+		return getDoubleValue(getConfigurationValue("High Speed Booster Block Multiplier"));
 	}
 	
 	public static int getLowSpeedBoosterBlockId() {
-		return getIntValue(getConfigurationValue("low speed booster block"));
+		return getIntValue(getConfigurationValue("Low Speed Booster Block"));
+	}
+	
+	public static double getLowSpeedBoosterBlockMultiplier() {
+		return getDoubleValue(getConfigurationValue("Low Speed Booster Block Multiplier"));
 	}
 	
 	public static int getHighSpeedBrakeBlockId() {
-		return getIntValue(getConfigurationValue("high speed brake block"));
+		return getIntValue(getConfigurationValue("High Speed Brake Block"));
+	}
+	
+	public static double getHighSpeedBrakeBlockDivisor() {
+		return getDoubleValue(getConfigurationValue("High Speed Brake Block Divisor"));
 	}
 	
 	public static int getLowSpeedBrakeBlockId() {
-		return getIntValue(getConfigurationValue("low speed brake block"));
+		return getIntValue(getConfigurationValue("Low Speed Brake Block"));
+	}
+	
+	public static double getLowSpeedBrakeBlockDivisor() {
+		return getDoubleValue(getConfigurationValue("Low Speed Brake Block Divisor"));
 	}
 	
 	public static int getCatcherBlockId() {
-		return getIntValue(getConfigurationValue("catcher block"));
+		return getIntValue(getConfigurationValue("Catcher Block"));
 	}
 	
 	public static int getEjectorBlockId() {
-		return getIntValue(getConfigurationValue("ejector block"));
+		return getIntValue(getConfigurationValue("Ejector Block"));
 	}
 	
 	public static boolean isMinecartsKillMobs() {
-		Object o = getConfigurationValue("minecarts kill mobs");
+		Object o = getConfigurationValue("Minecarts Kill Mobs");
 		if (o != null) {
 			Boolean value = (Boolean)o;
 			return value.booleanValue();
@@ -249,7 +274,8 @@ public class MinecartManiaWorld {
 	 ** @param z coordinate
 	 **/
 	public static boolean isBlockIndirectlyPowered(int x, int y, int z) {
-		return isBlockPowered(x+1, y, z) || isBlockPowered(x-1, y, z) || isBlockPowered(x, y, z+1) || isBlockPowered(x, y, z-1) || isBlockPowered(x, y-1, z);
+		return getBlockAt(x, y, z).isBlockIndirectlyPowered();
+		//return isBlockPowered(x+1, y, z) || isBlockPowered(x-1, y, z) || isBlockPowered(x, y, z+1) || isBlockPowered(x, y, z-1) || isBlockPowered(x, y-1, z);
 	}
 	
 	/**
@@ -259,10 +285,11 @@ public class MinecartManiaWorld {
 	 ** @param z coordinate
 	 **/
 	public static boolean isBlockPowered(int x, int y, int z) {
-		MaterialData md = getWorld().getBlockAt(x, y, z).getState().getData();
-		if (md instanceof Redstone) {
-			return ((Redstone) md).isPowered();
-		}
-		return false;
+		return getBlockAt(x, y, z).isBlockPowered();
+		//MaterialData md = getWorld().getBlockAt(x, y, z).getState().getData();
+		//if (md instanceof Redstone) {
+		//	return ((Redstone) md).isPowered();
+		//}
+		//return false;
 	}
 }

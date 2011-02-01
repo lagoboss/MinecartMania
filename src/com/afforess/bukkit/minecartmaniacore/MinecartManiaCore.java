@@ -10,6 +10,8 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.afforess.bukkit.minecartmaniacore.config.SettingList;
+
 public class MinecartManiaCore extends JavaPlugin {
 	
 	public MinecartManiaCore(PluginLoader pluginLoader, Server instance,
@@ -30,9 +32,9 @@ public class MinecartManiaCore extends JavaPlugin {
 
 	public void onEnable(){
 		log = Logger.getLogger("Minecraft");
-		Configuration.loadConfiguration();
+		Configuration.loadConfiguration(description, SettingList.config);
 
-        getServer().getPluginManager().registerEvent(Event.Type.VEHICLE_MOVE, listener, Priority.Normal, this);
+        getServer().getPluginManager().registerEvent(Event.Type.VEHICLE_UPDATE, listener, Priority.Normal, this);
         getServer().getPluginManager().registerEvent(Event.Type.VEHICLE_COLLISION_ENTITY, listener, Priority.Normal, this);
         getServer().getPluginManager().registerEvent(Event.Type.VEHICLE_DAMAGE, listener, Priority.Monitor, this);
         getServer().getPluginManager().registerEvent(Event.Type.REDSTONE_CHANGE, blockListener, Priority.Monitor, this);
@@ -47,7 +49,7 @@ public class MinecartManiaCore extends JavaPlugin {
 	
 	public boolean onCommand(Player player, Command c, String s, String[] list) {
 		if (s.contains("reloadconfig")) {
-			Configuration.loadConfiguration();
+			Configuration.loadConfiguration(description, SettingList.config);
 		}
 		return true;
 	}

@@ -7,7 +7,11 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import org.bukkit.Material;
+import org.bukkit.plugin.PluginDescriptionFile;
+
+import com.afforess.bukkit.minecartmaniacore.config.MinecartManiaFlatFile;
+import com.afforess.bukkit.minecartmaniacore.config.Setting;
+import com.afforess.bukkit.minecartmaniacore.config.SettingList;
 
 
 public class Configuration {
@@ -15,35 +19,36 @@ public class Configuration {
 	 ** Initializes Minecart Mania Core configuration values
 	 ** 
 	 **/
-	public static void loadConfiguration() {
-		readFile();
+	public static void loadConfiguration(PluginDescriptionFile desc, Setting config[]) {
+		readFile(desc, config);
 	}
 
-	public static void readFile() {	
-		
-		
+	private static void readFile(PluginDescriptionFile desc, Setting config[]) {	
+
 		File directory = new File("MinecartMania" + File.separator);
 		if (!directory.exists())
 			directory.mkdir();
-		File options = new File("MinecartMania" + File.separator + "MinecartManiaCoreSettings.txt");
-		if (!options.exists() || invalidFile(options))
+		String input ="MinecartMania" + File.separator;
+		input += StringUtils.removeWhitespace(desc.getName());
+		input += "Settings.txt";
+		File options = new File(input);
+		if (!options.exists() || invalidFile(options, desc))
 		{
-			WriteFile(options);
+			WriteFile(options, desc, config);
 		}
-		ReadFile(options);
+		/*else if (invalidFile(options)) {
+			updateFile(options);
+		}*/
+		ReadFile(options, desc, config);
 	}
-	
-	private static boolean invalidFile(File file)
-	{
+
+	private static boolean invalidFile(File file, PluginDescriptionFile desc) {
 		try {
 			BufferedReader bufferedreader = new BufferedReader(new FileReader(file));
-			for (String s = ""; (s = bufferedreader.readLine()) != null; )
-			{
-				if (s.indexOf(MinecartManiaCore.description.getVersion()) > -1)
-				{
+			for (String s = ""; (s = bufferedreader.readLine()) != null; ) {
+				if (s.indexOf(desc.getVersion()) > -1) {
 					return false;
 				}
-
 			}
 			bufferedreader.close();
 		}
@@ -54,70 +59,94 @@ public class Configuration {
 		return true;
 	}
 	
-	private static void WriteFile(File file)
+	@SuppressWarnings("unused")
+	private static void updateFile(File options) {
+		try {
+			MinecartManiaFlatFile.updateVersionHeader(options, MinecartManiaCore.description.getName() + " " + MinecartManiaCore.description.getVersion());
+			for (int i = 0; i < SettingList.config.length; i++) {
+				MinecartManiaFlatFile.updateSetting(
+						options,
+						SettingList.config[i].getName(),
+						SettingList.config[i].getDescription(),
+						//Attempt to read value, otherwise use default
+						MinecartManiaFlatFile.getValueFromSetting(options, SettingList.config[i].getName(), SettingList.config[i].getValue().toString()));
+			}
+		} catch (IOException e) {
+			MinecartManiaCore.log.severe("Failed to update Minecart Mania settings!");
+			e.printStackTrace();
+		}
+	}
+	
+	private static void WriteFile(File file, PluginDescriptionFile desc, Setting[] config)
 	{
-		try
-		{
+		try {
 			file.createNewFile();
 			BufferedWriter bufferedwriter = new BufferedWriter(new FileWriter(file));
-			MinecartManiaFlatFile.createNewHeader(bufferedwriter, "Minecraft Mania Core" + MinecartManiaCore.description.getVersion(), "Minecart Mania Core Config Settings", true);
-			MinecartManiaFlatFile.createNewSetting(bufferedwriter, "Minecarts Kill Mobs", "true", 
-			"Minecarts that collide with mobs and animals will kill them and continue uninterrupted.");
-			MinecartManiaFlatFile.createNewSetting(bufferedwriter, "Pressure Plate Rails", "true", 
-			"Pressure Plats will mimic the effect of rails, and minecarts will pass over them inhindered.");
-			MinecartManiaFlatFile.createNewHeader(bufferedwriter, "Minecart Mania Block Settings", "", false);
-			MinecartManiaFlatFile.createNewSetting(bufferedwriter, "High Speed Booster Block", Material.GOLD_BLOCK.toString(), 
-					"Minecarts that pass over this will be boosted to 8x their current speed");
-			MinecartManiaFlatFile.createNewSetting(bufferedwriter, "Low Speed Booster Block", Material.GOLD_ORE.toString(), 
-					"Minecarts that pass over this will be boosted to 2x their current speed");
-			MinecartManiaFlatFile.createNewSetting(bufferedwriter, "High Speed Brake Block", Material.SOUL_SAND.toString(), 
-					"Minecarts that pass over this will be slowed to 1/8 their current speed");
-			MinecartManiaFlatFile.createNewSetting(bufferedwriter, "Low Speed Brake Block", Material.GRAVEL.toString(), 
-					"Minecarts that pass over this will be slowed to 1/2 their current speed");
-			MinecartManiaFlatFile.createNewSetting(bufferedwriter, "Reverse Block", Material.WOOL.toString(), 
-					"Minecarts that pass over this will have their momentum and speed reveresed.");
-			MinecartManiaFlatFile.createNewSetting(bufferedwriter, "Catcher Block", Material.OBSIDIAN.toString(), 
-					"Minecarts that pass over this without being powered by redstone will be stopped");
-			MinecartManiaFlatFile.createNewSetting(bufferedwriter, "Ejector Block", Material.IRON_BLOCK.toString(), 
-			"Minecarts that pass over this will eject any passengers in the minecart");
-
-
+			
+			MinecartManiaFlatFile.createNewHeader(
+					bufferedwriter,
+					desc.getName() + " " + desc.getVersion(),
+					desc.getMain() + " Config Settings",
+					true);
+			
+			for (int i = 0; i < config.length; i++) {
+				MinecartManiaFlatFile.createNewSetting(
+						bufferedwriter,
+						config[i].getName(),
+						config[i].getValue().toString(),
+						config[i].getDescription());
+			}
 			bufferedwriter.close();
 		}
 		catch (Exception exception)
 		{
-			MinecartManiaCore.log.severe("Failed to write Minecart Mania settings!");
+			MinecartManiaCore.log.severe("Failed to write " + desc.getName() +" settings!");
 			exception.printStackTrace();
 		}
 	}
 
-	private static void ReadFile(File file)
+	private static void ReadFile(File file, PluginDescriptionFile desc, Setting[] config)
 	{
 		try {
-			MinecartManiaWorld.setConfigurationValue("minecarts kill mobs", new Boolean(
-					MinecartManiaFlatFile.getValueFromSetting(file, "Minecarts Kill Mobs", "true")));
-			MinecartManiaWorld.setConfigurationValue("Pressure Plate Rails", new Boolean(
-					MinecartManiaFlatFile.getValueFromSetting(file, "Pressure Plate Rails", "true")));
-			MinecartManiaWorld.setConfigurationValue("high speed booster block", new Integer(
-					Material.valueOf(MinecartManiaFlatFile.getValueFromSetting(file, "High Speed Booster Block", Material.GOLD_BLOCK.toString())).getId()));
-			MinecartManiaWorld.setConfigurationValue("low speed booster block", new Integer(
-					Material.valueOf(MinecartManiaFlatFile.getValueFromSetting(file, "Low Speed Booster Block", Material.GOLD_ORE.toString())).getId()));
-			MinecartManiaWorld.setConfigurationValue("high speed brake block", new Integer(
-					Material.valueOf(MinecartManiaFlatFile.getValueFromSetting(file, "High Speed Brake Block", Material.SOUL_SAND.toString())).getId()));
-			MinecartManiaWorld.setConfigurationValue("low speed brake block", new Integer(
-					Material.valueOf(MinecartManiaFlatFile.getValueFromSetting(file, "Low Speed Brake Block", Material.GRAVEL.toString())).getId()));
-			MinecartManiaWorld.setConfigurationValue("reverse block", new Integer(
-					Material.valueOf(MinecartManiaFlatFile.getValueFromSetting(file, "Reverse Block", Material.WOOL.toString())).getId()));
-			MinecartManiaWorld.setConfigurationValue("catcher block", new Integer(
-					Material.valueOf(MinecartManiaFlatFile.getValueFromSetting(file, "Catcher Block", Material.OBSIDIAN.toString())).getId()));
-			MinecartManiaWorld.setConfigurationValue("ejector block", new Integer(
-					Material.valueOf(MinecartManiaFlatFile.getValueFromSetting(file, "Ejector Block", Material.IRON_BLOCK.toString())).getId()));
+			for (int i = 0; i < config.length; i++) {
+				String value = MinecartManiaFlatFile.getValueFromSetting(
+						file,
+						config[i].getName(),
+						config[i].getValue().toString());
+				//Attempt to parse the value as boolean
+				if (value.contains("true")) {
+					MinecartManiaWorld.setConfigurationValue(config[i].getName(),
+							Boolean.TRUE);
+				}
+				else if (value.contains("false")) {
+					MinecartManiaWorld.setConfigurationValue(config[i].getName(),
+							Boolean.TRUE);
+				}
+				//Attempt to parse the value as a double or integer
+				else if (!StringUtils.getNumber(value).isEmpty()) {
+					Double d = Double.valueOf(StringUtils.getNumber(value));
+					if (d.intValue() == d) {
+						MinecartManiaWorld.setConfigurationValue(config[i].getName(),
+								new Integer(d.intValue()));
+					}
+					else {
+						MinecartManiaWorld.setConfigurationValue(config[i].getName(),
+								d);
+					}
+				}
+				//Fallback on string
+				else {
+					MinecartManiaWorld.setConfigurationValue(config[i].getName(),
+							value);
+				}
+			}
 		}
 		catch (Exception exception)
 		{
-			MinecartManiaCore.log.severe("Failed to read Minecart Mania settings!");
+			MinecartManiaCore.log.severe("Failed to read " + desc.getName() +" settings!");
 			exception.printStackTrace();
 		}
 	}
+
 
 }

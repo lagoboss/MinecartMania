@@ -5,15 +5,19 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import net.minecraft.server.EntityMinecart;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
 import org.bukkit.craftbukkit.entity.CraftMinecart;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.StorageMinecart;
 import org.bukkit.entity.PoweredMinecart;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 import com.afforess.bukkit.minecartmaniacore.DirectionUtils.CompassDirection;
 import com.afforess.bukkit.minecartmaniacore.event.MinecartTimeEvent;
@@ -27,8 +31,7 @@ public class MinecartManiaMinecart {
 	private Calendar cal;
 	private DirectionUtils.CompassDirection previousFacingDir = DirectionUtils.CompassDirection.NO_DIRECTION;
 	private boolean wasMovingLastTick;
-	@SuppressWarnings("unused")
-	private String owner;
+	private String owner = "none";
 	
 	private ConcurrentHashMap<String, Object> data = new ConcurrentHashMap<String,Object>();
 	
@@ -41,20 +44,36 @@ public class MinecartManiaMinecart {
 		findOwner();
 	}
 	
+	public MinecartManiaMinecart(Location loc, String ownerName) {
+		minecart = MinecartManiaWorld.getWorld().spawnMinecart(loc);
+		previousMotion = minecart.getVelocity().clone();
+		previousLocation = minecart.getLocation().toVector().clone();
+		cal = Calendar.getInstance();
+		setWasMovingLastTick(isMoving());
+		owner = ownerName;
+	}
+	
 	/**
 	 ** Attempts to find the player that spawned this minecart.
 	 **
 	 */
 	private void findOwner() {
-		int range = 4;
-		for (int dx = -(range); dx <= range; dx++){
-			for (int dy = -(range); dy <= range; dy++){
-				for (int dz = -(range); dz <= range; dz++){
-					
+		double closest = Double.MAX_VALUE;
+		Player closestPlayer = null;
+		for (LivingEntity le : MinecartManiaWorld.getWorld().getLivingEntities()) {
+			if (le instanceof Player) {
+				double distance = le.getLocation().toVector().distance(minecart.getLocation().toVector());
+				if (distance < closest) {
+					closestPlayer = (Player)le;
+					closest = distance;
 				}
 			}
 		}
-		
+		if (closestPlayer != null) {
+			owner = closestPlayer.getName();
+			
+		}
+		System.out.println("Owner: " + owner);
 	}
 
 	public Vector getPreviousLocation() {
@@ -183,12 +202,12 @@ public class MinecartManiaMinecart {
 			return true;
 		}
 		//Temporary Fix for Pressure Plates, since they are NYI
-		if (MinecartManiaWorld.getBlockAt(getX(), getY(), getZ()).getTypeId() == Material.WOOD_PLATE.getId()) {
+		/*if (MinecartManiaWorld.getBlockAt(getX(), getY(), getZ()).getTypeId() == Material.WOOD_PLATE.getId()) {
 			return true;
 		}
 		if (MinecartManiaWorld.getBlockAt(getX(), getY(), getZ()).getTypeId() == Material.STONE_PLATE.getId()) {
 			return this.minecart.getPassenger() != null;
-		}
+		}*/
 		return false;
 	}
 	
@@ -210,8 +229,8 @@ public class MinecartManiaMinecart {
 	public boolean doLowSpeedBrake() {
 		if (getBlockIdBeneath() == MinecartManiaWorld.getLowSpeedBrakeBlockId() && !isPoweredBeneath())
     	{
-    		setMotionX(getMotionX() / 2D);
-    		setMotionZ(getMotionZ() / 2D);
+    		setMotionX(getMotionX() / MinecartManiaWorld.getLowSpeedBrakeBlockDivisor());
+    		setMotionZ(getMotionZ() / MinecartManiaWorld.getLowSpeedBrakeBlockDivisor());
     		return true;
     	}
 		return false;
@@ -220,8 +239,8 @@ public class MinecartManiaMinecart {
 	public boolean doHighSpeedBrake() {
 		if (getBlockIdBeneath() == MinecartManiaWorld.getHighSpeedBrakeBlockId() && !isPoweredBeneath())
     	{
-    		setMotionX(getMotionX() / 8D);
-    		setMotionZ(getMotionZ() / 8D);
+    		setMotionX(getMotionX() / MinecartManiaWorld.getHighSpeedBrakeBlockDivisor());
+    		setMotionZ(getMotionZ() / MinecartManiaWorld.getHighSpeedBrakeBlockDivisor());
     		return true;
     	}
 		return false;
@@ -230,8 +249,8 @@ public class MinecartManiaMinecart {
 	public boolean doLowSpeedBooster() {
 		if (getBlockIdBeneath() == MinecartManiaWorld.getLowSpeedBoosterBlockId() && !isPoweredBeneath())
     	{
-    		setMotionX(getMotionX() * 2D);
-    		setMotionZ(getMotionZ() * 2D);
+    		setMotionX(getMotionX() * MinecartManiaWorld.getLowSpeedBoosterBlockMultiplier());
+    		setMotionZ(getMotionZ() * MinecartManiaWorld.getLowSpeedBoosterBlockMultiplier());
     		return true;
     	}
 		return false;
@@ -240,8 +259,8 @@ public class MinecartManiaMinecart {
 	public boolean doHighSpeedBooster() {
 		if (getBlockIdBeneath() == MinecartManiaWorld.getHighSpeedBoosterBlockId() && !isPoweredBeneath())
     	{
-    		setMotionX(getMotionX() * 8D);
-    		setMotionZ(getMotionZ() * 8D);
+    		setMotionX(getMotionX() * MinecartManiaWorld.getHighSpeedBoosterBlockMultiplier());
+    		setMotionZ(getMotionZ() * MinecartManiaWorld.getHighSpeedBoosterBlockMultiplier());
     		return true;
     	}
 		return false;
@@ -478,9 +497,61 @@ public class MinecartManiaMinecart {
 		return !isPoweredMinecart() && !isStorageMinecart();
 	}
 	
+	public Material getType() {
+		if (isPoweredMinecart()) {
+			return Material.POWERED_MINECART;
+		}
+		if (isStorageMinecart()) {
+			return Material.STORAGE_MINECART;
+		}
+		
+		return Material.MINECART;
+	}
+	
+	/**
+	 * attempts to find and return the owner of this object, a player or a minecart mania chest.
+	 * It will fail if the owner is offline, wasn't found, or the chest was destroyed.
+	 * @return Player or Minecart Mania Chest that spawned this minecart.
+	 */
+	public Object getOwner() {
+		if (owner.equals("none")) {
+			return null;
+		}
+		if (owner.contains("[") && owner.contains("]")) {
+			try {
+				int x, y, z;
+				String[] split = owner.split(":");
+				x = Integer.valueOf(StringUtils.getNumber(split[0]));
+				y = Integer.valueOf(StringUtils.getNumber(split[1]));
+				z = Integer.valueOf(StringUtils.getNumber(split[2]));
+				if (MinecartManiaWorld.getBlockAt(x, y, z).getState() instanceof Chest) {
+					return MinecartManiaWorld.getMinecartManiaChest((Chest)MinecartManiaWorld.getBlockAt(x, y, z).getState());
+				}
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
+		
+		return MinecartManiaCore.server.getPlayer(owner);
+	}
+	
 	public void kill() {
 
 		try {
+			Object owner = getOwner();
+			if (owner instanceof Player) {
+				System.out.println("Added minecart to inventory");
+				((Player)owner).getInventory().addItem(new ItemStack(getType(), 1));
+			}
+			else if (owner instanceof MinecartManiaChest) {
+				((MinecartManiaChest)owner).addItem(getType().getId());
+			}
+			else {
+				System.out.println("Fail to find owner minecart to inventory");
+				MinecartManiaWorld.getWorld().dropItemNaturally(minecart.getLocation(), new ItemStack(getType(), 1));
+			}
 			MinecartManiaWorld.delMinecartManiaMinecart(minecart.getEntityId());
 			CraftMinecart cart = (CraftMinecart)minecart;
 			EntityMinecart em = (EntityMinecart) cart.getHandle();

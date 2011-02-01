@@ -94,7 +94,7 @@ public class MinecartManiaChest {
 		Inventory inventory = chest.getInventory();
 		//Backup contents
 		ItemStack[] backup = inventory.getContents().clone();
-		ItemStack backupItem = new ItemStack(item.getTypeId(), item.getAmount(), item.getDamage());
+		ItemStack backupItem = new ItemStack(item.getTypeId(), item.getAmount(), item.getDurability());
 		
 		for (int i = 0; i < inventory.getSize(); i++) {
 			if (inventory.getItem(i) != null) {
@@ -221,8 +221,7 @@ public class MinecartManiaChest {
 	}
 	
 	public void update() {
-		//TODO does not work
-		//chest.update(); Does not work ATM
+		chest.update();
 	}
 	
 

@@ -4,7 +4,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.Listener;
 
 
-public class MinecartManiaListener implements CustomEventListener, Listener{
+public class MinecartManiaListener extends CustomEventListener implements Listener{
 
 	public MinecartManiaListener() {
 		
