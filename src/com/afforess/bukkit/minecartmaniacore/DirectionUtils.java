@@ -2,7 +2,10 @@ package com.afforess.bukkit.minecartmaniacore;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.Sign;
 
 public abstract class DirectionUtils {
 	 public enum CompassDirection {
@@ -47,6 +50,13 @@ public abstract class DirectionUtils {
 		if (e2 == CompassDirection.NO_DIRECTION) return true;
 		if (e1 == e2) return true;
 		return false;
+	 }
+	 
+	 public static boolean isOrthogonalDirection(CompassDirection dir) {
+		 return dir == CompassDirection.NORTH ||
+		 dir == CompassDirection.SOUTH ||
+		 dir == CompassDirection.EAST ||
+		 dir == CompassDirection.WEST;
 	 }
 	 
 	 public static CompassDirection getLeftDirection(CompassDirection efacingDir) {
@@ -213,5 +223,79 @@ public abstract class DirectionUtils {
         }
 		
 		return CompassDirection.NO_DIRECTION;
+	}
+	
+	public static CompassDirection getDirectionFromString(String dir, CompassDirection facingDir) {
+		
+		if (dir.indexOf("W") > -1 || dir.toLowerCase().indexOf("west") > -1) {
+			return CompassDirection.WEST;
+		}
+		if (dir.indexOf("E") > -1 || dir.toLowerCase().indexOf("east") > -1) {
+			return CompassDirection.EAST;
+		}
+		if (dir.indexOf("S") > -1 || dir.toLowerCase().indexOf("south") > -1) {
+			return CompassDirection.SOUTH;
+		}
+		if (dir.indexOf("N") > -1 || dir.toLowerCase().indexOf("north") > -1) {
+			return CompassDirection.NORTH;
+		}
+		if (!facingDir.equals(CompassDirection.NO_DIRECTION)) {
+			if (dir.indexOf("STR") > -1 || dir.toLowerCase().indexOf("straight") > -1) {
+				return facingDir;
+			}
+			if (dir.indexOf("L") > -1 || dir.toLowerCase().indexOf("left") > -1) {
+				return getRightDirection(facingDir);
+			}
+			if (dir.indexOf("R") > -1 || dir.toLowerCase().indexOf("right") > -1) {
+				return getLeftDirection(facingDir);
+			}
+		}
+		
+		return CompassDirection.NO_DIRECTION;
+	}
+	
+	public static CompassDirection getSignFacingDirection(Sign sign) {
+		int data = MinecartManiaWorld.getBlockData(sign.getX(), sign.getY(), sign.getZ());
+		Block block = sign.getBlock();
+		if (block.getType().equals(Material.SIGN_POST)) {
+			if (data == 0x0) return DirectionUtils.CompassDirection.WEST;
+			if (data == 0x1 || data == 0x2 || data == 0x3) return DirectionUtils.CompassDirection.NORTH_WEST;
+			if (data == 0x4) return DirectionUtils.CompassDirection.NORTH;
+			if (data == 0x5 || data == 0x6 || data == 0x7) return DirectionUtils.CompassDirection.NORTH_EAST;
+			if (data == 0x8) return DirectionUtils.CompassDirection.EAST;
+			if (data == 0x9 || data == 0xA || data == 0xB) return DirectionUtils.CompassDirection.SOUTH_EAST;
+			if (data == 0xC) return DirectionUtils.CompassDirection.SOUTH;
+			if (data == 0xD || data == 0xE || data == 0xF) return DirectionUtils.CompassDirection.SOUTH_WEST;
+			return DirectionUtils.CompassDirection.NO_DIRECTION;
+		}
+		else {
+			if (data == 0x3) return DirectionUtils.CompassDirection.WEST;
+			if (data == 0x4) return DirectionUtils.CompassDirection.NORTH;
+			if (data == 0x2) return DirectionUtils.CompassDirection.EAST;
+			if (data == 0x5) return DirectionUtils.CompassDirection.SOUTH;
+			
+			return DirectionUtils.CompassDirection.NO_DIRECTION;
+		}
+	}
+	
+	public static BlockFace CompassDirectionToBlockFace(CompassDirection dir) {
+		if (dir.equals(CompassDirection.EAST))
+			return BlockFace.EAST;
+		if (dir.equals(CompassDirection.WEST))
+			return BlockFace.WEST;
+		if (dir.equals(CompassDirection.NORTH))
+			return BlockFace.NORTH;
+		if (dir.equals(CompassDirection.SOUTH))
+			return BlockFace.SOUTH;
+		if (dir.equals(CompassDirection.NORTH_EAST))
+			return BlockFace.NORTH_EAST;
+		if (dir.equals(CompassDirection.NORTH_WEST))
+			return BlockFace.NORTH_WEST;
+		if (dir.equals(CompassDirection.SOUTH_EAST))
+			return BlockFace.SOUTH_EAST;
+		if (dir.equals(CompassDirection.SOUTH_WEST))
+			return BlockFace.SOUTH_WEST;
+		
+		return BlockFace.SELF;
 	}
 }

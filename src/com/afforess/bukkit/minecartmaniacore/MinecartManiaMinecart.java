@@ -20,6 +20,8 @@ import org.bukkit.entity.PoweredMinecart;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 import com.afforess.bukkit.minecartmaniacore.DirectionUtils.CompassDirection;
+import com.afforess.bukkit.minecartmaniacore.event.MinecartLaunchedEvent;
+import com.afforess.bukkit.minecartmaniacore.event.MinecartManiaMinecartDestroyedEvent;
 import com.afforess.bukkit.minecartmaniacore.event.MinecartTimeEvent;
 
 
@@ -73,7 +75,6 @@ public class MinecartManiaMinecart {
 			owner = closestPlayer.getName();
 			
 		}
-		System.out.println("Owner: " + owner);
 	}
 
 	public Vector getPreviousLocation() {
@@ -284,6 +285,12 @@ public class MinecartManiaMinecart {
 	}
 	
 	private void launchCart() {
+		
+		MinecartLaunchedEvent mle = new MinecartLaunchedEvent(this, minecart.getVelocity());
+		MinecartManiaCore.server.getPluginManager().callEvent(mle);
+		if (mle.isCancelled()) {
+			return;
+		}
 
 		ArrayList<Sign> signList = SignUtils.getAdjacentSignList(this, 1);
 		for (Sign sign : signList) {
@@ -333,7 +340,7 @@ public class MinecartManiaMinecart {
 				}
 				if (sign.getLine(i).toLowerCase().indexOf("previous dir") > -1) {
 					if (!this.getPreviousFacingDir().equals(DirectionUtils.CompassDirection.NO_DIRECTION)) {
-						if (MinecartUtils.validMinecartTrack(getX(), getY(), getZ()+1, 2, this.getPreviousFacingDir())) {
+						if (MinecartUtils.validMinecartTrackAnyDirection(getX(), getY(), getZ()+1, 2)) {
 							sign.setLine(i, "[Previous Dir]");
 							sign.update();
 							setMotion(this.getPreviousFacingDir(), 0.6D);
@@ -476,6 +483,24 @@ public class MinecartManiaMinecart {
 	public MinecartManiaMinecart getMinecartBehind() {
 		return getAdjacentMinecartFromDirection(DirectionUtils.getOppositeDirection(getDirectionOfMotion()));
 	}
+	
+	public ArrayList<Block> getParallelBlocks() {
+		ArrayList<Block> blocks = new ArrayList<Block>(4);
+		blocks.add(MinecartManiaWorld.getBlockAt(getX()-1, getY(), getZ()));
+		blocks.add(MinecartManiaWorld.getBlockAt(getX()+1, getY(), getZ()));
+		blocks.add(MinecartManiaWorld.getBlockAt(getX(), getY(), getZ()-1));
+		blocks.add(MinecartManiaWorld.getBlockAt(getX(), getY(), getZ()+1));
+		return blocks;
+	}
+	
+	public ArrayList<Block> getPreviousLocationParallelBlocks() {
+		ArrayList<Block> blocks = new ArrayList<Block>(4);
+		blocks.add(MinecartManiaWorld.getBlockAt(previousLocation.getBlockX()-1, previousLocation.getBlockY(), previousLocation.getBlockZ()));
+		blocks.add(MinecartManiaWorld.getBlockAt(previousLocation.getBlockX()+1, previousLocation.getBlockY(), previousLocation.getBlockZ()));
+		blocks.add(MinecartManiaWorld.getBlockAt(previousLocation.getBlockX(), previousLocation.getBlockY(), previousLocation.getBlockZ()-1));
+		blocks.add(MinecartManiaWorld.getBlockAt(previousLocation.getBlockX(), previousLocation.getBlockY(), previousLocation.getBlockZ()+1));
+		return blocks;
+	}
 
 	public void setWasMovingLastTick(boolean wasMovingLastTick) {
 		this.wasMovingLastTick = wasMovingLastTick;
@@ -541,17 +566,20 @@ public class MinecartManiaMinecart {
 
 		try {
 			Object owner = getOwner();
-			if (owner instanceof Player) {
-				System.out.println("Added minecart to inventory");
+			if (owner instanceof Player && MinecartManiaWorld.isReturnMinecartToOwner()) {
 				((Player)owner).getInventory().addItem(new ItemStack(getType(), 1));
 			}
-			else if (owner instanceof MinecartManiaChest) {
+			else if (owner instanceof MinecartManiaChest && MinecartManiaWorld.isReturnMinecartToOwner()) {
 				((MinecartManiaChest)owner).addItem(getType().getId());
 			}
 			else {
-				System.out.println("Fail to find owner minecart to inventory");
 				MinecartManiaWorld.getWorld().dropItemNaturally(minecart.getLocation(), new ItemStack(getType(), 1));
 			}
+			
+			//Fire destroyed event
+			MinecartManiaMinecartDestroyedEvent mmmee = new MinecartManiaMinecartDestroyedEvent(this);
+			MinecartManiaCore.server.getPluginManager().callEvent(mmmee);
+			
 			MinecartManiaWorld.delMinecartManiaMinecart(minecart.getEntityId());
 			CraftMinecart cart = (CraftMinecart)minecart;
 			EntityMinecart em = (EntityMinecart) cart.getHandle();

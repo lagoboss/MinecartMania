@@ -6,7 +6,7 @@ public class MinecartMotionStopEvent extends org.bukkit.event.Event{
 	private MinecartManiaMinecart minecart;
 	
 	public MinecartMotionStopEvent(MinecartManiaMinecart cart) {
-		super("MinecartActionEvent");
+		super("MinecartMotionStopEvent");
 		minecart = cart;
 	}
 

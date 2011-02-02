@@ -15,6 +15,13 @@ public class MinecartUtils {
 		return false;
 	}
 	
+	public static boolean validMinecartTrackAnyDirection(int x, int y, int z, int range) {
+		return validMinecartTrack(x, y, z, range, DirectionUtils.CompassDirection.NORTH) ||
+			validMinecartTrack(x, y, z, range, DirectionUtils.CompassDirection.EAST) || 
+			validMinecartTrack(x, y, z, range, DirectionUtils.CompassDirection.SOUTH) ||
+			validMinecartTrack(x, y, z, range, DirectionUtils.CompassDirection.WEST);
+	}
+	
 	public static boolean validMinecartTrack(int x, int y, int z, int range, DirectionUtils.CompassDirection facingDir) {
     	if (!isMinecartTrack(MinecartManiaWorld.getBlockAt(x, y, z))) return false;
     	range--;

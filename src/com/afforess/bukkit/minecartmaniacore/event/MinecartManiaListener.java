@@ -67,6 +67,24 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
 	}
 	
 	/**
+     * Called when a MinecartManiaMinecart is destroyed
+     * 
+     * @param event
+     */
+	public void onMinecartManiaMinecartDestroyedEvent(MinecartManiaMinecartDestroyedEvent event) {
+		
+	}
+	
+	/**
+     * Called when a minecart is being launched by a launcher block, can be overriden
+     * 
+     * @param event
+     */
+	public void onMinecartLaunchedEvent(MinecartLaunchedEvent event) {
+		
+	}
+	
+	/**
      * Avoid using.
      * 
      * @param event
@@ -89,6 +107,12 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
 		}
 		else if (event instanceof ChestPoweredEvent) {
 			onChestPoweredEvent((ChestPoweredEvent)event);
+		}
+		else if (event instanceof MinecartManiaMinecartDestroyedEvent) {
+			onMinecartManiaMinecartDestroyedEvent((MinecartManiaMinecartDestroyedEvent)event);
+		}
+		else if (event instanceof MinecartLaunchedEvent) {
+			onMinecartLaunchedEvent((MinecartLaunchedEvent)event);
 		}
 	}
 

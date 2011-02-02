@@ -4,10 +4,16 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.entity.Minecart;
+import org.bukkit.material.Button;
+import org.bukkit.material.Lever;
+import org.bukkit.material.MaterialData;
+import org.bukkit.material.RedstoneTorch;
+import org.bukkit.material.RedstoneWire;
 import org.bukkit.util.Vector;
 
 public class MinecartManiaWorld {
@@ -89,12 +95,12 @@ public class MinecartManiaWorld {
     }
 	 
 	/**
-	 ** Returns true if the chest with the given entityID was deleted, false if not.
-	 ** @param the id of the chest to delete
+	 ** Returns true if the chest with the given vector was deleted, false if not.
+	 ** @param the vector location of the chest to delete
 	 **/
-	 public static boolean delMinecartManiaChest(int entityID) {
-        if (chests.containsKey(new Integer(entityID))) {
-            chests.remove(new Integer(entityID));
+	 public static boolean delMinecartManiaChest(Vector v) {
+        if (chests.containsKey(v)) {
+            chests.remove(v);
             return true;
         }
         return false;
@@ -216,6 +222,15 @@ public class MinecartManiaWorld {
 		return true;
 	}
 	
+	public static boolean isReturnMinecartToOwner() {
+		Object o = getConfigurationValue("Minecarts return to owner");
+		if (o != null) {
+			Boolean value = (Boolean)o;
+			return value.booleanValue();
+		}
+		return true;
+	}
+	
 	/**
 	 ** Returns the world that server is hosting
 	 **/
@@ -291,5 +306,42 @@ public class MinecartManiaWorld {
 		//	return ((Redstone) md).isPowered();
 		//}
 		//return false;
+	}
+	
+	/**
+	 ** Sets the block at the given x, y, z coordinates to the given power state, if possible
+	 ** @param x coordinate
+	 ** @param y coordinate
+	 ** @param z coordinate
+	 ** @param power state
+	 **/
+	public static void setBlockPowered(int x, int y, int z, boolean power) {
+		MaterialData md = getBlockAt(x, y, z).getState().getData();
+		if (md instanceof RedstoneWire) {
+			getBlockAt(x, y, z).getState().setData(new MaterialData(getBlockAt(x, y, z).getState().getTypeId(), (byte)(power ?  16 : 0)));
+		}
+		else if (md instanceof RedstoneTorch) {
+			getBlockAt(x, y, z).getState().setData(new MaterialData(power ? Material.REDSTONE_TORCH_ON : Material.REDSTONE_TORCH_OFF));
+		}
+		else if (md instanceof Lever || md instanceof Button) {
+			getBlockAt(x, y, z).getState().setData(new MaterialData(getBlockAt(x, y, z).getState().getTypeId(), (byte)(power ? md.getData() | 0x8 : md.getData() & 0x7)));
+		}
+	}
+	
+	/**
+	 ** Sets the block at the given x, y, z coordinates, as well as any block directly touch the given block to the given power state, if possible
+	 ** @param x coordinate
+	 ** @param y coordinate
+	 ** @param z coordinate
+	 ** @param power state
+	 **/
+	public static void setBlockIndirectlyPowered(int x, int y, int z, boolean power) {
+		setBlockPowered(x, y, z, power);
+		setBlockPowered(x-1, y, z, power);
+		setBlockPowered(x+1, y, z, power);
+		setBlockPowered(x, y-1, z, power);
+		setBlockPowered(x, y+1, z, power);
+		setBlockPowered(x, y, z-1, power);
+		setBlockPowered(x, y, z+1, power);
 	}
 }

@@ -3,7 +3,7 @@ import java.io.File;
 import java.util.logging.Logger;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
-import org.bukkit.entity.Player;
+import org.bukkit.command.CommandSender;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -47,8 +47,8 @@ public class MinecartManiaCore extends JavaPlugin {
 		
 	}
 	
-	public boolean onCommand(Player player, Command c, String s, String[] list) {
-		if (s.contains("reloadconfig")) {
+	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
+		if (commandLabel.contains("reloadconfig")) {
 			Configuration.loadConfiguration(description, SettingList.config);
 		}
 		return true;
