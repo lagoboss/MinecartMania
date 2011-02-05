@@ -149,20 +149,25 @@ public class MinecartManiaCoreListener extends VehicleListener{
     		Minecart cart = (Minecart)event.getVehicle();
     		MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart(cart);
 			Entity collisioner = event.getEntity();
-			
+			System.out.println("Collision");
 			if (collisioner instanceof LivingEntity) {
+				System.out.println("Living");
 				LivingEntity victim = (LivingEntity)(collisioner);
 				if (!(victim instanceof Player)) {
+					System.out.println("Not Player");
 					if (MinecartManiaWorld.isMinecartsKillMobs()) {
+						System.out.println("Can kill Mob");
 						if (minecart.isMoving()) {
 							
 							try {
 								CraftLivingEntity e = (CraftLivingEntity)victim;
 								EntityLiving el = e.getHandle();
 								el.q();
+								System.out.println("Killed Mob");
 							}
 							catch (Exception e) {
 								victim.setHealth(0);
+								System.out.println("Failed to Killed Mob");
 							}
 							
 							event.setCancelled(true);

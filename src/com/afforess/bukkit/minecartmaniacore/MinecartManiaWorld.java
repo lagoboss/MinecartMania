@@ -289,7 +289,7 @@ public class MinecartManiaWorld {
 	 ** @param z coordinate
 	 **/
 	public static boolean isBlockIndirectlyPowered(int x, int y, int z) {
-		return getBlockAt(x, y, z).isBlockIndirectlyPowered();
+		return getBlockAt(x, y, z).isBlockIndirectlyPowered() || isBlockPowered(x, y-1, z);
 		//return isBlockPowered(x+1, y, z) || isBlockPowered(x-1, y, z) || isBlockPowered(x, y, z+1) || isBlockPowered(x, y, z-1) || isBlockPowered(x, y-1, z);
 	}
 	

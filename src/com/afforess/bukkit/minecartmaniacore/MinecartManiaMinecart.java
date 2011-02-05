@@ -35,6 +35,11 @@ public class MinecartManiaMinecart {
 	private boolean wasMovingLastTick;
 	private String owner = "none";
 	
+	public MinecartManiaMinecart leader;
+	public MinecartManiaMinecart follower;
+	
+	private Location previousRawLocation;
+
 	private ConcurrentHashMap<String, Object> data = new ConcurrentHashMap<String,Object>();
 	
 	public MinecartManiaMinecart(Minecart cart) {
@@ -44,6 +49,7 @@ public class MinecartManiaMinecart {
 		cal = Calendar.getInstance();
 		setWasMovingLastTick(isMoving());
 		findOwner();
+		updateLocation();
 	}
 	
 	public MinecartManiaMinecart(Location loc, String ownerName) {
@@ -53,6 +59,7 @@ public class MinecartManiaMinecart {
 		cal = Calendar.getInstance();
 		setWasMovingLastTick(isMoving());
 		owner = ownerName;
+		updateLocation();
 	}
 	
 	/**
@@ -81,7 +88,20 @@ public class MinecartManiaMinecart {
 		return previousLocation.clone();
 	}
 	
+	public Location getPreviousRawLocation() {
+		return previousRawLocation.clone();
+	}
+	
 	public void updateLocation() {
+		if(follower != null) {
+			boolean xChanged = getX() == previousRawLocation.getBlockX();
+			//boolean yChanged = getY() == previousRawLocation.getBlockY();
+			boolean zChanged = getZ() == previousRawLocation.getBlockZ();
+			if(xChanged || zChanged) {
+				follower.minecart.teleportTo(previousRawLocation);
+			}
+		}
+		previousRawLocation = minecart.getLocation();
 		previousLocation = minecart.getLocation().toVector().clone();
 	}
 	
@@ -144,9 +164,16 @@ public class MinecartManiaMinecart {
 	
 	public void stopCart() {
 		setMotion(0D, 0D, 0D);
+		if(follower != null){
+			follower.stopCart();
+		}
 	}
 	
 	public boolean isMoving() {
+		if (getMinecartAhead() != null && leader == null) {
+			MinecartManiaCore.log.info("cart present, attempting to follow");
+			setLeader(getMinecartAhead());
+		}
 		return getMotionX() != 0D || getMotionY() != 0D || getMotionZ() != 0D;
 	}
 	
@@ -277,7 +304,9 @@ public class MinecartManiaMinecart {
 				}
 			}
 			else {
-				stopCart();
+				if(leader == null || !leader.isMoving()){
+					stopCart();
+				}
 				return true;
 			}
 		}
@@ -531,6 +560,30 @@ public class MinecartManiaMinecart {
 		}
 		
 		return Material.MINECART;
+	}
+	
+	public void setLeader(MinecartManiaMinecart leaderCart) {
+		leader = leaderCart;
+		if (leader != null) {
+			if (leader.follower != this) {
+				leader.setFollower(this);
+			}
+			if (leader.leader == this) {
+				leader.setLeader(null);
+			}
+		}
+	}
+	
+	public void setFollower(MinecartManiaMinecart followerCart) {
+		follower = followerCart;
+		if (follower != null) {
+			if (follower.leader != this) {
+				follower.setLeader(this);
+			}
+			if (follower.follower == this) {
+				follower.setFollower(null);
+			}
+		}
 	}
 	
 	/**
