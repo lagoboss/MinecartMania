@@ -232,20 +232,13 @@ public class MinecartManiaWorld {
 	}
 	
 	/**
-	 ** Returns the world that server is hosting
-	 **/
-	public static World getWorld() {
-		return MinecartManiaCore.server.getWorlds()[0];
-	}
-	
-	/**
 	 ** Returns the block at the given x, y, z coordinates
 	 ** @param x coordinate
 	 ** @param y coordinate
 	 ** @param z coordinate
 	 **/	
-	public static Block getBlockAt(int x, int y, int z) {
-		return getWorld().getBlockAt(x, y, z);
+	public static Block getBlockAt(World w, int x, int y, int z) {
+		return w.getBlockAt(x, y, z);
 	}
 	
 	/**
@@ -255,8 +248,8 @@ public class MinecartManiaWorld {
 	 ** @param y coordinate
 	 ** @param z coordinate
 	 **/
-	public static void setBlockAt(int type, int x, int y, int z) {
-		getWorld().getBlockAt(x, y, z).setTypeId(type);
+	public static void setBlockAt(World w, int type, int x, int y, int z) {
+		w.getBlockAt(x, y, z).setTypeId(type);
 	}
 	
 	/**
@@ -265,8 +258,8 @@ public class MinecartManiaWorld {
 	 ** @param y coordinate
 	 ** @param z coordinate
 	 **/
-	public static byte getBlockData(int x, int y, int z) {
-		return getWorld().getBlockAt(x, y, z).getData();
+	public static byte getBlockData(World w, int x, int y, int z) {
+		return w.getBlockAt(x, y, z).getData();
 	}
 	
 	/**
@@ -276,10 +269,10 @@ public class MinecartManiaWorld {
 	 ** @param z coordinate
 	 ** @param new data to set
 	 **/
-	public static void setBlockData(int x, int y, int z, int data) {
+	public static void setBlockData(World w, int x, int y, int z, int data) {
 		//Better to crash than to write bad data!
 		if (data == -1 || data > Byte.MAX_VALUE) throw new IllegalArgumentException();
-		getWorld().getBlockAt(x, y, z).setData((byte) (data));
+		w.getBlockAt(x, y, z).setData((byte) (data));
 	}
 	
 	/**
@@ -288,8 +281,8 @@ public class MinecartManiaWorld {
 	 ** @param y coordinate
 	 ** @param z coordinate
 	 **/
-	public static boolean isBlockIndirectlyPowered(int x, int y, int z) {
-		return getBlockAt(x, y, z).isBlockIndirectlyPowered();
+	public static boolean isBlockIndirectlyPowered(World w, int x, int y, int z) {
+		return getBlockAt(w, x, y, z).isBlockIndirectlyPowered();
 		//return isBlockPowered(x+1, y, z) || isBlockPowered(x-1, y, z) || isBlockPowered(x, y, z+1) || isBlockPowered(x, y, z-1) || isBlockPowered(x, y-1, z);
 	}
 	
@@ -299,8 +292,8 @@ public class MinecartManiaWorld {
 	 ** @param y coordinate
 	 ** @param z coordinate
 	 **/
-	public static boolean isBlockPowered(int x, int y, int z) {
-		return getBlockAt(x, y, z).isBlockPowered();
+	public static boolean isBlockPowered(World w, int x, int y, int z) {
+		return getBlockAt(w, x, y, z).isBlockPowered();
 		//MaterialData md = getWorld().getBlockAt(x, y, z).getState().getData();
 		//if (md instanceof Redstone) {
 		//	return ((Redstone) md).isPowered();
@@ -315,16 +308,16 @@ public class MinecartManiaWorld {
 	 ** @param z coordinate
 	 ** @param power state
 	 **/
-	public static void setBlockPowered(int x, int y, int z, boolean power) {
-		MaterialData md = getBlockAt(x, y, z).getState().getData();
+	public static void setBlockPowered(World w, int x, int y, int z, boolean power) {
+		MaterialData md = getBlockAt(w, x, y, z).getState().getData();
 		if (md instanceof RedstoneWire) {
-			getBlockAt(x, y, z).getState().setData(new MaterialData(getBlockAt(x, y, z).getState().getTypeId(), (byte)(power ?  16 : 0)));
+			getBlockAt(w, x, y, z).getState().setData(new MaterialData(getBlockAt(w, x, y, z).getState().getTypeId(), (byte)(power ?  16 : 0)));
 		}
 		else if (md instanceof RedstoneTorch) {
-			getBlockAt(x, y, z).getState().setData(new MaterialData(power ? Material.REDSTONE_TORCH_ON : Material.REDSTONE_TORCH_OFF));
+			getBlockAt(w, x, y, z).getState().setData(new MaterialData(power ? Material.REDSTONE_TORCH_ON : Material.REDSTONE_TORCH_OFF));
 		}
 		else if (md instanceof Lever || md instanceof Button) {
-			getBlockAt(x, y, z).getState().setData(new MaterialData(getBlockAt(x, y, z).getState().getTypeId(), (byte)(power ? md.getData() | 0x8 : md.getData() & 0x7)));
+			getBlockAt(w, x, y, z).getState().setData(new MaterialData(getBlockAt(w, x, y, z).getState().getTypeId(), (byte)(power ? md.getData() | 0x8 : md.getData() & 0x7)));
 		}
 	}
 	
@@ -335,13 +328,13 @@ public class MinecartManiaWorld {
 	 ** @param z coordinate
 	 ** @param power state
 	 **/
-	public static void setBlockIndirectlyPowered(int x, int y, int z, boolean power) {
-		setBlockPowered(x, y, z, power);
-		setBlockPowered(x-1, y, z, power);
-		setBlockPowered(x+1, y, z, power);
-		setBlockPowered(x, y-1, z, power);
-		setBlockPowered(x, y+1, z, power);
-		setBlockPowered(x, y, z-1, power);
-		setBlockPowered(x, y, z+1, power);
+	public static void setBlockIndirectlyPowered(World w, int x, int y, int z, boolean power) {
+		setBlockPowered(w, x, y, z, power);
+		setBlockPowered(w, x-1, y, z, power);
+		setBlockPowered(w, x+1, y, z, power);
+		setBlockPowered(w, x, y-1, z, power);
+		setBlockPowered(w, x, y+1, z, power);
+		setBlockPowered(w, x, y, z-1, power);
+		setBlockPowered(w, x, y, z+1, power);
 	}
 }

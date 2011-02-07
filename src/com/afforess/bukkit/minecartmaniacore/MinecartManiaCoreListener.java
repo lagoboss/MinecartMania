@@ -39,7 +39,7 @@ public class MinecartManiaCoreListener extends VehicleListener{
 			
 			minecart.doRealisticFriction();
 			minecart.doPressurePlateRails();
-			minecart.updateCalendar();
+			minecart.updateCalendar(); 
 			if (minecart.isMoving()) {
 				minecart.setPreviousFacingDir(minecart.getDirectionOfMotion());
 			}

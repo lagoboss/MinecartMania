@@ -3,6 +3,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
@@ -91,11 +92,11 @@ public abstract class DirectionUtils {
 		 return CompassDirection.NO_DIRECTION;
 	 }
 	 
-	 public static Block getBlockTypeAhead(CompassDirection efacingDir, int x, int y, int z) {
-			if (efacingDir == CompassDirection.NORTH) return MinecartManiaWorld.getBlockAt(x-1, y, z);
-			if (efacingDir == CompassDirection.EAST) return MinecartManiaWorld.getBlockAt(x, y, z-1);
-			if (efacingDir == CompassDirection.SOUTH) return MinecartManiaWorld.getBlockAt(x+1, y, z);
-			if (efacingDir == CompassDirection.WEST) return MinecartManiaWorld.getBlockAt(x, y, z+1);
+	 public static Block getBlockTypeAhead(World w, CompassDirection efacingDir, int x, int y, int z) {
+			if (efacingDir == CompassDirection.NORTH) return MinecartManiaWorld.getBlockAt(w, x-1, y, z);
+			if (efacingDir == CompassDirection.EAST) return MinecartManiaWorld.getBlockAt(w, x, y, z-1);
+			if (efacingDir == CompassDirection.SOUTH) return MinecartManiaWorld.getBlockAt(w, x+1, y, z);
+			if (efacingDir == CompassDirection.WEST) return MinecartManiaWorld.getBlockAt(w, x, y, z+1);
 			return null;
 		}
 	 
@@ -255,7 +256,7 @@ public abstract class DirectionUtils {
 	}
 	
 	public static CompassDirection getSignFacingDirection(Sign sign) {
-		int data = MinecartManiaWorld.getBlockData(sign.getX(), sign.getY(), sign.getZ());
+		int data = MinecartManiaWorld.getBlockData(sign.getWorld(), sign.getX(), sign.getY(), sign.getZ());
 		Block block = sign.getBlock();
 		if (block.getType().equals(Material.SIGN_POST)) {
 			if (data == 0x0) return DirectionUtils.CompassDirection.WEST;

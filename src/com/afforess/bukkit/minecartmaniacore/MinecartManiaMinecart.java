@@ -38,7 +38,7 @@ public class MinecartManiaMinecart {
 	private ConcurrentHashMap<String, Object> data = new ConcurrentHashMap<String,Object>();
 	
 	public MinecartManiaMinecart(Minecart cart) {
-		minecart = cart;
+		minecart = cart; 
 		previousMotion = cart.getVelocity().clone();
 		previousLocation = cart.getLocation().toVector().clone();
 		cal = Calendar.getInstance();
@@ -47,7 +47,7 @@ public class MinecartManiaMinecart {
 	}
 	
 	public MinecartManiaMinecart(Location loc, String ownerName) {
-		minecart = MinecartManiaWorld.getWorld().spawnMinecart(loc);
+		minecart = loc.getWorld().spawnMinecart(loc);
 		previousMotion = minecart.getVelocity().clone();
 		previousLocation = minecart.getLocation().toVector().clone();
 		cal = Calendar.getInstance();
@@ -62,7 +62,7 @@ public class MinecartManiaMinecart {
 	private void findOwner() {
 		double closest = Double.MAX_VALUE;
 		Player closestPlayer = null;
-		for (LivingEntity le : MinecartManiaWorld.getWorld().getLivingEntities()) {
+		for (LivingEntity le : minecart.getWorld().getLivingEntities()) {
 			if (le instanceof Player) {
 				double distance = le.getLocation().toVector().distance(minecart.getLocation().toVector());
 				if (distance < closest) {
@@ -195,11 +195,11 @@ public class MinecartManiaMinecart {
 	 }
 	
 	public int getBlockIdBeneath() {
-		return MinecartManiaWorld.getBlockAt(getX(), getY()-1, getZ()).getTypeId();
+		return MinecartManiaWorld.getBlockAt(minecart.getWorld(), getX(), getY()-1, getZ()).getTypeId();
 	}
 	
 	public boolean isPoweredBeneath() {
-		if (MinecartManiaWorld.isBlockIndirectlyPowered(getX(), getY()-1, getZ()) || MinecartManiaWorld.isBlockIndirectlyPowered(getX(), getY(), getZ())) {
+		if (MinecartManiaWorld.isBlockIndirectlyPowered(minecart.getWorld(), getX(), getY()-1, getZ()) || MinecartManiaWorld.isBlockIndirectlyPowered(minecart.getWorld(), getX(), getY(), getZ())) {
 			return true;
 		}
 		//Temporary Fix for Pressure Plates, since they are NYI
@@ -296,7 +296,7 @@ public class MinecartManiaMinecart {
 		for (Sign sign : signList) {
 			for (int i = 0; i < 4; i++) {
 				if (sign.getLine(i).toLowerCase().indexOf("north") > -1) {
-					if (MinecartUtils.validMinecartTrack(getX()-1, getY(), getZ(), 2, DirectionUtils.CompassDirection.NORTH)) {
+					if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX()-1, getY(), getZ(), 2, DirectionUtils.CompassDirection.NORTH)) {
 						sign.setLine(i, "[North]");
 						sign.update();
 						setMotion(DirectionUtils.CompassDirection.NORTH, 0.6D);
@@ -304,7 +304,7 @@ public class MinecartManiaMinecart {
 					}
 				}
 				if (sign.getLine(i).toLowerCase().indexOf("east") > -1) {
-					if (MinecartUtils.validMinecartTrack(getX(), getY(), getZ()-1, 2, DirectionUtils.CompassDirection.EAST)) {
+					if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX(), getY(), getZ()-1, 2, DirectionUtils.CompassDirection.EAST)) {
 						sign.setLine(i, "[East]");
 						sign.update();
 						setMotion(DirectionUtils.CompassDirection.EAST, 0.6D);
@@ -312,7 +312,7 @@ public class MinecartManiaMinecart {
 					}
 				}
 				if (sign.getLine(i).toLowerCase().indexOf("south") > -1) {
-					if (MinecartUtils.validMinecartTrack(getX()+1, getY(), getZ(), 2, DirectionUtils.CompassDirection.SOUTH)) {
+					if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX()+1, getY(), getZ(), 2, DirectionUtils.CompassDirection.SOUTH)) {
 						sign.setLine(i, "[South]");
 						sign.update();
 						setMotion(DirectionUtils.CompassDirection.SOUTH, 0.6D);
@@ -320,7 +320,7 @@ public class MinecartManiaMinecart {
 					}
 				}
 				if (sign.getLine(i).toLowerCase().indexOf("west") > -1) {
-					if (MinecartUtils.validMinecartTrack(getX(), getY(), getZ()+1, 2, DirectionUtils.CompassDirection.WEST)) {
+					if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX(), getY(), getZ()+1, 2, DirectionUtils.CompassDirection.WEST)) {
 						sign.setLine(i, "[West]");
 						sign.update();
 						setMotion(DirectionUtils.CompassDirection.WEST, 0.6D);
@@ -330,7 +330,7 @@ public class MinecartManiaMinecart {
 				if (sign.getLine(i).toLowerCase().indexOf("facing dir") > -1) {
 					if (minecart.getPassenger() != null) {
 						DirectionUtils.CompassDirection facingDir = DirectionUtils.getDirectionFromMinecartRotation((minecart.getPassenger().getLocation().getYaw() - 90.0F) % 360.0F);
-						if (MinecartUtils.validMinecartTrack(getX(), getY(), getZ()+1, 2, facingDir)) {
+						if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX(), getY(), getZ()+1, 2, facingDir)) {
 							sign.setLine(i, "[Facing Dir]");
 							sign.update();
 							setMotion(facingDir, 0.6D);
@@ -340,7 +340,7 @@ public class MinecartManiaMinecart {
 				}
 				if (sign.getLine(i).toLowerCase().indexOf("previous dir") > -1) {
 					if (!this.getPreviousFacingDir().equals(DirectionUtils.CompassDirection.NO_DIRECTION)) {
-						if (MinecartUtils.validMinecartTrackAnyDirection(getX(), getY(), getZ()+1, 2)) {
+						if (MinecartUtils.validMinecartTrackAnyDirection(minecart.getWorld(), getX(), getY(), getZ()+1, 2)) {
 							sign.setLine(i, "[Previous Dir]");
 							sign.update();
 							setMotion(this.getPreviousFacingDir(), 0.6D);
@@ -350,16 +350,16 @@ public class MinecartManiaMinecart {
 				}
 			}
 		}
-		if (MinecartUtils.validMinecartTrack(getX()-1, getY(), getZ(), 2, DirectionUtils.CompassDirection.NORTH)) {
+		if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX()-1, getY(), getZ(), 2, DirectionUtils.CompassDirection.NORTH)) {
 			setMotion(DirectionUtils.CompassDirection.NORTH, 0.6D);
 		}
-		else if (MinecartUtils.validMinecartTrack(getX(), getY(), getZ()-1, 2, DirectionUtils.CompassDirection.EAST)) {
+		else if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX(), getY(), getZ()-1, 2, DirectionUtils.CompassDirection.EAST)) {
 			setMotion(DirectionUtils.CompassDirection.EAST, 0.6D);
 		}
-		else if (MinecartUtils.validMinecartTrack(getX()+1, getY(), getZ(), 2, DirectionUtils.CompassDirection.SOUTH)) {
+		else if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX()+1, getY(), getZ(), 2, DirectionUtils.CompassDirection.SOUTH)) {
 			setMotion(DirectionUtils.CompassDirection.SOUTH, 0.6D);
 		}
-		else if (MinecartUtils.validMinecartTrack(getX(), getY(), getZ()+1, 2, DirectionUtils.CompassDirection.WEST)) {
+		else if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX(), getY(), getZ()+1, 2, DirectionUtils.CompassDirection.WEST)) {
 			setMotion(DirectionUtils.CompassDirection.WEST, 0.6D);
 		}
 	}
@@ -387,7 +387,7 @@ public class MinecartManiaMinecart {
 	}
 	
 	public void doRealisticFriction() {
-		if (minecart.getPassenger() == null && MinecartManiaWorld.getBlockAt(getX(), getY(), getZ()).getType().equals(Material.RAILS)) 	{
+		if (minecart.getPassenger() == null && MinecartManiaWorld.getBlockAt(minecart.getWorld(), getX(), getY(), getZ()).getType().equals(Material.RAILS)) 	{
 			setMotion(getMotionX() * 1.03774, getMotionY(), getMotionZ()* 1.03774);
     	}
 	}
@@ -416,7 +416,7 @@ public class MinecartManiaMinecart {
 	}
 	
 	public boolean isOnRails() {
-		return MinecartUtils.isMinecartTrack(MinecartManiaWorld.getBlockAt(getX(), getY(), getZ()));
+		return MinecartUtils.isMinecartTrack(MinecartManiaWorld.getBlockAt(minecart.getWorld(), getX(), getY(), getZ()));
 	}
 	
 	/**
@@ -424,23 +424,23 @@ public class MinecartManiaMinecart {
 	 **/
 	public boolean isAtIntersection() {
 		if (this.isOnRails()) {
-			return MinecartUtils.isAtIntersection(getX(), getY(), getZ());
+			return MinecartUtils.isAtIntersection(minecart.getWorld(), getX(), getY(), getZ());
 		}
 		return false;
 	}
 	
 	public Block getBlockTypeAhead() {
-		return DirectionUtils.getBlockTypeAhead(getDirectionOfMotion(), getX(), getY(), getZ());
+		return DirectionUtils.getBlockTypeAhead(minecart.getWorld(), getDirectionOfMotion(), getX(), getY(), getZ());
 	}
 	
 	public Block getBlockTypeBehind() {
-		return DirectionUtils.getBlockTypeAhead(DirectionUtils.getOppositeDirection(getDirectionOfMotion()), getX(), getY(), getZ());
+		return DirectionUtils.getBlockTypeAhead(minecart.getWorld(), DirectionUtils.getOppositeDirection(getDirectionOfMotion()), getX(), getY(), getZ());
 	}
 
 	public void doPressurePlateRails() {
 		if (MinecartManiaWorld.isPressurePlateRails()) {
-			if (MinecartManiaWorld.getBlockAt(getX(), getY(), getZ()).getType().equals(Material.STONE_PLATE)
-			|| MinecartManiaWorld.getBlockAt(getX(), getY(), getZ()).getType().equals(Material.WOOD_PLATE)) {
+			if (MinecartManiaWorld.getBlockAt(minecart.getWorld(), getX(), getY(), getZ()).getType().equals(Material.STONE_PLATE)
+			|| MinecartManiaWorld.getBlockAt(minecart.getWorld(), getX(), getY(), getZ()).getType().equals(Material.WOOD_PLATE)) {
 				setMotionX(getMotionX() * 3);
 				setMotionZ(getMotionZ() * 3);
 	    	}
@@ -486,19 +486,19 @@ public class MinecartManiaMinecart {
 	
 	public ArrayList<Block> getParallelBlocks() {
 		ArrayList<Block> blocks = new ArrayList<Block>(4);
-		blocks.add(MinecartManiaWorld.getBlockAt(getX()-1, getY(), getZ()));
-		blocks.add(MinecartManiaWorld.getBlockAt(getX()+1, getY(), getZ()));
-		blocks.add(MinecartManiaWorld.getBlockAt(getX(), getY(), getZ()-1));
-		blocks.add(MinecartManiaWorld.getBlockAt(getX(), getY(), getZ()+1));
+		blocks.add(MinecartManiaWorld.getBlockAt(minecart.getWorld(), getX()-1, getY(), getZ()));
+		blocks.add(MinecartManiaWorld.getBlockAt(minecart.getWorld(), getX()+1, getY(), getZ()));
+		blocks.add(MinecartManiaWorld.getBlockAt(minecart.getWorld(), getX(), getY(), getZ()-1));
+		blocks.add(MinecartManiaWorld.getBlockAt(minecart.getWorld(), getX(), getY(), getZ()+1));
 		return blocks;
 	}
 	
 	public ArrayList<Block> getPreviousLocationParallelBlocks() {
 		ArrayList<Block> blocks = new ArrayList<Block>(4);
-		blocks.add(MinecartManiaWorld.getBlockAt(previousLocation.getBlockX()-1, previousLocation.getBlockY(), previousLocation.getBlockZ()));
-		blocks.add(MinecartManiaWorld.getBlockAt(previousLocation.getBlockX()+1, previousLocation.getBlockY(), previousLocation.getBlockZ()));
-		blocks.add(MinecartManiaWorld.getBlockAt(previousLocation.getBlockX(), previousLocation.getBlockY(), previousLocation.getBlockZ()-1));
-		blocks.add(MinecartManiaWorld.getBlockAt(previousLocation.getBlockX(), previousLocation.getBlockY(), previousLocation.getBlockZ()+1));
+		blocks.add(MinecartManiaWorld.getBlockAt(minecart.getWorld(), previousLocation.getBlockX()-1, previousLocation.getBlockY(), previousLocation.getBlockZ()));
+		blocks.add(MinecartManiaWorld.getBlockAt(minecart.getWorld(), previousLocation.getBlockX()+1, previousLocation.getBlockY(), previousLocation.getBlockZ()));
+		blocks.add(MinecartManiaWorld.getBlockAt(minecart.getWorld(), previousLocation.getBlockX(), previousLocation.getBlockY(), previousLocation.getBlockZ()-1));
+		blocks.add(MinecartManiaWorld.getBlockAt(minecart.getWorld(), previousLocation.getBlockX(), previousLocation.getBlockY(), previousLocation.getBlockZ()+1));
 		return blocks;
 	}
 
@@ -549,8 +549,8 @@ public class MinecartManiaMinecart {
 				x = Integer.valueOf(StringUtils.getNumber(split[0]));
 				y = Integer.valueOf(StringUtils.getNumber(split[1]));
 				z = Integer.valueOf(StringUtils.getNumber(split[2]));
-				if (MinecartManiaWorld.getBlockAt(x, y, z).getState() instanceof Chest) {
-					return MinecartManiaWorld.getMinecartManiaChest((Chest)MinecartManiaWorld.getBlockAt(x, y, z).getState());
+				if (MinecartManiaWorld.getBlockAt(minecart.getWorld(), x, y, z).getState() instanceof Chest) {
+					return MinecartManiaWorld.getMinecartManiaChest((Chest)MinecartManiaWorld.getBlockAt(minecart.getWorld(), x, y, z).getState());
 				}
 			}
 			catch (Exception e) {
@@ -573,7 +573,7 @@ public class MinecartManiaMinecart {
 				((MinecartManiaChest)owner).addItem(getType().getId());
 			}
 			else {
-				MinecartManiaWorld.getWorld().dropItemNaturally(minecart.getLocation(), new ItemStack(getType(), 1));
+				minecart.getWorld().dropItemNaturally(minecart.getLocation(), new ItemStack(getType(), 1));
 			}
 			
 			//Fire destroyed event

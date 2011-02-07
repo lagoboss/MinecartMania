@@ -2,6 +2,7 @@ package com.afforess.bukkit.minecartmaniacore;
 
 import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Chest;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -13,7 +14,7 @@ public class MinecartManiaChest {
 	private ConcurrentHashMap<String, Object> data = new ConcurrentHashMap<String,Object>();
 	public MinecartManiaChest(Chest chest) {
 		this.chest = chest;
-		setRedstonePower(MinecartManiaWorld.isBlockIndirectlyPowered(getX(), getY(), getZ()));
+		setRedstonePower(MinecartManiaWorld.isBlockIndirectlyPowered(chest.getWorld(), getX(), getY(), getZ()));
 	}
 	
 	public int getX() {
@@ -33,7 +34,7 @@ public class MinecartManiaChest {
 	 ** Returns the neighbor chest to this chest, or null if none exists
 	 **/
 	public MinecartManiaChest getNeighborChest() {
-		return getNeighborChest(getX(), getY(), getZ());
+		return getNeighborChest(chest.getWorld(), getX(), getY(), getZ());
 	}
 	
 	/**
@@ -42,19 +43,19 @@ public class MinecartManiaChest {
 	 ** @param y coordinate to search
 	 ** @param z coordinate to search
 	 **/
-	 public static MinecartManiaChest getNeighborChest(int x, int y, int z)
+	 public static MinecartManiaChest getNeighborChest(World w, int x, int y, int z)
 	 {
-    	if (MinecartManiaWorld.getBlockAt(x - 1, y, z).getType().equals(Material.CHEST)) {
-            return MinecartManiaWorld.getMinecartManiaChest((Chest)MinecartManiaWorld.getBlockAt(x - 1, y, z).getState());
+    	if (MinecartManiaWorld.getBlockAt(w, x - 1, y, z).getType().equals(Material.CHEST)) {
+            return MinecartManiaWorld.getMinecartManiaChest((Chest)MinecartManiaWorld.getBlockAt(w, x - 1, y, z).getState());
         }
-        if(MinecartManiaWorld.getBlockAt(x + 1, y, z).getType().equals(Material.CHEST)) {
-        	return MinecartManiaWorld.getMinecartManiaChest((Chest)MinecartManiaWorld.getBlockAt(x + 1, y, z).getState());
+        if(MinecartManiaWorld.getBlockAt(w, x + 1, y, z).getType().equals(Material.CHEST)) {
+        	return MinecartManiaWorld.getMinecartManiaChest((Chest)MinecartManiaWorld.getBlockAt(w, x + 1, y, z).getState());
         }
-        if(MinecartManiaWorld.getBlockAt(x, y, z - 1).getType().equals(Material.CHEST)) {
-        	return MinecartManiaWorld.getMinecartManiaChest((Chest)MinecartManiaWorld.getBlockAt(x, y, z - 1).getState());
+        if(MinecartManiaWorld.getBlockAt(w, x, y, z - 1).getType().equals(Material.CHEST)) {
+        	return MinecartManiaWorld.getMinecartManiaChest((Chest)MinecartManiaWorld.getBlockAt(w, x, y, z - 1).getState());
         }
-        if (MinecartManiaWorld.getBlockAt(x, y, z + 1).getType().equals(Material.CHEST)) {
-        	return MinecartManiaWorld.getMinecartManiaChest((Chest)MinecartManiaWorld.getBlockAt(x, y, z + 1).getState());
+        if (MinecartManiaWorld.getBlockAt(w, x, y, z + 1).getType().equals(Material.CHEST)) {
+        	return MinecartManiaWorld.getMinecartManiaChest((Chest)MinecartManiaWorld.getBlockAt(w, x, y, z + 1).getState());
 		}
 
 		return null;

@@ -25,8 +25,8 @@ public class MinecartManiaCoreBlockListener extends BlockListener{
     	for (int dx = -(range); dx <= range; dx++){
 			for (int dy = -(range); dy <= range; dy++){
 				for (int dz = -(range); dz <= range; dz++){
-					if (MinecartManiaWorld.getBlockAt(block.getX() + dx, block.getY() + dy, block.getZ() + dz).getState() instanceof Chest) {
-						Chest chest = (Chest)MinecartManiaWorld.getBlockAt(block.getX() + dx, block.getY() + dy, block.getZ() + dz).getState();
+					if (MinecartManiaWorld.getBlockAt(block.getWorld(), block.getX() + dx, block.getY() + dy, block.getZ() + dz).getState() instanceof Chest) {
+						Chest chest = (Chest)MinecartManiaWorld.getBlockAt(block.getWorld(), block.getX() + dx, block.getY() + dy, block.getZ() + dz).getState();
 						MinecartManiaChest mmc = MinecartManiaWorld.getMinecartManiaChest(chest);
 						boolean previouslyPowered = mmc.isRedstonePower();
 						if (!previouslyPowered && power) {
