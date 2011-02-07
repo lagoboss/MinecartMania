@@ -14,11 +14,11 @@ import org.bukkit.material.Lever;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.RedstoneTorch;
 import org.bukkit.material.RedstoneWire;
-import org.bukkit.util.Vector;
+import org.bukkit.Location;
 
 public class MinecartManiaWorld {
 	private static ConcurrentHashMap<Integer,MinecartManiaMinecart> minecarts = new ConcurrentHashMap<Integer,MinecartManiaMinecart>();
-	private static ConcurrentHashMap<Vector,MinecartManiaChest> chests = new ConcurrentHashMap<Vector,MinecartManiaChest>();
+	private static ConcurrentHashMap<Location,MinecartManiaChest> chests = new ConcurrentHashMap<Location,MinecartManiaChest>();
 	private static ConcurrentHashMap<String, Object> configuration = new ConcurrentHashMap<String,Object>();
 	
 	/**
@@ -84,10 +84,10 @@ public class MinecartManiaWorld {
 	 ** @param the chest to wrap
 	 **/
 	 public static MinecartManiaChest getMinecartManiaChest(Chest chest) {
-        MinecartManiaChest testChest = chests.get(new Vector(chest.getX(), chest.getY(), chest.getZ()));
+        MinecartManiaChest testChest = chests.get(new Location(chest.getWorld(), chest.getX(), chest.getY(), chest.getZ()));
         if (testChest == null) {
 	        MinecartManiaChest newChest = new MinecartManiaChest(chest);
-	        chests.put(new Vector(chest.getX(), chest.getY(), chest.getZ()), newChest);
+	        chests.put(new Location(chest.getWorld(), chest.getX(), chest.getY(), chest.getZ()), newChest);
 	        return newChest;
         } else {
         	return testChest;
@@ -98,7 +98,7 @@ public class MinecartManiaWorld {
 	 ** Returns true if the chest with the given vector was deleted, false if not.
 	 ** @param the vector location of the chest to delete
 	 **/
-	 public static boolean delMinecartManiaChest(Vector v) {
+	 public static boolean delMinecartManiaChest(Location v) {
         if (chests.containsKey(v)) {
             chests.remove(v);
             return true;
