@@ -291,7 +291,7 @@ public class MinecartManiaMinecart {
 			return;
 		}
 
-		ArrayList<Sign> signList = SignUtils.getAdjacentSignList(this, 1);
+		ArrayList<Sign> signList = SignUtils.getAdjacentSignList(this, 2);
 		for (Sign sign : signList) {
 			for (int i = 0; i < 4; i++) {
 				if (sign.getLine(i).toLowerCase().indexOf("north") > -1) {

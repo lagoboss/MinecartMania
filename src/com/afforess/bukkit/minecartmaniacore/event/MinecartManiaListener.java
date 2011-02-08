@@ -84,6 +84,16 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
 		
 	}
 	
+	
+	/**
+     * Called when a chest attempts to spawn a minecart. Can be cancelled, or the location changed.
+     * 
+     * @param event
+     */
+	public void onChestSpawnMinecartEvent(ChestSpawnMinecartEvent event) {
+		
+	}
+	
 	/**
      * Avoid using.
      * 
@@ -113,6 +123,9 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
 		}
 		else if (event instanceof MinecartLaunchedEvent) {
 			onMinecartLaunchedEvent((MinecartLaunchedEvent)event);
+		}
+		else if (event instanceof ChestSpawnMinecartEvent) {
+			onChestSpawnMinecartEvent((ChestSpawnMinecartEvent)event);
 		}
 	}
 
