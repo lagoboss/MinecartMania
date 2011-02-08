@@ -2,16 +2,13 @@ package com.afforess.bukkit.minecartmaniacore;
 
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
-import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockListener;
 import org.bukkit.event.block.BlockRedstoneEvent;
 
 import com.afforess.bukkit.minecartmaniacore.event.ChestPoweredEvent;
 
 public class MinecartManiaCoreBlockListener extends BlockListener{
-    public void onBlockRedstoneChange(BlockFromToEvent bfte) {    
-    	//Funny handling
-    	BlockRedstoneEvent event = ((BlockRedstoneEvent)bfte);
+    public void onBlockRedstoneChange(BlockRedstoneEvent event) {    
     	if (event.isCancelled()) {
     		return;
     	}
