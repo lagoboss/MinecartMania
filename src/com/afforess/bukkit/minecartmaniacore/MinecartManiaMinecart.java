@@ -5,7 +5,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import net.minecraft.server.EntityMinecart;
 
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -46,15 +45,15 @@ public class MinecartManiaMinecart {
 		findOwner();
 	}
 	
-	public MinecartManiaMinecart(Location loc, String ownerName) {
-		minecart = loc.getWorld().spawnMinecart(loc);
-		previousMotion = minecart.getVelocity().clone();
-		previousLocation = minecart.getLocation().toVector().clone();
+	public MinecartManiaMinecart(Minecart cart, String owner) {
+		minecart = cart; 
+		previousMotion = cart.getVelocity().clone();
+		previousLocation = cart.getLocation().toVector().clone();
 		cal = Calendar.getInstance();
 		setWasMovingLastTick(isMoving());
-		owner = ownerName;
+		this.owner = owner;
 	}
-	
+
 	/**
 	 ** Attempts to find the player that spawned this minecart.
 	 **
@@ -563,17 +562,23 @@ public class MinecartManiaMinecart {
 	}
 	
 	public void kill() {
+		kill(true);
+	}
+	
+	public void kill(boolean returnToOwner) {
 
 		try {
-			Object owner = getOwner();
-			if (owner instanceof Player && MinecartManiaWorld.isReturnMinecartToOwner()) {
-				((Player)owner).getInventory().addItem(new ItemStack(getType(), 1));
-			}
-			else if (owner instanceof MinecartManiaChest && MinecartManiaWorld.isReturnMinecartToOwner()) {
-				((MinecartManiaChest)owner).addItem(getType().getId());
-			}
-			else {
-				minecart.getWorld().dropItemNaturally(minecart.getLocation(), new ItemStack(getType(), 1));
+			if (MinecartManiaWorld.isReturnMinecartToOwner() && returnToOwner) {
+				Object owner = getOwner();
+				if (owner instanceof Player) {
+					((Player)owner).getInventory().addItem(new ItemStack(getType(), 1));
+				}
+				else if (owner instanceof MinecartManiaChest) {
+					((MinecartManiaChest)owner).addItem(getType().getId());
+				}
+				else {
+					minecart.getWorld().dropItemNaturally(minecart.getLocation(), new ItemStack(getType(), 1));
+				}
 			}
 			
 			//Fire destroyed event

@@ -7,6 +7,7 @@ import org.bukkit.block.Chest;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+@SuppressWarnings("unused")
 public class MinecartManiaChest {
 
 	public final Chest chest;
@@ -92,7 +93,10 @@ public class MinecartManiaChest {
 	 ** @param item to add
 	 **/
 	public boolean addItem(ItemStack item) {
-		Inventory inventory = chest.getInventory();
+		//Temporary Fix
+		chest.getInventory().addItem(item);
+		return true;
+		/*Inventory inventory = chest.getInventory();
 		//Backup contents
 		ItemStack[] backup = inventory.getContents().clone();
 		ItemStack backupItem = new ItemStack(item.getTypeId(), item.getAmount(), item.getDurability());
@@ -133,7 +137,7 @@ public class MinecartManiaChest {
 		//if we fail, reset the inventory and item back to previous values
 		inventory.setContents(backup);
 		item = backupItem;
-		return false;
+		return false;*/
 	}
 	
 	/**
@@ -141,7 +145,7 @@ public class MinecartManiaChest {
 	 ** @param itemtype to add
 	 **/
 	public boolean addItem(int type) {
-		return addItem(new ItemStack(type));
+		return addItem(new ItemStack(type, 1));
 	}
 	
 	/**
@@ -159,7 +163,9 @@ public class MinecartManiaChest {
 	 ** @param the amount to remove
 	 **/
 	public boolean removeItem(int type, int amount) {
-		Inventory inventory = chest.getInventory();
+		chest.getInventory().removeItem(new ItemStack(type, amount));
+		return true;
+		/*Inventory inventory = chest.getInventory();
 		//Backup contents
 		ItemStack[] backup = inventory.getContents().clone();
 		
@@ -203,7 +209,7 @@ public class MinecartManiaChest {
 			
 		//if we fail, reset the inventory back to previous values
 		inventory.setContents(backup);
-		return false;
+		return false;*/
 	}
 	
 	/**
@@ -223,6 +229,10 @@ public class MinecartManiaChest {
 	
 	public void update() {
 		chest.update();
+	}
+	
+	public String toString() {
+		return "[" + getX() + ":" + getY() + ":" + getZ() + "]";
 	}
 	
 

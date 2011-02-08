@@ -27,6 +27,7 @@ public class MinecartManiaCore extends JavaPlugin {
 	public static Logger log;
 	public static Server server;
 	public static PluginDescriptionFile description;
+	public static final String dataDirectory = "plugins" + File.separator + "MinecartMania";
 	
 	
 

@@ -25,10 +25,10 @@ public class Configuration {
 
 	private static void readFile(PluginDescriptionFile desc, Setting config[]) {	
 
-		File directory = new File("MinecartMania" + File.separator);
+		File directory = new File(MinecartManiaCore.dataDirectory);
 		if (!directory.exists())
 			directory.mkdir();
-		String input ="MinecartMania" + File.separator;
+		String input = MinecartManiaCore.dataDirectory + File.separator;
 		input += StringUtils.removeWhitespace(desc.getName());
 		input += "Settings.txt";
 		File options = new File(input);

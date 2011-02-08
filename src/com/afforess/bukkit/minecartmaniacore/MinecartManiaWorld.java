@@ -9,6 +9,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.entity.Minecart;
+import org.bukkit.entity.Player;
 import org.bukkit.material.Button;
 import org.bukkit.material.Lever;
 import org.bukkit.material.MaterialData;
@@ -233,6 +234,7 @@ public class MinecartManiaWorld {
 	
 	/**
 	 ** Returns the block at the given x, y, z coordinates
+	 ** @param w World to take effect in
 	 ** @param x coordinate
 	 ** @param y coordinate
 	 ** @param z coordinate
@@ -243,6 +245,7 @@ public class MinecartManiaWorld {
 	
 	/**
 	 ** Returns the block at the given x, y, z coordinates
+	 ** @param w World to take effect in
 	 ** @param new block type id
 	 ** @param x coordinate
 	 ** @param y coordinate
@@ -254,6 +257,7 @@ public class MinecartManiaWorld {
 	
 	/**
 	 ** Returns the block data at the given x, y, z coordinates
+	 ** @param w World to take effect in
 	 ** @param x coordinate
 	 ** @param y coordinate
 	 ** @param z coordinate
@@ -264,6 +268,7 @@ public class MinecartManiaWorld {
 	
 	/**
 	 ** sets the block data at the given x, y, z coordinates
+	 ** @param w World to take effect in
 	 ** @param x coordinate
 	 ** @param y coordinate
 	 ** @param z coordinate
@@ -277,6 +282,7 @@ public class MinecartManiaWorld {
 	
 	/**
 	 ** Returns true if the block at the given x, y, z coordinates is indirectly powered
+	 ** @param w World to take effect in
 	 ** @param x coordinate
 	 ** @param y coordinate
 	 ** @param z coordinate
@@ -288,6 +294,7 @@ public class MinecartManiaWorld {
 	
 	/**
 	 ** Returns true if the block at the given x, y, z coordinates is directly powered
+	 ** @param w World to take effect in
 	 ** @param x coordinate
 	 ** @param y coordinate
 	 ** @param z coordinate
@@ -303,6 +310,7 @@ public class MinecartManiaWorld {
 	
 	/**
 	 ** Sets the block at the given x, y, z coordinates to the given power state, if possible
+	 ** @param w World to take effect in
 	 ** @param x coordinate
 	 ** @param y coordinate
 	 ** @param z coordinate
@@ -323,6 +331,7 @@ public class MinecartManiaWorld {
 	
 	/**
 	 ** Sets the block at the given x, y, z coordinates, as well as any block directly touch the given block to the given power state, if possible
+	 ** @param w World to take effect in
 	 ** @param x coordinate
 	 ** @param y coordinate
 	 ** @param z coordinate
@@ -336,5 +345,36 @@ public class MinecartManiaWorld {
 		setBlockPowered(w, x, y+1, z, power);
 		setBlockPowered(w, x, y, z-1, power);
 		setBlockPowered(w, x, y, z+1, power);
+	}
+	
+	/** Spawns a minecart at the given coordinates. Includes a "fudge factor" to get the minecart to properly line up with minecart tracks.
+	 ** @param w World to take effect in
+	 ** @param x coordinate
+	 ** @param y coordinate
+	 ** @param z coordinate
+	 ** @param type of minecart to spawn. 0 - standard. 1 - powered. 2 - storage.
+	 ** @param Owner of this minecart (player or chest). Can be null
+	 **/
+	public static void spawnMinecart(World w, int x, int y, int z, int type, Object owner) {
+		Minecart m;
+		if (type == 0) {
+			m = w.spawnMinecart(new Location(w, x + 0.5D, y, z + 0.5D));
+		}
+		else if (type == 1) {
+			m = w.spawnPoweredMinecart(new Location(w, x + 0.5D, y, z + 0.5D));
+		}
+		else {
+			m = w.spawnStorageMinecart(new Location(w, x + 0.5D, y, z + 0.5D));
+		}
+		if (owner != null) {
+			
+			if (owner instanceof Player) {
+				minecarts.put(m.getEntityId(), new MinecartManiaMinecart(m, ((Player)owner).getName()));
+			}
+			if (owner instanceof MinecartManiaChest) {
+				minecarts.put(m.getEntityId(), new MinecartManiaMinecart(m, ((MinecartManiaChest)owner).toString()));
+			}
+		}
+		
 	}
 }
