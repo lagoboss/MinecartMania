@@ -1,7 +1,7 @@
-package com.afforess.bukkit.minecartmaniacore.config;
+package com.afforess.minecartmaniacore.config;
 import org.bukkit.plugin.Plugin;
 
-import com.afforess.bukkit.minecartmaniacore.MinecartManiaCore;
+import com.afforess.minecartmaniacore.MinecartManiaCore;
 
 public class Setting {
 	

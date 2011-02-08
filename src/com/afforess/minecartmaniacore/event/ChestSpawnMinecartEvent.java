@@ -1,9 +1,9 @@
-package com.afforess.bukkit.minecartmaniacore.event;
+package com.afforess.minecartmaniacore.event;
 
 import org.bukkit.Location;
 import org.bukkit.event.Cancellable;
 
-import com.afforess.bukkit.minecartmaniacore.MinecartManiaChest;
+import com.afforess.minecartmaniacore.MinecartManiaChest;
 
 public class ChestSpawnMinecartEvent extends org.bukkit.event.Event implements Cancellable{
 	private MinecartManiaChest chest;

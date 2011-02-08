@@ -1,4 +1,4 @@
-package com.afforess.bukkit.minecartmaniacore.config;
+package com.afforess.minecartmaniacore.config;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

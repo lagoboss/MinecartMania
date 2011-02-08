@@ -1,4 +1,4 @@
-package com.afforess.bukkit.minecartmaniacore;
+package com.afforess.minecartmaniacore;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,10 +18,10 @@ import org.bukkit.entity.StorageMinecart;
 import org.bukkit.entity.PoweredMinecart;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
-import com.afforess.bukkit.minecartmaniacore.DirectionUtils.CompassDirection;
-import com.afforess.bukkit.minecartmaniacore.event.MinecartLaunchedEvent;
-import com.afforess.bukkit.minecartmaniacore.event.MinecartManiaMinecartDestroyedEvent;
-import com.afforess.bukkit.minecartmaniacore.event.MinecartTimeEvent;
+import com.afforess.minecartmaniacore.DirectionUtils.CompassDirection;
+import com.afforess.minecartmaniacore.event.MinecartLaunchedEvent;
+import com.afforess.minecartmaniacore.event.MinecartManiaMinecartDestroyedEvent;
+import com.afforess.minecartmaniacore.event.MinecartTimeEvent;
 
 
 public class MinecartManiaMinecart {

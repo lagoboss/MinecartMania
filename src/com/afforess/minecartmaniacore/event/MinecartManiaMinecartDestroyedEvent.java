@@ -1,6 +1,6 @@
-package com.afforess.bukkit.minecartmaniacore.event;
+package com.afforess.minecartmaniacore.event;
 
-import com.afforess.bukkit.minecartmaniacore.MinecartManiaMinecart;
+import com.afforess.minecartmaniacore.MinecartManiaMinecart;
 
 public class MinecartManiaMinecartDestroyedEvent  extends org.bukkit.event.Event{
 

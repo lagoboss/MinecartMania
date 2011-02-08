@@ -1,8 +1,8 @@
-package com.afforess.bukkit.minecartmaniacore.event;
+package com.afforess.minecartmaniacore.event;
 
 import java.util.Calendar;
 
-import com.afforess.bukkit.minecartmaniacore.MinecartManiaMinecart;
+import com.afforess.minecartmaniacore.MinecartManiaMinecart;
 
 	public class MinecartTimeEvent extends org.bukkit.event.Event {
 	private MinecartManiaMinecart minecart;	

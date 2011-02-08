@@ -1,4 +1,4 @@
-package com.afforess.bukkit.minecartmaniacore;
+package com.afforess.minecartmaniacore;
 
 public class StringUtils {
 	

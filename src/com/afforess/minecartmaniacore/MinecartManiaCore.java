@@ -1,4 +1,4 @@
-package com.afforess.bukkit.minecartmaniacore;
+package com.afforess.minecartmaniacore;
 import java.io.File;
 import java.util.logging.Logger;
 import org.bukkit.Server;
@@ -10,7 +10,7 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.afforess.bukkit.minecartmaniacore.config.SettingList;
+import com.afforess.minecartmaniacore.config.SettingList;
 
 public class MinecartManiaCore extends JavaPlugin {
 	

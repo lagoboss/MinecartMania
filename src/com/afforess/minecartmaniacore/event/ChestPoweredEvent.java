@@ -1,6 +1,6 @@
-package com.afforess.bukkit.minecartmaniacore.event;
+package com.afforess.minecartmaniacore.event;
 
-import com.afforess.bukkit.minecartmaniacore.MinecartManiaChest;
+import com.afforess.minecartmaniacore.MinecartManiaChest;
 public class ChestPoweredEvent  extends org.bukkit.event.Event{
 	
 	private MinecartManiaChest chest;

@@ -1,8 +1,8 @@
-package com.afforess.bukkit.minecartmaniacore.config;
+package com.afforess.minecartmaniacore.config;
 
 import org.bukkit.Material;
 
-import com.afforess.bukkit.minecartmaniacore.MinecartManiaCore;
+import com.afforess.minecartmaniacore.MinecartManiaCore;
 
 //Holds default settings and values
 public class SettingList {

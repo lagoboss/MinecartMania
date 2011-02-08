@@ -1,4 +1,4 @@
-package com.afforess.bukkit.minecartmaniacore;
+package com.afforess.minecartmaniacore;
 
 import java.util.Calendar;
 
@@ -19,10 +19,10 @@ import org.bukkit.event.vehicle.VehicleListener;
 import org.bukkit.event.block.BlockListener;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
 
-import com.afforess.bukkit.minecartmaniacore.event.MinecartActionEvent;
-import com.afforess.bukkit.minecartmaniacore.event.MinecartIntersectionEvent;
-import com.afforess.bukkit.minecartmaniacore.event.MinecartMotionStartEvent;
-import com.afforess.bukkit.minecartmaniacore.event.MinecartMotionStopEvent;
+import com.afforess.minecartmaniacore.event.MinecartActionEvent;
+import com.afforess.minecartmaniacore.event.MinecartIntersectionEvent;
+import com.afforess.minecartmaniacore.event.MinecartMotionStartEvent;
+import com.afforess.minecartmaniacore.event.MinecartMotionStopEvent;
 
 @SuppressWarnings("unused")
 public class MinecartManiaCoreListener extends VehicleListener{

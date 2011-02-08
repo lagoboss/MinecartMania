@@ -1,7 +1,8 @@
-package com.afforess.bukkit.minecartmaniacore.event;
+package com.afforess.minecartmaniacore.event;
 
 import org.bukkit.util.Vector;
-import com.afforess.bukkit.minecartmaniacore.MinecartManiaMinecart;
+
+import com.afforess.minecartmaniacore.MinecartManiaMinecart;
 
 public class MinecartLaunchedEvent extends org.bukkit.event.Event implements org.bukkit.event.Cancellable {
 	private MinecartManiaMinecart minecart;

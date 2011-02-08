@@ -1,11 +1,11 @@
-package com.afforess.bukkit.minecartmaniacore;
+package com.afforess.minecartmaniacore;
 
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.event.block.BlockListener;
 import org.bukkit.event.block.BlockRedstoneEvent;
 
-import com.afforess.bukkit.minecartmaniacore.event.ChestPoweredEvent;
+import com.afforess.minecartmaniacore.event.ChestPoweredEvent;
 
 public class MinecartManiaCoreBlockListener extends BlockListener{
     public void onBlockRedstoneChange(BlockRedstoneEvent event) {    

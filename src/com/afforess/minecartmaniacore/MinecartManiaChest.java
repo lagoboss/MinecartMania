@@ -1,4 +1,4 @@
-package com.afforess.bukkit.minecartmaniacore;
+package com.afforess.minecartmaniacore;
 
 import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.Material;

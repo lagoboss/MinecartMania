@@ -1,4 +1,4 @@
-package com.afforess.bukkit.minecartmaniacore;
+package com.afforess.minecartmaniacore;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -9,9 +9,9 @@ import java.io.IOException;
 
 import org.bukkit.plugin.PluginDescriptionFile;
 
-import com.afforess.bukkit.minecartmaniacore.config.MinecartManiaFlatFile;
-import com.afforess.bukkit.minecartmaniacore.config.Setting;
-import com.afforess.bukkit.minecartmaniacore.config.SettingList;
+import com.afforess.minecartmaniacore.config.MinecartManiaFlatFile;
+import com.afforess.minecartmaniacore.config.Setting;
+import com.afforess.minecartmaniacore.config.SettingList;
 
 
 public class Configuration {

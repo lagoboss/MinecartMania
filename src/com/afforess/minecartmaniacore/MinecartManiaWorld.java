@@ -1,4 +1,4 @@
-package com.afforess.bukkit.minecartmaniacore;
+package com.afforess.minecartmaniacore;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map.Entry;
