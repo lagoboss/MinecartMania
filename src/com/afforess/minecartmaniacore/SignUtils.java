@@ -36,16 +36,38 @@ public class SignUtils {
 		return signList;
 	}
 	
-	public static ArrayList<Sign> getParallelSignList(World w, int x, int y, int z)
-	{
+	public static ArrayList<Sign> getParallelSignList(MinecartManiaMinecart minecart) {
+		return getParallelSignList(minecart.minecart.getWorld(), minecart.getX(), minecart.getY(), minecart.getZ());
+	}
+	
+	public static ArrayList<Sign> getParallelSignList(World w, int x, int y, int z){
 		int range = 1;
 		ArrayList<Sign> signList = new ArrayList<Sign>();
 		for (int dx = -(range); dx <= range; dx++){
-			for (int dz = -(range); dz <= range; dz++){
-				Sign sign = getSignAt(w, x+dx, y, z+dz);
-				if (sign != null) {
-					signList.add(sign);
-				}
+			Sign sign = getSignAt(w, x+dx, y, z);
+			if (sign != null) {
+				signList.add(sign);
+			}
+		}
+		for (int dz = -(range); dz <= range; dz++){
+			Sign sign = getSignAt(w, x, y, z+dz);
+			if (sign != null) {
+				signList.add(sign);
+			}
+		}
+		return signList;
+	}
+	
+	public static ArrayList<Sign> getSignBeneathList(MinecartManiaMinecart minecart, int range) {
+		return getSignBeneathList(minecart.minecart.getWorld(), minecart.getX(), minecart.getY()-1, minecart.getZ(), range);
+	}
+	
+	public static ArrayList<Sign> getSignBeneathList(World w, int x, int y, int z, int range) {
+		ArrayList<Sign> signList = new ArrayList<Sign>();
+		for (int dy = -range; dy <= 0; dy++) {
+			Sign sign = getSignAt(w, x, y+dy, z);
+			if (sign != null) {
+				signList.add(sign);
 			}
 		}
 		return signList;
