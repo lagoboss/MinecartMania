@@ -568,12 +568,12 @@ public class MinecartManiaMinecart {
 	public void kill(boolean returnToOwner) {
 
 		try {
-			if (MinecartManiaWorld.isReturnMinecartToOwner() && returnToOwner) {
+			if (returnToOwner) {
 				Object owner = getOwner();
-				if (owner instanceof Player) {
+				if (owner instanceof Player && MinecartManiaWorld.isReturnMinecartToOwner()) {
 					((Player)owner).getInventory().addItem(new ItemStack(getType(), 1));
 				}
-				else if (owner instanceof MinecartManiaChest) {
+				else if (owner instanceof MinecartManiaChest && MinecartManiaWorld.isReturnMinecartToOwner()) {
 					((MinecartManiaChest)owner).addItem(getType().getId());
 				}
 				else {

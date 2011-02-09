@@ -9,15 +9,12 @@ import com.afforess.minecartmaniacore.event.ChestPoweredEvent;
 
 public class MinecartManiaCoreBlockListener extends BlockListener{
     public void onBlockRedstoneChange(BlockRedstoneEvent event) {    
-    	if (event.isCancelled()) {
-    		return;
-    	}
     	if (event.getOldCurrent() > 0 && event.getNewCurrent() > 0) {
     		return;
     	}
     	boolean power = event.getNewCurrent() > 0;
     	
-    	Block block = event.getToBlock();
+    	Block block = event.getBlock();
     	int range = 1;
     	for (int dx = -(range); dx <= range; dx++){
 			for (int dy = -(range); dy <= range; dy++){
