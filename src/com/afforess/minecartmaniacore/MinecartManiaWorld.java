@@ -1,13 +1,20 @@
 package com.afforess.minecartmaniacore;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
+import net.minecraft.server.EntityMinecart;
+
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
+import org.bukkit.craftbukkit.CraftServer;
+import org.bukkit.craftbukkit.entity.CraftMinecart;
+import org.bukkit.craftbukkit.entity.CraftPoweredMinecart;
+import org.bukkit.craftbukkit.entity.CraftStorageMinecart;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.material.Button;
@@ -29,6 +36,20 @@ public class MinecartManiaWorld {
 	 public static MinecartManiaMinecart getMinecartManiaMinecart(Minecart minecart) {
         MinecartManiaMinecart testMinecart = minecarts.get(new Integer(minecart.getEntityId()));
         if (testMinecart == null) {
+        	
+        	//Special handling to create storage and powered minecart correctly until Bukkit fixes their bug
+        	CraftMinecart cm = (CraftMinecart)minecart;
+        	EntityMinecart em = (EntityMinecart)cm.getHandle();
+        	CraftServer cs = (CraftServer)MinecartManiaCore.server;
+        	if (em.d == 1) {
+        		CraftStorageMinecart csm = new CraftStorageMinecart(cs, em); 
+        		minecart = (Minecart)csm;
+        	}
+        	if (em.d == 2) {
+        		CraftPoweredMinecart csm = new CraftPoweredMinecart(cs, em); 
+        		minecart = (Minecart)csm;
+        	}
+        	
         	MinecartManiaMinecart newCart = new MinecartManiaMinecart(minecart);
         	minecarts.put(new Integer(minecart.getEntityId()), newCart);
         	return newCart;
@@ -276,7 +297,7 @@ public class MinecartManiaWorld {
 	 **/
 	public static void setBlockData(World w, int x, int y, int z, int data) {
 		//Better to crash than to write bad data!
-		if (data == -1 || data > Byte.MAX_VALUE) throw new IllegalArgumentException();
+		if (data < 0 || data > Byte.MAX_VALUE) throw new IllegalArgumentException();
 		w.getBlockAt(x, y, z).setData((byte) (data));
 	}
 	
@@ -352,22 +373,21 @@ public class MinecartManiaWorld {
 	 ** @param x coordinate
 	 ** @param y coordinate
 	 ** @param z coordinate
-	 ** @param type of minecart to spawn. 0 - standard. 1 - powered. 2 - storage.
+	 ** @param Material type of minecart to spawn
 	 ** @param Owner of this minecart (player or chest). Can be null
 	 **/
-	public static void spawnMinecart(World w, int x, int y, int z, int type, Object owner) {
+	public static void spawnMinecart(World w, int x, int y, int z, Material type, Object owner) {
 		Minecart m;
-		if (type == 0) {
+		if (type.getId() == Material.MINECART.getId()) {
 			m = w.spawnMinecart(new Location(w, x + 0.5D, y, z + 0.5D));
 		}
-		else if (type == 1) {
+		else if (type.getId() == Material.POWERED_MINECART.getId()) {
 			m = w.spawnPoweredMinecart(new Location(w, x + 0.5D, y, z + 0.5D));
 		}
 		else {
 			m = w.spawnStorageMinecart(new Location(w, x + 0.5D, y, z + 0.5D));
 		}
 		if (owner != null) {
-			
 			if (owner instanceof Player) {
 				minecarts.put(m.getEntityId(), new MinecartManiaMinecart(m, ((Player)owner).getName()));
 			}
@@ -375,6 +395,46 @@ public class MinecartManiaWorld {
 				minecarts.put(m.getEntityId(), new MinecartManiaMinecart(m, ((MinecartManiaChest)owner).toString()));
 			}
 		}
-		
+	}
+	
+	/** Spawns a new thread that will run next server tick, invoking the given method, with the given class and parameters.
+	 ** @param Method to run
+	 ** @param Class to run the method from. If the class is static, null may be used.
+	 ** @param Parameters for the thread.
+	 **/
+	public static void doAsyncTask(final Method m, final Object method, final Object...parameters){
+		Runnable a = new Runnable() { public void run() { try { m.invoke(method, parameters); } catch (Exception e) { e.printStackTrace(); } } };
+		MinecartManiaCore.server.getScheduler().scheduleAsyncDelayedTask(MinecartManiaCore.instance, a);
+	}
+	
+	/** Spawns a new thread that will run next server tick, invoking the given static method and parameters.
+	 ** @param Method to run
+	 ** @param Parameters for the thread.
+	 **/
+	public static void doAsyncTask(final Method m, final Object...parameters) {
+		doAsyncTask(m, null, parameters);
+	}
+	
+	/** Spawns a new thread that will run next server tick, invoking the given method with the given class. The method should have no parameters.
+	 ** @param Method to run
+	 ** @param Class to run the method from.
+	 **/
+	public static void doAsyncTask(final Method m, final Object method) {
+		doAsyncTask(m, method, (Object[])null);
+	}
+	
+	/** Spawns a new thread that will run next server tick, invoking the given static method, with no parameters.
+	 ** @param Method to run
+	 **/
+	public static void doAsyncTask(final Method m) {
+		doAsyncTask(m, null, (Object[])null);
 	}
 }
+
+
+
+
+
+
+
+

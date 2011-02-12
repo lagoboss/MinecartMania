@@ -6,6 +6,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -20,12 +21,14 @@ public class MinecartManiaCore extends JavaPlugin {
 		super(pluginLoader, instance, desc, folder, plugin, cLoader);
 		server = instance;
 		description = desc;
+		MinecartManiaCore.instance = this;
 	}
 
 	public final MinecartManiaCoreListener listener = new MinecartManiaCoreListener(this);
 	public final MinecartManiaCoreBlockListener blockListener = new MinecartManiaCoreBlockListener();
 	public static Logger log;
 	public static Server server;
+	public static Plugin instance;
 	public static PluginDescriptionFile description;
 	public static final String dataDirectory = "plugins" + File.separator + "MinecartMania";
 	

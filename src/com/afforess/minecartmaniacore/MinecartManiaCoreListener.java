@@ -121,13 +121,6 @@ public class MinecartManiaCoreListener extends VehicleListener{
 				minecart.updateMotion();
 				minecart.updateLocation();
 			}
-			
-			
-			//Allow other mods to disable this
-			//TODO better way to do this?
-			if (minecart.getDataValue("Do Catcher Block") == null) {
-				minecart.doCatcherBlock();
-			}
 		}
     }
 	
@@ -149,6 +142,13 @@ public class MinecartManiaCoreListener extends VehicleListener{
     		Minecart cart = (Minecart)event.getVehicle();
     		MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart(cart);
 			Entity collisioner = event.getEntity();
+			
+			if (minecart.doCatcherBlock()) {
+				event.setCancelled(true);
+				event.setCollisionCancelled(true);
+				event.setPickupCancelled(true);
+				return;
+			}
 			
 			if (collisioner instanceof LivingEntity) {
 				LivingEntity victim = (LivingEntity)(collisioner);

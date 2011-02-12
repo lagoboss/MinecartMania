@@ -43,6 +43,31 @@ public abstract class DirectionUtils {
 	        public static CompassDirection fromId(final int type) {
 	            return map.get(type);
 	        }
+	        
+	        public String toString() {
+	        	if (this.equals(CompassDirection.NORTH)) {
+	        		return "North";
+	        	}
+	        	if (this.equals(CompassDirection.NORTH_EAST)) {
+	        		return "North-East";
+	        	}
+	        	if (this.equals(CompassDirection.SOUTH_EAST)) {
+	        		return "South-East";
+	        	}
+	        	if (this.equals(CompassDirection.SOUTH)) {
+	        		return "South";
+	        	}
+	        	if (this.equals(CompassDirection.SOUTH_WEST)) {
+	        		return "South-West";
+	        	}
+	        	if (this.equals(CompassDirection.WEST)) {
+	        		return "West";
+	        	}
+	        	if (this.equals(CompassDirection.NORTH_WEST)) {
+	        		return "North-West";
+	        	}
+	        	return "No Direction";
+	        }
 	    }
 	 
 	 public static boolean isEqualOrNoDirection(CompassDirection e1, CompassDirection e2)

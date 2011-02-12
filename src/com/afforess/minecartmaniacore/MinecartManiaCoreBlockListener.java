@@ -1,5 +1,6 @@
 package com.afforess.minecartmaniacore;
 
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.event.block.BlockListener;
@@ -13,8 +14,31 @@ public class MinecartManiaCoreBlockListener extends BlockListener{
     		return;
     	}
     	boolean power = event.getNewCurrent() > 0;
-    	
     	Block block = event.getBlock();
+    	
+    	if (power) {
+	    	//Launch Minecarts
+	    	MinecartManiaMinecart cart = null;
+	    	//Rail check for performance reasons
+	    	if (block.getRelative(-1, 0, 0).getTypeId() == Material.RAILS.getId()) {
+	    		cart = MinecartManiaWorld.getMinecartManiaMinecartAt(block.getX()-1, block.getY(), block.getZ());
+	    	}
+	    	if (block.getRelative(1, 0, 0).getTypeId() == Material.RAILS.getId()) {
+	    		cart = MinecartManiaWorld.getMinecartManiaMinecartAt(block.getX()+1, block.getY(), block.getZ());
+	    	}
+	    	if (block.getRelative(0, 0, -1).getTypeId() == Material.RAILS.getId()) {
+	    		cart = MinecartManiaWorld.getMinecartManiaMinecartAt(block.getX(), block.getY(), block.getZ()-1);
+	    	}
+	    	if (block.getRelative(0, 0, 1).getTypeId() == Material.RAILS.getId()) {
+	    		cart = MinecartManiaWorld.getMinecartManiaMinecartAt(block.getX(), block.getY(), block.getZ()+1);
+	    	}
+	    	if (cart != null) {
+				cart.doLauncherBlock();
+			}
+    	}
+
+
+    	
     	int range = 1;
     	for (int dx = -(range); dx <= range; dx++){
 			for (int dy = -(range); dy <= range; dy++){

@@ -16,6 +16,7 @@ import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.StorageMinecart;
 import org.bukkit.entity.PoweredMinecart;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 import com.afforess.minecartmaniacore.DirectionUtils.CompassDirection;
@@ -265,17 +266,28 @@ public class MinecartManiaMinecart {
     	}
 		return false;
 	}
-
-	public boolean doCatcherBlock() {
-		if (getBlockIdBeneath() == MinecartManiaWorld.getCatcherBlockId())
- 		{
-			if (isPoweredBeneath()) {
+	
+	private boolean canDoLauncher() {
+		if (getBlockIdBeneath() == MinecartManiaWorld.getCatcherBlockId()){
+			//When the redstone event fires, the power will not have been updated yet.
+			if (!isPoweredBeneath()) {
 				if (!isMoving()) {
-					launchCart();
 					return true;
 				}
 			}
-			else {
+		}
+		return false;
+	}
+	
+	public void doLauncherBlock() {
+		if (canDoLauncher()) {
+			launchCart();
+		}
+	}
+
+	public boolean doCatcherBlock() {
+		if (getBlockIdBeneath() == MinecartManiaWorld.getCatcherBlockId()){
+			if (!isPoweredBeneath()) {
 				stopCart();
 				return true;
 			}
@@ -284,22 +296,16 @@ public class MinecartManiaMinecart {
 	}
 	
 	private void launchCart() {
-		
-		MinecartLaunchedEvent mle = new MinecartLaunchedEvent(this, minecart.getVelocity());
-		MinecartManiaCore.server.getPluginManager().callEvent(mle);
-		if (mle.isCancelled()) {
-			return;
-		}
 
 		ArrayList<Sign> signList = SignUtils.getAdjacentSignList(this, 2);
-		for (Sign sign : signList) {
+loop:   for (Sign sign : signList) {
 			for (int i = 0; i < 4; i++) {
 				if (sign.getLine(i).toLowerCase().indexOf("north") > -1) {
 					if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX()-1, getY(), getZ(), 2, DirectionUtils.CompassDirection.NORTH)) {
 						sign.setLine(i, "[North]");
 						sign.update();
 						setMotion(DirectionUtils.CompassDirection.NORTH, 0.6D);
-						return;
+						break loop;
 					}
 				}
 				if (sign.getLine(i).toLowerCase().indexOf("east") > -1) {
@@ -307,7 +313,7 @@ public class MinecartManiaMinecart {
 						sign.setLine(i, "[East]");
 						sign.update();
 						setMotion(DirectionUtils.CompassDirection.EAST, 0.6D);
-						return;
+						break loop;
 					}
 				}
 				if (sign.getLine(i).toLowerCase().indexOf("south") > -1) {
@@ -315,7 +321,7 @@ public class MinecartManiaMinecart {
 						sign.setLine(i, "[South]");
 						sign.update();
 						setMotion(DirectionUtils.CompassDirection.SOUTH, 0.6D);
-						return;
+						break loop;
 					}
 				}
 				if (sign.getLine(i).toLowerCase().indexOf("west") > -1) {
@@ -323,7 +329,7 @@ public class MinecartManiaMinecart {
 						sign.setLine(i, "[West]");
 						sign.update();
 						setMotion(DirectionUtils.CompassDirection.WEST, 0.6D);
-						return;
+						break loop;
 					}
 				}
 				if (sign.getLine(i).toLowerCase().indexOf("facing dir") > -1) {
@@ -333,7 +339,7 @@ public class MinecartManiaMinecart {
 							sign.setLine(i, "[Facing Dir]");
 							sign.update();
 							setMotion(facingDir, 0.6D);
-							return;
+							break loop;
 						}
 					}
 				}
@@ -343,7 +349,7 @@ public class MinecartManiaMinecart {
 							sign.setLine(i, "[Previous Dir]");
 							sign.update();
 							setMotion(this.getPreviousFacingDir(), 0.6D);
-							return;
+							break loop;
 						}
 					}
 				}
@@ -360,6 +366,17 @@ public class MinecartManiaMinecart {
 		}
 		else if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX(), getY(), getZ()+1, 2, DirectionUtils.CompassDirection.WEST)) {
 			setMotion(DirectionUtils.CompassDirection.WEST, 0.6D);
+		}
+		
+		//Create event, then stop the cart and wait for the results
+		MinecartLaunchedEvent mle = new MinecartLaunchedEvent(this, minecart.getVelocity().clone());
+		stopCart();
+		MinecartManiaCore.server.getPluginManager().callEvent(mle);
+		if (mle.isCancelled()) {
+			return;
+		}
+		else {
+			minecart.setVelocity(mle.getLaunchSpeed());
 		}
 	}
 
@@ -530,6 +547,13 @@ public class MinecartManiaMinecart {
 		}
 		
 		return Material.MINECART;
+	}
+	
+	public Inventory getInventory() {
+		if (isStorageMinecart()) {
+			return ((StorageMinecart)minecart).getInventory();
+		}
+		return null;
 	}
 	
 	/**

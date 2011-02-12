@@ -97,6 +97,7 @@ public class MinecartManiaChest {
 		ItemStack[] backup = inventory.getContents().clone();
 		ItemStack backupItem = new ItemStack(item.getTypeId(), item.getAmount(), item.getDurability());
 		
+		//First attempt to merge the itemstack with existing item stacks that aren't full (< 64)
 		for (int i = 0; i < inventory.getSize(); i++) {
 			if (inventory.getItem(i) != null) {
 				if (inventory.getItem(i).getTypeId() == item.getTypeId()) {
@@ -114,6 +115,16 @@ public class MinecartManiaChest {
 			}
 		}
 		
+		//Attempt to add the item to an empty slot
+		int emptySlot = inventory.firstEmpty();
+		if (emptySlot > -1) {
+			inventory.setItem(emptySlot, item);
+			update();
+			return true;
+		}
+		
+		
+		//Try to merge the itemstack with the neighbor chest, if we have one
 		MinecartManiaChest neighbor = getNeighborChest();
 		if (neighbor != null) {
 			//flag to prevent infinite recursion
@@ -125,7 +136,7 @@ public class MinecartManiaChest {
 				}
 			}
 			else {
-				//set flag
+				//reset flag
 				setDataValue("neighbor", null);
 			}
 		}
@@ -195,7 +206,7 @@ public class MinecartManiaChest {
 				}
 			}
 			else {
-				//set flag
+				//reset flag
 				setDataValue("neighbor", null);
 			}
 		}
@@ -208,9 +219,50 @@ public class MinecartManiaChest {
 	
 	/**
 	 ** attempts to remove a single item type from this chest. If it fails, it will not alter the chests previous contents.
+	 ** @param item type to remove
 	 **/
 	public boolean removeItem(int type) {
 		return removeItem(type, 1);
+	}
+	
+	/**
+	 ** Returns true if this chest or it's neighbor chest contains an itemstack of the given material
+	 ** @param Material to search for
+	 **/
+	public boolean contains(Material type) {
+		return contains(type.getId());
+	}
+	
+	/**
+	 ** Returns true if this chest or it's neighbor chest contains an itemstack of the given item id
+	 ** @param item id to search for
+	 **/
+	public boolean contains(int type) {
+		Inventory inventory = chest.getInventory();
+		for (int i = 0; i < inventory.getSize(); i++) {
+			if (inventory.getItem(i) != null) {
+				if (inventory.getItem(i).getTypeId() == type) {
+					return true;
+				}
+			}
+		}
+		
+		MinecartManiaChest neighbor = getNeighborChest();
+		if (neighbor != null) {
+			//flag to prevent infinite recursion
+			if (getDataValue("neighbor") == null) {
+				neighbor.setDataValue("neighbor", Boolean.TRUE);
+				if (neighbor.contains(type)) {
+					return true;
+				}
+			}
+			else {
+				//reset flag
+				setDataValue("neighbor", null);
+			}
+		}
+		
+		return false;
 	}
 
 	public void setRedstonePower(boolean redstonePower) {
