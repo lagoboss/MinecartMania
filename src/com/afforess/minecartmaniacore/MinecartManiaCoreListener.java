@@ -4,6 +4,7 @@ import java.util.Calendar;
 
 import net.minecraft.server.EntityLiving;
 
+import org.bukkit.Material;
 import org.bukkit.craftbukkit.entity.CraftLivingEntity;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -37,8 +38,6 @@ public class MinecartManiaCoreListener extends VehicleListener{
 			Minecart cart = (Minecart)event.getVehicle();
 			MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart(cart);
 			
-			minecart.doRealisticFriction();
-			minecart.doPressurePlateRails();
 			minecart.updateCalendar(); 
 			if (minecart.isMoving()) {
 				minecart.setPreviousFacingDir(minecart.getDirectionOfMotion());
@@ -117,6 +116,8 @@ public class MinecartManiaCoreListener extends VehicleListener{
 		    	if (!action) {
 		    		action = minecart.doEjectorBlock();
 		    	}
+		    	
+		    	minecart.doPressurePlateRails();
 				
 				minecart.updateMotion();
 				minecart.updateLocation();
@@ -136,6 +137,19 @@ public class MinecartManiaCoreListener extends VehicleListener{
     		}
 		}
     }
+	
+	public void onVehicleEnter(VehicleEnterEvent event) {
+		if (event.getVehicle() instanceof Minecart) {
+    		Minecart cart = (Minecart)event.getVehicle();
+    		MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart(cart);
+    		
+    		if (MinecartManiaWorld.getBlockAt(minecart.minecart.getWorld(), minecart.getX(), minecart.getY(), minecart.getZ()).getTypeId() == Material.STONE_PLATE.getId()) {
+    			if (event.getEntered() != null) {
+    				minecart.doLauncherBlock();
+    			}
+    		}
+		}
+	}
 	
 	public void onVehicleEntityCollision(VehicleEntityCollisionEvent event) {
     	if (event.getVehicle() instanceof Minecart) {

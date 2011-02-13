@@ -1,6 +1,5 @@
 package com.afforess.minecartmaniacore;
 
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.event.block.BlockListener;
@@ -16,24 +15,25 @@ public class MinecartManiaCoreBlockListener extends BlockListener{
     	boolean power = event.getNewCurrent() > 0;
     	Block block = event.getBlock();
     	
+    	
+    	int rangex = 1;
+    	int rangey = 2;
+    	int rangez = 1;
     	if (power) {
 	    	//Launch Minecarts
 	    	MinecartManiaMinecart cart = null;
-	    	//Rail check for performance reasons
-	    	if (block.getRelative(-1, 0, 0).getTypeId() == Material.RAILS.getId()) {
-	    		cart = MinecartManiaWorld.getMinecartManiaMinecartAt(block.getX()-1, block.getY(), block.getZ());
-	    	}
-	    	if (block.getRelative(1, 0, 0).getTypeId() == Material.RAILS.getId()) {
-	    		cart = MinecartManiaWorld.getMinecartManiaMinecartAt(block.getX()+1, block.getY(), block.getZ());
-	    	}
-	    	if (block.getRelative(0, 0, -1).getTypeId() == Material.RAILS.getId()) {
-	    		cart = MinecartManiaWorld.getMinecartManiaMinecartAt(block.getX(), block.getY(), block.getZ()-1);
-	    	}
-	    	if (block.getRelative(0, 0, 1).getTypeId() == Material.RAILS.getId()) {
-	    		cart = MinecartManiaWorld.getMinecartManiaMinecartAt(block.getX(), block.getY(), block.getZ()+1);
-	    	}
-	    	if (cart != null) {
-				cart.doLauncherBlock();
+	    	for (int dx = -(rangex); dx <= rangex; dx++){
+				for (int dy = -(rangey); dy <= rangey; dy++){
+					for (int dz = -(rangez); dz <= rangez; dz++){
+						//Rail check for performance reasons
+						if (MinecartUtils.isMinecartTrack(block.getRelative(dx, dy, dz))) {
+							cart = MinecartManiaWorld.getMinecartManiaMinecartAt(block.getX()+dx, block.getY()+dy, block.getZ()+dz);
+							if (cart != null) {
+								cart.doLauncherBlock();
+							}
+						}
+					}
+				}
 			}
     	}
 
@@ -43,8 +43,9 @@ public class MinecartManiaCoreBlockListener extends BlockListener{
     	for (int dx = -(range); dx <= range; dx++){
 			for (int dy = -(range); dy <= range; dy++){
 				for (int dz = -(range); dz <= range; dz++){
-					if (MinecartManiaWorld.getBlockAt(block.getWorld(), block.getX() + dx, block.getY() + dy, block.getZ() + dz).getState() instanceof Chest) {
-						Chest chest = (Chest)MinecartManiaWorld.getBlockAt(block.getWorld(), block.getX() + dx, block.getY() + dy, block.getZ() + dz).getState();
+					Block b = MinecartManiaWorld.getBlockAt(block.getWorld(), block.getX() + dx, block.getY() + dy, block.getZ() + dz);
+					if (b.getState() instanceof Chest) {
+						Chest chest = (Chest)b.getState();
 						MinecartManiaChest mmc = MinecartManiaWorld.getMinecartManiaChest(chest);
 						boolean previouslyPowered = mmc.isRedstonePower();
 						if (!previouslyPowered && power) {

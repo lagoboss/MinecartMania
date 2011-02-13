@@ -120,7 +120,7 @@ public class Configuration {
 				}
 				else if (value.contains("false")) {
 					MinecartManiaWorld.setConfigurationValue(config[i].getName(),
-							Boolean.TRUE);
+							Boolean.FALSE);
 				}
 				//Attempt to parse the value as a double or integer
 				else if (!StringUtils.getNumber(value).isEmpty()) {

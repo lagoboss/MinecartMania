@@ -92,6 +92,12 @@ public class MinecartManiaChest {
 	 ** @param item to add
 	 **/
 	public boolean addItem(ItemStack item) {
+		if (item == null) {
+			return true;
+		}
+		if (item.getTypeId() == Material.AIR.getId()) {
+			return true;
+		}
 		Inventory inventory = chest.getInventory();
 		//Backup contents
 		ItemStack[] backup = inventory.getContents().clone();

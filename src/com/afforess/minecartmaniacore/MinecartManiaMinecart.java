@@ -7,7 +7,6 @@ import net.minecraft.server.EntityMinecart;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
 import org.bukkit.craftbukkit.entity.CraftMinecart;
@@ -39,20 +38,23 @@ public class MinecartManiaMinecart {
 	
 	public MinecartManiaMinecart(Minecart cart) {
 		minecart = cart; 
-		previousMotion = cart.getVelocity().clone();
-		previousLocation = cart.getLocation().toVector().clone();
-		cal = Calendar.getInstance();
-		setWasMovingLastTick(isMoving());
 		findOwner();
+		initialize();
 	}
-	
+
 	public MinecartManiaMinecart(Minecart cart, String owner) {
 		minecart = cart; 
-		previousMotion = cart.getVelocity().clone();
-		previousLocation = cart.getLocation().toVector().clone();
+		this.owner = owner;
+		initialize();
+	}
+	
+	private void initialize() {
+		minecart.setSlowWhenEmpty(false);
 		cal = Calendar.getInstance();
 		setWasMovingLastTick(isMoving());
-		this.owner = owner;
+		previousMotion = minecart.getVelocity().clone();
+		previousLocation = minecart.getLocation().toVector().clone();
+		minecart.setMaxSpeed(MinecartManiaWorld.getMaximumMinecartSpeedPercent() * 0.4D / 100);
 	}
 
 	/**
@@ -267,21 +269,22 @@ public class MinecartManiaMinecart {
 		return false;
 	}
 	
-	private boolean canDoLauncher() {
+	public void doLauncherBlock() {
 		if (getBlockIdBeneath() == MinecartManiaWorld.getCatcherBlockId()){
-			//When the redstone event fires, the power will not have been updated yet.
-			if (!isPoweredBeneath()) {
-				if (!isMoving()) {
-					return true;
-				}
+			if (!isMoving()) {
+				launchCart();
 			}
 		}
-		return false;
 	}
 	
-	public void doLauncherBlock() {
-		if (canDoLauncher()) {
-			launchCart();
+	private void doWoodPressurePlate() {
+		if (MinecartManiaWorld.getBlockAt(minecart.getWorld(), getX(), getY(), getZ()).getType().equals(Material.WOOD_PLATE)) {
+			if (MinecartManiaWorld.isPressurePlateRails()) {
+				try {
+					//does the task next server tick
+					MinecartManiaWorld.doAsyncTask(MinecartManiaMinecart.class.getDeclaredMethod("doLauncherBlock"), this);
+				} catch (Exception e) {	}
+			}
 		}
 	}
 
@@ -289,6 +292,8 @@ public class MinecartManiaMinecart {
 		if (getBlockIdBeneath() == MinecartManiaWorld.getCatcherBlockId()){
 			if (!isPoweredBeneath()) {
 				stopCart();
+				//Handle wooden pressure plates. Wood plates should launch the minecart next tick
+				//doWoodPressurePlate();
 				return true;
 			}
 		}
@@ -401,12 +406,6 @@ loop:   for (Sign sign : signList) {
 		if (getMotionZ() > 0.0D) return DirectionUtils.CompassDirection.WEST;
 		return DirectionUtils.CompassDirection.NO_DIRECTION;
 	}
-	
-	public void doRealisticFriction() {
-		if (minecart.getPassenger() == null && MinecartManiaWorld.getBlockAt(minecart.getWorld(), getX(), getY(), getZ()).getType().equals(Material.RAILS)) 	{
-			setMotion(getMotionX() * 1.03774, getMotionY(), getMotionZ()* 1.03774);
-    	}
-	}
 
 	public boolean doEjectorBlock() {
 		if (getBlockIdBeneath() == MinecartManiaWorld.getEjectorBlockId() && !isPoweredBeneath()) {
@@ -457,20 +456,10 @@ loop:   for (Sign sign : signList) {
 		if (MinecartManiaWorld.isPressurePlateRails()) {
 			if (MinecartManiaWorld.getBlockAt(minecart.getWorld(), getX(), getY(), getZ()).getType().equals(Material.STONE_PLATE)
 			|| MinecartManiaWorld.getBlockAt(minecart.getWorld(), getX(), getY(), getZ()).getType().equals(Material.WOOD_PLATE)) {
-				setMotionX(getMotionX() * 3);
-				setMotionZ(getMotionZ() * 3);
+				minecart.setDerailedVelocityMod(new Vector(1, 1, 1));
 	    	}
-			else if (getBlockTypeAhead() != null && (getBlockTypeAhead().getType().equals(Material.STONE_PLATE) || getBlockTypeAhead().getType().equals(Material.WOOD_PLATE))) {
-				setDataValue("pre-ppr velocity", this.minecart.getVelocity());
-			}
 			else if (getBlockTypeBehind() != null && (getBlockTypeBehind().getType().equals(Material.STONE_PLATE) || getBlockTypeBehind().getType().equals(Material.WOOD_PLATE))) {
-				Vector velocity = (Vector) getDataValue("pre-ppr velocity");
-				if (velocity != null) {
-					if (getBlockTypeBehind().getFace(BlockFace.DOWN).getTypeId() != MinecartManiaWorld.getCatcherBlockId()) {
-						this.minecart.setVelocity(velocity);
-					}
-					setDataValue("pre-ppr velocity", null);
-				}
+				minecart.setDerailedVelocityMod(new Vector(0.5D, 0.5D, 0.5D));
 			}
 		}
 	}

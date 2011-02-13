@@ -226,6 +226,10 @@ public class MinecartManiaWorld {
 		return getIntValue(getConfigurationValue("Ejector Block"));
 	}
 	
+	public static int getMaximumMinecartSpeedPercent() {
+		return getIntValue(getConfigurationValue("Maximum Minecart Speed Percent"));
+	}
+	
 	public static boolean isMinecartsKillMobs() {
 		Object o = getConfigurationValue("Minecarts Kill Mobs");
 		if (o != null) {

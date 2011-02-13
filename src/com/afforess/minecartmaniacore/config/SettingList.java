@@ -32,6 +32,12 @@ public class SettingList {
 				MinecartManiaCore.description.getName()
 		),
 		new Setting(
+				"Maximum Minecart Speed Percent", 
+				new Integer(100), 
+				"Adjusts the maximum minecart speed. 100% is equal to the vanilla Minecart speed. Large values will cause minecarts to derail.",
+				MinecartManiaCore.description.getName()
+		),
+		new Setting(
 				"High Speed Booster Block Multiplier", 
 				new Integer(8),
 				"Multiplier for High Speed Booster Blocks. Do not use absurd values.",
