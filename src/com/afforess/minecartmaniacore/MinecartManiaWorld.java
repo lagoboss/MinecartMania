@@ -373,6 +373,15 @@ public class MinecartManiaWorld {
 	}
 	
 	/** Spawns a minecart at the given coordinates. Includes a "fudge factor" to get the minecart to properly line up with minecart tracks.
+	 ** @param Location to spawn the minecart at
+	 ** @param Material type of minecart to spawn
+	 ** @param Owner of this minecart (player or chest). Can be null
+	 **/
+	public static MinecartManiaMinecart spawnMinecart(Location l, Material type, Object owner) {
+		return spawnMinecart(l.getWorld(), l.getBlockX(), l.getBlockY(), l.getBlockZ(), type, owner);
+	}
+	
+	/** Spawns a minecart at the given coordinates. Includes a "fudge factor" to get the minecart to properly line up with minecart tracks.
 	 ** @param w World to take effect in
 	 ** @param x coordinate
 	 ** @param y coordinate
@@ -380,7 +389,7 @@ public class MinecartManiaWorld {
 	 ** @param Material type of minecart to spawn
 	 ** @param Owner of this minecart (player or chest). Can be null
 	 **/
-	public static void spawnMinecart(World w, int x, int y, int z, Material type, Object owner) {
+	public static MinecartManiaMinecart spawnMinecart(World w, int x, int y, int z, Material type, Object owner) {
 		Minecart m;
 		if (type.getId() == Material.MINECART.getId()) {
 			m = w.spawnMinecart(new Location(w, x + 0.5D, y, z + 0.5D));
@@ -391,14 +400,22 @@ public class MinecartManiaWorld {
 		else {
 			m = w.spawnStorageMinecart(new Location(w, x + 0.5D, y, z + 0.5D));
 		}
+		MinecartManiaMinecart minecart = null;
 		if (owner != null) {
 			if (owner instanceof Player) {
-				minecarts.put(m.getEntityId(), new MinecartManiaMinecart(m, ((Player)owner).getName()));
+				minecart = new MinecartManiaMinecart(m, ((Player)owner).getName());
+				minecarts.put(m.getEntityId(), minecart);
 			}
 			if (owner instanceof MinecartManiaChest) {
-				minecarts.put(m.getEntityId(), new MinecartManiaMinecart(m, ((MinecartManiaChest)owner).toString()));
+				minecart = new MinecartManiaMinecart(m, ((MinecartManiaChest)owner).toString());
+				minecarts.put(m.getEntityId(), minecart);
 			}
 		}
+		else {
+			minecart = new MinecartManiaMinecart(m);
+			minecarts.put(m.getEntityId(), minecart);
+		}
+		return minecart;
 	}
 	
 	/** Spawns a new thread that will run next server tick, invoking the given method, with the given class and parameters.

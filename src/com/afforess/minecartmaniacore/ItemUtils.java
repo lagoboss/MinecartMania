@@ -5,12 +5,11 @@ import org.bukkit.Material;
 public class ItemUtils {
 
 	public static Material itemStringToMaterial(String str) {
-		int wildcard = str.indexOf('*');
-		if (wildcard > -1) {
-			str = str.substring(0, wildcard-1);
-		}
 		if (str.indexOf('[') > -1) {
 			str = str.substring(str.indexOf('[') + 1);
+		}
+		if (str.indexOf(']') > -1) {
+			str = str.substring(0, str.indexOf(']'));
 		}
 		str = str.toLowerCase();
 		//try and parse it as a number first

@@ -34,7 +34,6 @@ public class MinecartManiaMinecart {
 	private DirectionUtils.CompassDirection previousFacingDir = DirectionUtils.CompassDirection.NO_DIRECTION;
 	private boolean wasMovingLastTick;
 	private String owner = "none";
-	
 	private ConcurrentHashMap<String, Object> data = new ConcurrentHashMap<String,Object>();
 	
 	public MinecartManiaMinecart(Minecart cart) {
@@ -56,16 +55,10 @@ public class MinecartManiaMinecart {
 		previousMotion = minecart.getVelocity().clone();
 		previousLocation = minecart.getLocation().toVector().clone();
 		minecart.setMaxSpeed(MinecartManiaWorld.getMaximumMinecartSpeedPercent() * 0.4D / 100);
-		
-		//Launch, if powered
-		if (isPoweredBeneath()) {
-			doLauncherBlock();
-		}
 	}
 
 	/**
 	 ** Attempts to find the player that spawned this minecart.
-	 **
 	 */
 	private void findOwner() {
 		double closest = Double.MAX_VALUE;
@@ -81,7 +74,6 @@ public class MinecartManiaMinecart {
 		}
 		if (closestPlayer != null) {
 			owner = closestPlayer.getName();
-			
 		}
 	}
 
@@ -111,7 +103,6 @@ public class MinecartManiaMinecart {
 		if (getPreviousLocation().getBlockZ() != minecart.getLocation().getBlockZ()) {
 			return true;
 		}
-		
 		return false;
 	}
 	
@@ -210,13 +201,6 @@ public class MinecartManiaMinecart {
 		if (MinecartManiaWorld.isBlockIndirectlyPowered(minecart.getWorld(), getX(), getY()-1, getZ()) || MinecartManiaWorld.isBlockIndirectlyPowered(minecart.getWorld(), getX(), getY(), getZ())) {
 			return true;
 		}
-		//Temporary Fix for Pressure Plates, since they are NYI
-		/*if (MinecartManiaWorld.getBlockAt(getX(), getY(), getZ()).getTypeId() == Material.WOOD_PLATE.getId()) {
-			return true;
-		}
-		if (MinecartManiaWorld.getBlockAt(getX(), getY(), getZ()).getTypeId() == Material.STONE_PLATE.getId()) {
-			return this.minecart.getPassenger() != null;
-		}*/
 		return false;
 	}
 	
@@ -227,8 +211,7 @@ public class MinecartManiaMinecart {
 	}
 	
 	public boolean doReverse() {
-		if (getBlockIdBeneath() == MinecartManiaWorld.getReverseBlockId() && !isPoweredBeneath())
-    	{
+		if (getBlockIdBeneath() == MinecartManiaWorld.getReverseBlockId() && !isPoweredBeneath()){
 			reverse();
     		return true;
     	}
@@ -236,8 +219,7 @@ public class MinecartManiaMinecart {
 	}
 
 	public boolean doLowSpeedBrake() {
-		if (getBlockIdBeneath() == MinecartManiaWorld.getLowSpeedBrakeBlockId() && !isPoweredBeneath())
-    	{
+		if (getBlockIdBeneath() == MinecartManiaWorld.getLowSpeedBrakeBlockId() && !isPoweredBeneath()){
     		setMotionX(getMotionX() / MinecartManiaWorld.getLowSpeedBrakeBlockDivisor());
     		setMotionZ(getMotionZ() / MinecartManiaWorld.getLowSpeedBrakeBlockDivisor());
     		return true;
@@ -246,8 +228,7 @@ public class MinecartManiaMinecart {
 	}
 
 	public boolean doHighSpeedBrake() {
-		if (getBlockIdBeneath() == MinecartManiaWorld.getHighSpeedBrakeBlockId() && !isPoweredBeneath())
-    	{
+		if (getBlockIdBeneath() == MinecartManiaWorld.getHighSpeedBrakeBlockId() && !isPoweredBeneath()){
     		setMotionX(getMotionX() / MinecartManiaWorld.getHighSpeedBrakeBlockDivisor());
     		setMotionZ(getMotionZ() / MinecartManiaWorld.getHighSpeedBrakeBlockDivisor());
     		return true;
@@ -256,8 +237,7 @@ public class MinecartManiaMinecart {
 	}
 
 	public boolean doLowSpeedBooster() {
-		if (getBlockIdBeneath() == MinecartManiaWorld.getLowSpeedBoosterBlockId() && !isPoweredBeneath())
-    	{
+		if (getBlockIdBeneath() == MinecartManiaWorld.getLowSpeedBoosterBlockId() && !isPoweredBeneath()){
     		setMotionX(getMotionX() * MinecartManiaWorld.getLowSpeedBoosterBlockMultiplier());
     		setMotionZ(getMotionZ() * MinecartManiaWorld.getLowSpeedBoosterBlockMultiplier());
     		return true;
@@ -266,8 +246,7 @@ public class MinecartManiaMinecart {
 	}
 	
 	public boolean doHighSpeedBooster() {
-		if (getBlockIdBeneath() == MinecartManiaWorld.getHighSpeedBoosterBlockId() && !isPoweredBeneath())
-    	{
+		if (getBlockIdBeneath() == MinecartManiaWorld.getHighSpeedBoosterBlockId() && !isPoweredBeneath()){
     		setMotionX(getMotionX() * MinecartManiaWorld.getHighSpeedBoosterBlockMultiplier());
     		setMotionZ(getMotionZ() * MinecartManiaWorld.getHighSpeedBoosterBlockMultiplier());
     		return true;
@@ -282,24 +261,11 @@ public class MinecartManiaMinecart {
 			}
 		}
 	}
-	
-	/*private void doWoodPressurePlate() {
-		if (MinecartManiaWorld.getBlockAt(minecart.getWorld(), getX(), getY(), getZ()).getType().equals(Material.WOOD_PLATE)) {
-			if (MinecartManiaWorld.isPressurePlateRails()) {
-				try {
-					//does the task next server tick
-					MinecartManiaWorld.doAsyncTask(MinecartManiaMinecart.class.getDeclaredMethod("doLauncherBlock"), this);
-				} catch (Exception e) {	}
-			}
-		}
-	}*/
 
 	public boolean doCatcherBlock() {
 		if (getBlockIdBeneath() == MinecartManiaWorld.getCatcherBlockId()){
 			if (!isPoweredBeneath()) {
 				stopCart();
-				//Handle wooden pressure plates. Wood plates should launch the minecart next tick
-				//doWoodPressurePlate();
 				return true;
 			}
 		}
@@ -311,43 +277,58 @@ public class MinecartManiaMinecart {
 		ArrayList<Sign> signList = SignUtils.getAdjacentSignList(this, 2);
 loop:   for (Sign sign : signList) {
 			for (int i = 0; i < 4; i++) {
-				//Allow other types of sign directions.
-				if (sign.getLine(i).length() > 9) {
-					continue;
+				//Temporarily update old signs
+				System.out.println(sign.getLine(i));
+				if (sign.getLine(i).contains("[North]")) {
+					sign.setLine(i, "[Launch North]");
+					sign.update();
 				}
-				if (sign.getLine(i).toLowerCase().indexOf("north") > -1) {
+				if (sign.getLine(i).contains("[East]")) {
+					sign.setLine(i, "[Launch East]");
+					sign.update();
+				}
+				if (sign.getLine(i).contains("[South]")) {
+					sign.setLine(i, "[Launch South]");
+					sign.update();
+				}
+				if (sign.getLine(i).contains("[West]")) {
+					sign.setLine(i, "[Launch West]");
+					sign.update();
+				}
+				System.out.println(sign.getLine(i));
+				if (sign.getLine(i).toLowerCase().contains("launch north")) {
 					if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX()-1, getY(), getZ(), 2, DirectionUtils.CompassDirection.NORTH)) {
-						sign.setLine(i, "[North]");
+						sign.setLine(i, "[Launch North]");
 						sign.update();
 						setMotion(DirectionUtils.CompassDirection.NORTH, 0.6D);
 						break loop;
 					}
 				}
-				if (sign.getLine(i).toLowerCase().indexOf("east") > -1) {
+				if (sign.getLine(i).toLowerCase().contains("launch east")) {
 					if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX(), getY(), getZ()-1, 2, DirectionUtils.CompassDirection.EAST)) {
-						sign.setLine(i, "[East]");
+						sign.setLine(i, "[Launch East]");
 						sign.update();
 						setMotion(DirectionUtils.CompassDirection.EAST, 0.6D);
 						break loop;
 					}
 				}
-				if (sign.getLine(i).toLowerCase().indexOf("south") > -1) {
+				if (sign.getLine(i).toLowerCase().contains("launch south")) {
 					if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX()+1, getY(), getZ(), 2, DirectionUtils.CompassDirection.SOUTH)) {
-						sign.setLine(i, "[South]");
+						sign.setLine(i, "[Launch South]");
 						sign.update();
 						setMotion(DirectionUtils.CompassDirection.SOUTH, 0.6D);
 						break loop;
 					}
 				}
-				if (sign.getLine(i).toLowerCase().indexOf("west") > -1) {
+				if (sign.getLine(i).toLowerCase().contains("launch west")) {
 					if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX(), getY(), getZ()+1, 2, DirectionUtils.CompassDirection.WEST)) {
-						sign.setLine(i, "[West]");
+						sign.setLine(i, "[Launch West]");
 						sign.update();
 						setMotion(DirectionUtils.CompassDirection.WEST, 0.6D);
 						break loop;
 					}
 				}
-				if (sign.getLine(i).toLowerCase().indexOf("facing dir") > -1) {
+				if (sign.getLine(i).toLowerCase().contains("facing dir")) {
 					if (minecart.getPassenger() != null) {
 						DirectionUtils.CompassDirection facingDir = DirectionUtils.getDirectionFromMinecartRotation((minecart.getPassenger().getLocation().getYaw() - 90.0F) % 360.0F);
 						if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX(), getY(), getZ()+1, 2, facingDir)) {
@@ -358,7 +339,7 @@ loop:   for (Sign sign : signList) {
 						}
 					}
 				}
-				if (sign.getLine(i).toLowerCase().indexOf("previous dir") > -1) {
+				if (sign.getLine(i).toLowerCase().contains("previous dir")) {
 					if (!this.getPreviousFacingDir().equals(DirectionUtils.CompassDirection.NO_DIRECTION)) {
 						if (MinecartUtils.validMinecartTrackAnyDirection(minecart.getWorld(), getX(), getY(), getZ()+1, 2)) {
 							sign.setLine(i, "[Previous Dir]");
@@ -370,17 +351,19 @@ loop:   for (Sign sign : signList) {
 				}
 			}
 		}
-		if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX()-1, getY(), getZ(), 2, DirectionUtils.CompassDirection.NORTH)) {
-			setMotion(DirectionUtils.CompassDirection.NORTH, 0.6D);
-		}
-		else if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX(), getY(), getZ()-1, 2, DirectionUtils.CompassDirection.EAST)) {
-			setMotion(DirectionUtils.CompassDirection.EAST, 0.6D);
-		}
-		else if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX()+1, getY(), getZ(), 2, DirectionUtils.CompassDirection.SOUTH)) {
-			setMotion(DirectionUtils.CompassDirection.SOUTH, 0.6D);
-		}
-		else if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX(), getY(), getZ()+1, 2, DirectionUtils.CompassDirection.WEST)) {
-			setMotion(DirectionUtils.CompassDirection.WEST, 0.6D);
+		if (!isMoving()) {
+			if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX()-1, getY(), getZ(), 2, DirectionUtils.CompassDirection.NORTH)) {
+				setMotion(DirectionUtils.CompassDirection.NORTH, 0.6D);
+			}
+			else if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX(), getY(), getZ()-1, 2, DirectionUtils.CompassDirection.EAST)) {
+				setMotion(DirectionUtils.CompassDirection.EAST, 0.6D);
+			}
+			else if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX()+1, getY(), getZ(), 2, DirectionUtils.CompassDirection.SOUTH)) {
+				setMotion(DirectionUtils.CompassDirection.SOUTH, 0.6D);
+			}
+			else if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX(), getY(), getZ()+1, 2, DirectionUtils.CompassDirection.WEST)) {
+				setMotion(DirectionUtils.CompassDirection.WEST, 0.6D);
+			}
 		}
 		
 		//Create event, then stop the cart and wait for the results
