@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import net.minecraft.server.EntityMinecart;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
@@ -55,6 +56,11 @@ public class MinecartManiaMinecart {
 		previousMotion = minecart.getVelocity().clone();
 		previousLocation = minecart.getLocation().toVector().clone();
 		minecart.setMaxSpeed(MinecartManiaWorld.getMaximumMinecartSpeedPercent() * 0.4D / 100);
+		
+		//Launch, if powered
+		if (isPoweredBeneath()) {
+			doLauncherBlock();
+		}
 	}
 
 	/**
@@ -277,7 +283,7 @@ public class MinecartManiaMinecart {
 		}
 	}
 	
-	private void doWoodPressurePlate() {
+	/*private void doWoodPressurePlate() {
 		if (MinecartManiaWorld.getBlockAt(minecart.getWorld(), getX(), getY(), getZ()).getType().equals(Material.WOOD_PLATE)) {
 			if (MinecartManiaWorld.isPressurePlateRails()) {
 				try {
@@ -286,7 +292,7 @@ public class MinecartManiaMinecart {
 				} catch (Exception e) {	}
 			}
 		}
-	}
+	}*/
 
 	public boolean doCatcherBlock() {
 		if (getBlockIdBeneath() == MinecartManiaWorld.getCatcherBlockId()){
@@ -305,6 +311,10 @@ public class MinecartManiaMinecart {
 		ArrayList<Sign> signList = SignUtils.getAdjacentSignList(this, 2);
 loop:   for (Sign sign : signList) {
 			for (int i = 0; i < 4; i++) {
+				//Allow other types of sign directions.
+				if (sign.getLine(i).length() > 9) {
+					continue;
+				}
 				if (sign.getLine(i).toLowerCase().indexOf("north") > -1) {
 					if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX()-1, getY(), getZ(), 2, DirectionUtils.CompassDirection.NORTH)) {
 						sign.setLine(i, "[North]");
@@ -505,6 +515,35 @@ loop:   for (Sign sign : signList) {
 		blocks.add(MinecartManiaWorld.getBlockAt(minecart.getWorld(), previousLocation.getBlockX(), previousLocation.getBlockY(), previousLocation.getBlockZ()-1));
 		blocks.add(MinecartManiaWorld.getBlockAt(minecart.getWorld(), previousLocation.getBlockX(), previousLocation.getBlockY(), previousLocation.getBlockZ()+1));
 		return blocks;
+	}
+	
+	public boolean isMovingAway(Location l) {
+		//North of us
+		if (l.getBlockX() - getX() < 0) {
+			if (getDirectionOfMotion().equals(DirectionUtils.CompassDirection.SOUTH)) {
+				return true;
+			}
+		}
+		//South of us
+		if (l.getBlockX() - getX() > 0) {
+			if (getDirectionOfMotion().equals(DirectionUtils.CompassDirection.NORTH)) {
+				return true;
+			}
+		}
+		//East of us
+		if (l.getBlockZ() - getZ() < 0) {
+			if (getDirectionOfMotion().equals(DirectionUtils.CompassDirection.WEST)) {
+				return true;
+			}
+		}
+		//West of us
+		if (l.getBlockZ() + getZ() > 0) {
+			if (getDirectionOfMotion().equals(DirectionUtils.CompassDirection.WEST)) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 
 	public void setWasMovingLastTick(boolean wasMovingLastTick) {

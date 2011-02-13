@@ -404,16 +404,16 @@ public class MinecartManiaWorld {
 	/** Spawns a new thread that will run next server tick, invoking the given method, with the given class and parameters.
 	 ** @param Method to run
 	 ** @param Class to run the method from. If the class is static, null may be used.
-	 ** @param Parameters for the thread.
+	 ** @param Parameters for the method.
 	 **/
-	public static void doAsyncTask(final Method m, final Object method, final Object...parameters){
-		Runnable a = new Runnable() { public void run() { try { m.invoke(method, parameters); } catch (Exception e) { e.printStackTrace(); } } };
+	public static void doAsyncTask(final Method m, final Object classOf, final Object...parameters){
+		Runnable a = new Runnable() { public void run() { try { m.invoke(classOf, parameters); } catch (Exception e) { e.printStackTrace(); } } };
 		MinecartManiaCore.server.getScheduler().scheduleAsyncDelayedTask(MinecartManiaCore.instance, a);
 	}
 	
 	/** Spawns a new thread that will run next server tick, invoking the given static method and parameters.
 	 ** @param Method to run
-	 ** @param Parameters for the thread.
+	 ** @param Parameters for the method.
 	 **/
 	public static void doAsyncTask(final Method m, final Object...parameters) {
 		doAsyncTask(m, null, parameters);
@@ -423,8 +423,8 @@ public class MinecartManiaWorld {
 	 ** @param Method to run
 	 ** @param Class to run the method from.
 	 **/
-	public static void doAsyncTask(final Method m, final Object method) {
-		doAsyncTask(m, method, (Object[])null);
+	public static void doAsyncTask(final Method m, final Object classOf) {
+		doAsyncTask(m, classOf, (Object[])null);
 	}
 	
 	/** Spawns a new thread that will run next server tick, invoking the given static method, with no parameters.
