@@ -1,9 +1,12 @@
 package com.afforess.minecartmaniacore;
 
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
+import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockListener;
 import org.bukkit.event.block.BlockRedstoneEvent;
+import org.bukkit.plugin.PluginManager;
 
 import com.afforess.minecartmaniacore.event.ChestPoweredEvent;
 
@@ -14,8 +17,7 @@ public class MinecartManiaCoreBlockListener extends BlockListener{
     	}
     	boolean power = event.getNewCurrent() > 0;
     	Block block = event.getBlock();
-    	
-    	
+
     	int rangex = 1;
     	int rangey = 2;
     	int rangez = 1;
@@ -37,8 +39,6 @@ public class MinecartManiaCoreBlockListener extends BlockListener{
 			}
     	}
 
-
-    	
     	int range = 1;
     	for (int dx = -(range); dx <= range; dx++){
 			for (int dy = -(range); dy <= range; dy++){
@@ -63,5 +63,20 @@ public class MinecartManiaCoreBlockListener extends BlockListener{
 				}
 			}
     	}
+    	
+    	
+    	//Button unpressed will not trigger RedstoneChange event, which is needed to tell if the chest is still powered
+		//This tests whether the chest is still powered after 8 ticks, which is when a button unpresses itself
+		if (block.getTypeId() == Material.STONE_BUTTON.getId() && power) {
+			final BlockRedstoneEvent bre = new BlockRedstoneEvent(block, 16, 0);
+			PluginManager pm = MinecartManiaCore.server.getPluginManager();
+			@SuppressWarnings("rawtypes")
+			Class[] params = {Event.class};
+			Object[] args = {bre};
+			
+			try {
+				MinecartManiaTaskScheduler.doAsyncTask(PluginManager.class.getDeclaredMethod("callEvent", params), pm, 8, args);
+			} catch (Exception e) { }
+		}
     }
 }

@@ -278,7 +278,6 @@ public class MinecartManiaMinecart {
 loop:   for (Sign sign : signList) {
 			for (int i = 0; i < 4; i++) {
 				//Temporarily update old signs
-				System.out.println(sign.getLine(i));
 				if (sign.getLine(i).contains("[North]")) {
 					sign.setLine(i, "[Launch North]");
 					sign.update();
@@ -295,7 +294,6 @@ loop:   for (Sign sign : signList) {
 					sign.setLine(i, "[Launch West]");
 					sign.update();
 				}
-				System.out.println(sign.getLine(i));
 				if (sign.getLine(i).toLowerCase().contains("launch north")) {
 					if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX()-1, getY(), getZ(), 2, DirectionUtils.CompassDirection.NORTH)) {
 						sign.setLine(i, "[Launch North]");
