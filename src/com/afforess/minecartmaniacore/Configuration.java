@@ -12,6 +12,7 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import com.afforess.minecartmaniacore.config.MinecartManiaFlatFile;
 import com.afforess.minecartmaniacore.config.Setting;
 import com.afforess.minecartmaniacore.config.SettingList;
+import com.afforess.minecartmaniacore.utils.StringUtils;
 
 
 public class Configuration {
@@ -32,7 +33,7 @@ public class Configuration {
 		input += StringUtils.removeWhitespace(desc.getName());
 		input += "Settings.txt";
 		File options = new File(input);
-		if (!options.exists() || invalidFile(options, desc))
+		if (!options.exists() || invalidFile(options, config))
 		{
 			WriteFile(options, desc, config);
 		}
@@ -42,27 +43,23 @@ public class Configuration {
 		ReadFile(options, desc, config);
 	}
 
-	private static boolean invalidFile(File file, PluginDescriptionFile desc) {
+	private static boolean invalidFile(File file, Setting config[]) {
 		try {
+			String configSize = "("+config.length+")";
 			BufferedReader bufferedreader = new BufferedReader(new FileReader(file));
-			for (String s = ""; (s = bufferedreader.readLine()) != null; ) {
-				if (s.indexOf(desc.getVersion()) > -1) {
-					return false;
-				}
-			}
+			bufferedreader.readLine(); //skip first line
+			String line = bufferedreader.readLine();
 			bufferedreader.close();
+			return !line.contains(configSize);
 		}
-		catch (IOException exception)
-		{
-			return true;
-		}
+		catch (IOException exception){}
 		return true;
 	}
 	
 	@SuppressWarnings("unused")
 	private static void updateFile(File options) {
 		try {
-			MinecartManiaFlatFile.updateVersionHeader(options, MinecartManiaCore.description.getName() + " " + MinecartManiaCore.description.getVersion());
+			MinecartManiaFlatFile.updateVersionHeader(options, MinecartManiaCore.description + " " + MinecartManiaCore.description.getVersion());
 			for (int i = 0; i < SettingList.config.length; i++) {
 				MinecartManiaFlatFile.updateSetting(
 						options,
@@ -85,8 +82,8 @@ public class Configuration {
 			
 			MinecartManiaFlatFile.createNewHeader(
 					bufferedwriter,
-					desc.getName() + " " + desc.getVersion(),
-					desc.getMain() + " Config Settings",
+					desc.getName(),
+					desc.getName() + " Config Settings ("+config.length+")",
 					true);
 			
 			for (int i = 0; i < config.length; i++) {

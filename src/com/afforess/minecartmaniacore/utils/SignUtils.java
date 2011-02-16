@@ -1,4 +1,4 @@
-package com.afforess.minecartmaniacore;
+package com.afforess.minecartmaniacore.utils;
 
 import java.util.ArrayList;
 
@@ -6,6 +6,7 @@ import org.bukkit.World;
 import org.bukkit.block.Sign;
 
 import com.afforess.minecartmaniacore.MinecartManiaMinecart;
+import com.afforess.minecartmaniacore.MinecartManiaWorld;
 
 public class SignUtils {
 	

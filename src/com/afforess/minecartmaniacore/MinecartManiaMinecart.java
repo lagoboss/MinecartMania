@@ -8,6 +8,7 @@ import net.minecraft.server.EntityMinecart;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
 import org.bukkit.craftbukkit.entity.CraftMinecart;
@@ -16,18 +17,21 @@ import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.StorageMinecart;
 import org.bukkit.entity.PoweredMinecart;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
-import com.afforess.minecartmaniacore.DirectionUtils.CompassDirection;
 import com.afforess.minecartmaniacore.event.MinecartLaunchedEvent;
 import com.afforess.minecartmaniacore.event.MinecartManiaMinecartDestroyedEvent;
 import com.afforess.minecartmaniacore.event.MinecartTimeEvent;
+import com.afforess.minecartmaniacore.utils.DirectionUtils;
+import com.afforess.minecartmaniacore.utils.MathUtils;
+import com.afforess.minecartmaniacore.utils.MinecartUtils;
+import com.afforess.minecartmaniacore.utils.SignUtils;
+import com.afforess.minecartmaniacore.utils.StringUtils;
+import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
 
 
 public class MinecartManiaMinecart {
 	public final Minecart minecart;
-	private static final double maxMomentum = 1E308;
 	private Vector previousLocation;
 	private Vector previousMotion;
 	private Calendar cal;
@@ -119,17 +123,17 @@ public class MinecartManiaMinecart {
 	}
 	
 	public void setMotionX(double motionX){
-		motionX = MathUtils.range(motionX, maxMomentum, -maxMomentum);
+		motionX = MathUtils.range(motionX, Double.MAX_VALUE, -Double.MAX_VALUE);
 		setMotion(motionX, getMotionY(), getMotionZ());
 	}
 	
 	public void setMotionY(double motionY){
-		motionY = MathUtils.range(motionY, maxMomentum, -maxMomentum);
+		motionY = MathUtils.range(motionY, Double.MAX_VALUE, -Double.MAX_VALUE);
 		setMotion(getMotionX(), motionY, getMotionZ());
 	}
 	
 	public void setMotionZ(double motionZ){
-		motionZ = MathUtils.range(motionZ, maxMomentum, -maxMomentum);
+		motionZ = MathUtils.range(motionZ, Double.MAX_VALUE, -Double.MAX_VALUE);
 		setMotion(getMotionX(), getMotionY(), motionZ);
 	}
 	
@@ -256,8 +260,10 @@ public class MinecartManiaMinecart {
 	
 	public void doLauncherBlock() {
 		if (getBlockIdBeneath() == MinecartManiaWorld.getCatcherBlockId()){
-			if (!isMoving()) {
-				launchCart();
+			if (isPoweredBeneath()) {
+				if (!isMoving()) {
+					launchCart();
+				}
 			}
 		}
 	}
@@ -407,6 +413,12 @@ loop:   for (Sign sign : signList) {
 		return false;
 	}
 	
+	public void doRealisticFriction() {
+		if (minecart.getPassenger() == null && isOnRails()) {
+			setMotion(getMotionX() * 1.03774, getMotionY(), getMotionZ()* 1.03774);
+    	}
+	}
+	
 	public boolean hasPlayerPassenger() {
 		return getPlayerPassenger() != null;
 	}
@@ -447,10 +459,20 @@ loop:   for (Sign sign : signList) {
 		if (MinecartManiaWorld.isPressurePlateRails()) {
 			if (MinecartManiaWorld.getBlockAt(minecart.getWorld(), getX(), getY(), getZ()).getType().equals(Material.STONE_PLATE)
 			|| MinecartManiaWorld.getBlockAt(minecart.getWorld(), getX(), getY(), getZ()).getType().equals(Material.WOOD_PLATE)) {
-				minecart.setDerailedVelocityMod(new Vector(1, 1, 1));
+				setMotionX(getMotionX() * 3);
+				setMotionZ(getMotionZ() * 3);
 	    	}
+			else if (getBlockTypeAhead() != null && (getBlockTypeAhead().getType().equals(Material.STONE_PLATE) || getBlockTypeAhead().getType().equals(Material.WOOD_PLATE))) {
+				setDataValue("pre-ppr velocity", this.minecart.getVelocity());
+			}
 			else if (getBlockTypeBehind() != null && (getBlockTypeBehind().getType().equals(Material.STONE_PLATE) || getBlockTypeBehind().getType().equals(Material.WOOD_PLATE))) {
-				minecart.setDerailedVelocityMod(new Vector(0.5D, 0.5D, 0.5D));
+				Vector velocity = (Vector) getDataValue("pre-ppr velocity");
+				if (velocity != null) {
+					if (getBlockTypeBehind().getFace(BlockFace.DOWN).getTypeId() != MinecartManiaWorld.getCatcherBlockId()) {
+						this.minecart.setVelocity(velocity);
+					}
+					setDataValue("pre-ppr velocity", null);
+				}
 			}
 		}
 	}
@@ -557,14 +579,7 @@ loop:   for (Sign sign : signList) {
 		
 		return Material.MINECART;
 	}
-	
-	public Inventory getInventory() {
-		if (isStorageMinecart()) {
-			return ((StorageMinecart)minecart).getInventory();
-		}
-		return null;
-	}
-	
+
 	/**
 	 * attempts to find and return the owner of this object, a player or a minecart mania chest.
 	 * It will fail if the owner is offline, wasn't found, or the chest was destroyed.

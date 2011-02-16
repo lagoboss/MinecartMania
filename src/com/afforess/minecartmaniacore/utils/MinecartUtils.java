@@ -1,8 +1,21 @@
-package com.afforess.minecartmaniacore;
+package com.afforess.minecartmaniacore.utils;
+
+import java.util.List;
 
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
+import org.bukkit.event.Event;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.util.Vector;
+
+import com.afforess.minecartmaniacore.MinecartManiaCore;
+import com.afforess.minecartmaniacore.MinecartManiaMinecart;
+import com.afforess.minecartmaniacore.MinecartManiaTaskScheduler;
+import com.afforess.minecartmaniacore.MinecartManiaWorld;
+import com.afforess.minecartmaniacore.event.MinecartNearItemDropEvent;
 
 
 public class MinecartUtils {
@@ -143,5 +156,29 @@ public class MinecartUtils {
 		}
 		
 		return paths > 2;
+	}
+
+	public static void testNearbyItems(MinecartManiaMinecart minecart) {
+		List<Entity> entities = minecart.minecart.getWorld().getEntities();
+    	Vector location = minecart.minecart.getLocation().toVector();
+    	for (Entity e : entities) {
+    		if (e instanceof Item) {
+    			if (e.getLocation().toVector().distanceSquared(location) <= 4) {
+    				Object[] param = { new MinecartNearItemDropEvent(minecart, (Item)e) };
+    				@SuppressWarnings("rawtypes")
+					Class[] paramtype = { Event.class };
+    				try {
+    					//No reason to keep this on the main thread, fire it on a second thread
+						MinecartManiaTaskScheduler.doAsyncTask(PluginManager.class.getMethod("callEvent", paramtype), MinecartManiaCore.server.getPluginManager(), param);
+					} catch (SecurityException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (NoSuchMethodException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+    			}
+    		}
+    	}
 	}
 }

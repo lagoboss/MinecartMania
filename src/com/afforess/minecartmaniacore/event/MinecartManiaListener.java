@@ -95,6 +95,15 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
 	}
 	
 	/**
+     * Called when a minecart each time a minecart moves 1 full block, and is less than two blocks away from an item drop.
+     * 
+     * @param event
+     */
+	public void onMinecartNearItemDropEvent(MinecartNearItemDropEvent event) {
+		
+	}
+	
+	/**
      * Avoid using.
      * 
      * @param event
@@ -126,6 +135,9 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
 		}
 		else if (event instanceof ChestSpawnMinecartEvent) {
 			onChestSpawnMinecartEvent((ChestSpawnMinecartEvent)event);
+		}
+		else if (event instanceof MinecartNearItemDropEvent) {
+			onMinecartNearItemDropEvent((MinecartNearItemDropEvent)event);
 		}
 	}
 

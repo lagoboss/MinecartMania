@@ -1,6 +1,8 @@
 package com.afforess.minecartmaniacore;
 
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Chest;
@@ -9,24 +11,36 @@ import org.bukkit.inventory.ItemStack;
 
 public class MinecartManiaChest {
 
-	public final Chest chest;
+	private final Location chest;
 	private boolean RedstonePower;
 	private ConcurrentHashMap<String, Object> data = new ConcurrentHashMap<String,Object>();
 	public MinecartManiaChest(Chest chest) {
-		this.chest = chest;
+		this.chest = chest.getBlock().getLocation();
 		setRedstonePower(MinecartManiaWorld.isBlockIndirectlyPowered(chest.getWorld(), getX(), getY(), getZ()));
 	}
 	
 	public int getX() {
-		return this.chest.getX();
+		return this.chest.getBlockX();
 	}
 	
 	public int getY() {
-		return this.chest.getY();
+		return this.chest.getBlockY();
 	}
 	
 	public int getZ() {
-		return this.chest.getZ();
+		return this.chest.getBlockZ();
+	}
+	
+	public World getWorld() {
+		return this.chest.getWorld();
+	}
+	
+	public Location getLocation() {
+		return chest;
+	}
+	
+	public Chest getChest() {
+		return (Chest)MinecartManiaWorld.getBlockAt(chest.getWorld(), getX(), getY(), getZ()).getState();
 	}
 	
 	
@@ -98,7 +112,7 @@ public class MinecartManiaChest {
 		if (item.getTypeId() == Material.AIR.getId()) {
 			return true;
 		}
-		Inventory inventory = chest.getInventory();
+		Inventory inventory =  getChest().getInventory();
 		//Backup contents
 		ItemStack[] backup = inventory.getContents().clone();
 		ItemStack backupItem = new ItemStack(item.getTypeId(), item.getAmount(), item.getDurability());
@@ -176,7 +190,7 @@ public class MinecartManiaChest {
 	 ** @param the amount to remove
 	 **/
 	public boolean removeItem(int type, int amount) {
-		Inventory inventory = chest.getInventory();
+		Inventory inventory =  getChest().getInventory();
 		//Backup contents
 		ItemStack[] backup = inventory.getContents().clone();
 		
@@ -189,13 +203,13 @@ public class MinecartManiaChest {
 						return true;
 					}
 					else if (inventory.getItem(i).getAmount() - amount == 0) {
-						inventory.remove(i);
+						inventory.clear(i);
 						update();
 						return true;
 					}
 					else{
 						amount -=  inventory.getItem(i).getAmount();
-						inventory.remove(i);
+						inventory.clear(i);
 					}
 				}
 			}
@@ -244,7 +258,7 @@ public class MinecartManiaChest {
 	 ** @param item id to search for
 	 **/
 	public boolean contains(int type) {
-		Inventory inventory = chest.getInventory();
+		Inventory inventory =  getChest().getInventory();
 		for (int i = 0; i < inventory.getSize(); i++) {
 			if (inventory.getItem(i) != null) {
 				if (inventory.getItem(i).getTypeId() == type) {
@@ -280,7 +294,7 @@ public class MinecartManiaChest {
 	}
 	
 	public void update() {
-		chest.update();
+		 getChest().update();
 	}
 	
 	public String toString() {

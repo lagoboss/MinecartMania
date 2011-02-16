@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
+import net.minecraft.server.EntityItem;
 import net.minecraft.server.EntityMinecart;
 
 import org.bukkit.Material;
@@ -11,11 +12,19 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.craftbukkit.CraftServer;
+import org.bukkit.craftbukkit.CraftWorld;
+import org.bukkit.craftbukkit.entity.CraftEntity;
+import org.bukkit.craftbukkit.entity.CraftItem;
 import org.bukkit.craftbukkit.entity.CraftMinecart;
 import org.bukkit.craftbukkit.entity.CraftPoweredMinecart;
 import org.bukkit.craftbukkit.entity.CraftStorageMinecart;
+import org.bukkit.craftbukkit.inventory.CraftItemStack;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.StorageMinecart;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Button;
 import org.bukkit.material.Lever;
 import org.bukkit.material.MaterialData;
@@ -26,6 +35,7 @@ import org.bukkit.Location;
 public class MinecartManiaWorld {
 	private static ConcurrentHashMap<Integer,MinecartManiaMinecart> minecarts = new ConcurrentHashMap<Integer,MinecartManiaMinecart>();
 	private static ConcurrentHashMap<Location,MinecartManiaChest> chests = new ConcurrentHashMap<Location,MinecartManiaChest>();
+	private static ConcurrentHashMap<String,MinecartManiaPlayer> players = new ConcurrentHashMap<String,MinecartManiaPlayer>();
 	private static ConcurrentHashMap<String, Object> configuration = new ConcurrentHashMap<String,Object>();
 	
 	/**
@@ -48,8 +58,14 @@ public class MinecartManiaWorld {
         		CraftPoweredMinecart csm = new CraftPoweredMinecart(cs, em); 
         		minecart = (Minecart)csm;
         	}
-        	
-        	MinecartManiaMinecart newCart = new MinecartManiaMinecart(minecart);
+        	//End workaround
+        	MinecartManiaMinecart newCart;
+        	if (minecart instanceof StorageMinecart) {
+        		newCart = new MinecartManiaStorageCart(minecart);
+        	}
+        	else {
+        		newCart = new MinecartManiaMinecart(minecart);
+        	}
         	minecarts.put(new Integer(minecart.getEntityId()), newCart);
         	return newCart;
         } else {
@@ -110,8 +126,16 @@ public class MinecartManiaWorld {
 	        MinecartManiaChest newChest = new MinecartManiaChest(chest);
 	        chests.put(new Location(chest.getWorld(), chest.getX(), chest.getY(), chest.getZ()), newChest);
 	        return newChest;
-        } else {
-        	return testChest;
+        } 
+        else {
+        	//Verify that this block is still a chest (could have been changed)
+        	if (MinecartManiaWorld.getBlockAt(testChest.getWorld(), testChest.getX(), testChest.getY(), testChest.getZ()).getTypeId() == Material.CHEST.getId()) {
+        		return testChest;
+        	}
+        	else {
+        		chests.remove(new Location(chest.getWorld(), chest.getX(), chest.getY(), chest.getZ()));
+        		return null;
+        	}
         }
     }
 	 
@@ -126,6 +150,19 @@ public class MinecartManiaWorld {
         }
         return false;
     }
+	 
+	 /**
+	 ** Returns a new MinecartManiaPlayer from storage if it already exists, or creates and stores a new MinecartManiaPlayer object, and returns it
+	 ** @param the player to wrap
+	 **/	 
+	 public static MinecartManiaPlayer getMinecartManiaPlayer(Player player) {
+		 MinecartManiaPlayer testPlayer = players.get(player.getName());
+		 if (testPlayer == null) {
+			 testPlayer = new MinecartManiaPlayer(player.getName());
+			 players.put(player.getName(), testPlayer);
+		 }
+		 return testPlayer;
+	 }
 	 
 	/**
 	 ** Returns the value from the loaded configuration
@@ -390,33 +427,72 @@ public class MinecartManiaWorld {
 	 **/
 	public static MinecartManiaMinecart spawnMinecart(World w, int x, int y, int z, Material type, Object owner) {
 		Minecart m;
+		CraftWorld cw = (CraftWorld)w;
+		CraftServer cs = (CraftServer)MinecartManiaCore.server;
 		if (type.getId() == Material.MINECART.getId()) {
 			m = w.spawnMinecart(new Location(w, x + 0.5D, y, z + 0.5D));
 		}
 		else if (type.getId() == Material.POWERED_MINECART.getId()) {
-			m = w.spawnPoweredMinecart(new Location(w, x + 0.5D, y, z + 0.5D));
+			EntityMinecart em = new EntityMinecart(cw.getHandle(), x + 0.5D, y, z + 0.5D, 2);
+			CraftPoweredMinecart csm = new CraftPoweredMinecart(cs, em);
+			m = (Minecart)csm;
+			cw.getHandle().a(em);
+			//m = w.spawnPoweredMinecart(new Location(w, x + 0.5D, y, z + 0.5D));
 		}
 		else {
-			m = w.spawnStorageMinecart(new Location(w, x + 0.5D, y, z + 0.5D));
+			//real men construct their minecarts from the bare ash, er, actually bukkit's implementation of spawning is broken.
+			EntityMinecart em = new EntityMinecart(cw.getHandle(), x + 0.5D, y, z + 0.5D, 1);
+			CraftStorageMinecart csm = new CraftStorageMinecart(cs, em);
+			m = (Minecart)csm;
+			cw.getHandle().a(em);
+			//m = w.spawnStorageMinecart(new Location(w, x + 0.5D, y, z + 0.5D));
 		}
 		MinecartManiaMinecart minecart = null;
 		if (owner != null) {
 			if (owner instanceof Player) {
-				minecart = new MinecartManiaMinecart(m, ((Player)owner).getName());
+				if (m instanceof StorageMinecart) {
+					minecart = new MinecartManiaStorageCart(m, ((Player)owner).getName());
+				}
+				else {
+					minecart = new MinecartManiaMinecart(m, ((Player)owner).getName());
+				}
+				
 				minecarts.put(m.getEntityId(), minecart);
 			}
 			if (owner instanceof MinecartManiaChest) {
-				minecart = new MinecartManiaMinecart(m, ((MinecartManiaChest)owner).toString());
+				if (m instanceof StorageMinecart) {
+					minecart = new MinecartManiaStorageCart(m, ((MinecartManiaChest)owner).toString());
+				}
+				else {
+					minecart = new MinecartManiaMinecart(m, ((MinecartManiaChest)owner).toString());
+				}
 				minecarts.put(m.getEntityId(), minecart);
 			}
 		}
 		else {
-			minecart = new MinecartManiaMinecart(m);
+			if (m instanceof StorageMinecart) {
+				minecart = new MinecartManiaStorageCart(m);
+			}
+			else {
+				minecart = new MinecartManiaMinecart(m);
+			}
 			minecarts.put(m.getEntityId(), minecart);
 		}
 		return minecart;
 	}
 	
+	public static void kill(Entity e) {
+		CraftEntity ce = (CraftEntity)e;
+		ce.getHandle().q();
+	}
+	
+	public static ItemStack ItemToItemStack(Item i) {
+		CraftItem ci = (CraftItem)i;
+		EntityItem ei = (EntityItem)ci.getHandle();
+		CraftItemStack cis = new CraftItemStack(ei.a.id, ei.a.count);
+		cis.setDurability((short) ei.a.damage);
+		return (ItemStack)cis;
+	}
 	
 }
 

@@ -18,27 +18,6 @@ public class MinecartManiaCoreBlockListener extends BlockListener{
     	boolean power = event.getNewCurrent() > 0;
     	Block block = event.getBlock();
 
-    	int rangex = 1;
-    	int rangey = 2;
-    	int rangez = 1;
-    	if (power) {
-	    	//Launch Minecarts
-	    	MinecartManiaMinecart cart = null;
-	    	for (int dx = -(rangex); dx <= rangex; dx++){
-				for (int dy = -(rangey); dy <= rangey; dy++){
-					for (int dz = -(rangez); dz <= rangez; dz++){
-						//Rail check for performance reasons
-						if (MinecartUtils.isMinecartTrack(block.getRelative(dx, dy, dz))) {
-							cart = MinecartManiaWorld.getMinecartManiaMinecartAt(block.getX()+dx, block.getY()+dy, block.getZ()+dz);
-							if (cart != null) {
-								cart.doLauncherBlock();
-							}
-						}
-					}
-				}
-			}
-    	}
-
     	int range = 1;
     	for (int dx = -(range); dx <= range; dx++){
 			for (int dy = -(range); dy <= range; dy++){

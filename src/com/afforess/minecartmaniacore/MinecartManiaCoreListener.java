@@ -1,15 +1,21 @@
 package com.afforess.minecartmaniacore;
 
 import java.util.Calendar;
+import java.util.List;
+
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.util.Vector;
 
 import net.minecraft.server.EntityLiving;
 
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.entity.CraftLivingEntity;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.ItemDrop;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.Event.Type;
 import org.bukkit.event.vehicle.VehicleDamageEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
@@ -19,11 +25,14 @@ import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.event.vehicle.VehicleListener;
 import org.bukkit.event.block.BlockListener;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
+import org.bukkit.inventory.ItemStack;
 
 import com.afforess.minecartmaniacore.event.MinecartActionEvent;
 import com.afforess.minecartmaniacore.event.MinecartIntersectionEvent;
 import com.afforess.minecartmaniacore.event.MinecartMotionStartEvent;
 import com.afforess.minecartmaniacore.event.MinecartMotionStopEvent;
+import com.afforess.minecartmaniacore.event.MinecartNearItemDropEvent;
+import com.afforess.minecartmaniacore.utils.MinecartUtils;
 
 @SuppressWarnings("unused")
 public class MinecartManiaCoreListener extends VehicleListener{
@@ -43,6 +52,7 @@ public class MinecartManiaCoreListener extends VehicleListener{
 				minecart.setPreviousFacingDir(minecart.getDirectionOfMotion());
 			}
 			
+			//Fire new events
 			if (minecart.wasMovingLastTick() && !minecart.isMoving()) {
 				MinecartMotionStopEvent mmse = new MinecartMotionStopEvent(minecart);
 				MinecartManiaCore.server.getPluginManager().callEvent(mmse);
@@ -83,7 +93,9 @@ public class MinecartManiaCoreListener extends VehicleListener{
 				}
 			}
 			//End Workaround
-			
+			minecart.doRealisticFriction();
+			minecart.doLauncherBlock();
+			minecart.doPressurePlateRails();
 			if (minecart.hasChangedPosition()) {
 				
 				if (minecart.isAtIntersection()) {
@@ -91,10 +103,10 @@ public class MinecartManiaCoreListener extends VehicleListener{
 					MinecartManiaCore.server.getPluginManager().callEvent(mie);
 				}
 				
-				MinecartActionEvent e = new MinecartActionEvent(minecart);
-				MinecartManiaCore.server.getPluginManager().callEvent(e);
+				MinecartActionEvent mae = new MinecartActionEvent(minecart);
+				MinecartManiaCore.server.getPluginManager().callEvent(mae);
 				
-				boolean action = e.isActionTaken();
+				boolean action = mae.isActionTaken();
 		    	if (!action) {
 		    		action = minecart.doHighSpeedBooster();
 		    	}
@@ -117,8 +129,7 @@ public class MinecartManiaCoreListener extends VehicleListener{
 		    		action = minecart.doEjectorBlock();
 		    	}
 		    	
-		    	minecart.doPressurePlateRails();
-				
+		    	MinecartUtils.testNearbyItems(minecart);
 				minecart.updateMotion();
 				minecart.updateLocation();
 			}
@@ -137,19 +148,6 @@ public class MinecartManiaCoreListener extends VehicleListener{
     		}
 		}
     }
-	
-	public void onVehicleEnter(VehicleEnterEvent event) {
-		if (event.getVehicle() instanceof Minecart) {
-    		Minecart cart = (Minecart)event.getVehicle();
-    		MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart(cart);
-    		
-    		if (MinecartManiaWorld.getBlockAt(minecart.minecart.getWorld(), minecart.getX(), minecart.getY(), minecart.getZ()).getTypeId() == Material.STONE_PLATE.getId()) {
-    			if (event.getEntered() != null) {
-    				minecart.doLauncherBlock();
-    			}
-    		}
-		}
-	}
 	
 	public void onVehicleEntityCollision(VehicleEntityCollisionEvent event) {
     	if (event.getVehicle() instanceof Minecart) {
