@@ -161,9 +161,14 @@ public class MinecartUtils {
 	public static void testNearbyItems(MinecartManiaMinecart minecart) {
 		List<Entity> entities = minecart.minecart.getWorld().getEntities();
     	Vector location = minecart.minecart.getLocation().toVector();
+    	int rangeSquared = 4;
+    	if (MinecartManiaWorld.getConfigurationValue("Nearby Items Range") != null) {
+    		rangeSquared = MinecartManiaWorld.getIntValue(MinecartManiaWorld.getConfigurationValue("Nearby Items Range"));
+    		rangeSquared = rangeSquared * rangeSquared;
+    	}
     	for (Entity e : entities) {
     		if (e instanceof Item) {
-    			if (e.getLocation().toVector().distanceSquared(location) <= 4) {
+    			if (e.getLocation().toVector().distanceSquared(location) <= rangeSquared) {
     				Object[] param = { new MinecartNearItemDropEvent(minecart, (Item)e) };
     				@SuppressWarnings("rawtypes")
 					Class[] paramtype = { Event.class };
