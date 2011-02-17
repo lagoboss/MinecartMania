@@ -6,8 +6,7 @@ public class StringUtils {
 	public static String getNumber(String s)
 	{
 		String n = "";
-		for (int i = 0; i < s.length(); i++)
-		{
+		for (int i = 0; i < s.length(); i++){
 			char c = s.charAt(i);
 			if (Character.isDigit(c) || c == '.' || c == '-')
 				n += c;
@@ -16,8 +15,7 @@ public class StringUtils {
 	}
 	
 	public static boolean containsLetters(String s) {
-		for (int i = 0; i < s.length(); i++)
-		{
+		for (int i = 0; i < s.length(); i++) {
 			char c = s.charAt(i);
 			if (Character.isLetter(c)) {
 				return true;
@@ -37,13 +35,13 @@ public class StringUtils {
 	}
 	
 	public static String removeBrackets(String s) {
-		if (s.contains("[")) {
-			s.substring(s.indexOf("["));
+		String str = "";
+		for (int i = 0; i < s.length(); i++){
+			char c = s.charAt(i);
+			if (c == ']' || c == '[') continue;
+			str += c;
 		}
-		if (s.contains("]")) {
-			s.substring(0,s.indexOf("]"));
-		}
-		return s;
+		return str;
 	}
 	
 	public static String addBrackets(String s) {

@@ -37,7 +37,12 @@ public class MinecartUtils {
 	}
 	
 	public static boolean validMinecartTrack(World w, int x, int y, int z, int range, DirectionUtils.CompassDirection facingDir) {
-    	if (!isMinecartTrack(MinecartManiaWorld.getBlockAt(w, x, y, z))) return false;
+    	if (!isMinecartTrack(MinecartManiaWorld.getBlockAt(w, x, y, z))) {
+    		y--;
+    		if (!isMinecartTrack(MinecartManiaWorld.getBlockAt(w, x, y, z))) {
+    			return false;
+    		}
+    	}
     	range--;
     	while (range > 0) {
     		if (facingDir == DirectionUtils.CompassDirection.NORTH) x--;
