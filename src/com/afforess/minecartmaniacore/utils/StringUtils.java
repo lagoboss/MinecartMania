@@ -35,4 +35,18 @@ public class StringUtils {
 		}
 		return s1;
 	}
+	
+	public static String removeBrackets(String s) {
+		if (s.contains("[")) {
+			s.substring(s.indexOf("["));
+		}
+		if (s.contains("]")) {
+			s.substring(0,s.indexOf("]"));
+		}
+		return s;
+	}
+	
+	public static String addBrackets(String s) {
+		return "[" + s + "]";
+	}
 }

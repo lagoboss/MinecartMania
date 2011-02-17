@@ -9,7 +9,7 @@ import org.bukkit.block.Chest;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-public class MinecartManiaChest {
+public class MinecartManiaChest implements MinecartManiaInventory{
 
 	private final Location chest;
 	private boolean RedstonePower;
@@ -300,6 +300,35 @@ public class MinecartManiaChest {
 	public String toString() {
 		return "[" + getX() + ":" + getY() + ":" + getZ() + "]";
 	}
+
+	public int size() {
+		return getChest().getInventory().getSize();
+	}
+
+	public ItemStack[] getContents() {
+		return getChest().getInventory().getContents();
+	}
+
+	public ItemStack getItem(int slot) {
+		return getChest().getInventory().getItem(slot);
+	}
+
+	public void setItem(int slot, ItemStack item) {
+		if (item == null) {
+			getChest().getInventory().clear(slot);
+		}
+		else {
+			getChest().getInventory().setItem(slot, item);
+		}
+		update();
+	}
 	
+	public int firstEmpty() {
+		return getChest().getInventory().firstEmpty();
+	}
+	
+	public Inventory getInventory() {
+		return getChest().getInventory();
+	}
 
 }

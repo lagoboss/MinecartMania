@@ -6,7 +6,7 @@ import org.bukkit.entity.StorageMinecart;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-public class MinecartManiaStorageCart extends MinecartManiaMinecart{
+public class MinecartManiaStorageCart extends MinecartManiaMinecart implements MinecartManiaInventory{
 
 	public MinecartManiaStorageCart(Minecart cart) {
 		super(cart);
@@ -152,4 +152,28 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart{
 		return false;
 	}
 
+	public int size() {
+		return getInventory().getSize();
+	}
+
+	public ItemStack[] getContents() {
+		return getInventory().getContents();
+	}
+	
+	public ItemStack getItem(int slot) {
+		return getInventory().getItem(slot);
+	}
+
+	public void setItem(int slot, ItemStack item) {
+		if (item == null) {
+			getInventory().clear(slot);
+		}
+		else {
+			getInventory().setItem(slot, item);
+		}
+	}
+	
+	public int firstEmpty() {
+		return getInventory().firstEmpty();
+	}
 }
