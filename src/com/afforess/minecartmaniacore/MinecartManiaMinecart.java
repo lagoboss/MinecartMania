@@ -8,7 +8,6 @@ import net.minecraft.server.EntityMinecart;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
 import org.bukkit.craftbukkit.entity.CraftMinecart;
@@ -39,6 +38,7 @@ public class MinecartManiaMinecart {
 	private boolean wasMovingLastTick;
 	private String owner = "none";
 	private ConcurrentHashMap<String, Object> data = new ConcurrentHashMap<String,Object>();
+	private int entityDetectionRange = 2;
 	
 	public MinecartManiaMinecart(Minecart cart) {
 		minecart = cart; 
@@ -53,7 +53,7 @@ public class MinecartManiaMinecart {
 	}
 	
 	private void initialize() {
-		minecart.setSlowWhenEmpty(false);
+		setEntityDetectionRange(MinecartManiaWorld.getIntValue(MinecartManiaWorld.getConfigurationValue("Nearby Items Range")));
 		cal = Calendar.getInstance();
 		setWasMovingLastTick(isMoving());
 		previousMotion = minecart.getVelocity().clone();
@@ -457,22 +457,14 @@ loop:   for (Sign sign : signList) {
 
 	public void doPressurePlateRails() {
 		if (MinecartManiaWorld.isPressurePlateRails()) {
+			
 			if (MinecartManiaWorld.getBlockAt(minecart.getWorld(), getX(), getY(), getZ()).getType().equals(Material.STONE_PLATE)
 			|| MinecartManiaWorld.getBlockAt(minecart.getWorld(), getX(), getY(), getZ()).getType().equals(Material.WOOD_PLATE)) {
-				setMotionX(getMotionX() * 3);
-				setMotionZ(getMotionZ() * 3);
+				
+				minecart.setDerailedVelocityMod(new Vector(0.95, 0.95, 0.95));
 	    	}
-			else if (getBlockTypeAhead() != null && (getBlockTypeAhead().getType().equals(Material.STONE_PLATE) || getBlockTypeAhead().getType().equals(Material.WOOD_PLATE))) {
-				setDataValue("pre-ppr velocity", this.minecart.getVelocity());
-			}
-			else if (getBlockTypeBehind() != null && (getBlockTypeBehind().getType().equals(Material.STONE_PLATE) || getBlockTypeBehind().getType().equals(Material.WOOD_PLATE))) {
-				Vector velocity = (Vector) getDataValue("pre-ppr velocity");
-				if (velocity != null) {
-					if (getBlockTypeBehind().getFace(BlockFace.DOWN).getTypeId() != MinecartManiaWorld.getCatcherBlockId()) {
-						this.minecart.setVelocity(velocity);
-					}
-					setDataValue("pre-ppr velocity", null);
-				}
+			else {
+				minecart.setDerailedVelocityMod(new Vector(0.5, 0.5, 0.5));
 			}
 		}
 	}
@@ -644,5 +636,13 @@ loop:   for (Sign sign : signList) {
 			//Failed to kill minecart
 		}
 
+	}
+
+	public void setEntityDetectionRange(int range) {
+		this.entityDetectionRange = range;
+	}
+
+	public int getEntityDetectionRange() {
+		return entityDetectionRange;
 	}
 }

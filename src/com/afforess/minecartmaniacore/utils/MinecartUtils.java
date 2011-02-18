@@ -1,21 +1,21 @@
 package com.afforess.minecartmaniacore.utils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Item;
-import org.bukkit.event.Event;
-import org.bukkit.plugin.PluginManager;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import com.afforess.minecartmaniacore.MinecartManiaCore;
 import com.afforess.minecartmaniacore.MinecartManiaMinecart;
 import com.afforess.minecartmaniacore.MinecartManiaTaskScheduler;
 import com.afforess.minecartmaniacore.MinecartManiaWorld;
-import com.afforess.minecartmaniacore.event.MinecartNearItemDropEvent;
+import com.afforess.minecartmaniacore.event.MinecartNearEntityEvent;
 
 
 public class MinecartUtils {
@@ -162,33 +162,48 @@ public class MinecartUtils {
 		
 		return paths > 2;
 	}
-
-	public static void testNearbyItems(MinecartManiaMinecart minecart) {
+	
+	public static void doMinecartNearEntityCheck(MinecartManiaMinecart minecart) {
 		List<Entity> entities = minecart.minecart.getWorld().getEntities();
+		ArrayList<MinecartNearEntityEvent> deadQueue = new ArrayList<MinecartNearEntityEvent>(50);
     	Vector location = minecart.minecart.getLocation().toVector();
-    	int rangeSquared = 4;
-    	if (MinecartManiaWorld.getConfigurationValue("Nearby Items Range") != null) {
-    		rangeSquared = MinecartManiaWorld.getIntValue(MinecartManiaWorld.getConfigurationValue("Nearby Items Range"));
-    		rangeSquared = rangeSquared * rangeSquared;
-    	}
+    	int rangeSquared = minecart.getEntityDetectionRange() * minecart.getEntityDetectionRange();
     	for (Entity e : entities) {
-    		if (e instanceof Item) {
-    			if (e.getLocation().toVector().distanceSquared(location) <= rangeSquared) {
-    				Object[] param = { new MinecartNearItemDropEvent(minecart, (Item)e) };
-    				@SuppressWarnings("rawtypes")
-					Class[] paramtype = { Event.class };
-    				try {
-    					//No reason to keep this on the main thread, fire it on a second thread
-						MinecartManiaTaskScheduler.doAsyncTask(PluginManager.class.getMethod("callEvent", paramtype), MinecartManiaCore.server.getPluginManager(), param);
-					} catch (SecurityException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (NoSuchMethodException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-    			}
+			if (e.getLocation().toVector().distanceSquared(location) <= rangeSquared) {
+				MinecartNearEntityEvent mnee = new MinecartNearEntityEvent(minecart, e);
+				//by default drop arrows
+				mnee.setCancelled(e instanceof Arrow);
+				mnee.setDrop(e instanceof Arrow ? new ItemStack(Material.ARROW, 1) : null);
+				MinecartManiaCore.server.getPluginManager().callEvent(mnee);
+				//If cancelled, kill them once we are done calling events
+				if (mnee.isCancelled()) {
+					deadQueue.add(mnee);
+				}
+			}
+    	}
+    	
+    	for (MinecartNearEntityEvent e : deadQueue) {
+    		if (e.getDrop() != null) {
+    			MinecartManiaWorld.dropItem(e.getEntity().getLocation(), e.getDrop());
     		}
+    		MinecartManiaWorld.kill(e.getEntity());
     	}
 	}
+	
+	public static void updateNearbyItems(MinecartManiaMinecart minecart) {
+		Object[] param = { minecart };
+		@SuppressWarnings("rawtypes")
+		Class[] paramtype = { MinecartManiaMinecart.class };
+		try {
+			//No reason to keep this on the main thread, fire it on a second thread
+			MinecartManiaTaskScheduler.doAsyncTask(MinecartUtils.class.getMethod("doMinecartNearEntityCheck", paramtype), 5, param);
+		} catch (SecurityException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (NoSuchMethodException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	}
+		
 }

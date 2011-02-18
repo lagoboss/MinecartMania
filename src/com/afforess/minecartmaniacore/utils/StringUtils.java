@@ -45,6 +45,6 @@ public class StringUtils {
 	}
 	
 	public static String addBrackets(String s) {
-		return "[" + s + "]";
+		return "[" + removeBrackets(s) + "]";
 	}
 }

@@ -31,7 +31,6 @@ import com.afforess.minecartmaniacore.event.MinecartActionEvent;
 import com.afforess.minecartmaniacore.event.MinecartIntersectionEvent;
 import com.afforess.minecartmaniacore.event.MinecartMotionStartEvent;
 import com.afforess.minecartmaniacore.event.MinecartMotionStopEvent;
-import com.afforess.minecartmaniacore.event.MinecartNearItemDropEvent;
 import com.afforess.minecartmaniacore.utils.MinecartUtils;
 
 @SuppressWarnings("unused")
@@ -96,6 +95,7 @@ public class MinecartManiaCoreListener extends VehicleListener{
 			minecart.doRealisticFriction();
 			minecart.doLauncherBlock();
 			minecart.doPressurePlateRails();
+			
 			if (minecart.hasChangedPosition()) {
 				
 				if (minecart.isAtIntersection()) {
@@ -128,8 +128,8 @@ public class MinecartManiaCoreListener extends VehicleListener{
 		    	if (!action) {
 		    		action = minecart.doEjectorBlock();
 		    	}
+		    	MinecartUtils.updateNearbyItems(minecart);
 		    	
-		    	MinecartUtils.testNearbyItems(minecart);
 				minecart.updateMotion();
 				minecart.updateLocation();
 			}
@@ -162,6 +162,11 @@ public class MinecartManiaCoreListener extends VehicleListener{
 				return;
 			}
 			
+			if (collisioner instanceof Minecart) {
+				event.setCancelled(true);
+				event.setCollisionCancelled(true);
+			}
+
 			if (collisioner instanceof LivingEntity) {
 				LivingEntity victim = (LivingEntity)(collisioner);
 				if (!(victim instanceof Player)) {

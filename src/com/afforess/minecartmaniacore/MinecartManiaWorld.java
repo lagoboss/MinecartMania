@@ -2,7 +2,9 @@ package com.afforess.minecartmaniacore;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map.Entry;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
 
 import net.minecraft.server.EntityItem;
 import net.minecraft.server.EntityMinecart;
@@ -305,6 +307,17 @@ public class MinecartManiaWorld {
 	}
 	
 	/**
+	 ** Returns the block type id at the given x, y, z coordinates
+	 ** @param w World to take effect in
+	 ** @param x coordinate
+	 ** @param y coordinate
+	 ** @param z coordinate
+	 **/	
+	public static int getBlockIdAt(World w, int x, int y, int z) {
+		return w.getBlockTypeIdAt(x, y, z);
+	}
+	
+	/**
 	 ** Returns the block at the given x, y, z coordinates
 	 ** @param w World to take effect in
 	 ** @param new block type id
@@ -317,6 +330,20 @@ public class MinecartManiaWorld {
 	}
 	
 	/**
+	 ** Returns the block at the given x, y, z coordinates, guaranteed  to be thread safe
+	 ** @param w World to take effect in
+	 ** @param new block type id
+	 ** @param x coordinate
+	 ** @param y coordinate
+	 ** @param z coordinate
+	 **/
+	public static void setBlockAtThreadSafe(final World w, final int type, final int x, final int y, final int z) {
+		MinecartManiaCore.server.getScheduler().scheduleSyncDelayedTask(MinecartManiaCore.instance, new Runnable() { public void run() {
+			w.getBlockAt(x, y, z).setTypeId(type);
+			}});
+	}
+	
+	/**
 	 ** Returns the block data at the given x, y, z coordinates
 	 ** @param w World to take effect in
 	 ** @param x coordinate
@@ -325,6 +352,30 @@ public class MinecartManiaWorld {
 	 **/
 	public static byte getBlockData(World w, int x, int y, int z) {
 		return w.getBlockAt(x, y, z).getData();
+	}
+	
+	/**
+	 ** Returns the block data at the given x, y, z coordinates
+	 ** @param w World to take effect in
+	 ** @param x coordinate
+	 ** @param y coordinate
+	 ** @param z coordinate
+	 **/
+	public static byte getBlockDataThreadSafe(final World w, final int x, final int y, final int z) {
+		try {
+			Future<Integer> c = MinecartManiaCore.server.getScheduler().callSyncMethod(MinecartManiaCore.instance, 
+			new Callable<Integer>() { 
+				public Integer call(){
+					try {
+							return new Integer(w.getBlockAt(x, y, z).getData());
+						} 
+					catch (Exception e) { return new Integer(0); }
+				} } );
+			return c.get().byteValue();
+		} catch (Exception e) {
+			return 0;
+		}
+		
 	}
 	
 	/**
@@ -481,9 +532,19 @@ public class MinecartManiaWorld {
 		return minecart;
 	}
 	
-	public static void kill(Entity e) {
-		CraftEntity ce = (CraftEntity)e;
-		ce.getHandle().q();
+	public static void kill(final Entity e) {
+		//force this to run on the main thread
+		MinecartManiaCore.server.getScheduler().scheduleSyncDelayedTask(MinecartManiaCore.instance, new Runnable() { public void run() {
+			CraftEntity ce = (CraftEntity)e;
+			ce.getHandle().q();
+			}});
+	}
+	
+	public static void dropItem(final Location loc, final ItemStack item) {
+		//force this to run on the main thread
+		MinecartManiaCore.server.getScheduler().scheduleSyncDelayedTask(MinecartManiaCore.instance, new Runnable() { public void run() {
+			loc.getWorld().dropItem(loc, item);
+			}});
 	}
 	
 	public static ItemStack ItemToItemStack(Item i) {
