@@ -76,6 +76,15 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
 	}
 	
 	/**
+     * Called when a MinecartManiaMinecart is created. This is not nessecary the same as when the generic type Minecart is created.
+     * 
+     * @param event
+     */
+	public void onMinecartManiaMinecartCreatedEvent(MinecartManiaMinecartCreatedEvent event) {
+		
+	}
+	
+	/**
      * Called when a minecart is being launched by a launcher block, can be overriden
      * 
      * @param event
@@ -138,6 +147,9 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
 		}
 		else if (event instanceof MinecartNearEntityEvent) {
 			onMinecartNearEntityEvent((MinecartNearEntityEvent)event);
+		}
+		else if (event instanceof MinecartManiaMinecartCreatedEvent) {
+			onMinecartManiaMinecartCreatedEvent((MinecartManiaMinecartCreatedEvent)event);
 		}
 	}
 

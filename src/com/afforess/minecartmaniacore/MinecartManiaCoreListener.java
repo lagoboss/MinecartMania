@@ -162,10 +162,14 @@ public class MinecartManiaCoreListener extends VehicleListener{
 				return;
 			}
 			
-			if (collisioner instanceof Minecart) {
+			//TODO possible?
+			/*if (collisioner instanceof Minecart) {
 				event.setCancelled(true);
 				event.setCollisionCancelled(true);
-			}
+				minecart.minecart.setVelocity(minecart.getPreviousMotion());
+				MinecartManiaMinecart collisionerMinecart = MinecartManiaWorld.getMinecartManiaMinecart((Minecart)collisioner);
+				collisionerMinecart.minecart.setVelocity(collisionerMinecart.getPreviousMotion());
+			}*/
 
 			if (collisioner instanceof LivingEntity) {
 				LivingEntity victim = (LivingEntity)(collisioner);

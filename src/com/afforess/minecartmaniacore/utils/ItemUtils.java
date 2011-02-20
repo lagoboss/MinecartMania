@@ -35,6 +35,7 @@ public class ItemUtils {
 		
 		String[] keys = str.split("-| ?: ?");
 		for (int i = 0; i < keys.length; i++) {
+			if (keys[i] == null || keys[i].isEmpty()) continue;
 			Material type = null;
 			//Parse the numbers first. Can be separated by "-" or ":"
 			try {

@@ -2,10 +2,7 @@ package com.afforess.minecartmaniacore;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map.Entry;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Future;
-
 import net.minecraft.server.EntityItem;
 import net.minecraft.server.EntityMinecart;
 
@@ -338,9 +335,11 @@ public class MinecartManiaWorld {
 	 ** @param z coordinate
 	 **/
 	public static void setBlockAtThreadSafe(final World w, final int type, final int x, final int y, final int z) {
-		MinecartManiaCore.server.getScheduler().scheduleSyncDelayedTask(MinecartManiaCore.instance, new Runnable() { public void run() {
+		CraftWorld cw = (CraftWorld)w;
+		cw.getHandle().e(x, y, z, type);
+		/*MinecartManiaCore.server.getScheduler().scheduleSyncDelayedTask(MinecartManiaCore.instance, new Runnable() { public void run() {
 			w.getBlockAt(x, y, z).setTypeId(type);
-			}});
+			}});*/
 	}
 	
 	/**
@@ -362,6 +361,10 @@ public class MinecartManiaWorld {
 	 ** @param z coordinate
 	 **/
 	public static byte getBlockDataThreadSafe(final World w, final int x, final int y, final int z) {
+		CraftWorld cw = (CraftWorld)w;
+		return (byte) cw.getHandle().getData(x, y, z);
+		
+		/*
 		try {
 			Future<Integer> c = MinecartManiaCore.server.getScheduler().callSyncMethod(MinecartManiaCore.instance, 
 			new Callable<Integer>() { 
@@ -374,7 +377,7 @@ public class MinecartManiaWorld {
 			return c.get().byteValue();
 		} catch (Exception e) {
 			return 0;
-		}
+		}*/
 		
 	}
 	

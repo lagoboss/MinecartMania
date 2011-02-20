@@ -19,6 +19,7 @@ import org.bukkit.entity.PoweredMinecart;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 import com.afforess.minecartmaniacore.event.MinecartLaunchedEvent;
+import com.afforess.minecartmaniacore.event.MinecartManiaMinecartCreatedEvent;
 import com.afforess.minecartmaniacore.event.MinecartManiaMinecartDestroyedEvent;
 import com.afforess.minecartmaniacore.event.MinecartTimeEvent;
 import com.afforess.minecartmaniacore.utils.DirectionUtils;
@@ -39,6 +40,7 @@ public class MinecartManiaMinecart {
 	private String owner = "none";
 	private ConcurrentHashMap<String, Object> data = new ConcurrentHashMap<String,Object>();
 	private int entityDetectionRange = 2;
+	public static final double MAXIMUM_MOMENTUM = 1E300D;
 	
 	public MinecartManiaMinecart(Minecart cart) {
 		minecart = cart; 
@@ -53,12 +55,13 @@ public class MinecartManiaMinecart {
 	}
 	
 	private void initialize() {
-		setEntityDetectionRange(MinecartManiaWorld.getIntValue(MinecartManiaWorld.getConfigurationValue("Nearby Items Range")));
+		setEntityDetectionRange(MinecartManiaWorld.getIntValue(MinecartManiaWorld.getConfigurationValue("Nearby Collection Range")));
 		cal = Calendar.getInstance();
 		setWasMovingLastTick(isMoving());
 		previousMotion = minecart.getVelocity().clone();
 		previousLocation = minecart.getLocation().toVector().clone();
 		minecart.setMaxSpeed(MinecartManiaWorld.getMaximumMinecartSpeedPercent() * 0.4D / 100);
+		MinecartManiaCore.server.getPluginManager().callEvent(new MinecartManiaMinecartCreatedEvent(this));
 	}
 
 	/**
@@ -123,17 +126,17 @@ public class MinecartManiaMinecart {
 	}
 	
 	public void setMotionX(double motionX){
-		motionX = MathUtils.range(motionX, Double.MAX_VALUE, -Double.MAX_VALUE);
+		motionX = MathUtils.range(motionX, MAXIMUM_MOMENTUM, -MAXIMUM_MOMENTUM);
 		setMotion(motionX, getMotionY(), getMotionZ());
 	}
 	
 	public void setMotionY(double motionY){
-		motionY = MathUtils.range(motionY, Double.MAX_VALUE, -Double.MAX_VALUE);
+		motionY = MathUtils.range(motionY, MAXIMUM_MOMENTUM, -MAXIMUM_MOMENTUM);
 		setMotion(getMotionX(), motionY, getMotionZ());
 	}
 	
 	public void setMotionZ(double motionZ){
-		motionZ = MathUtils.range(motionZ, Double.MAX_VALUE, -Double.MAX_VALUE);
+		motionZ = MathUtils.range(motionZ, MAXIMUM_MOMENTUM, -MAXIMUM_MOMENTUM);
 		setMotion(getMotionX(), getMotionY(), motionZ);
 	}
 	

@@ -2,12 +2,12 @@ package com.afforess.minecartmaniacore.event;
 
 import com.afforess.minecartmaniacore.MinecartManiaMinecart;
 
-public class MinecartManiaMinecartDestroyedEvent extends org.bukkit.event.Event{
+public class MinecartManiaMinecartCreatedEvent extends org.bukkit.event.Event{
 
 	private MinecartManiaMinecart minecart;
 	
-	public MinecartManiaMinecartDestroyedEvent(MinecartManiaMinecart cart) {
-		super("MinecartManiaMinecartDestroyedEvent");
+	public MinecartManiaMinecartCreatedEvent(MinecartManiaMinecart cart) {
+		super("MinecartManiaMinecartCreatedEvent");
 		minecart = cart;
 	}
 

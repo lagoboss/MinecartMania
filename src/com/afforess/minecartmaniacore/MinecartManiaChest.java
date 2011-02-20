@@ -120,15 +120,14 @@ public class MinecartManiaChest implements MinecartManiaInventory{
 		//First attempt to merge the itemstack with existing item stacks that aren't full (< 64)
 		for (int i = 0; i < inventory.getSize(); i++) {
 			if (inventory.getItem(i) != null) {
-				if (inventory.getItem(i).getTypeId() == item.getTypeId()) {
+				if (inventory.getItem(i).getTypeId() == item.getTypeId() && inventory.getItem(i).getDurability() == item.getDurability()) {
 					if (inventory.getItem(i).getAmount() + item.getAmount() <= 64) {
-						inventory.setItem(i, new ItemStack(item.getTypeId(), inventory.getItem(i).getAmount() + item.getAmount()));
-						update();
+						inventory.setItem(i, new ItemStack(item.getTypeId(), inventory.getItem(i).getAmount() + item.getAmount(), item.getDurability()));
 						return true;
 					}
 					else {
 						int diff = inventory.getItem(i).getAmount() + item.getAmount() - 64;
-						inventory.setItem(i, new ItemStack(item.getTypeId(), inventory.getItem(i).getAmount() + item.getAmount()));
+						inventory.setItem(i, new ItemStack(item.getTypeId(), inventory.getItem(i).getAmount() + item.getAmount(), item.getDurability()));
 						item = new ItemStack(item.getTypeId(), diff);
 					}
 				}
