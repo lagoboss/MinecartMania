@@ -10,6 +10,8 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
+import org.bukkit.block.Dispenser;
+import org.bukkit.block.Furnace;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.craftbukkit.entity.CraftEntity;
@@ -34,6 +36,8 @@ import org.bukkit.Location;
 public class MinecartManiaWorld {
 	private static ConcurrentHashMap<Integer,MinecartManiaMinecart> minecarts = new ConcurrentHashMap<Integer,MinecartManiaMinecart>();
 	private static ConcurrentHashMap<Location,MinecartManiaChest> chests = new ConcurrentHashMap<Location,MinecartManiaChest>();
+	private static ConcurrentHashMap<Location,MinecartManiaDispenser> dispensers = new ConcurrentHashMap<Location,MinecartManiaDispenser>();
+	private static ConcurrentHashMap<Location,MinecartManiaFurnace> furnaces = new ConcurrentHashMap<Location,MinecartManiaFurnace>();
 	private static ConcurrentHashMap<String,MinecartManiaPlayer> players = new ConcurrentHashMap<String,MinecartManiaPlayer>();
 	private static ConcurrentHashMap<String, Object> configuration = new ConcurrentHashMap<String,Object>();
 	
@@ -128,7 +132,7 @@ public class MinecartManiaWorld {
         } 
         else {
         	//Verify that this block is still a chest (could have been changed)
-        	if (MinecartManiaWorld.getBlockAt(testChest.getWorld(), testChest.getX(), testChest.getY(), testChest.getZ()).getTypeId() == Material.CHEST.getId()) {
+        	if (MinecartManiaWorld.getBlockIdAt(testChest.getWorld(), testChest.getX(), testChest.getY(), testChest.getZ()) == Material.CHEST.getId()) {
         		return testChest;
         	}
         	else {
@@ -139,12 +143,82 @@ public class MinecartManiaWorld {
     }
 	 
 	/**
-	 ** Returns true if the chest with the given vector was deleted, false if not.
-	 ** @param the vector location of the chest to delete
+	 ** Returns true if the chest with the given location was deleted, false if not.
+	 ** @param the  location of the chest to delete
 	 **/
 	 public static boolean delMinecartManiaChest(Location v) {
         if (chests.containsKey(v)) {
             chests.remove(v);
+            return true;
+        }
+        return false;
+    }
+	 
+	 /**
+	 ** Returns a new MinecartManiaDispenser from storage if it already exists, or creates and stores a new MinecartManiaDispenser object, and returns it
+	 ** @param the dispenser to wrap
+	 **/
+	 public static MinecartManiaDispenser getMinecartManiaDispenser(Dispenser dispenser) {
+        MinecartManiaDispenser testDispenser = dispensers.get(new Location(dispenser.getWorld(), dispenser.getX(), dispenser.getY(), dispenser.getZ()));
+        if (testDispenser == null) {
+        	MinecartManiaDispenser newDispenser = new MinecartManiaDispenser(dispenser);
+        	dispensers.put(new Location(dispenser.getWorld(), dispenser.getX(), dispenser.getY(), dispenser.getZ()), newDispenser);
+	        return newDispenser;
+        } 
+        else {
+        	//Verify that this block is still a dispenser (could have been changed)
+        	if (MinecartManiaWorld.getBlockIdAt(testDispenser.getWorld(), testDispenser.getX(), testDispenser.getY(), testDispenser.getZ()) == Material.DISPENSER.getId()) {
+        		return testDispenser;
+        	}
+        	else {
+        		dispensers.remove(new Location(dispenser.getWorld(), dispenser.getX(), dispenser.getY(), dispenser.getZ()));
+        		return null;
+        	}
+        }
+    }
+	 
+	/**
+	 ** Returns true if the dispenser with the given location was deleted, false if not.
+	 ** @param the location of the dispenser to delete
+	 **/
+	 public static boolean delMinecartManiaDispenser(Location v) {
+        if (dispensers.containsKey(v)) {
+        	dispensers.remove(v);
+            return true;
+        }
+        return false;
+    }
+	 
+	 /**
+	 ** Returns a new MinecartManiaFurnace from storage if it already exists, or creates and stores a new MinecartManiaFurnace object, and returns it
+	 ** @param the furnace to wrap
+	 **/
+	 public static MinecartManiaFurnace getMinecartManiaFurnace(Furnace furnace) {
+		 MinecartManiaFurnace testFurnace = furnaces.get(new Location(furnace.getWorld(), furnace.getX(), furnace.getY(), furnace.getZ()));
+        if (testFurnace == null) {
+        	MinecartManiaFurnace newFurnace = new MinecartManiaFurnace(furnace);
+        	furnaces.put(new Location(furnace.getWorld(), furnace.getX(), furnace.getY(), furnace.getZ()), newFurnace);
+	        return newFurnace;
+        } 
+        else {
+        	//Verify that this block is still a furnace (could have been changed)
+        	if (MinecartManiaWorld.getBlockIdAt(testFurnace.getWorld(), testFurnace.getX(), testFurnace.getY(), testFurnace.getZ()) == Material.FURNACE.getId()) {
+        		return testFurnace;
+        	}
+        	else {
+        		furnaces.remove(new Location(furnace.getWorld(), furnace.getX(), furnace.getY(), furnace.getZ()));
+        		return null;
+        	}
+        }
+    }
+	 
+	/**
+	 ** Returns true if the furnaces with the given location was deleted, false if not.
+	 ** @param the location of the furnaces to delete
+	 **/
+	 public static boolean delMinecartManiaFurnace(Location v) {
+        if (furnaces.containsKey(v)) {
+        	furnaces.remove(v);
             return true;
         }
         return false;

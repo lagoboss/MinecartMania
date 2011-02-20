@@ -15,7 +15,7 @@ public class MinecartManiaChest implements MinecartManiaInventory{
 	private boolean RedstonePower;
 	private ConcurrentHashMap<String, Object> data = new ConcurrentHashMap<String,Object>();
 	public MinecartManiaChest(Chest chest) {
-		this.chest = chest.getBlock().getLocation();
+		this.chest = chest.getBlock().getLocation().clone();
 		setRedstonePower(MinecartManiaWorld.isBlockIndirectlyPowered(chest.getWorld(), getX(), getY(), getZ()));
 	}
 	
@@ -40,7 +40,7 @@ public class MinecartManiaChest implements MinecartManiaInventory{
 	}
 	
 	public Chest getChest() {
-		return (Chest)MinecartManiaWorld.getBlockAt(chest.getWorld(), getX(), getY(), getZ()).getState();
+		return (Chest)chest.getBlock().getState();
 	}
 	
 	

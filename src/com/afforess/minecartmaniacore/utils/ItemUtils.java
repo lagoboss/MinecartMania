@@ -45,6 +45,7 @@ public class ItemUtils {
 			}
 			catch (Exception exception) {
 				//Now try string names
+				keys[i] = keys[i].replace(' ','_');
 				Material bestMaterial = null;
 				for (Material e : Material.values()) {
 					if (e != null) {
