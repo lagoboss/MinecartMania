@@ -95,6 +95,7 @@ public class MinecartManiaCoreListener extends VehicleListener{
 			minecart.doRealisticFriction();
 			minecart.doLauncherBlock();
 			minecart.doPressurePlateRails();
+			minecart.updateChunks();
 			
 			if (minecart.hasChangedPosition()) {
 				

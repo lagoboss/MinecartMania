@@ -2,9 +2,9 @@ package com.afforess.minecartmaniacore;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.concurrent.ConcurrentHashMap;
-
 import net.minecraft.server.EntityMinecart;
 
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -647,5 +647,20 @@ loop:   for (Sign sign : signList) {
 
 	public int getEntityDetectionRange() {
 		return entityDetectionRange;
+	}
+
+	public void updateChunks() {
+		if (MinecartManiaWorld.isKeepMinecartsLoaded()) {
+			Chunk current = minecart.getLocation().getBlock().getChunk();
+			int range = 1;
+			for (int dx = -(range); dx <= range; dx++){
+				for (int dz = -(range); dz <= range; dz++){
+					Chunk chunk = current.getWorld().getChunkAt(current.getX() + dx, current.getZ() + dz);
+					if (!current.getWorld().isChunkLoaded(chunk)) {
+						current.getWorld().loadChunk(chunk);
+					}
+				}
+			}
+		}
 	}
 }

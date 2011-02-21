@@ -339,6 +339,15 @@ public class MinecartManiaWorld {
 		return getIntValue(getConfigurationValue("Maximum Minecart Speed Percent"));
 	}
 	
+	public static boolean isKeepMinecartsLoaded() {
+		Object o = getConfigurationValue("Keep Minecarts Loaded");
+		if (o != null) {
+			Boolean value = (Boolean)o;
+			return value.booleanValue();
+		}
+		return false;
+	}
+	
 	public static boolean isMinecartsKillMobs() {
 		Object o = getConfigurationValue("Minecarts Kill Mobs");
 		if (o != null) {

@@ -20,6 +20,12 @@ public class SettingList {
 				MinecartManiaCore.description.getName()
 		),
 		new Setting(
+				"Keep Minecarts Loaded", 
+				Boolean.FALSE, 
+				"The Server will Load Chunks around minecarts, and will not unload chunks with minecarts in them. May cause excessive RAM usage.",
+				MinecartManiaCore.description.getName()
+		),
+		new Setting(
 				"High Speed Booster Block", 
 				new Integer(Material.GOLD_BLOCK.getId()),
 				"Minecarts that pass over this will be boosted to the multiplier set below their current speed",

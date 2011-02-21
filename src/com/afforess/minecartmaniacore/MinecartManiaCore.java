@@ -16,6 +16,7 @@ public class MinecartManiaCore extends JavaPlugin {
 	
 	public final MinecartManiaCoreListener listener = new MinecartManiaCoreListener(this);
 	public final MinecartManiaCoreBlockListener blockListener = new MinecartManiaCoreBlockListener();
+	public final MinecartManiaCoreWorldListener worldListener = new MinecartManiaCoreWorldListener();
 	public static Logger log;
 	public static Server server;
 	public static Plugin instance;
@@ -34,6 +35,7 @@ public class MinecartManiaCore extends JavaPlugin {
         getServer().getPluginManager().registerEvent(Event.Type.VEHICLE_UPDATE, listener, Priority.Normal, this);
         getServer().getPluginManager().registerEvent(Event.Type.VEHICLE_COLLISION_ENTITY, listener, Priority.Normal, this);
         getServer().getPluginManager().registerEvent(Event.Type.VEHICLE_DAMAGE, listener, Priority.Monitor, this);
+        getServer().getPluginManager().registerEvent(Event.Type.CHUNK_UNLOADED, worldListener, Priority.Normal, this);
         getServer().getPluginManager().registerEvent(Event.Type.REDSTONE_CHANGE, blockListener, Priority.Monitor, this);
 
         PluginDescriptionFile pdfFile = this.getDescription();
