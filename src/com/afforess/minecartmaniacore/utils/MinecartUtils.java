@@ -8,6 +8,8 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
@@ -164,34 +166,39 @@ public class MinecartUtils {
 	}
 	
 	public static void doMinecartNearEntityCheck(MinecartManiaMinecart minecart) {
-		try {
-			List<Entity> entities = minecart.minecart.getWorld().getEntities();
-			ArrayList<MinecartNearEntityEvent> deadQueue = new ArrayList<MinecartNearEntityEvent>(50);
-	    	Vector location = minecart.minecart.getLocation().toVector();
-	    	int rangeSquared = minecart.getEntityDetectionRange() * minecart.getEntityDetectionRange();
-	    	for (Entity e : entities) {
-				if (e.getLocation().toVector().distanceSquared(location) <= rangeSquared) {
-					MinecartNearEntityEvent mnee = new MinecartNearEntityEvent(minecart, e);
-					//by default drop arrows
-					mnee.setCancelled(e instanceof Arrow);
-					mnee.setDrop(e instanceof Arrow ? new ItemStack(Material.ARROW, 1) : null);
-					MinecartManiaCore.server.getPluginManager().callEvent(mnee);
-					//If cancelled, kill them once we are done calling events
-					if (mnee.isCancelled()) {
-						deadQueue.add(mnee);
-					}
+		List<Entity> entities = minecart.minecart.getWorld().getEntities();
+		ArrayList<MinecartNearEntityEvent> deadQueue = new ArrayList<MinecartNearEntityEvent>(50);
+    	Vector location = minecart.minecart.getLocation().toVector();
+    	int rangeSquared = minecart.getEntityDetectionRange() * minecart.getEntityDetectionRange();
+    	boolean killmobs = MinecartManiaWorld.isMinecartsKillMobs();
+    	
+    	for (Entity e : entities) {
+    		double distance = e.getLocation().toVector().distanceSquared(location);
+    		
+			if (distance <= rangeSquared) {
+				MinecartNearEntityEvent mnee = new MinecartNearEntityEvent(minecart, e);
+				//by default drop arrows
+				boolean kill = e instanceof Arrow;
+				//kill nearby animals before we bump into them
+				if (distance <= 2) {
+					kill = kill || killmobs && (e instanceof LivingEntity && (!(e instanceof Player)));
 				}
-	    	}
-	    	
-	    	for (MinecartNearEntityEvent e : deadQueue) {
-	    		if (e.getDrop() != null) {
-	    			MinecartManiaWorld.dropItem(e.getEntity().getLocation(), e.getDrop());
-	    		}
-	    		MinecartManiaWorld.kill(e.getEntity());
-	    	}
-		}
-		catch (Exception e) {
-		}
+				mnee.setCancelled(kill);
+				mnee.setDrop(e instanceof Arrow ? new ItemStack(Material.ARROW, 1) : null);
+				MinecartManiaCore.server.getPluginManager().callEvent(mnee);
+				//If cancelled, kill them once we are done calling events
+				if (mnee.isCancelled()) {
+					deadQueue.add(mnee);
+				}
+			}
+    	}
+    	
+    	for (MinecartNearEntityEvent e : deadQueue) {
+    		if (e.getDrop() != null) {
+    			MinecartManiaWorld.dropItem(e.getEntity().getLocation(), e.getDrop());
+    		}
+    		MinecartManiaWorld.kill(e.getEntity());
+    	}
 	}
 	
 	public static void updateNearbyItems(MinecartManiaMinecart minecart) {

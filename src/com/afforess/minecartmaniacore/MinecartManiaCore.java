@@ -32,14 +32,14 @@ public class MinecartManiaCore extends JavaPlugin {
 		log = Logger.getLogger("Minecraft");
 		Configuration.loadConfiguration(description, SettingList.config);
 
-        getServer().getPluginManager().registerEvent(Event.Type.VEHICLE_UPDATE, listener, Priority.Normal, this);
-        getServer().getPluginManager().registerEvent(Event.Type.VEHICLE_COLLISION_ENTITY, listener, Priority.Normal, this);
-        getServer().getPluginManager().registerEvent(Event.Type.VEHICLE_DAMAGE, listener, Priority.Monitor, this);
-        getServer().getPluginManager().registerEvent(Event.Type.CHUNK_UNLOADED, worldListener, Priority.Normal, this);
-        getServer().getPluginManager().registerEvent(Event.Type.REDSTONE_CHANGE, blockListener, Priority.Monitor, this);
+		getServer().getPluginManager().registerEvent(Event.Type.VEHICLE_UPDATE, listener, Priority.Normal, this);
+		getServer().getPluginManager().registerEvent(Event.Type.VEHICLE_COLLISION_ENTITY, listener, Priority.Normal, this);
+		getServer().getPluginManager().registerEvent(Event.Type.VEHICLE_DAMAGE, listener, Priority.Monitor, this);
+		getServer().getPluginManager().registerEvent(Event.Type.CHUNK_UNLOADED, worldListener, Priority.Normal, this);
+		getServer().getPluginManager().registerEvent(Event.Type.REDSTONE_CHANGE, blockListener, Priority.Monitor, this);
 
-        PluginDescriptionFile pdfFile = this.getDescription();
-        log.info( pdfFile.getName() + " version " + pdfFile.getVersion() + " is enabled!" );
+		PluginDescriptionFile pdfFile = this.getDescription();
+		log.info( pdfFile.getName() + " version " + pdfFile.getVersion() + " is enabled!" );
 	}
 	
 	public void onDisable(){

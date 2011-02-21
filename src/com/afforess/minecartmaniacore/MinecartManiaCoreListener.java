@@ -61,37 +61,6 @@ public class MinecartManiaCoreListener extends VehicleListener{
 				MinecartManiaCore.server.getPluginManager().callEvent(mmse);
 			}
 			minecart.setWasMovingLastTick(minecart.isMoving());
-			
-			//Workaround until VehicleEnter and VehicleExit work
-			Object data = minecart.getDataValue("PrevPassenger");
-			if (data != null) {
-				LivingEntity prevPassenger = (LivingEntity)data;
-				//Passenger disembarked
-				if (minecart.minecart.getPassenger() == null) {
-					//VehicleExitEvent vee = new VehicleExitEvent(Type.VEHICLE_EXIT, minecart.minecart, prevPassenger);
-					//MinecartManiaCore.server.getPluginManager().callEvent(vee);
-					//if (vee.isCancelled()) {
-					//	minecart.minecart.setPassenger(prevPassenger);
-					//}
-					//else {
-						minecart.setDataValue("PrevPassenger", null);
-					//}
-				}
-			}
-			else if (data == null) {
-				//New Passenger
-				if (minecart.minecart.getPassenger() != null) {
-					VehicleEnterEvent vee = new VehicleEnterEvent(Type.VEHICLE_ENTER, minecart.minecart, (LivingEntity) minecart.minecart.getPassenger());
-					MinecartManiaCore.server.getPluginManager().callEvent(vee);
-					if (vee.isCancelled()) {
-						minecart.minecart.eject();
-					}
-					else {
-						minecart.setDataValue("PrevPassenger", minecart.minecart.getPassenger());
-					}
-				}
-			}
-			//End Workaround
 			minecart.doRealisticFriction();
 			minecart.doLauncherBlock();
 			minecart.doPressurePlateRails();
