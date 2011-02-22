@@ -203,7 +203,6 @@ public class MinecartManiaDispenser implements MinecartManiaInventory{
 		return getDispenser().getInventory().getSize();
 	}
 
-	@Override
 	public Inventory getInventory() {
 		return getDispenser().getInventory();
 	}
@@ -211,6 +210,16 @@ public class MinecartManiaDispenser implements MinecartManiaInventory{
 	@Override
 	public ItemStack[] getContents() {
 		return getDispenser().getInventory().getContents();
+	}
+	
+	@Override
+	public int first(Material m) {
+		return getInventory().first(m);
+	}
+
+	@Override
+	public int first(int type) {
+		return getInventory().first(type);
 	}
 
 }

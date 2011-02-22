@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack;
 public class MinecartManiaChest implements MinecartManiaInventory{
 
 	private final Location chest;
-	private boolean RedstonePower;
+	private boolean redstonePower;
 	private ConcurrentHashMap<String, Object> data = new ConcurrentHashMap<String,Object>();
 	public MinecartManiaChest(Chest chest) {
 		this.chest = chest.getBlock().getLocation().clone();
@@ -285,11 +285,11 @@ public class MinecartManiaChest implements MinecartManiaInventory{
 	}
 
 	public void setRedstonePower(boolean redstonePower) {
-		RedstonePower = redstonePower;
+		this.redstonePower = redstonePower;
 	}
 
 	public boolean isRedstonePower() {
-		return RedstonePower;
+		return redstonePower;
 	}
 	
 	public void update() {
@@ -297,37 +297,47 @@ public class MinecartManiaChest implements MinecartManiaInventory{
 	}
 	
 	public String toString() {
-		return "[" + getX() + ":" + getY() + ":" + getZ() + "]";
+		return "[ MinecartManiaChest:" + getX() + ":" + getY() + ":" + getZ() + "]";
 	}
 
 	public int size() {
-		return getChest().getInventory().getSize();
+		return getInventory().getSize();
 	}
 
 	public ItemStack[] getContents() {
-		return getChest().getInventory().getContents();
+		return getInventory().getContents();
 	}
 
 	public ItemStack getItem(int slot) {
-		return getChest().getInventory().getItem(slot);
+		return getInventory().getItem(slot);
 	}
 
 	public void setItem(int slot, ItemStack item) {
 		if (item == null) {
-			getChest().getInventory().clear(slot);
+			getInventory().clear(slot);
 		}
 		else {
-			getChest().getInventory().setItem(slot, item);
+			getInventory().setItem(slot, item);
 		}
 		update();
 	}
 	
 	public int firstEmpty() {
-		return getChest().getInventory().firstEmpty();
+		return getInventory().firstEmpty();
 	}
 	
 	public Inventory getInventory() {
 		return getChest().getInventory();
+	}
+	
+	@Override
+	public int first(Material m) {
+		return getInventory().first(m);
+	}
+
+	@Override
+	public int first(int type) {
+		return getInventory().first(type);
 	}
 
 }

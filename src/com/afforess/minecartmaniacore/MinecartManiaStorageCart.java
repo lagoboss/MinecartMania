@@ -176,4 +176,14 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 	public int firstEmpty() {
 		return getInventory().firstEmpty();
 	}
+	
+	@Override
+	public int first(Material m) {
+		return getInventory().first(m);
+	}
+
+	@Override
+	public int first(int type) {
+		return getInventory().first(type);
+	}
 }

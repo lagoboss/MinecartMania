@@ -1,7 +1,6 @@
 package com.afforess.minecartmaniacore;
 
 import org.bukkit.Material;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 public interface MinecartManiaInventory {
@@ -28,7 +27,12 @@ public interface MinecartManiaInventory {
 	
 	public int size();
 	
-	public Inventory getInventory();
+	public int first(Material m);
+	
+	public int first(int type);
+	
+	//Just is just a kindness, but not nessecary.
+	//public Inventory getInventory();
 	
 	public ItemStack[] getContents();
 }
