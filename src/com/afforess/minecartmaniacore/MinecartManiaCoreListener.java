@@ -149,7 +149,7 @@ public class MinecartManiaCoreListener extends VehicleListener{
 							try {
 								CraftLivingEntity e = (CraftLivingEntity)victim;
 								EntityLiving el = e.getHandle();
-								el.q();
+								el.C();
 							}
 							catch (Exception e) {
 								victim.setHealth(0);
