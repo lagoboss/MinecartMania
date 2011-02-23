@@ -11,7 +11,6 @@ import net.minecraft.server.EntityLiving;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.entity.CraftLivingEntity;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.ItemDrop;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;

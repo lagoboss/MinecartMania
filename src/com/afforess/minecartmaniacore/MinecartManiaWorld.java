@@ -410,22 +410,6 @@ public class MinecartManiaWorld {
 	}
 	
 	/**
-	 ** Returns the block at the given x, y, z coordinates, guaranteed  to be thread safe
-	 ** @param w World to take effect in
-	 ** @param new block type id
-	 ** @param x coordinate
-	 ** @param y coordinate
-	 ** @param z coordinate
-	 **/
-	public static void setBlockAtThreadSafe(final World w, final int type, final int x, final int y, final int z) {
-		CraftWorld cw = (CraftWorld)w;
-		cw.getHandle().e(x, y, z, type);
-		/*MinecartManiaCore.server.getScheduler().scheduleSyncDelayedTask(MinecartManiaCore.instance, new Runnable() { public void run() {
-			w.getBlockAt(x, y, z).setTypeId(type);
-			}});*/
-	}
-	
-	/**
 	 ** Returns the block data at the given x, y, z coordinates
 	 ** @param w World to take effect in
 	 ** @param x coordinate
@@ -434,34 +418,6 @@ public class MinecartManiaWorld {
 	 **/
 	public static byte getBlockData(World w, int x, int y, int z) {
 		return w.getBlockAt(x, y, z).getData();
-	}
-	
-	/**
-	 ** Returns the block data at the given x, y, z coordinates
-	 ** @param w World to take effect in
-	 ** @param x coordinate
-	 ** @param y coordinate
-	 ** @param z coordinate
-	 **/
-	public static byte getBlockDataThreadSafe(final World w, final int x, final int y, final int z) {
-		CraftWorld cw = (CraftWorld)w;
-		return (byte) cw.getHandle().getData(x, y, z);
-		
-		/*
-		try {
-			Future<Integer> c = MinecartManiaCore.server.getScheduler().callSyncMethod(MinecartManiaCore.instance, 
-			new Callable<Integer>() { 
-				public Integer call(){
-					try {
-							return new Integer(w.getBlockAt(x, y, z).getData());
-						} 
-					catch (Exception e) { return new Integer(0); }
-				} } );
-			return c.get().byteValue();
-		} catch (Exception e) {
-			return 0;
-		}*/
-		
 	}
 	
 	/**
@@ -487,7 +443,6 @@ public class MinecartManiaWorld {
 	 **/
 	public static boolean isBlockIndirectlyPowered(World w, int x, int y, int z) {
 		return getBlockAt(w, x, y, z).isBlockIndirectlyPowered();
-		//return isBlockPowered(x+1, y, z) || isBlockPowered(x-1, y, z) || isBlockPowered(x, y, z+1) || isBlockPowered(x, y, z-1) || isBlockPowered(x, y-1, z);
 	}
 	
 	/**
@@ -499,11 +454,6 @@ public class MinecartManiaWorld {
 	 **/
 	public static boolean isBlockPowered(World w, int x, int y, int z) {
 		return getBlockAt(w, x, y, z).isBlockPowered();
-		//MaterialData md = getWorld().getBlockAt(x, y, z).getState().getData();
-		//if (md instanceof Redstone) {
-		//	return ((Redstone) md).isPowered();
-		//}
-		//return false;
 	}
 	
 	/**
@@ -622,7 +572,7 @@ public class MinecartManiaWorld {
 		//force this to run on the main thread
 		MinecartManiaCore.server.getScheduler().scheduleSyncDelayedTask(MinecartManiaCore.instance, new Runnable() { public void run() {
 			CraftEntity ce = (CraftEntity)e;
-			ce.getHandle().q();
+			ce.getHandle().C();
 			}});
 	}
 	

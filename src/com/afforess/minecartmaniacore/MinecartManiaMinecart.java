@@ -631,7 +631,7 @@ loop:   for (Sign sign : signList) {
 			MinecartManiaWorld.delMinecartManiaMinecart(minecart.getEntityId());
 			CraftMinecart cart = (CraftMinecart)minecart;
 			EntityMinecart em = (EntityMinecart) cart.getHandle();
-			em.q();
+			em.C();
 			
 			
 		}
