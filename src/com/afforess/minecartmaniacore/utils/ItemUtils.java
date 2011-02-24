@@ -40,6 +40,10 @@ public class ItemUtils {
 		ArrayList<Material> items = new ArrayList<Material>();
 		for (int line = 0; line < list.length; line++) {
 			String str = StringUtils.removeBrackets(list[line].toLowerCase());
+			str = str.trim();
+			if (str.isEmpty()) {
+				continue;
+			}
 			
 			//short circuit if it's everything
 			if (str.contains("all items")) {
@@ -56,9 +60,12 @@ public class ItemUtils {
 				Material type = null;
 				//check if we need to remove this item
 				boolean remove = keys[i].contains("!");
+				if (remove) {
+					keys[i] = keys[i].replace('!', ' ');
+				}
+				keys[i] = keys[i].trim();
 				//Parse the numbers first. Can be separated by "-" or ":"
 				try {
-					
 					String num = StringUtils.getNumber(keys[i]);
 					int id = Integer.parseInt(num);
 					type = Material.getMaterial(id);
@@ -83,12 +90,13 @@ public class ItemUtils {
 				if (type != null) {
 					if (!remove)
 						items.add(type);
-					else
+					else {
 						items.remove(type);
+						System.out.println("removed " + type);
+					}
 				}
 			}
 		}
-
 		Material itemList[] = new Material[items.size()];
 		return items.toArray(itemList);
 	}

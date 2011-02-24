@@ -109,8 +109,9 @@ public class MinecartManiaChest implements MinecartManiaInventory{
 		if (item == null) {
 			return true;
 		}
+		//WTF is it with air
 		if (item.getTypeId() == Material.AIR.getId()) {
-			return true;
+			return false;
 		}
 		Inventory inventory =  getChest().getInventory();
 		//Backup contents
