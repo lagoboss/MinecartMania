@@ -297,7 +297,7 @@ public class MinecartManiaChest implements MinecartManiaInventory{
 	}
 	
 	public String toString() {
-		return "[ MinecartManiaChest:" + getX() + ":" + getY() + ":" + getZ() + "]";
+		return "[" + getX() + ":" + getY() + ":" + getZ() + "]";
 	}
 
 	public int size() {
