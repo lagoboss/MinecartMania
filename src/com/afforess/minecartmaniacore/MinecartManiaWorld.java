@@ -564,12 +564,8 @@ public class MinecartManiaWorld {
 	}
 	
 	public static void kill(final Entity e) {
-		//force this to run on the main thread
 		e.remove();
-		//MinecartManiaCore.server.getScheduler().scheduleSyncDelayedTask(MinecartManiaCore.instance, new Runnable() { public void run() {
-			//CraftEntity ce = (CraftEntity)e;
-			//ce.getHandle().C();
-			//}});
+
 	}
 	
 	public static void dropItem(final Location loc, final ItemStack item) {
