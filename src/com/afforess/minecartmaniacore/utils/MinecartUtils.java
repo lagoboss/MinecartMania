@@ -1,23 +1,11 @@
 package com.afforess.minecartmaniacore.utils;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.Vector;
-
-import com.afforess.minecartmaniacore.MinecartManiaCore;
 import com.afforess.minecartmaniacore.MinecartManiaMinecart;
 import com.afforess.minecartmaniacore.MinecartManiaTaskScheduler;
 import com.afforess.minecartmaniacore.MinecartManiaWorld;
-import com.afforess.minecartmaniacore.event.MinecartNearEntityEvent;
 
 
 public class MinecartUtils {
@@ -166,7 +154,8 @@ public class MinecartUtils {
 	}
 	
 	public static void doMinecartNearEntityCheck(MinecartManiaMinecart minecart) {
-		List<Entity> entities = minecart.minecart.getWorld().getEntities();
+		//TODO: reenable once bukkit gets their act together
+		/*List<Entity> entities = minecart.minecart.getWorld().getEntities();
 		ArrayList<MinecartNearEntityEvent> deadQueue = new ArrayList<MinecartNearEntityEvent>(50);
     	Vector location = minecart.minecart.getLocation().toVector();
     	int rangeSquared = minecart.getEntityDetectionRange() * minecart.getEntityDetectionRange();
@@ -198,7 +187,7 @@ public class MinecartUtils {
     			MinecartManiaWorld.dropItem(e.getEntity().getLocation(), e.getDrop());
     		}
     		MinecartManiaWorld.kill(e.getEntity());
-    	}
+    	}*/
 	}
 	
 	public static void updateNearbyItems(MinecartManiaMinecart minecart) {

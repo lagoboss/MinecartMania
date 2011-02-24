@@ -2,15 +2,12 @@ package com.afforess.minecartmaniacore;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.concurrent.ConcurrentHashMap;
-import net.minecraft.server.EntityMinecart;
-
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
-import org.bukkit.craftbukkit.entity.CraftMinecart;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
@@ -629,9 +626,10 @@ loop:   for (Sign sign : signList) {
 			MinecartManiaCore.server.getPluginManager().callEvent(mmmee);
 			
 			MinecartManiaWorld.delMinecartManiaMinecart(minecart.getEntityId());
-			CraftMinecart cart = (CraftMinecart)minecart;
-			EntityMinecart em = (EntityMinecart) cart.getHandle();
-			em.C();
+			//CraftMinecart cart = (CraftMinecart)minecart;
+			//EntityMinecart em = (EntityMinecart) cart.getHandle();
+			//em.C();
+			minecart.remove();
 			
 			
 		}

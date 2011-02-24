@@ -3,7 +3,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-import net.minecraft.server.EntityItem;
 import net.minecraft.server.EntityMinecart;
 
 import org.bukkit.Material;
@@ -14,14 +13,10 @@ import org.bukkit.block.Dispenser;
 import org.bukkit.block.Furnace;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.CraftWorld;
-import org.bukkit.craftbukkit.entity.CraftEntity;
-import org.bukkit.craftbukkit.entity.CraftItem;
 import org.bukkit.craftbukkit.entity.CraftMinecart;
 import org.bukkit.craftbukkit.entity.CraftPoweredMinecart;
 import org.bukkit.craftbukkit.entity.CraftStorageMinecart;
-import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.StorageMinecart;
@@ -570,10 +565,11 @@ public class MinecartManiaWorld {
 	
 	public static void kill(final Entity e) {
 		//force this to run on the main thread
-		MinecartManiaCore.server.getScheduler().scheduleSyncDelayedTask(MinecartManiaCore.instance, new Runnable() { public void run() {
-			CraftEntity ce = (CraftEntity)e;
-			ce.getHandle().C();
-			}});
+		e.remove();
+		//MinecartManiaCore.server.getScheduler().scheduleSyncDelayedTask(MinecartManiaCore.instance, new Runnable() { public void run() {
+			//CraftEntity ce = (CraftEntity)e;
+			//ce.getHandle().C();
+			//}});
 	}
 	
 	public static void dropItem(final Location loc, final ItemStack item) {
@@ -582,15 +578,6 @@ public class MinecartManiaWorld {
 			loc.getWorld().dropItem(loc, item);
 			}});
 	}
-	
-	public static ItemStack ItemToItemStack(Item i) {
-		CraftItem ci = (CraftItem)i;
-		EntityItem ei = (EntityItem)ci.getHandle();
-		CraftItemStack cis = new CraftItemStack(ei.a.id, ei.a.count);
-		cis.setDurability((short) ei.a.damage);
-		return (ItemStack)cis;
-	}
-	
 }
 
 

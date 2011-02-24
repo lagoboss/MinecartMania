@@ -25,13 +25,7 @@ public class ItemUtils {
 	 */
 	public static Material[] getItemStringToMaterial(String str) {
 		ArrayList<Material> items = new ArrayList<Material>();
-		if (str.indexOf('[') > -1) {
-			str = str.substring(str.indexOf('[') + 1);
-		}
-		if (str.indexOf(']') > -1) {
-			str = str.substring(0, str.indexOf(']'));
-		}
-		str = str.toLowerCase();
+		str = StringUtils.removeBrackets(str.toLowerCase());
 		
 		String[] keys = str.split("-| ?: ?");
 		for (int i = 0; i < keys.length; i++) {
