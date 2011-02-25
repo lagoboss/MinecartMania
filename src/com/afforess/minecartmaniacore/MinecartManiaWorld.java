@@ -195,7 +195,8 @@ public class MinecartManiaWorld {
         } 
         else {
         	//Verify that this block is still a furnace (could have been changed)
-        	if (MinecartManiaWorld.getBlockIdAt(testFurnace.getWorld(), testFurnace.getX(), testFurnace.getY(), testFurnace.getZ()) == Material.FURNACE.getId()) {
+        	if (MinecartManiaWorld.getBlockIdAt(testFurnace.getWorld(), testFurnace.getX(), testFurnace.getY(), testFurnace.getZ()) == Material.FURNACE.getId()
+        			|| MinecartManiaWorld.getBlockIdAt(testFurnace.getWorld(), testFurnace.getX(), testFurnace.getY(), testFurnace.getZ()) == Material.BURNING_FURNACE.getId()) {
         		return testFurnace;
         	}
         	else {

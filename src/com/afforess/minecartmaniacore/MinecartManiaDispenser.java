@@ -222,4 +222,15 @@ public class MinecartManiaDispenser implements MinecartManiaInventory{
 		return getInventory().first(type);
 	}
 
+	@Override
+	public boolean isEmpty() {
+		for (ItemStack i : getContents()) {
+			//I hate you too, air.
+			if (i != null && i.getType() != Material.AIR) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 }

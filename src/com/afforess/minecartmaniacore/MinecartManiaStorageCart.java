@@ -186,4 +186,15 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 	public int first(int type) {
 		return getInventory().first(type);
 	}
+
+	@Override
+	public boolean isEmpty() {
+		for (ItemStack i : getContents()) {
+			//I hate you too, air.
+			if (i != null && i.getType() != Material.AIR) {
+				return false;
+			}
+		}
+		return true;
+	}
 }

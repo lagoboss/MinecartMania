@@ -185,7 +185,9 @@ public class MinecartManiaFurnace implements MinecartManiaInventory{
 
 	@Override
 	public ItemStack getItem(int slot) {
-		return getInventory().getItem(slot);
+		ItemStack i = getInventory().getItem(slot);
+		//WTF is it with bukkit and returning air instead of null?
+		return i == null ? null : (i.getTypeId() == Material.AIR.getId() ? null : i);
 	}
 
 	@Override
@@ -220,6 +222,17 @@ public class MinecartManiaFurnace implements MinecartManiaInventory{
 	@Override
 	public int first(int type) {
 		return getInventory().first(type);
+	}
+
+	@Override
+	public boolean isEmpty() {
+		for (ItemStack i : getContents()) {
+			//I hate you too, air.
+			if (i != null && i.getType() != Material.AIR) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 }

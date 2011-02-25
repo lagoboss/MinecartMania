@@ -131,4 +131,15 @@ public class MinecartManiaDoubleChest implements MinecartManiaInventory{
 		return -1;
 	}
 
+	@Override
+	public boolean isEmpty() {
+		for (ItemStack i : getContents()) {
+			//I hate you too, air.
+			if (i != null && i.getType() != Material.AIR) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 }

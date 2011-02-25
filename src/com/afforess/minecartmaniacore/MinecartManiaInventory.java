@@ -31,6 +31,8 @@ public interface MinecartManiaInventory {
 	
 	public int first(int type);
 	
+	public boolean isEmpty();
+	
 	//Just is just a kindness, but not nessecary.
 	//public Inventory getInventory();
 	
