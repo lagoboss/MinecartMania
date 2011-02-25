@@ -24,8 +24,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Button;
 import org.bukkit.material.Lever;
 import org.bukkit.material.MaterialData;
-import org.bukkit.material.RedstoneTorch;
-import org.bukkit.material.RedstoneWire;
 import org.bukkit.Location;
 
 public class MinecartManiaWorld {
@@ -461,14 +459,17 @@ public class MinecartManiaWorld {
 	 **/
 	public static void setBlockPowered(World w, int x, int y, int z, boolean power) {
 		MaterialData md = getBlockAt(w, x, y, z).getState().getData();
-		if (md instanceof RedstoneWire) {
-			getBlockAt(w, x, y, z).getState().setData(new MaterialData(getBlockAt(w, x, y, z).getState().getTypeId(), (byte)(power ?  16 : 0)));
+		int data = getBlockData(w, x, y, z);
+		if (getBlockAt(w, x, y, z).getType().equals(Material.DIODE_BLOCK_OFF) && power) {
+			setBlockAt(w, Material.DIODE_BLOCK_ON.getId(), x, y, z);
+			setBlockData(w, x, y, z, (byte)data);
 		}
-		else if (md instanceof RedstoneTorch) {
-			getBlockAt(w, x, y, z).getState().setData(new MaterialData(power ? Material.REDSTONE_TORCH_ON : Material.REDSTONE_TORCH_OFF));
+		else if (getBlockAt(w, x, y, z).getType().equals(Material.DIODE_BLOCK_ON) && !power) {
+			setBlockAt(w, Material.DIODE_BLOCK_OFF.getId(), x, y, z);
+			setBlockData(w, x, y, z, (byte)data);
 		}
 		else if (md instanceof Lever || md instanceof Button) {
-			getBlockAt(w, x, y, z).getState().setData(new MaterialData(getBlockAt(w, x, y, z).getState().getTypeId(), (byte)(power ? md.getData() | 0x8 : md.getData() & 0x7)));
+			setBlockData(w, x, y, z, ((byte)(power ? data | 0x8 : data & 0x7)));
 		}
 	}
 	
