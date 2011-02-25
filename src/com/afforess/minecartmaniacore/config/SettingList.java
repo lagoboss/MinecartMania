@@ -45,7 +45,7 @@ public class SettingList {
 		),
 		new Setting(
 				"High Speed Booster Block Multiplier", 
-				new Integer(8),
+				new Integer(12),
 				"Multiplier for High Speed Booster Blocks. Do not use absurd values.",
 				MinecartManiaCore.description.getName()
 		),
@@ -57,7 +57,7 @@ public class SettingList {
 		),
 		new Setting(
 				"Low Speed Booster Block Multiplier", 
-				new Integer(2),
+				new Integer(3),
 				"Multiplier for Low Speed Booster Blocks. Do not use absurd values.",
 				MinecartManiaCore.description.getName()
 		),
@@ -69,7 +69,7 @@ public class SettingList {
 		),
 		new Setting(
 				"High Speed Brake Block Divisor", 
-				new Integer(8),
+				new Integer(16),
 				"Multiplier for High Speed Brake Blocks. Do not use absurd values.",
 				MinecartManiaCore.description.getName()
 		),
@@ -81,7 +81,7 @@ public class SettingList {
 		),
 		new Setting(
 				"Low Speed Brake Block Divisor", 
-				new Integer(2),
+				new Integer(4),
 				"Multiplier for Low Speed Brake Blocks. Do not use absurd values.",
 				MinecartManiaCore.description.getName()
 		),
