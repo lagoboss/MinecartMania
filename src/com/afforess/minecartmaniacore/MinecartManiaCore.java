@@ -21,7 +21,8 @@ public class MinecartManiaCore extends JavaPlugin {
 	public static Server server;
 	public static Plugin instance;
 	public static PluginDescriptionFile description;
-	public static final String dataDirectory = "plugins" + File.separator + "MinecartMania";
+	public static File data;
+	public static String dataDirectory = "plugins" + File.separator + "MinecartMania";
 	
 	
 
@@ -30,6 +31,12 @@ public class MinecartManiaCore extends JavaPlugin {
 		description = this.getDescription();
 		instance = this;
 		log = Logger.getLogger("Minecraft");
+		data = getDataFolder();
+		String path = data.getPath();
+		path = path.replace("plugins"+File.separatorChar+"MinecartManiaCore", "");
+		if (!path.isEmpty()) {
+			dataDirectory = path + dataDirectory;
+		}
 		Configuration.loadConfiguration(description, SettingList.config);
 
 		getServer().getPluginManager().registerEvent(Event.Type.VEHICLE_UPDATE, listener, Priority.Normal, this);

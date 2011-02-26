@@ -1,11 +1,23 @@
 package com.afforess.minecartmaniacore.utils;
 
+import java.util.List;
+import java.util.ArrayList;
+
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
+
+import com.afforess.minecartmaniacore.MinecartManiaCore;
 import com.afforess.minecartmaniacore.MinecartManiaMinecart;
 import com.afforess.minecartmaniacore.MinecartManiaTaskScheduler;
 import com.afforess.minecartmaniacore.MinecartManiaWorld;
+import com.afforess.minecartmaniacore.event.MinecartNearEntityEvent;
 
 
 public class MinecartUtils {
@@ -153,9 +165,7 @@ public class MinecartUtils {
 		return paths > 2;
 	}
 	
-	public static void doMinecartNearEntityCheck(MinecartManiaMinecart minecart) {
-		//TODO: reenable once bukkit gets their act together
-		/*List<Entity> entities = minecart.minecart.getWorld().getEntities();
+	public static void doMinecartNearEntityCheck(MinecartManiaMinecart minecart, List<Entity> entities) {
 		ArrayList<MinecartNearEntityEvent> deadQueue = new ArrayList<MinecartNearEntityEvent>(50);
     	Vector location = minecart.minecart.getLocation().toVector();
     	int rangeSquared = minecart.getEntityDetectionRange() * minecart.getEntityDetectionRange();
@@ -187,13 +197,13 @@ public class MinecartUtils {
     			MinecartManiaWorld.dropItem(e.getEntity().getLocation(), e.getDrop());
     		}
     		MinecartManiaWorld.kill(e.getEntity());
-    	}*/
+    	}
 	}
 	
 	public static void updateNearbyItems(MinecartManiaMinecart minecart) {
-		Object[] param = { minecart };
+		Object[] param = { minecart, minecart.minecart.getWorld().getEntities() };
 		@SuppressWarnings("rawtypes")
-		Class[] paramtype = { MinecartManiaMinecart.class };
+		Class[] paramtype = { MinecartManiaMinecart.class, List.class };
 		try {
 			//No reason to keep this on the main thread, fire it on a second thread
 			MinecartManiaTaskScheduler.doAsyncTask(MinecartUtils.class.getMethod("doMinecartNearEntityCheck", paramtype), 5, param);

@@ -388,7 +388,13 @@ public class MinecartManiaWorld {
 	 ** @param z coordinate
 	 **/	
 	public static int getBlockIdAt(World w, int x, int y, int z) {
-		return w.getBlockTypeIdAt(x, y, z);
+		try {
+			return ((CraftWorld)w).getHandle().getTypeId(x, y, z);
+		}
+		catch (Exception e) {
+			return w.getBlockTypeIdAt(x, y, z);
+		}
+		
 	}
 	
 	/**
@@ -400,7 +406,12 @@ public class MinecartManiaWorld {
 	 ** @param z coordinate
 	 **/
 	public static void setBlockAt(World w, int type, int x, int y, int z) {
-		w.getBlockAt(x, y, z).setTypeId(type);
+		try {
+			((CraftWorld)w).getHandle().e(x, y, z, type);
+		}
+		catch (Exception e) {
+			w.getBlockAt(x, y, z).setTypeId(type);
+		}
 	}
 	
 	/**
@@ -411,7 +422,12 @@ public class MinecartManiaWorld {
 	 ** @param z coordinate
 	 **/
 	public static byte getBlockData(World w, int x, int y, int z) {
-		return w.getBlockAt(x, y, z).getData();
+		try {
+			return (byte) ((CraftWorld)w).getHandle().getData(x, y, z);
+		}
+		catch (Exception e) {
+			return w.getBlockAt(x, y, z).getData();
+		}
 	}
 	
 	/**
@@ -425,7 +441,13 @@ public class MinecartManiaWorld {
 	public static void setBlockData(World w, int x, int y, int z, int data) {
 		//Better to crash than to write bad data!
 		if (data < 0 || data > Byte.MAX_VALUE) throw new IllegalArgumentException();
-		w.getBlockAt(x, y, z).setData((byte) (data));
+		try {
+			((CraftWorld)w).getHandle().b(x, y, z, getBlockIdAt(w,x,y,z), data);
+		}
+		catch (Exception e) {
+			w.getBlockAt(x, y, z).setData((byte) (data));
+		}
+		
 	}
 	
 	/**
