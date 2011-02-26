@@ -606,37 +606,47 @@ loop:   for (Sign sign : signList) {
 	}
 	
 	public void kill(boolean returnToOwner) {
-
-		try {
-			if (returnToOwner) {
-				Object owner = getOwner();
-				if (owner instanceof Player && MinecartManiaWorld.isReturnMinecartToOwner()) {
-					((Player)owner).getInventory().addItem(new ItemStack(getType(), 1));
-				}
-				else if (owner instanceof MinecartManiaChest && MinecartManiaWorld.isReturnMinecartToOwner()) {
-					((MinecartManiaChest)owner).addItem(getType().getId());
-				}
-				else {
-					minecart.getWorld().dropItemNaturally(minecart.getLocation(), new ItemStack(getType(), 1));
+		if (returnToOwner) {
+			//give the items back inside too
+			ArrayList<ItemStack> items = new ArrayList<ItemStack>();
+			if (isStorageMinecart()) {
+				for (ItemStack i : ((MinecartManiaStorageCart)this).getContents()) {
+					if (i != null && i.getType() != Material.AIR) {
+						items.add(i);
+					}
 				}
 			}
+			items.add(new ItemStack(getType(), 1));
 			
-			//Fire destroyed event
-			MinecartManiaMinecartDestroyedEvent mmmee = new MinecartManiaMinecartDestroyedEvent(this);
-			MinecartManiaCore.server.getPluginManager().callEvent(mmmee);
+			Object owner = getOwner();
+			MinecartManiaInventory inventory = null;
+			if (owner instanceof Player && MinecartManiaWorld.isReturnMinecartToOwner()) {
+				inventory = MinecartManiaWorld.getMinecartManiaPlayer((Player)owner);
+			}
+			else if (owner instanceof MinecartManiaChest && MinecartManiaWorld.isReturnMinecartToOwner()) {
+				inventory = ((MinecartManiaChest)owner);
+			}
 			
-			MinecartManiaWorld.delMinecartManiaMinecart(minecart.getEntityId());
-			//CraftMinecart cart = (CraftMinecart)minecart;
-			//EntityMinecart em = (EntityMinecart) cart.getHandle();
-			//em.C();
-			minecart.remove();
-			
-			
+			if (inventory != null) {
+				for (int i = 0; i < items.size(); i++) {
+					if (!inventory.addItem(items.get(i))) {
+						minecart.getWorld().dropItemNaturally(minecart.getLocation(), items.get(i));
+					}
+				}
+			}
+			else {
+				for (ItemStack i : items) {
+					minecart.getWorld().dropItemNaturally(minecart.getLocation(), i);
+				}
+			}	
 		}
-		catch (Exception e) {
-			//Failed to kill minecart
-		}
-
+		
+		//Fire destroyed event
+		MinecartManiaMinecartDestroyedEvent mmmee = new MinecartManiaMinecartDestroyedEvent(this);
+		MinecartManiaCore.server.getPluginManager().callEvent(mmmee);
+		
+		MinecartManiaWorld.delMinecartManiaMinecart(minecart.getEntityId());
+		minecart.remove();
 	}
 
 	public void setEntityDetectionRange(int range) {

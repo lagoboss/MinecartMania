@@ -258,10 +258,9 @@ public class MinecartManiaChest implements MinecartManiaInventory{
 	 ** @param item id to search for
 	 **/
 	public boolean contains(int type) {
-		Inventory inventory =  getChest().getInventory();
-		for (int i = 0; i < inventory.getSize(); i++) {
-			if (inventory.getItem(i) != null) {
-				if (inventory.getItem(i).getTypeId() == type) {
+		for (int i = 0; i < size(); i++) {
+			if (getItem(i) != null) {
+				if (getItem(i).getTypeId() == type) {
 					return true;
 				}
 			}
@@ -310,7 +309,9 @@ public class MinecartManiaChest implements MinecartManiaInventory{
 	}
 
 	public ItemStack getItem(int slot) {
-		return getInventory().getItem(slot);
+		ItemStack i = getInventory().getItem(slot);
+		//WTF is it with bukkit and returning air instead of null?
+		return i == null ? null : (i.getTypeId() == Material.AIR.getId() ? null : i);
 	}
 
 	public void setItem(int slot, ItemStack item) {

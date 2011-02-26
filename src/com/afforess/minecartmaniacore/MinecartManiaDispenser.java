@@ -68,12 +68,19 @@ public class MinecartManiaDispenser implements MinecartManiaInventory{
 	
 	@Override
 	public boolean contains(Material m) {
-		return getDispenser().getInventory().contains(m);
+		return contains(m.getId());
 	}
 
 	@Override
 	public boolean contains(int type) {
-		return getDispenser().getInventory().contains(type);
+		for (int i = 0; i < size(); i++) {
+			if (getItem(i) != null) {
+				if (getItem(i).getTypeId() == type) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -87,7 +94,7 @@ public class MinecartManiaDispenser implements MinecartManiaInventory{
 			return true;
 		}
 		if (item.getTypeId() == Material.AIR.getId()) {
-			return true;
+			return false;
 		}
 		Inventory inventory = getInventory();
 		//Backup contents
@@ -185,7 +192,9 @@ public class MinecartManiaDispenser implements MinecartManiaInventory{
 
 	@Override
 	public ItemStack getItem(int slot) {
-		return getDispenser().getInventory().getItem(slot);
+		ItemStack i = getInventory().getItem(slot);
+		//WTF is it with bukkit and returning air instead of null?
+		return i == null ? null : (i.getTypeId() == Material.AIR.getId() ? null : i);
 	}
 
 	@Override

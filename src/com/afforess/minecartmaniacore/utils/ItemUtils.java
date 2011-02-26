@@ -92,7 +92,6 @@ public class ItemUtils {
 						items.add(type);
 					else {
 						items.remove(type);
-						System.out.println("removed " + type);
 					}
 				}
 			}

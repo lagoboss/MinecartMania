@@ -68,12 +68,19 @@ public class MinecartManiaFurnace implements MinecartManiaInventory{
 	
 	@Override
 	public boolean contains(Material m) {
-		return getInventory().contains(m);
+		return contains(m.getId());
 	}
 
 	@Override
 	public boolean contains(int type) {
-		return getInventory().contains(type);
+		for (int i = 0; i < size(); i++) {
+			if (getItem(i) != null) {
+				if (getItem(i).getTypeId() == type) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -87,7 +94,7 @@ public class MinecartManiaFurnace implements MinecartManiaInventory{
 			return true;
 		}
 		if (item.getTypeId() == Material.AIR.getId()) {
-			return true;
+			return false;
 		}
 		Inventory inventory = getInventory();
 		//Backup contents

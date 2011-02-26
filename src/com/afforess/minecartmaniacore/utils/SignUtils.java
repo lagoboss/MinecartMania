@@ -2,6 +2,7 @@ package com.afforess.minecartmaniacore.utils;
 
 import java.util.ArrayList;
 
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Sign;
 
@@ -19,7 +20,11 @@ public class SignUtils {
 	}
 	
 	public static ArrayList<Sign> getAdjacentSignList(MinecartManiaMinecart minecart, int range) {
-		return getAdjacentSignList(minecart.minecart.getWorld(), minecart.getX(), minecart.getY()-1, minecart.getZ(), range);
+		return getAdjacentSignList(minecart.minecart.getLocation(), range);
+	}
+	
+	public static ArrayList<Sign> getAdjacentSignList(Location location, int range) {
+		return getAdjacentSignList(location.getWorld(), location.getBlockX(), location.getBlockY()-1, location.getBlockZ(), range);
 	}
 	
 	public static ArrayList<Sign> getAdjacentSignList(World w, int x, int y, int z, int range) {
@@ -38,7 +43,11 @@ public class SignUtils {
 	}
 	
 	public static ArrayList<Sign> getParallelSignList(MinecartManiaMinecart minecart) {
-		return getParallelSignList(minecart.minecart.getWorld(), minecart.getX(), minecart.getY(), minecart.getZ());
+		return getParallelSignList(minecart.minecart.getLocation());
+	}
+	
+	public static ArrayList<Sign> getParallelSignList(Location location) {
+		return getParallelSignList(location.getWorld(), location.getBlockX(), location.getBlockY()-1, location.getBlockZ());
 	}
 	
 	public static ArrayList<Sign> getParallelSignList(World w, int x, int y, int z){
@@ -60,7 +69,11 @@ public class SignUtils {
 	}
 	
 	public static ArrayList<Sign> getSignBeneathList(MinecartManiaMinecart minecart, int range) {
-		return getSignBeneathList(minecart.minecart.getWorld(), minecart.getX(), minecart.getY()-1, minecart.getZ(), range);
+		return getSignBeneathList(minecart.minecart.getLocation(), range);
+	}
+	
+	public static ArrayList<Sign> getSignBeneathList(Location location, int range) {
+		return getSignBeneathList(location.getWorld(), location.getBlockX(), location.getBlockY()-1, location.getBlockZ(), range);
 	}
 	
 	public static ArrayList<Sign> getSignBeneathList(World w, int x, int y, int z, int range) {
