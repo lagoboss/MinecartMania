@@ -182,11 +182,11 @@ public class MinecartUtils {
 				if (distance <= 2) {
 					kill = kill || killmobs && (e instanceof LivingEntity && (!(e instanceof Player)));
 				}
-				mnee.setCancelled(kill);
+				mnee.setActionTaken(kill);
 				mnee.setDrop(e instanceof Arrow ? new ItemStack(Material.ARROW, 1) : null);
 				MinecartManiaCore.server.getPluginManager().callEvent(mnee);
 				//If cancelled, kill them once we are done calling events
-				if (mnee.isCancelled()) {
+				if (mnee.isActionTaken()) {
 					deadQueue.add(mnee);
 				}
 			}

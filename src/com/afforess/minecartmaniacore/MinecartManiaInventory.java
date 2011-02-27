@@ -9,11 +9,15 @@ public interface MinecartManiaInventory {
 	
 	public boolean contains(int type);
 	
+	public boolean contains(int type, short durability);
+	
 	public boolean addItem(ItemStack item);
 	
 	public boolean addItem(int type);
 	
 	public boolean addItem(int type, int amount);
+	
+	public boolean removeItem(int type, int amount, short durability);
 	
 	public boolean removeItem(int type, int amount);
 	

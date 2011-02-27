@@ -1,15 +1,14 @@
 package com.afforess.minecartmaniacore.event;
 
 import org.bukkit.entity.Entity;
-import org.bukkit.event.Cancellable;
 import org.bukkit.inventory.ItemStack;
 
 import com.afforess.minecartmaniacore.MinecartManiaMinecart;
 
-public class MinecartNearEntityEvent extends org.bukkit.event.Event implements Cancellable{
+public class MinecartNearEntityEvent extends org.bukkit.event.Event implements MinecartEvent{
 	private MinecartManiaMinecart minecart;	
 	private Entity entity;
-	private boolean cancelled = false;
+	private boolean action = false;
 	private ItemStack drop = null;
 	
 	public MinecartNearEntityEvent(MinecartManiaMinecart cart, Entity entity) {
@@ -25,16 +24,6 @@ public class MinecartNearEntityEvent extends org.bukkit.event.Event implements C
 	public Entity getEntity() {
 		return entity;
 	}
-
-	@Override
-	public boolean isCancelled() {
-		return cancelled;
-	}
-
-	@Override
-	public void setCancelled(boolean cancel) {
-		cancelled = cancel;
-	}
 	
 	public ItemStack getDrop() {
 		return drop;
@@ -42,5 +31,15 @@ public class MinecartNearEntityEvent extends org.bukkit.event.Event implements C
 	
 	public void setDrop(ItemStack drop) {
 		this.drop = drop;
+	}
+
+	@Override
+	public boolean isActionTaken() {
+		return action;
+	}
+
+	@Override
+	public void setActionTaken(boolean Action) {
+		this.action = Action;
 	}
 }

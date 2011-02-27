@@ -332,17 +332,6 @@ loop:   for (Sign sign : signList) {
 						break loop;
 					}
 				}
-				if (sign.getLine(i).toLowerCase().contains("facing dir")) {
-					if (minecart.getPassenger() != null) {
-						DirectionUtils.CompassDirection facingDir = DirectionUtils.getDirectionFromMinecartRotation((minecart.getPassenger().getLocation().getYaw() - 90.0F) % 360.0F);
-						if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX(), getY(), getZ()+1, 2, facingDir)) {
-							sign.setLine(i, "[Facing Dir]");
-							sign.update();
-							setMotion(facingDir, 0.6D);
-							break loop;
-						}
-					}
-				}
 				if (sign.getLine(i).toLowerCase().contains("previous dir")) {
 					if (!this.getPreviousFacingDir().equals(DirectionUtils.CompassDirection.NO_DIRECTION)) {
 						if (MinecartUtils.validMinecartTrackAnyDirection(minecart.getWorld(), getX(), getY(), getZ()+1, 2)) {
@@ -374,7 +363,7 @@ loop:   for (Sign sign : signList) {
 		MinecartLaunchedEvent mle = new MinecartLaunchedEvent(this, minecart.getVelocity().clone());
 		stopCart();
 		MinecartManiaCore.server.getPluginManager().callEvent(mle);
-		if (mle.isCancelled()) {
+		if (mle.isActionTaken()) {
 			return;
 		}
 		else {

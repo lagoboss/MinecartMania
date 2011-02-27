@@ -4,9 +4,9 @@ import org.bukkit.util.Vector;
 
 import com.afforess.minecartmaniacore.MinecartManiaMinecart;
 
-public class MinecartLaunchedEvent extends org.bukkit.event.Event implements org.bukkit.event.Cancellable {
+public class MinecartLaunchedEvent extends org.bukkit.event.Event implements MinecartEvent {
 	private MinecartManiaMinecart minecart;
-	private boolean cancel = false;
+	private boolean action = false;
 	private Vector launchSpeed;
 	public MinecartLaunchedEvent(MinecartManiaMinecart cart, Vector speed) {
 		super("MinecartLaunchedEvent");
@@ -17,16 +17,6 @@ public class MinecartLaunchedEvent extends org.bukkit.event.Event implements org
 	public MinecartManiaMinecart getMinecart() {
 		return minecart;
 	}
-
-	@Override
-	public boolean isCancelled() {
-		return cancel;
-	}
-
-	@Override
-	public void setCancelled(boolean cancel) {
-		this.cancel = cancel;
-	}
 	
 	public Vector getLaunchSpeed() {
 		return launchSpeed.clone();
@@ -34,5 +24,15 @@ public class MinecartLaunchedEvent extends org.bukkit.event.Event implements org
 	
 	public void setLaunchSpeed(Vector speed) {
 		launchSpeed = speed;
+	}
+
+	@Override
+	public boolean isActionTaken() {
+		return action;
+	}
+
+	@Override
+	public void setActionTaken(boolean Action) {
+		this.action = Action;
 	}
 }

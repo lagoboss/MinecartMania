@@ -1,29 +1,45 @@
 package com.afforess.minecartmaniacore;
 
 import org.bukkit.Material;
-import org.bukkit.entity.Minecart;
-import org.bukkit.entity.StorageMinecart;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-public class MinecartManiaStorageCart extends MinecartManiaMinecart implements MinecartManiaInventory{
-
-	public MinecartManiaStorageCart(Minecart cart) {
-		super(cart);
-	}
-	
-	public MinecartManiaStorageCart(Minecart cart, String owner) {
-		super(cart, owner);
+public abstract class MinecartManiaSingleContainer implements MinecartManiaInventory{
+	private final Inventory inventory;
+	public MinecartManiaSingleContainer(Inventory i) {
+		inventory = i;
 	}
 	
 	public Inventory getInventory() {
-		return ((StorageMinecart)minecart).getInventory();
+		return inventory;
 	}
 	
+	@Override
+	public boolean contains(Material m) {
+		return contains(m.getId());
+	}
+
+	@Override
+	public boolean contains(int type) {
+		return contains(type, (short) -1);
+	}
+	
+	@Override
+	public boolean contains(int type, short durability) {
+		for (int i = 0; i < size(); i++) {
+			if (getItem(i) != null) {
+				if (getItem(i).getTypeId() == type && (durability == -1 || (getItem(i).getDurability() == durability))) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	/**
-	 ** attempts to add an itemstack to this storage chest. It adds items in a 'smart' manner, merging with existing itemstacks, until they
-	 ** reach the maximum size (64). If it fails, it will not alter the storage chest's previous contents.
-	 ** Causes of failure: Full storage chest
+	 ** attempts to add an itemstack to this container. It adds items in a 'smart' manner, merging with existing itemstacks, until they
+	 ** reach the maximum size (64). If it fails, it will not alter the container's previous contents.
+	 ** Causes of failure: Full container
 	 ** @param item to add
 	 **/
 	public boolean addItem(ItemStack item) {
@@ -48,7 +64,7 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 					}
 					else {
 						int diff = inventory.getItem(i).getAmount() + item.getAmount() - 64;
-						inventory.setItem(i, new ItemStack(item.getTypeId(), inventory.getItem(i).getAmount() + item.getAmount(), item.getDurability()));
+						inventory.setItem(i, new ItemStack(item.getTypeId(), 64, item.getDurability()));
 						item = new ItemStack(item.getTypeId(), diff);
 					}
 				}
@@ -69,7 +85,7 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 	}
 	
 	/**
-	 ** attempts to add a single item to this storage chest. If it fails, it will not alter the storage chest's previous contents
+	 ** attempts to add a single item to this container. If it fails, it will not alter the container's previous contents
 	 ** @param itemtype to add
 	 **/
 	public boolean addItem(int type) {
@@ -77,7 +93,7 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 	}
 	
 	/**
-	 ** attempts to add an itemstack to this storage chest. If it fails, it will not alter the storage chest's previous contents
+	 ** attempts to add an itemstack to this container. If it fails, it will not alter the container's previous contents
 	 ** @param itemtype to add
 	 ** @param the amount to add
 	 **/
@@ -86,12 +102,11 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 	}
 	
 	/**
-	 ** attempts to remove the specified amount of an item type from this storage chest. If it fails, it will not alter the storage chests previous contents.
+	 ** attempts to remove the specified amount of an item type from this container. If it fails, it will not alter the containers previous contents.
 	 ** @param itemtype to remove
 	 ** @param the amount to remove
 	 ** @param the durability of the item to remove (-1 for generic durability)
 	 **/
-	@Override
 	public boolean removeItem(int type, int amount, short durability) {
 		Inventory inventory = getInventory();
 		//Backup contents
@@ -122,7 +137,7 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 	}
 
 	/**
-	 ** attempts to remove the specified amount of an item type from this storage chest. If it fails, it will not alter the containers previous contents.
+	 ** attempts to remove the specified amount of an item type from this container. If it fails, it will not alter the containers previous contents.
 	 ** @param itemtype to remove
 	 ** @param the amount to remove
 	 **/
@@ -131,69 +146,40 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 	}
 	
 	/**
-	 ** attempts to remove a single item type from this storage chest. If it fails, it will not alter the storage chests previous contents.
+	 ** attempts to remove a single item type from this container. If it fails, it will not alter the containers previous contents.
 	 ** @param item type to remove
 	 **/
 	public boolean removeItem(int type) {
 		return removeItem(type, 1);
 	}
-	
-	/**
-	 ** Returns true if this storage chest or it's neighbor storage chest contains an itemstack of the given material
-	 ** @param Material to search for
-	 **/
-	public boolean contains(Material type) {
-		return contains(type.getId());
-	}
-	
-	/**
-	 ** Returns true if this storage chest or it's neighbor storage chest contains an itemstack of the given item id
-	 ** @param item id to search for
-	 **/
-	@Override
-	public boolean contains(int type) {
-		return contains(type, (short) -1);
-	}
-	
-	@Override
-	public boolean contains(int type, short durability) {
-		for (int i = 0; i < size(); i++) {
-			if (getItem(i) != null) {
-				if (getItem(i).getTypeId() == type && (durability == -1 || (getItem(i).getDurability() == durability))) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
 
-	public int size() {
-		return getInventory().getSize();
-	}
-
-	public ItemStack[] getContents() {
-		return getInventory().getContents();
-	}
-	
+	@Override
 	public ItemStack getItem(int slot) {
 		ItemStack i = getInventory().getItem(slot);
 		//WTF is it with bukkit and returning air instead of null?
 		return i == null ? null : (i.getTypeId() == Material.AIR.getId() ? null : i);
 	}
 
+	@Override
 	public void setItem(int slot, ItemStack item) {
-		if (item == null) {
-			getInventory().clear(slot);
-		}
-		else {
-			getInventory().setItem(slot, item);
-		}
+		getInventory().setItem(slot, item);
 	}
-	
+
+	@Override
 	public int firstEmpty() {
 		return getInventory().firstEmpty();
 	}
-	
+
+	@Override
+	public int size() {
+		return getInventory().getSize();
+	}
+
+	@Override
+	public ItemStack[] getContents() {
+		return getInventory().getContents();
+	}
+
 	@Override
 	public int first(Material m) {
 		return getInventory().first(m);

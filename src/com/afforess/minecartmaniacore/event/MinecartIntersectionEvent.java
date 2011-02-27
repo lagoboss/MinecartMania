@@ -2,7 +2,7 @@ package com.afforess.minecartmaniacore.event;
 
 import com.afforess.minecartmaniacore.MinecartManiaMinecart;
 
-public class MinecartIntersectionEvent extends org.bukkit.event.Event{
+public class MinecartIntersectionEvent extends org.bukkit.event.Event implements MinecartEvent {
 	private boolean action = false;
 	private MinecartManiaMinecart minecart;
 	

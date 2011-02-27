@@ -9,12 +9,13 @@ import org.bukkit.block.Chest;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-public class MinecartManiaChest implements MinecartManiaInventory{
+public class MinecartManiaChest extends MinecartManiaSingleContainer implements MinecartManiaInventory{
 
 	private final Location chest;
 	private boolean redstonePower;
 	private ConcurrentHashMap<String, Object> data = new ConcurrentHashMap<String,Object>();
 	public MinecartManiaChest(Chest chest) {
+		super(chest.getInventory());
 		this.chest = chest.getBlock().getLocation().clone();
 		setRedstonePower(MinecartManiaWorld.isBlockIndirectlyPowered(chest.getWorld(), getX(), getY(), getZ()));
 	}
@@ -167,38 +168,23 @@ public class MinecartManiaChest implements MinecartManiaInventory{
 		return false;
 	}
 	
-	/**
-	 ** attempts to add a single item to this chest. If it fails, it will not alter the chest's previous contents
-	 ** @param itemtype to add
-	 **/
-	public boolean addItem(int type) {
-		return addItem(new ItemStack(type, 1));
-	}
-	
-	/**
-	 ** attempts to add an itemstack to this chest. If it fails, it will not alter the chest's previous contents
-	 ** @param itemtype to add
-	 ** @param the amount to add
-	 **/
-	public boolean addItem(int type, int amount) {
-		return addItem(new ItemStack(type, amount));
-	}
 	
 	/**
 	 ** attempts to remove the specified amount of an item type from this chest. If it fails, it will not alter the chests previous contents.
 	 ** @param itemtype to remove
 	 ** @param the amount to remove
+	 ** @param the durability of the item to remove (-1 for generic durability)
 	 **/
-	public boolean removeItem(int type, int amount) {
+	public boolean removeItem(int type, int amount, short durability) {
 		Inventory inventory =  getChest().getInventory();
 		//Backup contents
 		ItemStack[] backup = inventory.getContents().clone();
 		
 		for (int i = 0; i < inventory.getSize(); i++) {
 			if (inventory.getItem(i) != null) {
-				if (inventory.getItem(i).getTypeId() == type) {
+				if (inventory.getItem(i).getTypeId() == type && (durability == -1 || (getItem(i).getDurability() == durability))) {
 					if (inventory.getItem(i).getAmount() - amount > 0) {
-						inventory.setItem(i, new ItemStack(type, inventory.getItem(i).getAmount() - amount));
+						inventory.setItem(i, new ItemStack(type, inventory.getItem(i).getAmount() - amount, durability));
 						update();
 						return true;
 					}
@@ -238,29 +224,14 @@ public class MinecartManiaChest implements MinecartManiaInventory{
 	}
 	
 	/**
-	 ** attempts to remove a single item type from this chest. If it fails, it will not alter the chests previous contents.
-	 ** @param item type to remove
-	 **/
-	public boolean removeItem(int type) {
-		return removeItem(type, 1);
-	}
-	
-	/**
-	 ** Returns true if this chest or it's neighbor chest contains an itemstack of the given material
-	 ** @param Material to search for
-	 **/
-	public boolean contains(Material type) {
-		return contains(type.getId());
-	}
-	
-	/**
 	 ** Returns true if this chest or it's neighbor chest contains an itemstack of the given item id
 	 ** @param item id to search for
+	 ** @param the durability of the item to remove (-1 for generic durability)
 	 **/
-	public boolean contains(int type) {
+	public boolean contains(int type, short durability) {
 		for (int i = 0; i < size(); i++) {
 			if (getItem(i) != null) {
-				if (getItem(i).getTypeId() == type) {
+				if (getItem(i).getTypeId() == type && (durability == -1 || (getItem(i).getDurability() == durability))) {
 					return true;
 				}
 			}
@@ -271,7 +242,7 @@ public class MinecartManiaChest implements MinecartManiaInventory{
 			//flag to prevent infinite recursion
 			if (getDataValue("neighbor") == null) {
 				neighbor.setDataValue("neighbor", Boolean.TRUE);
-				if (neighbor.contains(type)) {
+				if (neighbor.contains(type, durability)) {
 					return true;
 				}
 			}
@@ -300,57 +271,7 @@ public class MinecartManiaChest implements MinecartManiaInventory{
 		return "[" + getX() + ":" + getY() + ":" + getZ() + "]";
 	}
 
-	public int size() {
-		return getInventory().getSize();
-	}
-
-	public ItemStack[] getContents() {
-		return getInventory().getContents();
-	}
-
-	public ItemStack getItem(int slot) {
-		ItemStack i = getInventory().getItem(slot);
-		//WTF is it with bukkit and returning air instead of null?
-		return i == null ? null : (i.getTypeId() == Material.AIR.getId() ? null : i);
-	}
-
-	public void setItem(int slot, ItemStack item) {
-		if (item == null) {
-			getInventory().clear(slot);
-		}
-		else {
-			getInventory().setItem(slot, item);
-		}
-		update();
-	}
-	
-	public int firstEmpty() {
-		return getInventory().firstEmpty();
-	}
-	
 	public Inventory getInventory() {
 		return getChest().getInventory();
 	}
-	
-	@Override
-	public int first(Material m) {
-		return getInventory().first(m);
-	}
-
-	@Override
-	public int first(int type) {
-		return getInventory().first(type);
-	}
-
-	@Override
-	public boolean isEmpty() {
-		for (ItemStack i : getContents()) {
-			//I hate you too, air.
-			if (i != null && i.getType() != Material.AIR) {
-				return false;
-			}
-		}
-		return true;
-	}
-
 }
