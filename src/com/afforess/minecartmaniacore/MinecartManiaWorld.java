@@ -441,13 +441,7 @@ public class MinecartManiaWorld {
 	public static void setBlockData(World w, int x, int y, int z, int data) {
 		//Better to crash than to write bad data!
 		if (data < 0 || data > Byte.MAX_VALUE) throw new IllegalArgumentException();
-		try {
-			((CraftWorld)w).getHandle().b(x, y, z, getBlockIdAt(w,x,y,z), data);
-		}
-		catch (Exception e) {
-			w.getBlockAt(x, y, z).setData((byte) (data));
-		}
-		
+		w.getBlockAt(x, y, z).setData((byte) (data));
 	}
 	
 	/**
