@@ -49,7 +49,7 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 					else {
 						int diff = inventory.getItem(i).getAmount() + item.getAmount() - 64;
 						inventory.setItem(i, new ItemStack(item.getTypeId(), inventory.getItem(i).getAmount() + item.getAmount(), item.getDurability()));
-						item = new ItemStack(item.getTypeId(), diff);
+						item = new ItemStack(item.getTypeId(), diff, item.getDurability());
 					}
 				}
 			}
@@ -101,7 +101,7 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 			if (inventory.getItem(i) != null) {
 				if (inventory.getItem(i).getTypeId() == type && (durability == -1 || (getItem(i).getDurability() == durability))) {
 					if (inventory.getItem(i).getAmount() - amount > 0) {
-						inventory.setItem(i, new ItemStack(type, inventory.getItem(i).getAmount() - amount));
+						inventory.setItem(i, new ItemStack(type, inventory.getItem(i).getAmount() - amount, durability));
 						return true;
 					}
 					else if (inventory.getItem(i).getAmount() - amount == 0) {
