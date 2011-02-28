@@ -126,6 +126,7 @@ public class MinecartManiaWorld {
         else {
         	//Verify that this block is still a chest (could have been changed)
         	if (MinecartManiaWorld.getBlockIdAt(testChest.getWorld(), testChest.getX(), testChest.getY(), testChest.getZ()) == Material.CHEST.getId()) {
+        		testChest.updateInventory(testChest.getInventory());
         		return testChest;
         	}
         	else {
@@ -161,6 +162,7 @@ public class MinecartManiaWorld {
         else {
         	//Verify that this block is still a dispenser (could have been changed)
         	if (MinecartManiaWorld.getBlockIdAt(testDispenser.getWorld(), testDispenser.getX(), testDispenser.getY(), testDispenser.getZ()) == Material.DISPENSER.getId()) {
+        		testDispenser.updateInventory(testDispenser.getInventory());
         		return testDispenser;
         	}
         	else {
@@ -197,6 +199,7 @@ public class MinecartManiaWorld {
         	//Verify that this block is still a furnace (could have been changed)
         	if (MinecartManiaWorld.getBlockIdAt(testFurnace.getWorld(), testFurnace.getX(), testFurnace.getY(), testFurnace.getZ()) == Material.FURNACE.getId()
         			|| MinecartManiaWorld.getBlockIdAt(testFurnace.getWorld(), testFurnace.getX(), testFurnace.getY(), testFurnace.getZ()) == Material.BURNING_FURNACE.getId()) {
+        		testFurnace.updateInventory(testFurnace.getInventory());
         		return testFurnace;
         	}
         	else {
@@ -227,6 +230,9 @@ public class MinecartManiaWorld {
 		 if (testPlayer == null) {
 			 testPlayer = new MinecartManiaPlayer(player.getName());
 			 players.put(player.getName(), testPlayer);
+		 }
+		 if (testPlayer.isOnline()) {
+			 testPlayer.updateInventory(testPlayer.getPlayer().getInventory());
 		 }
 		 return testPlayer;
 	 }

@@ -5,13 +5,17 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 public abstract class MinecartManiaSingleContainer implements MinecartManiaInventory{
-	private final Inventory inventory;
+	private Inventory inventory;
 	public MinecartManiaSingleContainer(Inventory i) {
 		inventory = i;
 	}
 	
 	public Inventory getInventory() {
 		return inventory;
+	}
+	
+	public void updateInventory(Inventory inventory) {
+		this.inventory = inventory;
 	}
 	
 	@Override
