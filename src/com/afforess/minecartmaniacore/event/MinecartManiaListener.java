@@ -113,6 +113,15 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
 	}
 	
 	/**
+     * Called when a player inside of a minecart tap on the minecart from the inside
+     * 
+     * @param event
+     */
+	public void onMinecartClickedEvent(MinecartClickedEvent event) {
+		
+	}
+	
+	/**
      * Avoid using.
      * 
      * @param event
@@ -150,6 +159,9 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
 		}
 		else if (event instanceof MinecartManiaMinecartCreatedEvent) {
 			onMinecartManiaMinecartCreatedEvent((MinecartManiaMinecartCreatedEvent)event);
+		}
+		else if (event instanceof MinecartClickedEvent) {
+			onMinecartClickedEvent((MinecartClickedEvent)event);
 		}
 	}
 

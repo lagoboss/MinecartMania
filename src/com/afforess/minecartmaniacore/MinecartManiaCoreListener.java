@@ -8,12 +8,15 @@ import org.bukkit.util.Vector;
 
 import net.minecraft.server.EntityLiving;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.entity.CraftLivingEntity;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Vehicle;
 import org.bukkit.event.Event;
 import org.bukkit.event.Event.Type;
 import org.bukkit.event.vehicle.VehicleDamageEvent;
@@ -27,9 +30,12 @@ import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.afforess.minecartmaniacore.event.MinecartActionEvent;
+import com.afforess.minecartmaniacore.event.MinecartClickedEvent;
 import com.afforess.minecartmaniacore.event.MinecartIntersectionEvent;
 import com.afforess.minecartmaniacore.event.MinecartMotionStartEvent;
 import com.afforess.minecartmaniacore.event.MinecartMotionStopEvent;
+import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
+import com.afforess.minecartmaniacore.utils.EntityUtils;
 import com.afforess.minecartmaniacore.utils.MinecartUtils;
 
 @SuppressWarnings("unused")
@@ -66,7 +72,7 @@ public class MinecartManiaCoreListener extends VehicleListener{
 			minecart.updateChunks();
 			
 			if (minecart.hasChangedPosition()) {
-				
+
 				if (minecart.isAtIntersection()) {
 					MinecartIntersectionEvent mie = new MinecartIntersectionEvent(minecart);
 					MinecartManiaCore.server.getPluginManager().callEvent(mie);
@@ -109,10 +115,22 @@ public class MinecartManiaCoreListener extends VehicleListener{
 		if (event.getVehicle() instanceof Minecart) {
     		MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart((Minecart)event.getVehicle());
     		if (!event.isCancelled()) {
-	    		if ((event.getDamage() * 10) + minecart.minecart.getDamage() > 40) {
+	    		if ((event.getDamage()) + minecart.minecart.getDamage() > 40) {
 	    			event.setDamage(0);
 	    			event.setCancelled(true);
 	    			minecart.kill();
+	    		}
+	    		else if (minecart.minecart.getPassenger() != null) {
+        			if (minecart.isOnRails()) {
+        				if(event.getAttacker() != null && event.getAttacker().getEntityId() == minecart.minecart.getPassenger().getEntityId()) {
+        					MinecartClickedEvent mce = new MinecartClickedEvent(minecart);
+        					MinecartManiaCore.server.getPluginManager().callEvent(mce);
+        					if (mce.isActionTaken()) {
+        						event.setDamage(0);
+        						event.setCancelled(true);
+        					}
+        				}
+        			}
 	    		}
     		}
 		}

@@ -8,6 +8,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
@@ -384,13 +385,13 @@ loop:   for (Sign sign : signList) {
 			throw new IllegalArgumentException();
 	}
 
-	public DirectionUtils.CompassDirection getDirectionOfMotion()
+	public CompassDirection getDirectionOfMotion()
 	{
-		if (getMotionX() < 0.0D) return DirectionUtils.CompassDirection.NORTH;
-		if (getMotionZ() < 0.0D) return DirectionUtils.CompassDirection.EAST;
-		if (getMotionX() > 0.0D) return DirectionUtils.CompassDirection.SOUTH;
-		if (getMotionZ() > 0.0D) return DirectionUtils.CompassDirection.WEST;
-		return DirectionUtils.CompassDirection.NO_DIRECTION;
+		if (getMotionX() < 0.0D) return CompassDirection.NORTH;
+		if (getMotionZ() < 0.0D) return CompassDirection.EAST;
+		if (getMotionX() > 0.0D) return CompassDirection.SOUTH;
+		if (getMotionZ() > 0.0D) return CompassDirection.WEST;
+		return CompassDirection.NO_DIRECTION;
 	}
 
 	public boolean doEjectorBlock() {
@@ -590,6 +591,20 @@ loop:   for (Sign sign : signList) {
 		return MinecartManiaCore.server.getPlayer(owner);
 	}
 	
+	public boolean isOwner(Entity e) {
+		Object owner = getOwner();
+		if (owner == null) {
+			return false;
+		}
+		if (owner instanceof Player) {
+			return ((Player)owner).getEntityId() == e.getEntityId();
+		}
+		if (owner instanceof MinecartManiaChest) {
+			return ((MinecartManiaChest) owner).getLocation().equals(e.getLocation());
+		}
+		return false;
+	}
+	
 	public void kill() {
 		kill(true);
 	}
@@ -659,5 +674,34 @@ loop:   for (Sign sign : signList) {
 				}
 			}
 		}
+	}
+	
+	public boolean isApproaching(Vector v) {
+		if (!isMoving()) {
+			return false;
+		}
+		CompassDirection direction = getDirectionOfMotion();
+		if (direction == CompassDirection.NORTH) {
+			if (minecart.getLocation().getX() - v.getX() < 3.0D && minecart.getLocation().getX() - v.getX() > 0.0D) {
+				return Math.abs(minecart.getLocation().getZ() - v.getZ()) < 1.5D;
+			}
+		}
+		if (direction == CompassDirection.SOUTH) {
+			if (minecart.getLocation().getX() - v.getX() > -3.0D && minecart.getLocation().getX() - v.getX() < 0.0D) {
+				return Math.abs(minecart.getLocation().getZ() - v.getZ()) < 1.5D;
+			}
+		}
+		if (direction == CompassDirection.EAST) {
+			if (minecart.getLocation().getZ() - v.getZ() < 3.0D && minecart.getLocation().getZ() - v.getZ() > 0.0D) {
+				return Math.abs(minecart.getLocation().getX() - v.getX()) < 1.5D;
+			}
+		}
+		if (direction == CompassDirection.WEST) {
+			if (minecart.getLocation().getZ() - v.getZ() > -3.0D && minecart.getLocation().getZ() - v.getZ() < 0.0D) {
+				return Math.abs(minecart.getLocation().getX() - v.getX()) < 1.5D;
+			}
+		}
+		
+		return false;
 	}
 }

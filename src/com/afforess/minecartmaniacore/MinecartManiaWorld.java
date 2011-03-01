@@ -13,6 +13,7 @@ import org.bukkit.block.Dispenser;
 import org.bukkit.block.Furnace;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.CraftWorld;
+import org.bukkit.craftbukkit.entity.CraftEntity;
 import org.bukkit.craftbukkit.entity.CraftMinecart;
 import org.bukkit.craftbukkit.entity.CraftPoweredMinecart;
 import org.bukkit.craftbukkit.entity.CraftStorageMinecart;
@@ -339,6 +340,10 @@ public class MinecartManiaWorld {
 		return getIntValue(getConfigurationValue("Maximum Minecart Speed Percent"));
 	}
 	
+	public static int getMinecartsClearRailsSetting() {
+		return getIntValue(getConfigurationValue("Minecarts Clear Rails"));
+	}
+	
 	public static boolean isKeepMinecartsLoaded() {
 		Object o = getConfigurationValue("Keep Minecarts Loaded");
 		if (o != null) {
@@ -587,9 +592,16 @@ public class MinecartManiaWorld {
 		return minecart;
 	}
 	
+	/**
+	 * @deprecated
+	 */
 	public static void kill(final Entity e) {
 		e.remove();
-
+	}
+	
+	public static boolean isDead(Entity e) {
+		CraftEntity ce = (CraftEntity)e;
+		return ce.getHandle().dead;
 	}
 	
 	public static void dropItem(final Location loc, final ItemStack item) {

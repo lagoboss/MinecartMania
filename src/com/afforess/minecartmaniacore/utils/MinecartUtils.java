@@ -3,6 +3,7 @@ package com.afforess.minecartmaniacore.utils;
 import java.util.List;
 import java.util.ArrayList;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -10,6 +11,7 @@ import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Vehicle;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
@@ -165,13 +167,24 @@ public class MinecartUtils {
 		return paths > 2;
 	}
 	
-	public static void doMinecartNearEntityCheck(MinecartManiaMinecart minecart, List<Entity> entities) {
+	public static void doMinecartNearEntityCheck(final MinecartManiaMinecart minecart, List<Entity> entities) {
+		//Set a flag to stop this event from happening twice
+		minecart.setDataValue("MinecartNearEntityEvent", true);
 		ArrayList<MinecartNearEntityEvent> deadQueue = new ArrayList<MinecartNearEntityEvent>(50);
     	Vector location = minecart.minecart.getLocation().toVector();
     	int rangeSquared = minecart.getEntityDetectionRange() * minecart.getEntityDetectionRange();
     	boolean killmobs = MinecartManiaWorld.isMinecartsKillMobs();
     	
     	for (Entity e : entities) {
+    		
+    		if (MinecartManiaWorld.isDead(e)) {
+    			continue;
+    		}
+    		
+    		if (clearedItemFromRails(e, minecart)) {
+    			continue;
+    		}
+    		
     		double distance = e.getLocation().toVector().distanceSquared(location);
     		
 			if (distance <= rangeSquared) {
@@ -196,11 +209,71 @@ public class MinecartUtils {
     		if (e.getDrop() != null) {
     			MinecartManiaWorld.dropItem(e.getEntity().getLocation(), e.getDrop());
     		}
-    		MinecartManiaWorld.kill(e.getEntity());
+    		e.getEntity().remove();
     	}
+    	//Reset the flag
+    	minecart.setDataValue("MinecartNearEntityEvent", null);
 	}
 	
+	private static boolean clearedItemFromRails(Entity e, MinecartManiaMinecart minecart) {
+		if (MinecartManiaWorld.getMinecartsClearRailsSetting() != 0) {
+			if (e.getEntityId() == minecart.minecart.getEntityId() || minecart.isOwner(e)) {
+				return false;
+			}
+			if (e instanceof Vehicle) {
+				return false;
+			}
+			if (minecart.minecart.getPassenger() != null && minecart.minecart.getPassenger().getEntityId() == e.getEntityId()) {
+				return false;
+			}
+			if (MinecartManiaWorld.getMinecartsClearRailsSetting() == 1 && e instanceof LivingEntity) {
+				return false;
+			}
+			if (MinecartManiaWorld.getMinecartsClearRailsSetting() == 2 && e instanceof Player) {
+				return false;
+			}
+		
+			if (minecart.isApproaching(e.getLocation().toVector())) {
+				Location current = e.getLocation().clone();
+				if (minecart.getMotionX() != 0.0D) {
+					Location test = current.clone();
+					test.setZ(current.getZ()-3);
+					Location loc = EntityUtils.getValidLocation(test.getBlock(), 1);
+					if (loc != null) {
+						e.teleportTo(loc);
+						return true;
+					}
+					test.setZ(current.getZ()+3);
+					loc = EntityUtils.getValidLocation(test.getBlock(), 1);
+					if (loc != null) {
+						e.teleportTo(loc);
+						return true;
+					}
+				}
+				if (minecart.getMotionZ() != 0.0D) {
+					Location test = current.clone();
+					test.setX(current.getX()-3);
+					Location loc = EntityUtils.getValidLocation(test.getBlock(), 1);
+					if (loc != null) {
+						e.teleportTo(loc);
+						return true;
+					}
+					test.setX(current.getX()+3);
+					loc = EntityUtils.getValidLocation(test.getBlock(), 1);
+					if (loc != null) {
+						e.teleportTo(loc);
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
 	public static void updateNearbyItems(MinecartManiaMinecart minecart) {
+		if (minecart.getDataValue("MinecartNearEntityEvent") != null) {
+			return;
+		}
 		Object[] param = { minecart, minecart.minecart.getWorld().getEntities() };
 		@SuppressWarnings("rawtypes")
 		Class[] paramtype = { MinecartManiaMinecart.class, List.class };
@@ -210,6 +283,5 @@ public class MinecartUtils {
 		} catch (Exception e1) {
 			
 		}
-	}
-		
+	}	
 }

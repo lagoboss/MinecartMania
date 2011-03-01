@@ -14,6 +14,15 @@ public class SettingList {
 				MinecartManiaCore.description.getName()
 		),
 		new Setting(
+				"Minecarts Clear Rails", 
+				1, 
+				"If set to 0, Minecarts Will not clear rails. If set to 1, Minecarts will clear the rails of non-living objects in the way (items, arrows, snowballs, etc)." +
+				" If set to 2, Minecarts Will clear the rails of all non-living objects, and living objects, excluding players." +
+				" if Set to 3, Minecarts will clear the rails of all objects, non-living objects, living objects, and all players, excluding the owner of the minecart." +
+				"Objects in the way of the rails will be shunted off to the side a safe distance away.",
+				MinecartManiaCore.description.getName()
+		),
+		new Setting(
 				"Pressure Plate Rails", 
 				Boolean.TRUE, 
 				"Pressure Plates will mimic the effect of rails, and minecarts will pass over them unhindered.",
