@@ -115,7 +115,7 @@ public class MinecartManiaCoreListener extends VehicleListener{
 		if (event.getVehicle() instanceof Minecart) {
     		MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart((Minecart)event.getVehicle());
     		if (!event.isCancelled()) {
-	    		if ((event.getDamage()) + minecart.minecart.getDamage() > 40) {
+	    		if ((event.getDamage() * 10) + minecart.minecart.getDamage() > 40) {
 	    			event.setDamage(0);
 	    			event.setCancelled(true);
 	    			minecart.kill();
