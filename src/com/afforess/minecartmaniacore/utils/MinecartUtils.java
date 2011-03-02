@@ -217,7 +217,7 @@ public class MinecartUtils {
 	
 	private static boolean clearedItemFromRails(Entity e, MinecartManiaMinecart minecart) {
 		if (MinecartManiaWorld.getMinecartsClearRailsSetting() != 0) {
-			if (e.getEntityId() == minecart.minecart.getEntityId() || minecart.isOwner(e)) {
+			if (e.getEntityId() == minecart.minecart.getEntityId()) {
 				return false;
 			}
 			if (e instanceof Vehicle) {
@@ -230,6 +230,9 @@ public class MinecartUtils {
 				return false;
 			}
 			if (MinecartManiaWorld.getMinecartsClearRailsSetting() == 2 && e instanceof Player) {
+				return false;
+			}
+			if (e instanceof Player && minecart.isOwner(e)) {
 				return false;
 			}
 		
