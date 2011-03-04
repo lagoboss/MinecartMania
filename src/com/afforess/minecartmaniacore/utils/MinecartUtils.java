@@ -40,6 +40,11 @@ public class MinecartUtils {
 			validMinecartTrack(w, x, y, z, range, DirectionUtils.CompassDirection.WEST);
 	}
 	
+	public static boolean isSlopedTrack(World w, int x, int y, int z) {
+		int data = MinecartManiaWorld.getBlockData(w, x, y, z);
+		return data >= 0x2 && data <= 0x5;
+	}
+	
 	public static boolean validMinecartTrack(World w, int x, int y, int z, int range, DirectionUtils.CompassDirection facingDir) {
     	if (!isMinecartTrack(MinecartManiaWorld.getBlockAt(w, x, y, z))) {
     		y--;
