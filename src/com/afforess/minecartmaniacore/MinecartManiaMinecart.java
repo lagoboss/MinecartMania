@@ -424,7 +424,7 @@ loop:   for (Sign sign : signList) {
 	}
 	
 	public boolean isOnRails() {
-		return MinecartUtils.isMinecartTrack(MinecartManiaWorld.getBlockAt(minecart.getWorld(), getX(), getY(), getZ()));
+		return MinecartManiaWorld.getBlockAt(minecart.getWorld(), getX(), getY(), getZ()).getTypeId() == Material.RAILS.getId();
 	}
 	
 	/**
@@ -443,20 +443,6 @@ loop:   for (Sign sign : signList) {
 	
 	public Block getBlockTypeBehind() {
 		return DirectionUtils.getBlockTypeAhead(minecart.getWorld(), DirectionUtils.getOppositeDirection(getDirectionOfMotion()), getX(), getY(), getZ());
-	}
-
-	public void doPressurePlateRails() {
-		if (MinecartManiaWorld.isPressurePlateRails()) {
-			
-			if (MinecartManiaWorld.getBlockAt(minecart.getWorld(), getX(), getY(), getZ()).getType().equals(Material.STONE_PLATE)
-			|| MinecartManiaWorld.getBlockAt(minecart.getWorld(), getX(), getY(), getZ()).getType().equals(Material.WOOD_PLATE)) {
-				
-				minecart.setDerailedVelocityMod(new Vector(0.95, 0.95, 0.95));
-	    	}
-			else {
-				minecart.setDerailedVelocityMod(new Vector(0.5, 0.5, 0.5));
-			}
-		}
 	}
 
 	public void updateCalendar() {

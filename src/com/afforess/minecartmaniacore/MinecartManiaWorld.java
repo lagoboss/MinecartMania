@@ -421,16 +421,7 @@ public class MinecartManiaWorld {
 		}
 		return true;
 	}
-	
-	public static boolean isPressurePlateRails() {
-		Object o = getConfigurationValue("Pressure Plate Rails");
-		if (o != null) {
-			Boolean value = (Boolean)o;
-			return value.booleanValue();
-		}
-		return true;
-	}
-	
+
 	public static boolean isReturnMinecartToOwner() {
 		Object o = getConfigurationValue("Minecarts return to owner");
 		if (o != null) {

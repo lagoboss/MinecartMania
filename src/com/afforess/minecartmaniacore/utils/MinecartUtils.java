@@ -23,14 +23,14 @@ import com.afforess.minecartmaniacore.event.MinecartNearEntityEvent;
 
 
 public class MinecartUtils {
-
+	
+	
+	/**
+	 * @deprecated
+	 * Will be removed by 15/3/11
+	 */
 	public static boolean isMinecartTrack(Block block) {
-		if (block.getType().equals(Material.RAILS)) return true;
-		if (MinecartManiaWorld.isPressurePlateRails()) {
-			if (block.getType().equals(Material.STONE_PLATE)) return true;
-			if (block.getType().equals(Material.WOOD_PLATE)) return true;
-		}
-		return false;
+		return block.getTypeId() == Material.RAILS.getId();
 	}
 	
 	public static boolean validMinecartTrackAnyDirection(World w, int x, int y, int z, int range) {
@@ -45,10 +45,12 @@ public class MinecartUtils {
 		return data >= 0x2 && data <= 0x5;
 	}
 	
+	
+	//TODO this method is not a perfect detection of track. It will give false positives for having 2 sets of parallel track, and when double curves are used
 	public static boolean validMinecartTrack(World w, int x, int y, int z, int range, DirectionUtils.CompassDirection facingDir) {
-    	if (!isMinecartTrack(MinecartManiaWorld.getBlockAt(w, x, y, z))) {
+    	if (MinecartManiaWorld.getBlockAt(w, x, y, z).getTypeId() != Material.RAILS.getId()) {
     		y--;
-    		if (!isMinecartTrack(MinecartManiaWorld.getBlockAt(w, x, y, z))) {
+    		if (MinecartManiaWorld.getBlockAt(w, x, y, z).getTypeId() != Material.RAILS.getId()) {
     			return false;
     		}
     	}
@@ -58,14 +60,14 @@ public class MinecartUtils {
     		if (facingDir == DirectionUtils.CompassDirection.EAST) z--;
     		if (facingDir == DirectionUtils.CompassDirection.SOUTH) x++;
     		if (facingDir == DirectionUtils.CompassDirection.WEST) z++;
-    		if (isMinecartTrack(MinecartManiaWorld.getBlockAt(w, x, y-1, z))) y--;
-    		if (isMinecartTrack(MinecartManiaWorld.getBlockAt(w, x, y+1, z))) y++;
-    		if (!isMinecartTrack(MinecartManiaWorld.getBlockAt(w, x, y, z))) return false;
+    		if (MinecartManiaWorld.getBlockAt(w, x, y-1, z).getTypeId() != Material.RAILS.getId()) y--;
+    		if (MinecartManiaWorld.getBlockAt(w, x, y+1, z).getTypeId() != Material.RAILS.getId()) y++;
+    		if (MinecartManiaWorld.getBlockAt(w, x, y, z).getTypeId() != Material.RAILS.getId()) return false;
     		
-    		if (isMinecartTrack(MinecartManiaWorld.getBlockAt(w, x-1, y, z))) facingDir = DirectionUtils.CompassDirection.NORTH;
-    		if (isMinecartTrack(MinecartManiaWorld.getBlockAt(w, x, y, z-1))) facingDir = DirectionUtils.CompassDirection.EAST;
-    		if (isMinecartTrack(MinecartManiaWorld.getBlockAt(w, x+1, y, z))) facingDir = DirectionUtils.CompassDirection.SOUTH;
-    		if (isMinecartTrack(MinecartManiaWorld.getBlockAt(w, x, y, z+1))) facingDir = DirectionUtils.CompassDirection.WEST;
+    		if (MinecartManiaWorld.getBlockAt(w, x-1, y, z).getTypeId() == Material.RAILS.getId()) facingDir = DirectionUtils.CompassDirection.NORTH;
+    		if (MinecartManiaWorld.getBlockAt(w, x, y, z-1).getTypeId() == Material.RAILS.getId()) facingDir = DirectionUtils.CompassDirection.EAST;
+    		if (MinecartManiaWorld.getBlockAt(w, x+1, y, z).getTypeId() == Material.RAILS.getId()) facingDir = DirectionUtils.CompassDirection.SOUTH;
+    		if (MinecartManiaWorld.getBlockAt(w, x, y, z-1).getTypeId() == Material.RAILS.getId()) facingDir = DirectionUtils.CompassDirection.WEST;
     		range--;
     	}
     	
