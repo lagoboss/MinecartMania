@@ -60,8 +60,8 @@ public class MinecartUtils {
     		if (facingDir == DirectionUtils.CompassDirection.EAST) z--;
     		if (facingDir == DirectionUtils.CompassDirection.SOUTH) x++;
     		if (facingDir == DirectionUtils.CompassDirection.WEST) z++;
-    		if (MinecartManiaWorld.getBlockAt(w, x, y-1, z).getTypeId() != Material.RAILS.getId()) y--;
-    		if (MinecartManiaWorld.getBlockAt(w, x, y+1, z).getTypeId() != Material.RAILS.getId()) y++;
+    		if (MinecartManiaWorld.getBlockAt(w, x, y-1, z).getTypeId() == Material.RAILS.getId()) y--;
+    		if (MinecartManiaWorld.getBlockAt(w, x, y+1, z).getTypeId() == Material.RAILS.getId()) y++;
     		if (MinecartManiaWorld.getBlockAt(w, x, y, z).getTypeId() != Material.RAILS.getId()) return false;
     		
     		if (MinecartManiaWorld.getBlockAt(w, x-1, y, z).getTypeId() == Material.RAILS.getId()) facingDir = DirectionUtils.CompassDirection.NORTH;
