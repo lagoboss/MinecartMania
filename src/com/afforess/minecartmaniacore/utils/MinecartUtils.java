@@ -187,11 +187,6 @@ public class MinecartUtils {
     		if (MinecartManiaWorld.isDead(e)) {
     			continue;
     		}
-    		
-    		if (clearedItemFromRails(e, minecart)) {
-    			continue;
-    		}
-    		
     		double distance = e.getLocation().toVector().distanceSquared(location);
     		
 			if (distance <= rangeSquared) {
@@ -208,6 +203,9 @@ public class MinecartUtils {
 				//If cancelled, kill them once we are done calling events
 				if (mnee.isActionTaken()) {
 					deadQueue.add(mnee);
+				}
+				else {
+					clearedItemFromRails(e, minecart);
 				}
 			}
     	}
