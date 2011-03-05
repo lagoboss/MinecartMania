@@ -54,7 +54,7 @@ public class ItemUtils {
 				continue;
 			}
 			
-			String[] keys = str.split("-| ?: ?");
+			String[] keys = str.split(":");
 			for (int i = 0; i < keys.length; i++) {
 				if (keys[i] == null || keys[i].isEmpty()) continue;
 				Material type = null;
@@ -64,6 +64,18 @@ public class ItemUtils {
 					keys[i] = keys[i].replace('!', ' ');
 				}
 				keys[i] = keys[i].trim();
+				//Check if this is a set of items
+				if (keys[i].contains("-")) {
+					String[] set = keys[i].split("-");
+					Material start = getFirstItemStringToMaterial(set[0]);
+					Material end = getFirstItemStringToMaterial(set[1]);
+					if (start != null && end != null) {
+						for (int item = start.getId(); item <= end.getId(); item++) {
+							items.add(Material.getMaterial(item));
+						}
+						continue; //skip to the next item
+					}
+				}
 				//Parse the numbers first. Can be separated by "-" or ":"
 				try {
 					String num = StringUtils.getNumber(keys[i]);
