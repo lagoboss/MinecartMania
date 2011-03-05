@@ -264,16 +264,24 @@ public class MinecartManiaWorld {
 		}
 		return furnaceList;
 	 }
-	 
-	 /**
+	
+	/**
 	 ** Returns a new MinecartManiaPlayer from storage if it already exists, or creates and stores a new MinecartManiaPlayer object, and returns it
 	 ** @param the player to wrap
+	 **/
+	public static MinecartManiaPlayer getMinecartManiaPlayer(Player player) {
+		return getMinecartManiaPlayer(player.getName());
+	}
+	
+	 /**
+	 ** Returns a new MinecartManiaPlayer from storage if it already exists, or creates and stores a new MinecartManiaPlayer object, and returns it
+	 ** @param the name of the player to wrap
 	 **/	 
-	 public static MinecartManiaPlayer getMinecartManiaPlayer(Player player) {
-		 MinecartManiaPlayer testPlayer = players.get(player.getName());
+	 public static MinecartManiaPlayer getMinecartManiaPlayer(String player) {
+		 MinecartManiaPlayer testPlayer = players.get(player);
 		 if (testPlayer == null) {
-			 testPlayer = new MinecartManiaPlayer(player.getName());
-			 players.put(player.getName(), testPlayer);
+			 testPlayer = new MinecartManiaPlayer(player);
+			 players.put(player, testPlayer);
 		 }
 		 if (testPlayer.isOnline()) {
 			 testPlayer.updateInventory(testPlayer.getPlayer().getInventory());

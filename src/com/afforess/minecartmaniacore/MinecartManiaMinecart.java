@@ -279,7 +279,7 @@ public class MinecartManiaMinecart {
 		return false;
 	}
 	
-	private void launchCart() {
+	public void launchCart() {
 
 		ArrayList<Sign> signList = SignUtils.getAdjacentSignList(this, 2);
 loop:   for (Sign sign : signList) {

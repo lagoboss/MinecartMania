@@ -1,5 +1,6 @@
 package com.afforess.minecartmaniacore;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -11,6 +12,7 @@ import net.minecraft.server.EntityLiving;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
 import org.bukkit.craftbukkit.entity.CraftLivingEntity;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -37,6 +39,7 @@ import com.afforess.minecartmaniacore.event.MinecartMotionStopEvent;
 import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
 import com.afforess.minecartmaniacore.utils.EntityUtils;
 import com.afforess.minecartmaniacore.utils.MinecartUtils;
+import com.afforess.minecartmaniacore.utils.SignUtils;
 
 @SuppressWarnings("unused")
 public class MinecartManiaCoreListener extends VehicleListener{
@@ -172,5 +175,27 @@ public class MinecartManiaCoreListener extends VehicleListener{
 			}
     	}
     }
+	
+	public void onVehicleEnter(VehicleEnterEvent event) {
+		if (event.isCancelled() || !(event.getVehicle() instanceof Minecart)) {
+			return;
+		}
+		MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart((Minecart)event.getVehicle());
+		if (minecart.getBlockIdBeneath() == MinecartManiaWorld.getCatcherBlockId()) {
+			if (!minecart.isMoving()) {
+				ArrayList<Sign> signs = SignUtils.getAdjacentSignList(minecart, 2);
+				for (Sign sign : signs) {
+					for (int i = 0; i < 4; i++) {
+						if (sign.getLine(i).toLowerCase().contains("launch player")) {
+							sign.setLine(i, "[Launch Player]");
+							sign.update();
+							minecart.launchCart();
+							return;
+						}
+					}
+				}
+			}
+		}
+	}
 
 }
