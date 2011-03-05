@@ -122,6 +122,24 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
 	}
 	
 	/**
+     * Called when a minecart is boosted by a control block
+     * 
+     * @param event
+     */
+	public void onMinecartBoostedEvent(MinecartBoostEvent event) {
+		
+	}
+	
+	/**
+     * Called when a minecart is braked from a control block
+     * 
+     * @param event
+     */
+	public void onMinecartBrakedEvent(MinecartBrakeEvent event) {
+		
+	}
+	
+	/**
      * Avoid using.
      * 
      * @param event
@@ -162,6 +180,12 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
 		}
 		else if (event instanceof MinecartClickedEvent) {
 			onMinecartClickedEvent((MinecartClickedEvent)event);
+		}
+		else if (event instanceof MinecartBoostEvent) {
+			onMinecartBoostedEvent((MinecartBoostEvent)event);
+		}
+		else if (event instanceof MinecartBrakeEvent) {
+			onMinecartBrakedEvent((MinecartBrakeEvent)event);
 		}
 	}
 

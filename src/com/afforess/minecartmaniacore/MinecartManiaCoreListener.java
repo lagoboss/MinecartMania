@@ -83,19 +83,12 @@ public class MinecartManiaCoreListener extends VehicleListener{
 				MinecartActionEvent mae = new MinecartActionEvent(minecart);
 				MinecartManiaCore.server.getPluginManager().callEvent(mae);
 				
+				minecart.doHighSpeedBooster();
+				minecart.doLowSpeedBooster();
+				minecart.doHighSpeedBrake();
+				minecart.doLowSpeedBrake();
+				
 				boolean action = mae.isActionTaken();
-		    	if (!action) {
-		    		action = minecart.doHighSpeedBooster();
-		    	}
-		    	if (!action) {
-		    		action = minecart.doLowSpeedBooster();
-		    	}
-		    	if (!action) {
-		    		action = minecart.doHighSpeedBrake();
-		    	}
-		    	if (!action) {
-		    		action = minecart.doLowSpeedBrake();
-		    	}
 		    	if (!action) {
 		    		action = minecart.doReverse();
 		    	}
