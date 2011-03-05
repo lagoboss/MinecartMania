@@ -104,6 +104,10 @@ public class MinecartManiaWorld {
 		 return null;
 	 }
 	 
+	 /**
+	  * Returns an arraylist of all the MinecartManiaMinecarts stored by this class
+	  * @return arraylist of all MinecartManiaMinecarts
+	  */
 	 public static ArrayList<MinecartManiaMinecart> getMinecartManiaMinecartList() {
 		 Iterator<Entry<Integer, MinecartManiaMinecart>> i = minecarts.entrySet().iterator();
 		 ArrayList<MinecartManiaMinecart> minecartList = new ArrayList<MinecartManiaMinecart>(minecarts.size());
@@ -148,6 +152,19 @@ public class MinecartManiaWorld {
         }
         return false;
     }
+	
+	/**
+	* Returns an arraylist of all the MinecartManiaChests stored by this class
+	* @return arraylist of all MinecartManiaChest
+	*/
+	public static ArrayList<MinecartManiaChest> getMinecartManiaChestList() {
+		Iterator<Entry<Location, MinecartManiaChest>> i = chests.entrySet().iterator();
+		ArrayList<MinecartManiaChest> chestList = new ArrayList<MinecartManiaChest>(chests.size());
+		while (i.hasNext()) {
+			chestList.add(i.next().getValue());
+		}
+		return chestList;
+	 }
 	 
 	 /**
 	 ** Returns a new MinecartManiaDispenser from storage if it already exists, or creates and stores a new MinecartManiaDispenser object, and returns it
@@ -184,6 +201,19 @@ public class MinecartManiaWorld {
         }
         return false;
     }
+	 
+	/**
+	* Returns an arraylist of all the MinecartManiaDispensers stored by this class
+	* @return arraylist of all MinecartManiaDispensers
+	*/
+	public static ArrayList<MinecartManiaDispenser> getMinecartManiaDispenserList() {
+		Iterator<Entry<Location, MinecartManiaDispenser>> i = dispensers.entrySet().iterator();
+		ArrayList<MinecartManiaDispenser> dispenserList = new ArrayList<MinecartManiaDispenser>(dispensers.size());
+		while (i.hasNext()) {
+			dispenserList.add(i.next().getValue());
+		}
+		return dispenserList;
+	 }
 	 
 	 /**
 	 ** Returns a new MinecartManiaFurnace from storage if it already exists, or creates and stores a new MinecartManiaFurnace object, and returns it
@@ -222,6 +252,19 @@ public class MinecartManiaWorld {
         return false;
     }
 	 
+	/**
+	* Returns an arraylist of all the MinecartManiaFurnaces stored by this class
+	* @return arraylist of all MinecartManiaFurnaces
+	*/
+	public static ArrayList<MinecartManiaFurnace> getMinecartManiaFurnaceList() {
+		Iterator<Entry<Location, MinecartManiaFurnace>> i = furnaces.entrySet().iterator();
+		ArrayList<MinecartManiaFurnace> furnaceList = new ArrayList<MinecartManiaFurnace>(furnaces.size());
+		while (i.hasNext()) {
+			furnaceList.add(i.next().getValue());
+		}
+		return furnaceList;
+	 }
+	 
 	 /**
 	 ** Returns a new MinecartManiaPlayer from storage if it already exists, or creates and stores a new MinecartManiaPlayer object, and returns it
 	 ** @param the player to wrap
@@ -236,6 +279,23 @@ public class MinecartManiaWorld {
 			 testPlayer.updateInventory(testPlayer.getPlayer().getInventory());
 		 }
 		 return testPlayer;
+	 }
+	 
+	 public static void setMinecartManiaPlayer(MinecartManiaPlayer player, String name) {
+		 players.put(name, player);
+	 }
+	 
+	/**
+	* Returns an arraylist of all the MinecartManiaPlayers stored by this class. These players may not be online.
+	* @return arraylist of all MinecartManiaPlayers
+	*/
+	public static ArrayList<MinecartManiaPlayer> getMinecartManiaPlayerList() {
+		Iterator<Entry<String, MinecartManiaPlayer>> i = players.entrySet().iterator();
+		ArrayList<MinecartManiaPlayer> playerList = new ArrayList<MinecartManiaPlayer>(players.size());
+		while (i.hasNext()) {
+			playerList.add(i.next().getValue());
+		}
+		return playerList;
 	 }
 	 
 	/**

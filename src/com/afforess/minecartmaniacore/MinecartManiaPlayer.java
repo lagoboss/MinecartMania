@@ -9,7 +9,7 @@ public class MinecartManiaPlayer extends MinecartManiaSingleContainer implements
 	private String lastStation = "";
 	private ConcurrentHashMap<String, Object> data = new ConcurrentHashMap<String,Object>();
 	public MinecartManiaPlayer(String name) {
-		super(MinecartManiaCore.server.getPlayer(name).getInventory());
+		super(MinecartManiaCore.server.getPlayer(name) == null ? null : MinecartManiaCore.server.getPlayer(name).getInventory());
 		this.name = name;
 	}
 	
