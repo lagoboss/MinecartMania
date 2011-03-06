@@ -146,6 +146,10 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 		return contains(type.getId());
 	}
 	
+	public boolean contains(Item i) {
+		return contains(i.getId(), (short) i.getData());
+	}
+	
 	/**
 	 ** Returns true if this storage chest or it's neighbor storage chest contains an itemstack of the given item id
 	 ** @param item id to search for
@@ -197,6 +201,17 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 	@Override
 	public int first(Material m) {
 		return getInventory().first(m);
+	}
+	
+	public int first(Item item) {
+		for (int i = 0; i < getInventory().getSize(); i++) {
+			if (getItem(i) != null) {
+				if (getItem(i).getTypeId() == item.getId() && getItem(i).getDurability() == item.getData()) {
+					return i;
+				}
+			}
+		}
+		return -1;
 	}
 
 	@Override

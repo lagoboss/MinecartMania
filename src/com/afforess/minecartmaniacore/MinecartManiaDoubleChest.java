@@ -33,6 +33,10 @@ public class MinecartManiaDoubleChest implements MinecartManiaInventory{
 	public boolean contains(Material m) {
 		return (chest1.contains(m) || chest2.contains(m));
 	}
+	
+	public boolean contains(Item i) {
+		return (chest1.contains(i) || chest2.contains(i));
+	}
 
 	@Override
 	public boolean contains(int type) {
@@ -126,6 +130,17 @@ public class MinecartManiaDoubleChest implements MinecartManiaInventory{
 		}
 		if (chest2.first(m) != -1) {
 			return chest2.first(m)+chest1.size();
+		}
+		return -1;
+	}
+	
+	@Override
+	public int first(Item i) {
+		if (chest1.first(i) != -1) {
+			return chest1.first(i);
+		}
+		if (chest2.first(i) != -1) {
+			return chest2.first(i)+chest1.size();
 		}
 		return -1;
 	}

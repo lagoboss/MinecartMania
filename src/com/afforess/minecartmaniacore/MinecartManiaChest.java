@@ -3,7 +3,6 @@ package com.afforess.minecartmaniacore;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Chest;
 import org.bukkit.inventory.Inventory;
@@ -60,16 +59,16 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements 
 	 **/
 	 public static MinecartManiaChest getNeighborChest(World w, int x, int y, int z)
 	 {
-    	if (MinecartManiaWorld.getBlockAt(w, x - 1, y, z).getType().equals(Material.CHEST)) {
+    	if (MinecartManiaWorld.getBlockAt(w, x - 1, y, z).getTypeId() == Item.CHEST.getId()) {
             return MinecartManiaWorld.getMinecartManiaChest((Chest)MinecartManiaWorld.getBlockAt(w, x - 1, y, z).getState());
         }
-        if(MinecartManiaWorld.getBlockAt(w, x + 1, y, z).getType().equals(Material.CHEST)) {
+        if(MinecartManiaWorld.getBlockAt(w, x + 1, y, z).getTypeId() == Item.CHEST.getId()) {
         	return MinecartManiaWorld.getMinecartManiaChest((Chest)MinecartManiaWorld.getBlockAt(w, x + 1, y, z).getState());
         }
-        if(MinecartManiaWorld.getBlockAt(w, x, y, z - 1).getType().equals(Material.CHEST)) {
+        if(MinecartManiaWorld.getBlockAt(w, x, y, z - 1).getTypeId() == Item.CHEST.getId()) {
         	return MinecartManiaWorld.getMinecartManiaChest((Chest)MinecartManiaWorld.getBlockAt(w, x, y, z - 1).getState());
         }
-        if (MinecartManiaWorld.getBlockAt(w, x, y, z + 1).getType().equals(Material.CHEST)) {
+        if (MinecartManiaWorld.getBlockAt(w, x, y, z + 1).getTypeId() == Item.CHEST.getId()) {
         	return MinecartManiaWorld.getMinecartManiaChest((Chest)MinecartManiaWorld.getBlockAt(w, x, y, z + 1).getState());
 		}
 
@@ -111,7 +110,7 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements 
 			return true;
 		}
 		//WTF is it with air
-		if (item.getTypeId() == Material.AIR.getId()) {
+		if (item.getTypeId() == Item.AIR.getId()) {
 			return false;
 		}
 		Inventory inventory =  getChest().getInventory();

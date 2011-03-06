@@ -2,8 +2,7 @@ package com.afforess.minecartmaniacore.utils;
 
 import java.util.ArrayList;
 
-import org.bukkit.Material;
-
+import com.afforess.minecartmaniacore.Item;
 import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
 
 public class ItemUtils {
@@ -14,9 +13,9 @@ public class ItemUtils {
 	 * Ex ("reds" will match "redstone" (the wire item) and not redstone ore.
 	 * @return material found, or null
 	 */
-	public static Material getFirstItemStringToMaterial(String str) {
+	public static Item getFirstItemStringToMaterial(String str) {
 		String[] list = {str};
-		Material items[] = getItemStringListToMaterial(list);
+		Item items[] = getItemStringListToMaterial(list);
 		return items.length == 0 ? null : items[0];
 	}
 	
@@ -26,12 +25,12 @@ public class ItemUtils {
 	 * Ex ("reds" will match "redstone" (the wire item) and not redstone ore.
 	 * @return materials found, or an empty array
 	 */
-	public static Material[] getItemStringToMaterial(String str) {
+	public static Item[] getItemStringToMaterial(String str) {
 		String[] list = {str};
 		return getItemStringListToMaterial(list);
 	}
 	
-	public static Material[] getItemStringListToMaterial(String[] list) {
+	public static Item[] getItemStringListToMaterial(String[] list) {
 		return getItemStringListToMaterial(list, CompassDirection.NO_DIRECTION);
 	}
 
@@ -42,8 +41,8 @@ public class ItemUtils {
 	 * Ex ("reds" will match "redstone" (the wire item) and not redstone ore.
 	 * @return materials found, or an empty array
 	 */
-	public static Material[] getItemStringListToMaterial(String[] list, CompassDirection facing) {
-		ArrayList<Material> items = new ArrayList<Material>();
+	public static Item[] getItemStringListToMaterial(String[] list, CompassDirection facing) {
+		ArrayList<Item> items = new ArrayList<Item>();
 		for (int line = 0; line < list.length; line++) {
 			String str = StringUtils.removeBrackets(list[line].toLowerCase());
 			str = str.trim();
@@ -68,7 +67,7 @@ public class ItemUtils {
 			
 			//short circuit if it's everything
 			if (str.contains("all items")) {
-				for (Material m : Material.values()) {
+				for (Item m : Item.values()) {
 					if (!items.contains(m))
 						items.add(m);
 				}
@@ -78,7 +77,7 @@ public class ItemUtils {
 			String[] keys = str.split(":");
 			for (int i = 0; i < keys.length; i++) {
 				if (keys[i] == null || keys[i].isEmpty()) continue;
-				Material type = null;
+				Item type = null;
 				//check if we need to remove this item
 				boolean remove = keys[i].contains("!");
 				if (remove) {
@@ -88,37 +87,44 @@ public class ItemUtils {
 				//Check if this is a set of items
 				if (keys[i].contains("-")) {
 					String[] set = keys[i].split("-");
-					Material start = getFirstItemStringToMaterial(set[0]);
-					Material end = getFirstItemStringToMaterial(set[1]);
+					Item start = getFirstItemStringToMaterial(set[0]);
+					Item end = getFirstItemStringToMaterial(set[1]);
 					if (start != null && end != null) {
 						for (int item = start.getId(); item <= end.getId(); item++) {
-							items.add(Material.getMaterial(item));
+							items.add(Item.getItem(item, 0)); //TODO support for items with non-zero data values?
 						}
 						continue; //skip to the next item
 					}
 				}
-				//Parse the numbers first. Can be separated by "-" or ":"
+				//Parse the numbers first. Can be separated by ":"
 				try {
+					//item with specific data value ("17;2" - item id, data value [redwood log])
+					int data = 0;
+					if (keys[i].contains(";")){
+						String[] info = keys[i].split(";");
+						String num = StringUtils.getNumber(info[1]);
+						data = Integer.parseInt(num);
+					}
 					String num = StringUtils.getNumber(keys[i]);
 					int id = Integer.parseInt(num);
-					type = Material.getMaterial(id);
+					type = Item.getItem(id, data);
 				}
 				catch (Exception exception) {
 					//Now try string names
 					keys[i] = keys[i].replace(' ','_');
-					Material bestMaterial = null;
-					for (Material e : Material.values()) {
+					Item best = null;
+					for (Item e : Item.values()) {
 						if (e != null) {
 							String item = e.toString().toLowerCase();
 							if (item.contains(keys[i])) {
 								//If two items have the same partial string in them (e.g diamond and diamond shovel) the shorter name wins
-								if (bestMaterial == null || item.length() < bestMaterial.toString().length()) {
-									bestMaterial = e;
+								if (best == null || item.length() < best.toString().length()) {
+									best = e;
 								}
 							}
 						}
 					}
-					type = bestMaterial;
+					type = best;
 				}
 				if (type != null) {
 					if (!remove)
@@ -129,7 +135,7 @@ public class ItemUtils {
 				}
 			}
 		}
-		Material itemList[] = new Material[items.size()];
+		Item itemList[] = new Item[items.size()];
 		return items.toArray(itemList);
 	}
 

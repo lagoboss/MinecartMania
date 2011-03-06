@@ -22,6 +22,10 @@ public abstract class MinecartManiaSingleContainer implements MinecartManiaInven
 	public boolean contains(Material m) {
 		return contains(m.getId());
 	}
+	
+	public boolean contains(Item i){
+		return contains(i.getId(), (short) i.getData());
+	}
 
 	@Override
 	public boolean contains(int type) {
@@ -187,6 +191,17 @@ public abstract class MinecartManiaSingleContainer implements MinecartManiaInven
 	@Override
 	public int first(Material m) {
 		return getInventory().first(m);
+	}
+	
+	public int first(Item item) {
+		for (int i = 0; i < inventory.getSize(); i++) {
+			if (inventory.getItem(i) != null) {
+				if (inventory.getItem(i).getTypeId() == item.getId() && inventory.getItem(i).getDurability() == item.getData()) {
+					return i;
+				}
+			}
+		}
+		return -1;
 	}
 
 	@Override

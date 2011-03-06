@@ -7,6 +7,8 @@ public interface MinecartManiaInventory {
 	
 	public boolean contains(Material m);
 	
+	public boolean contains(Item i);
+	
 	public boolean contains(int type);
 	
 	public boolean contains(int type, short durability);
@@ -32,6 +34,8 @@ public interface MinecartManiaInventory {
 	public int size();
 	
 	public int first(Material m);
+	
+	public int first(Item i);
 	
 	public int first(int type);
 	

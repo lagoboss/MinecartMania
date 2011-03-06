@@ -130,7 +130,7 @@ public class MinecartManiaWorld {
         } 
         else {
         	//Verify that this block is still a chest (could have been changed)
-        	if (MinecartManiaWorld.getBlockIdAt(testChest.getWorld(), testChest.getX(), testChest.getY(), testChest.getZ()) == Material.CHEST.getId()) {
+        	if (MinecartManiaWorld.getBlockIdAt(testChest.getWorld(), testChest.getX(), testChest.getY(), testChest.getZ()) == Item.CHEST.getId()) {
         		testChest.updateInventory(testChest.getInventory());
         		return testChest;
         	}
@@ -179,7 +179,7 @@ public class MinecartManiaWorld {
         } 
         else {
         	//Verify that this block is still a dispenser (could have been changed)
-        	if (MinecartManiaWorld.getBlockIdAt(testDispenser.getWorld(), testDispenser.getX(), testDispenser.getY(), testDispenser.getZ()) == Material.DISPENSER.getId()) {
+        	if (MinecartManiaWorld.getBlockIdAt(testDispenser.getWorld(), testDispenser.getX(), testDispenser.getY(), testDispenser.getZ()) == Item.DISPENSER.getId()) {
         		testDispenser.updateInventory(testDispenser.getInventory());
         		return testDispenser;
         	}
@@ -228,8 +228,8 @@ public class MinecartManiaWorld {
         } 
         else {
         	//Verify that this block is still a furnace (could have been changed)
-        	if (MinecartManiaWorld.getBlockIdAt(testFurnace.getWorld(), testFurnace.getX(), testFurnace.getY(), testFurnace.getZ()) == Material.FURNACE.getId()
-        			|| MinecartManiaWorld.getBlockIdAt(testFurnace.getWorld(), testFurnace.getX(), testFurnace.getY(), testFurnace.getZ()) == Material.BURNING_FURNACE.getId()) {
+        	if (MinecartManiaWorld.getBlockIdAt(testFurnace.getWorld(), testFurnace.getX(), testFurnace.getY(), testFurnace.getZ()) == Item.FURNACE.getId()
+        			|| MinecartManiaWorld.getBlockIdAt(testFurnace.getWorld(), testFurnace.getX(), testFurnace.getY(), testFurnace.getZ()) == Item.BURNING_FURNACE.getId()) {
         		testFurnace.updateInventory(testFurnace.getInventory());
         		return testFurnace;
         	}
@@ -547,12 +547,12 @@ public class MinecartManiaWorld {
 	public static void setBlockPowered(World w, int x, int y, int z, boolean power) {
 		MaterialData md = getBlockAt(w, x, y, z).getState().getData();
 		int data = getBlockData(w, x, y, z);
-		if (getBlockAt(w, x, y, z).getType().equals(Material.DIODE_BLOCK_OFF) && power) {
-			setBlockAt(w, Material.DIODE_BLOCK_ON.getId(), x, y, z);
+		if (getBlockAt(w, x, y, z).getTypeId() == (Item.DIODE_BLOCK_OFF.getId()) && power) {
+			setBlockAt(w, Item.DIODE_BLOCK_ON.getId(), x, y, z);
 			setBlockData(w, x, y, z, (byte)data);
 		}
-		else if (getBlockAt(w, x, y, z).getType().equals(Material.DIODE_BLOCK_ON) && !power) {
-			setBlockAt(w, Material.DIODE_BLOCK_OFF.getId(), x, y, z);
+		else if (getBlockAt(w, x, y, z).getTypeId() == (Item.DIODE_BLOCK_ON.getId()) && !power) {
+			setBlockAt(w, Item.DIODE_BLOCK_OFF.getId(), x, y, z);
 			setBlockData(w, x, y, z, (byte)data);
 		}
 		else if (md instanceof Lever || md instanceof Button) {
@@ -579,11 +579,34 @@ public class MinecartManiaWorld {
 	}
 	
 	/** Spawns a minecart at the given coordinates. Includes a "fudge factor" to get the minecart to properly line up with minecart tracks.
+	 ** @param w World to take effect in
+	 ** @param x coordinate
+	 ** @param y coordinate
+	 ** @param z coordinate
+	 ** @param Material type of minecart to spawn
+	 ** @param Owner of this minecart (player or chest). Can be null
+	 *  @deprecated
+	 **/
+	public static MinecartManiaMinecart spawnMinecart(World w, int x, int y, int z, Material type, Object owner) {
+		return spawnMinecart(w, x, y, z, Item.materialToItem(type), owner);
+	}
+	
+	/** Spawns a minecart at the given coordinates. Includes a "fudge factor" to get the minecart to properly line up with minecart tracks.
+	 ** @param Location to spawn the minecart at
+	 ** @param Material type of minecart to spawn
+	 ** @param Owner of this minecart (player or chest). Can be null
+	 *  @deprecated
+	 **/
+	public static MinecartManiaMinecart spawnMinecart(Location l, Material type, Object owner) {
+		return spawnMinecart(l.getWorld(), l.getBlockX(), l.getBlockY(), l.getBlockZ(), Item.materialToItem(type), owner);
+	}
+	
+	/** Spawns a minecart at the given coordinates. Includes a "fudge factor" to get the minecart to properly line up with minecart tracks.
 	 ** @param Location to spawn the minecart at
 	 ** @param Material type of minecart to spawn
 	 ** @param Owner of this minecart (player or chest). Can be null
 	 **/
-	public static MinecartManiaMinecart spawnMinecart(Location l, Material type, Object owner) {
+	public static MinecartManiaMinecart spawnMinecart(Location l, Item type, Object owner) {
 		return spawnMinecart(l.getWorld(), l.getBlockX(), l.getBlockY(), l.getBlockZ(), type, owner);
 	}
 	
@@ -595,14 +618,14 @@ public class MinecartManiaWorld {
 	 ** @param Material type of minecart to spawn
 	 ** @param Owner of this minecart (player or chest). Can be null
 	 **/
-	public static MinecartManiaMinecart spawnMinecart(World w, int x, int y, int z, Material type, Object owner) {
+	public static MinecartManiaMinecart spawnMinecart(World w, int x, int y, int z, Item type, Object owner) {
 		Minecart m;
 		CraftWorld cw = (CraftWorld)w;
 		CraftServer cs = (CraftServer)MinecartManiaCore.server;
-		if (type.getId() == Material.MINECART.getId()) {
+		if (type.getId() == Item.MINECART.getId()) {
 			m = w.spawnMinecart(new Location(w, x + 0.5D, y, z + 0.5D));
 		}
-		else if (type.getId() == Material.POWERED_MINECART.getId()) {
+		else if (type.getId() == Item.POWERED_MINECART.getId()) {
 			EntityMinecart em = new EntityMinecart(cw.getHandle(), x + 0.5D, y, z + 0.5D, 2);
 			CraftPoweredMinecart csm = new CraftPoweredMinecart(cs, em);
 			m = (Minecart)csm;

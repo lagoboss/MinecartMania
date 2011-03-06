@@ -15,6 +15,7 @@ import org.bukkit.entity.Vehicle;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
+import com.afforess.minecartmaniacore.Item;
 import com.afforess.minecartmaniacore.MinecartManiaCore;
 import com.afforess.minecartmaniacore.MinecartManiaMinecart;
 import com.afforess.minecartmaniacore.MinecartManiaTaskScheduler;
@@ -60,14 +61,14 @@ public class MinecartUtils {
     		if (facingDir == DirectionUtils.CompassDirection.EAST) z--;
     		if (facingDir == DirectionUtils.CompassDirection.SOUTH) x++;
     		if (facingDir == DirectionUtils.CompassDirection.WEST) z++;
-    		if (MinecartManiaWorld.getBlockAt(w, x, y-1, z).getTypeId() == Material.RAILS.getId()) y--;
-    		if (MinecartManiaWorld.getBlockAt(w, x, y+1, z).getTypeId() == Material.RAILS.getId()) y++;
-    		if (MinecartManiaWorld.getBlockAt(w, x, y, z).getTypeId() != Material.RAILS.getId()) return false;
+    		if (MinecartManiaWorld.getBlockAt(w, x, y-1, z).getTypeId() == Item.RAILS.getId()) y--;
+    		if (MinecartManiaWorld.getBlockAt(w, x, y+1, z).getTypeId() == Item.RAILS.getId()) y++;
+    		if (MinecartManiaWorld.getBlockAt(w, x, y, z).getTypeId() != Item.RAILS.getId()) return false;
     		
-    		if (MinecartManiaWorld.getBlockAt(w, x-1, y, z).getTypeId() == Material.RAILS.getId()) facingDir = DirectionUtils.CompassDirection.NORTH;
-    		if (MinecartManiaWorld.getBlockAt(w, x, y, z-1).getTypeId() == Material.RAILS.getId()) facingDir = DirectionUtils.CompassDirection.EAST;
-    		if (MinecartManiaWorld.getBlockAt(w, x+1, y, z).getTypeId() == Material.RAILS.getId()) facingDir = DirectionUtils.CompassDirection.SOUTH;
-    		if (MinecartManiaWorld.getBlockAt(w, x, y, z-1).getTypeId() == Material.RAILS.getId()) facingDir = DirectionUtils.CompassDirection.WEST;
+    		if (MinecartManiaWorld.getBlockAt(w, x-1, y, z).getTypeId() == Item.RAILS.getId()) facingDir = DirectionUtils.CompassDirection.NORTH;
+    		if (MinecartManiaWorld.getBlockAt(w, x, y, z-1).getTypeId() == Item.RAILS.getId()) facingDir = DirectionUtils.CompassDirection.EAST;
+    		if (MinecartManiaWorld.getBlockAt(w, x+1, y, z).getTypeId() == Item.RAILS.getId()) facingDir = DirectionUtils.CompassDirection.SOUTH;
+    		if (MinecartManiaWorld.getBlockAt(w, x, y, z-1).getTypeId() == Item.RAILS.getId()) facingDir = DirectionUtils.CompassDirection.WEST;
     		range--;
     	}
     	
@@ -80,22 +81,22 @@ public class MinecartUtils {
 		int data = MinecartManiaWorld.getBlockData(w, x, y, z);
 		
 		if (data == 0 || data == 1) {
-			if (MinecartManiaWorld.getBlockAt(w, x, y, z-1).getType().equals(Material.RAILS)) {
+			if (MinecartManiaWorld.getBlockAt(w, x, y, z-1).getTypeId() == Item.RAILS.getId()) {
 				if (MinecartManiaWorld.getBlockData(w, x, y, z-1) == 0) {
 					paths++;
 				}
 			}
-			if (MinecartManiaWorld.getBlockAt(w, x, y, z+1).getType().equals(Material.RAILS)) {
+			if (MinecartManiaWorld.getBlockAt(w, x, y, z+1).getTypeId() == Item.RAILS.getId()) {
 				if (MinecartManiaWorld.getBlockData(w, x, y, z+1) == 0) {
 					paths++;
 				}
 			}
-			if (MinecartManiaWorld.getBlockAt(w, x-1, y, z).getType().equals(Material.RAILS)) {
+			if (MinecartManiaWorld.getBlockAt(w, x-1, y, z).getTypeId() == Item.RAILS.getId()) {
 				if (MinecartManiaWorld.getBlockData(w, x-1, y, z) == 1) {
 					paths++;
 				}
 			}
-			if (MinecartManiaWorld.getBlockAt(w, x+1, y, z).getType().equals(Material.RAILS)) {
+			if (MinecartManiaWorld.getBlockAt(w, x+1, y, z).getTypeId() == Item.RAILS.getId()) {
 				if (MinecartManiaWorld.getBlockData(w, x+1, y, z) == 1) {
 					paths++;
 				}
@@ -103,15 +104,15 @@ public class MinecartUtils {
 		}
 		
 		else if (data == 6) {
-			if (MinecartManiaWorld.getBlockAt(w, x+1, y, z).getType().equals(Material.RAILS) && MinecartManiaWorld.getBlockAt(w, x, y, z+1).getType().equals(Material.RAILS)) {
+			if (MinecartManiaWorld.getBlockAt(w, x+1, y, z).getTypeId() == Item.RAILS.getId() && MinecartManiaWorld.getBlockAt(w, x, y, z+1).getTypeId() == Item.RAILS.getId()) {
 				if (MinecartManiaWorld.getBlockData(w, x+1, y, z) == 1 && MinecartManiaWorld.getBlockData(w, x, y, z+1) == 0) {
 					paths = 2;
-					if (MinecartManiaWorld.getBlockAt(w, x-1, y, z).getType().equals(Material.RAILS)) {
+					if (MinecartManiaWorld.getBlockAt(w, x-1, y, z).getTypeId() == Item.RAILS.getId()) {
 						if (MinecartManiaWorld.getBlockData(w, x-1, y, z) == 1) {
 							paths++; 
 						}
 					}
-					if (MinecartManiaWorld.getBlockAt(w, x, y, z-1).getType().equals(Material.RAILS)) {
+					if (MinecartManiaWorld.getBlockAt(w, x, y, z-1).getTypeId() == Item.RAILS.getId()) {
 						if (MinecartManiaWorld.getBlockData(w, x, y, z-1) == 0) {
 							paths++;
 						}
@@ -120,15 +121,15 @@ public class MinecartUtils {
 			}
 		}
 		else if (data == 7) {
-			if (MinecartManiaWorld.getBlockAt(w, x-1, y, z).getType().equals(Material.RAILS) && MinecartManiaWorld.getBlockAt(w, x, y, z+1).getType().equals(Material.RAILS)) {
+			if (MinecartManiaWorld.getBlockAt(w, x-1, y, z).getTypeId() == Item.RAILS.getId() && MinecartManiaWorld.getBlockAt(w, x, y, z+1).getTypeId() == Item.RAILS.getId()) {
 				if (MinecartManiaWorld.getBlockData(w, x-1, y, z) == 1 && MinecartManiaWorld.getBlockData(w, x, y, z+1) == 0) {
 					paths = 2;
-					if (MinecartManiaWorld.getBlockAt(w, x+1, y, z).getType().equals(Material.RAILS)) {
+					if (MinecartManiaWorld.getBlockAt(w, x+1, y, z).getTypeId() == Item.RAILS.getId()) {
 						if (MinecartManiaWorld.getBlockData(w, x+1, y, z) == 1) {
 							paths++;
 						}
 					}
-					if (MinecartManiaWorld.getBlockAt(w, x, y, z-1).getType().equals(Material.RAILS)) {
+					if (MinecartManiaWorld.getBlockAt(w, x, y, z-1).getTypeId() == Item.RAILS.getId()) {
 						if (MinecartManiaWorld.getBlockData(w, x, y, z-1) == 0) {
 							paths++;
 						}
@@ -137,15 +138,15 @@ public class MinecartUtils {
 			}
 		}
 		else if (data == 8) {
-			if (MinecartManiaWorld.getBlockAt(w, x-1, y, z).getType().equals(Material.RAILS) && MinecartManiaWorld.getBlockAt(w, x, y, z-1).getType().equals(Material.RAILS)) {
+			if (MinecartManiaWorld.getBlockAt(w, x-1, y, z).getTypeId() == Item.RAILS.getId() && MinecartManiaWorld.getBlockAt(w, x, y, z-1).getTypeId() == Item.RAILS.getId()) {
 				if (MinecartManiaWorld.getBlockData(w, x-1, y, z) == 1 && MinecartManiaWorld.getBlockData(w, x, y, z-1) == 0) {
 					paths = 2;
-					if (MinecartManiaWorld.getBlockAt(w, x+1, y, z).getType().equals(Material.RAILS)) {
+					if (MinecartManiaWorld.getBlockAt(w, x+1, y, z).getTypeId() == Item.RAILS.getId()) {
 						if (MinecartManiaWorld.getBlockData(w, x+1, y, z) == 1) {
 							paths++;
 						}
 					}
-					if (MinecartManiaWorld.getBlockAt(w, x, y, z+1).getType().equals(Material.RAILS)) {
+					if (MinecartManiaWorld.getBlockAt(w, x, y, z+1).getTypeId() == Item.RAILS.getId()) {
 						if (MinecartManiaWorld.getBlockData(w, x, y, z+1) == 0) {
 							paths++;
 						}
@@ -154,15 +155,15 @@ public class MinecartUtils {
 			}
 		}
 		else if (data == 9) {
-			if (MinecartManiaWorld.getBlockAt(w, x+1, y, z).getType().equals(Material.RAILS) && MinecartManiaWorld.getBlockAt(w, x, y, z-1).getType().equals(Material.RAILS)) {
+			if (MinecartManiaWorld.getBlockAt(w, x+1, y, z).getTypeId() == Item.RAILS.getId() && MinecartManiaWorld.getBlockAt(w, x, y, z-1).getTypeId() == Item.RAILS.getId()) {
 				if (MinecartManiaWorld.getBlockData(w, x+1, y, z) == 1 && MinecartManiaWorld.getBlockData(w, x, y, z-1) == 0) {
 					paths = 2;
-					if (MinecartManiaWorld.getBlockAt(w, x-1, y, z).getType().equals(Material.RAILS)) {
+					if (MinecartManiaWorld.getBlockAt(w, x-1, y, z).getTypeId() == Item.RAILS.getId()) {
 						if (MinecartManiaWorld.getBlockData(w, x-1, y, z) == 1) {
 							paths++;
 						}
 					}
-					if (MinecartManiaWorld.getBlockAt(w, x, y, z+1).getType().equals(Material.RAILS)) {
+					if (MinecartManiaWorld.getBlockAt(w, x, y, z+1).getTypeId() == Item.RAILS.getId()) {
 						if (MinecartManiaWorld.getBlockData(w, x, y, z+1) == 0) {
 							paths++;
 						}
