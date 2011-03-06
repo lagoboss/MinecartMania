@@ -24,7 +24,6 @@ import com.afforess.minecartmaniacore.event.MinecartManiaMinecartCreatedEvent;
 import com.afforess.minecartmaniacore.event.MinecartManiaMinecartDestroyedEvent;
 import com.afforess.minecartmaniacore.event.MinecartTimeEvent;
 import com.afforess.minecartmaniacore.utils.DirectionUtils;
-import com.afforess.minecartmaniacore.utils.MathUtils;
 import com.afforess.minecartmaniacore.utils.MinecartUtils;
 import com.afforess.minecartmaniacore.utils.SignUtils;
 import com.afforess.minecartmaniacore.utils.StringUtils;
@@ -41,7 +40,7 @@ public class MinecartManiaMinecart {
 	private String owner = "none";
 	private ConcurrentHashMap<String, Object> data = new ConcurrentHashMap<String,Object>();
 	private int entityDetectionRange = 2;
-	public static final double MAXIMUM_MOMENTUM = 1E300D;
+	public static final double MAXIMUM_MOMENTUM = 1E150D;
 	
 	public MinecartManiaMinecart(Minecart cart) {
 		minecart = cart; 
@@ -127,18 +126,32 @@ public class MinecartManiaMinecart {
 	}
 	
 	public void setMotionX(double motionX){
-		motionX = MathUtils.range(motionX, MAXIMUM_MOMENTUM, -MAXIMUM_MOMENTUM);
 		setMotion(motionX, getMotionY(), getMotionZ());
 	}
 	
 	public void setMotionY(double motionY){
-		motionY = MathUtils.range(motionY, MAXIMUM_MOMENTUM, -MAXIMUM_MOMENTUM);
 		setMotion(getMotionX(), motionY, getMotionZ());
 	}
 	
 	public void setMotionZ(double motionZ){
-		motionZ = MathUtils.range(motionZ, MAXIMUM_MOMENTUM, -MAXIMUM_MOMENTUM);
 		setMotion(getMotionX(), getMotionY(), motionZ);
+	}
+	
+	/**
+	 * Multiplies the minecarts current motion by the given multiplier in a safe way that will avoid
+	 * causing overflow, which will cause the minecart to grind to a halt.
+	 * @param multiplier
+	 */
+	public void multiplyMotion(double multiplier) {
+		if (MAXIMUM_MOMENTUM / multiplier > Math.abs(getMotionX())) {
+			setMotionX(getMotionX() * multiplier);
+		}
+		if (MAXIMUM_MOMENTUM / multiplier > Math.abs(getMotionY())) {
+			setMotionY(getMotionY() * multiplier);
+		}
+		if (MAXIMUM_MOMENTUM / multiplier > Math.abs(getMotionZ())) {
+			setMotionZ(getMotionZ() * multiplier);
+		}
 	}
 	
 	private void setMotion(double motionX, double motionY, double motionZ) {
@@ -230,8 +243,7 @@ public class MinecartManiaMinecart {
 		if (getBlockIdBeneath() == MinecartManiaWorld.getLowSpeedBrakeBlockId() && !isPoweredBeneath()){
 			MinecartBrakeEvent mbe = new MinecartBrakeEvent(this, MinecartManiaWorld.getLowSpeedBrakeBlockDivisor());
 			MinecartManiaCore.server.getPluginManager().callEvent(mbe);
-    		setMotionX(getMotionX() / mbe.getBrakeDivisor());
-    		setMotionZ(getMotionZ() / mbe.getBrakeDivisor());
+			multiplyMotion(1 / mbe.getBrakeDivisor());
     		return mbe.getBrakeDivisor() !=  1.0D;
     	}
 		return false;
@@ -241,8 +253,7 @@ public class MinecartManiaMinecart {
 		if (getBlockIdBeneath() == MinecartManiaWorld.getHighSpeedBrakeBlockId() && !isPoweredBeneath()){
 			MinecartBrakeEvent mbe = new MinecartBrakeEvent(this, MinecartManiaWorld.getHighSpeedBrakeBlockDivisor());
 			MinecartManiaCore.server.getPluginManager().callEvent(mbe);
-			setMotionX(getMotionX() / mbe.getBrakeDivisor());
-    		setMotionZ(getMotionZ() / mbe.getBrakeDivisor());
+			multiplyMotion(1 / mbe.getBrakeDivisor());
     		return mbe.getBrakeDivisor() !=  1.0D;
     	}
 		return false;
@@ -252,8 +263,7 @@ public class MinecartManiaMinecart {
 		if (getBlockIdBeneath() == MinecartManiaWorld.getLowSpeedBoosterBlockId() && !isPoweredBeneath()){
 			MinecartBoostEvent mbe = new MinecartBoostEvent(this, MinecartManiaWorld.getLowSpeedBoosterBlockMultiplier());
 			MinecartManiaCore.server.getPluginManager().callEvent(mbe);
-    		setMotionX(getMotionX() * mbe.getBoostMultiplier());
-    		setMotionZ(getMotionZ() * mbe.getBoostMultiplier());
+			multiplyMotion(mbe.getBoostMultiplier());
     		return mbe.getBoostMultiplier() != 1.0D;
     	}
 		return false;
@@ -263,8 +273,7 @@ public class MinecartManiaMinecart {
 		if (getBlockIdBeneath() == MinecartManiaWorld.getHighSpeedBoosterBlockId() && !isPoweredBeneath()){
 			MinecartBoostEvent mbe = new MinecartBoostEvent(this, MinecartManiaWorld.getHighSpeedBoosterBlockMultiplier());
 			MinecartManiaCore.server.getPluginManager().callEvent(mbe);
-			setMotionX(getMotionX() * mbe.getBoostMultiplier());
-    		setMotionZ(getMotionZ() * mbe.getBoostMultiplier());
+			multiplyMotion(mbe.getBoostMultiplier());
     		return mbe.getBoostMultiplier() != 1.0D;
     	}
 		return false;
