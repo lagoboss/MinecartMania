@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 import org.bukkit.Material;
 
+import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
+
 public class ItemUtils {
 	
 	/**
@@ -28,6 +30,10 @@ public class ItemUtils {
 		String[] list = {str};
 		return getItemStringListToMaterial(list);
 	}
+	
+	public static Material[] getItemStringListToMaterial(String[] list) {
+		return getItemStringListToMaterial(list, CompassDirection.NO_DIRECTION);
+	}
 
 	/**
 	 * Returns the list of material for each item name or id found in the given array of strings, or an empty array if there was no item names or ids.
@@ -36,12 +42,27 @@ public class ItemUtils {
 	 * Ex ("reds" will match "redstone" (the wire item) and not redstone ore.
 	 * @return materials found, or an empty array
 	 */
-	public static Material[] getItemStringListToMaterial(String[] list) {
+	public static Material[] getItemStringListToMaterial(String[] list, CompassDirection facing) {
 		ArrayList<Material> items = new ArrayList<Material>();
 		for (int line = 0; line < list.length; line++) {
 			String str = StringUtils.removeBrackets(list[line].toLowerCase());
 			str = str.trim();
 			if (str.isEmpty()) {
+				continue;
+			}
+			
+			//Check the given direction and intended direction from the sign
+			CompassDirection direction = CompassDirection.NO_DIRECTION;
+			if (str.contains("+")) {
+				String[] data = str.split("\\+");
+				str = data[1];
+				String dir = data[0].toLowerCase().trim();
+				if (dir.contains("n")) direction = CompassDirection.NORTH;
+				if (dir.contains("s")) direction = CompassDirection.SOUTH;
+				if (dir.contains("e")) direction = CompassDirection.EAST;
+				if (dir.contains("w")) direction = CompassDirection.WEST;
+			}
+			if (direction != facing && direction != CompassDirection.NO_DIRECTION) {
 				continue;
 			}
 			
