@@ -292,11 +292,11 @@ public enum Item {
     }
     
     public boolean equals(Item i) {
-    	return i.getId() == id && i.getData() == i.getData();
+    	return i != null && i.getId() == id && i.getData() == i.getData();
     }
     
     public boolean equals(Material m) {
-    	return m.getId() == id;
+    	return m != null && m.getId() == id;
     }
     
     public boolean equals(int id, short data) {
@@ -308,9 +308,10 @@ public enum Item {
     }
 
     /**
-     * Attempts to get the Item with the given ID
+     * Attempts to get the Item with the given ID and data value
      *
      * @param id ID of the Item to get
+     * @param the data value of the Item to get
      * @return Item if found, or null
      */
     public static Item getItem(final int id, int data) {
@@ -318,6 +319,24 @@ public enum Item {
     	a.add(id);
     	a.add(data);
     	return lookupId.get(a);
+    }
+    
+    /**
+     * Attempts to get the list of items with the given id
+     *
+     * @param id ID of the list of Items to get
+     * @return Items if found, or empty arraylist
+     */
+    public static ArrayList<Item> getItem(final int id) {
+    	ArrayList<Item> list = new ArrayList<Item>();
+    	for (int i = 0; i < 16; i++){
+    		Item temp = getItem(id, i);
+    		System.out.println("Item: " + temp);
+    		if (temp != null) {
+    			list.add(temp);
+    		}
+    	}
+    	return list;
     }
 
     /**

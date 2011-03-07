@@ -91,7 +91,7 @@ public class ItemUtils {
 					Item end = getFirstItemStringToMaterial(set[1]);
 					if (start != null && end != null) {
 						for (int item = start.getId(); item <= end.getId(); item++) {
-							items.add(Item.getItem(item, 0)); //TODO support for items with non-zero data values?
+							items.addAll(Item.getItem(item));
 						}
 						continue; //skip to the next item
 					}
@@ -99,7 +99,7 @@ public class ItemUtils {
 				//Parse the numbers first. Can be separated by ":"
 				try {
 					//item with specific data value ("17;2" - item id, data value [redwood log])
-					int data = 0;
+					int data = -1;
 					if (keys[i].contains(";")){
 						String[] info = keys[i].split(";");
 						String num = StringUtils.getNumber(info[1]);
@@ -107,7 +107,10 @@ public class ItemUtils {
 					}
 					String num = StringUtils.getNumber(keys[i]);
 					int id = Integer.parseInt(num);
-					type = Item.getItem(id, data);
+					if (data != -1)
+						type = Item.getItem(id, data);
+					else
+						items.addAll(Item.getItem(id));
 				}
 				catch (Exception exception) {
 					//Now try string names
