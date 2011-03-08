@@ -230,7 +230,7 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements 
 	public boolean contains(int type, short durability) {
 		for (int i = 0; i < size(); i++) {
 			if (getItem(i) != null) {
-				if (getItem(i).getTypeId() == type && (durability == -1 || (getItem(i).getDurability() == durability))) {
+				if (getItem(i).getTypeId() == type && ((durability == -1 || getItem(i).getDurability() == -1) || (getItem(i).getDurability() == durability))) {
 					return true;
 				}
 			}

@@ -143,11 +143,11 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 	 ** @param Material to search for
 	 **/
 	public boolean contains(Material type) {
-		return contains(type.getId());
+		return contains(type.getId(), (short) -1);
 	}
 	
 	public boolean contains(Item i) {
-		return contains(i.getId(), (short) i.getData());
+		return contains(i.getId(), (short) (i.hasData() ? i.getData() : -1));
 	}
 	
 	/**
@@ -163,7 +163,7 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 	public boolean contains(int type, short durability) {
 		for (int i = 0; i < size(); i++) {
 			if (getItem(i) != null) {
-				if (getItem(i).getTypeId() == type && (durability == -1 || (getItem(i).getDurability() == durability))) {
+				if (getItem(i).getTypeId() == type && ((durability == -1 || getItem(i).getDurability() == -1) || (getItem(i).getDurability() == durability))) {
 					return true;
 				}
 			}

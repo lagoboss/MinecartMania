@@ -173,17 +173,26 @@ public class MinecartManiaCoreListener extends VehicleListener{
 		if (event.isCancelled() || !(event.getVehicle() instanceof Minecart)) {
 			return;
 		}
-		MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart((Minecart)event.getVehicle());
+		final MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart((Minecart)event.getVehicle());
 		if (minecart.getBlockIdBeneath() == MinecartManiaWorld.getCatcherBlockId()) {
 			if (!minecart.isMoving()) {
 				ArrayList<Sign> signs = SignUtils.getAdjacentSignList(minecart, 2);
-				for (Sign sign : signs) {
+signs:			for (Sign sign : signs) {
 					for (int i = 0; i < 4; i++) {
 						if (sign.getLine(i).toLowerCase().contains("launch player")) {
 							sign.setLine(i, "[Launch Player]");
 							sign.update();
-							minecart.launchCart();
-							return;
+							
+							//This task must run next tick, because the player has not yet entered the minecart once the event is fired
+							//and we must wait until the player is in the minecart to launch (affects direction signs)
+							Runnable launch = new Runnable() {
+								public void run() {
+									minecart.launchCart();
+								}
+							};
+							MinecartManiaCore.server.getScheduler().scheduleSyncDelayedTask(MinecartManiaCore.instance, launch, 1);
+							
+							break signs;
 						}
 					}
 				}

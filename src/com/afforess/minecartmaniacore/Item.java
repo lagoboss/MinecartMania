@@ -244,16 +244,19 @@ public enum Item {
 
     private final int id;
     private final short data;
+    private boolean hasData;
     private static final Map<ArrayList<Integer>, Item> lookupId = new HashMap<ArrayList<Integer>, Item>();
     private static final Map<String, Item> lookupName = new HashMap<String, Item>();
 
     private Item(final int id) {
         this(id, 0);
+        hasData = false;
     }
 
     private Item(final int id, final int data) {
         this.id = id;
         this.data = (short)data;
+        hasData = true;
     }
 
     /**
@@ -281,6 +284,15 @@ public enum Item {
      */
     public boolean isBlock() {
         return id < 256;
+    }
+    
+    /**
+     * Checks to see if this Item has more than one Item using the same id
+     *
+     * @return true if this Item has more than one Item using the same id
+     */
+    public boolean hasData() {
+    	return hasData;
     }
     
     /**
@@ -331,7 +343,6 @@ public enum Item {
     	ArrayList<Item> list = new ArrayList<Item>();
     	for (int i = 0; i < 16; i++){
     		Item temp = getItem(id, i);
-    		System.out.println("Item: " + temp);
     		if (temp != null) {
     			list.add(temp);
     		}

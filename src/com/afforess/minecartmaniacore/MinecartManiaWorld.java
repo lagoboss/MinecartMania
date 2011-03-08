@@ -622,7 +622,7 @@ public class MinecartManiaWorld {
 		Minecart m;
 		CraftWorld cw = (CraftWorld)w;
 		CraftServer cs = (CraftServer)MinecartManiaCore.server;
-		if (type.getId() == Item.MINECART.getId()) {
+		if (type == null || type.getId() == Item.MINECART.getId()) {
 			m = w.spawnMinecart(new Location(w, x + 0.5D, y, z + 0.5D));
 		}
 		else if (type.getId() == Item.POWERED_MINECART.getId()) {
