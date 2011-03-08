@@ -45,18 +45,20 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements 
 	
 	
 	/**
-	 ** Returns the neighbor chest to this chest, or null if none exists
-	 **/
+	 * Returns the neighbor chest to this chest, or null if none exists
+	 * @return the neighbor chest
+	 */
 	public MinecartManiaChest getNeighborChest() {
 		return getNeighborChest(chest.getWorld(), getX(), getY(), getZ());
 	}
 	
 	/**
-	 ** Returns the neighbor chest to this chest, or null if none exists
-	 ** @param x coordinate to search
-	 ** @param y coordinate to search
-	 ** @param z coordinate to search
-	 **/
+	 * Returns the neighbor chest to this chest, or null if none exists
+	 * @param w the world to search in
+	 * @param x coordinate to search
+	 * @param y coordinate to search
+	 * @param z coordinate to search
+	 */
 	 public static MinecartManiaChest getNeighborChest(World w, int x, int y, int z)
 	 {
     	if (MinecartManiaWorld.getBlockAt(w, x - 1, y, z).getTypeId() == Item.CHEST.getId()) {
@@ -77,7 +79,7 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements 
 	 
 	 /**
 	 ** Returns the value from the loaded data
-	 ** @param the string key the data value is associated with
+	 ** @param key the string key the data value is associated with
 	 **/
 	 public Object getDataValue(String key) {
 		 if (data.containsKey(key)) {
@@ -88,8 +90,8 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements 
 	 
 	/**
 	 ** Creates a new data value if it does not already exists, or resets an existing value
-	 ** @param the string key the data value is associated with
-	 ** @param the value to store
+	 ** @param key the data value is associated with
+	 ** @param value to store
 	 **/	 
 	 public void setDataValue(String key, Object value) {
 		 if (value == null) {
@@ -100,10 +102,10 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements 
 	 }
 	
 	/**
-	 ** attempts to add an itemstack to this chest. It adds items in a 'smart' manner, merging with existing itemstacks, until they
-	 ** reach the maximum size (64). If it fails, it will not alter the chest's previous contents.
-	 ** Causes of failure: Full Chest, Concurrent modification.
-	 ** @param item to add
+	 * attempts to add an itemstack to this chest. It adds items in a 'smart' manner, merging with existing itemstacks, until they
+	 * reach the maximum size (64). If it fails, it will not alter the chest's previous contents.
+	 * Causes of failure: Full Chest, Concurrent modification.
+	 * @param item to add
 	 **/
 	public boolean addItem(ItemStack item) {
 		if (item == null) {

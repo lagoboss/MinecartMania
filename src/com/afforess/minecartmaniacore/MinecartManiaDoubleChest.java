@@ -7,8 +7,7 @@ import org.bukkit.inventory.ItemStack;
 /**
  * A temporary object that allows for easy use of accessing and altering the contents of a double chest. 
  * References are not safe, do not store them for later retrieval. Create them only as needed.
- * @author Cameron
- *
+ * @author Afforess
  */
 public class MinecartManiaDoubleChest implements MinecartManiaInventory{
 
@@ -28,57 +27,69 @@ public class MinecartManiaDoubleChest implements MinecartManiaInventory{
 		}
 		return false;
 	}
-
-	@Override
-	public boolean contains(Material m) {
-		return (chest1.contains(m) || chest2.contains(m));
-	}
 	
-	public boolean contains(Item i) {
-		return (chest1.contains(i) || chest2.contains(i));
-	}
-
-	@Override
-	public boolean contains(int type) {
-		return chest1.contains(type) || chest2.contains(type);
-	}
-	
-	@Override
-	public boolean contains(int type, short durability) {
-		return chest1.contains(type, durability) || chest2.contains(type, durability);
-	}
-
-	@Override
+	/**
+	 * Attempts to add an itemstack to this storage minecart. It adds items in a 'smart' manner, merging with existing itemstacks, until they
+	 * reach the maximum size (64). If it fails, it will not alter the storage minecart's previous contents.
+	 * @param item to add
+	 * @return true if the item was successfully added
+	 */
 	public boolean addItem(ItemStack item) {
 		return chest1.addItem(item);
 	}
 
-	@Override
+	/**
+	 ** Attempts to add a single item of the given type to this storage minecart. If it fails, it will not alter the storage minecart's previous contents
+	 ** @param type to add
+	 **/
 	public boolean addItem(int type) {
 		return chest1.addItem(type);
 	}
 
-	@Override
+	/**
+	 ** Attempts to add a given amount of a given type to this storage minecart. If it fails, it will not alter the storage minecart's previous contents
+	 ** @param type to add
+	 ** @param amount to add
+	 **/
 	public boolean addItem(int type, int amount) {
 		return chest1.addItem(type, amount);
 	}
-
-	@Override
+	
+	/**
+	 * Attempts to remove the specified amount of an item type from this storage minecart. If it fails, it will not alter the storage minecart's previous contents
+	 * @param type to remove
+	 * @param amount to remove
+	 * @param durability of the item to remove
+	 * @return true if the items were successfully removed
+	 */
+	public boolean removeItem(int type, int amount, short durability) {
+		return chest1.removeItem(type, amount, durability);
+	}
+	
+	/**
+	 * Attempts to remove the specified amount of an item type from this storage minecart. If it fails, it will not alter the storage minecart's previous contents
+	 * @param type to remove
+	 * @param amount to remove
+	 * @return true if the items were successfully removed
+	 */
 	public boolean removeItem(int type, int amount) {
 		return chest1.removeItem(type, amount);
 	}
 	
-	@Override
-	public boolean removeItem(int type, int amount, short durability) {
-		return chest1.removeItem(type, amount, durability);
-	}
-
-	@Override
+	/**
+	 * Attempts to remove a single item type from this storage minecart. If it fails, it will not alter the storage minecart previous contents
+	 * @param type to remove
+	 * @return true if the item was successfully removed
+	 */
 	public boolean removeItem(int type) {
 		return chest1.removeItem(type);
 	}
 
-	@Override
+	/**
+	 * Gets the itemstack at the given slot, or null if empty
+	 * @param the slot to get
+	 * @return the itemstack at the given slot
+	 */
 	public ItemStack getItem(int slot) {
 		if (slot < chest1.size()) {
 			return chest1.getItem(slot);
@@ -86,7 +97,11 @@ public class MinecartManiaDoubleChest implements MinecartManiaInventory{
 		return chest2.getItem(slot-chest1.size());
 	}
 
-	@Override
+	/**
+	 * Sets the given slot to the given itemstack. If the itemstack is null, the slot's contents will be cleared.
+	 * @param slot to set.
+	 * @param item to set in the slot
+	 */
 	public void setItem(int slot, ItemStack item) {
 		if (slot < chest1.size()) {
 			chest1.setItem(slot, item);
@@ -95,7 +110,10 @@ public class MinecartManiaDoubleChest implements MinecartManiaInventory{
 		}
 	}
 
-	@Override
+	/**
+	 * Get's the first empty slot in this storage minecart
+	 * @return the first empty slot in this storage minecart
+	 */
 	public int firstEmpty() {
 		if (chest1.firstEmpty() != -1) {
 			return chest1.firstEmpty();
@@ -106,12 +124,18 @@ public class MinecartManiaDoubleChest implements MinecartManiaInventory{
 		return -1;
 	}
 
-	@Override
+	/**
+	 * Gets the size of the inventory of this storage minecart
+	 * @return the size of the inventory
+	 */
 	public int size() {
 		return chest1.size()+chest2.size();
 	}
 
-	@Override
+	/**
+	 * Gets an array of the Itemstack's inside this storage minecart. Empty slots are represented by air stacks
+	 * @return the contents of this inventory
+	 */
 	public ItemStack[] getContents() {
 		ItemStack[] contents = new ItemStack[size()];
 		for (int i = 0; i < chest1.size(); i++) {
@@ -123,40 +147,54 @@ public class MinecartManiaDoubleChest implements MinecartManiaInventory{
 		return contents;
 	}
 	
-	@Override
-	public int first(Material m) {
-		if (chest1.first(m) != -1) {
-			return chest1.first(m);
-		}
-		if (chest2.first(m) != -1) {
-			return chest2.first(m)+chest1.size();
-		}
-		return -1;
+	/**
+	 * Get's the first slot containing the given material, or -1 if none contain it
+	 * @param material to search for
+	 * @return the first slot with the given material
+	 */
+	public int first(Material material) {
+		return first(material.getId(), (short) -1);
 	}
 	
-	@Override
-	public int first(Item i) {
-		if (chest1.first(i) != -1) {
-			return chest1.first(i);
-		}
-		if (chest2.first(i) != -1) {
-			return chest2.first(i)+chest1.size();
-		}
-		return -1;
+	/**
+	 * Get's the first slot containing the given item, or -1 if none contain it
+	 * @param item to search for
+	 * @return the first slot with the given item
+	 */
+	public int first(Item item) {
+		return first(item.getId(), (short) (item.hasData() ? item.getData() : -1));
 	}
 
-	@Override
+	/**
+	 * Get's the first slot containing the given type id, or -1 if none contain it
+	 * @param type id to search for
+	 * @return the first slot with the given item
+	 */
 	public int first(int type) {
-		if (chest1.first(type) != -1) {
+		return first(type, (short)-1);
+	}
+	
+	/**
+	 * Get's the first slot containing the given type id and matching durability, or -1 if none contain it.
+	 * If the durability is -1, it get's the first slot with the matching type id, and ignores durability
+	 * @param type id to search for
+	 * @param durability of the type id to search for
+	 * @return the first slot with the given type id and durability
+	 */
+	public int first(int type, short durability) {
+		if (chest1.first(type, durability) != -1) {
 			return chest1.first(type);
 		}
-		if (chest2.first(type) != -1) {
+		if (chest2.first(type, durability) != -1) {
 			return chest2.first(type)+chest1.size();
 		}
 		return -1;
 	}
 
-	@Override
+	/**
+	 * Searches the inventory for any items
+	 * @return true if the inventory contains no items
+	 */
 	public boolean isEmpty() {
 		for (ItemStack i : getContents()) {
 			//I hate you too, air.
@@ -165,6 +203,43 @@ public class MinecartManiaDoubleChest implements MinecartManiaInventory{
 			}
 		}
 		return true;
+	}
+	
+	/**
+	 * Searches the inventory for any items that match the given Material
+	 * @param material to search for
+	 * @return true if the material is found
+	 */
+	public boolean contains(Material material) {
+		return (chest1.contains(material) || chest2.contains(material));
+	}
+	
+	/**
+	 * Searches the inventory for any items that match the given Item
+	 * @param item to search for
+	 * @return true if the Item is found
+	 */
+	public boolean contains(Item item) {
+		return (chest1.contains(item) || chest2.contains(item));
+	}
+
+	/**
+	 * Searches the inventory for any items that match the given type id
+	 * @param type id to search for
+	 * @return true if an item matching the type id is found
+	 */
+	public boolean contains(int type) {
+		return chest1.contains(type) || chest2.contains(type);
+	}
+	
+	/**
+	 * Searches the inventory for any items that match the given type id and durability
+	 * @param type id to search for
+	 * @param durability to search for
+	 * @return true if an item matching the type id and durability is found
+	 */
+	public boolean contains(int type, short durability) {
+		return chest1.contains(type, durability) || chest2.contains(type, durability);
 	}
 
 }
