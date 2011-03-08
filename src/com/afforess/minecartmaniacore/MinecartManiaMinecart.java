@@ -60,7 +60,7 @@ public class MinecartManiaMinecart {
 		setWasMovingLastTick(isMoving());
 		previousMotion = minecart.getVelocity().clone();
 		previousLocation = minecart.getLocation().toVector().clone();
-		minecart.setMaxSpeed(MinecartManiaWorld.getMaximumMinecartSpeedPercent() * 0.4D / 100);
+		minecart.setMaxSpeed(MinecartManiaWorld.getDefaultMinecartSpeedPercent() * 0.4D / 100);
 		MinecartManiaCore.server.getPluginManager().callEvent(new MinecartManiaMinecartCreatedEvent(this));
 	}
 

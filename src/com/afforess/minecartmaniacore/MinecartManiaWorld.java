@@ -408,6 +408,10 @@ public class MinecartManiaWorld {
 		return getIntValue(getConfigurationValue("Maximum Minecart Speed Percent"));
 	}
 	
+	public static int getDefaultMinecartSpeedPercent() {
+		return getIntValue(getConfigurationValue("Default Minecart Speed Percent"));
+	}
+	
 	public static int getMinecartsClearRailsSetting() {
 		return getIntValue(getConfigurationValue("Minecarts Clear Rails"));
 	}

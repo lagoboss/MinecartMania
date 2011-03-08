@@ -23,23 +23,12 @@ public class SettingList {
 				MinecartManiaCore.description.getName()
 		),
 		new Setting(
-				"Pressure Plate Rails", 
-				Boolean.TRUE, 
-				"Pressure Plates will mimic the effect of rails, and minecarts will pass over them unhindered.",
-				MinecartManiaCore.description.getName()
-		),
-		new Setting(
 				"Keep Minecarts Loaded", 
 				Boolean.FALSE, 
 				"The Server will Load Chunks around minecarts, and will not unload chunks with minecarts in them. May cause excessive RAM usage.",
 				MinecartManiaCore.description.getName()
 		),
-		new Setting(
-				"High Speed Booster Block", 
-				new Integer(Material.GOLD_BLOCK.getId()),
-				"Minecarts that pass over this will be boosted to the multiplier set below their current speed",
-				MinecartManiaCore.description.getName()
-		),
+		
 		new Setting(
 				"Minecarts return to owner", 
 				Boolean.TRUE, 
@@ -48,8 +37,20 @@ public class SettingList {
 		),
 		new Setting(
 				"Maximum Minecart Speed Percent", 
+				new Integer(165), 
+				"Adjusts the maximum minecart speed that can be set by a sign.",
+				MinecartManiaCore.description.getName()
+		),
+		new Setting(
+				"Default Minecart Speed Percent", 
 				new Integer(100), 
 				"Adjusts the maximum minecart speed. 100% is equal to the vanilla Minecart speed. Large values will cause minecarts to derail.",
+				MinecartManiaCore.description.getName()
+		),
+		new Setting(
+				"High Speed Booster Block", 
+				new Integer(Material.GOLD_BLOCK.getId()),
+				"Minecarts that pass over this will be boosted to the multiplier set below their current speed",
 				MinecartManiaCore.description.getName()
 		),
 		new Setting(
