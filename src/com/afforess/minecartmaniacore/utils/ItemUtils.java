@@ -1,6 +1,7 @@
 package com.afforess.minecartmaniacore.utils;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import com.afforess.minecartmaniacore.Item;
 import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
@@ -49,7 +50,7 @@ public class ItemUtils {
 			if (str.isEmpty()) {
 				continue;
 			}
-			
+
 			//Check the given direction and intended direction from the sign
 			CompassDirection direction = CompassDirection.NO_DIRECTION;
 			if (str.contains("+")) {
@@ -68,8 +69,9 @@ public class ItemUtils {
 			//short circuit if it's everything
 			if (str.contains("all items")) {
 				for (Item m : Item.values()) {
-					if (!items.contains(m))
+					if (!items.contains(m)) {
 						items.add(m);
+					}
 				}
 				continue;
 			}
@@ -77,13 +79,17 @@ public class ItemUtils {
 			String[] keys = str.split(":");
 			for (int i = 0; i < keys.length; i++) {
 				if (keys[i] == null || keys[i].isEmpty()) continue;
-				Item type = null;
+				
+				//List of items to process
+				ArrayList<Item> toAdd = new ArrayList<Item>();
+				
 				//check if we need to remove this item
 				boolean remove = keys[i].contains("!");
 				if (remove) {
 					keys[i] = keys[i].replace('!', ' ');
 				}
 				keys[i] = keys[i].trim();
+				
 				//Check if this is a set of items
 				if (keys[i].contains("-")) {
 					String[] set = keys[i].split("-");
@@ -91,11 +97,12 @@ public class ItemUtils {
 					Item end = getFirstItemStringToMaterial(set[1]);
 					if (start != null && end != null) {
 						for (int item = start.getId(); item <= end.getId(); item++) {
-							items.addAll(Item.getItem(item));
+							toAdd.addAll(Item.getItem(item));
 						}
 						continue; //skip to the next item
 					}
 				}
+				
 				//Parse the numbers first. Can be separated by ":"
 				try {
 					//item with specific data value ("17;2" - item id, data value [redwood log])
@@ -108,9 +115,9 @@ public class ItemUtils {
 					String num = StringUtils.getNumber(keys[i]);
 					int id = Integer.parseInt(num);
 					if (data != -1)
-						type = Item.getItem(id, data);
+						toAdd.add(Item.getItem(id, data));
 					else
-						items.addAll(Item.getItem(id));
+						toAdd.addAll(Item.getItem(id));
 				}
 				catch (Exception exception) {
 					//Now try string names
@@ -127,17 +134,33 @@ public class ItemUtils {
 							}
 						}
 					}
-					type = best;
+					toAdd.add(best);
 				}
-				if (type != null) {
-					if (!remove)
-						items.add(type);
-					else {
-						items.remove(type);
+				
+				//Now add or remove the items we processed
+				for (Item type : toAdd) {
+					if (type != null) {
+						if (!remove) {
+							items.add(type);
+						}
+						else {
+							items.remove(type);
+						}
 					}
 				}
 			}
 		}
+		
+		
+		//Remove Air from the list
+		Iterator<Item> i = items.iterator();
+		while (i.hasNext()) {
+			Item type = i.next();
+			if (type == null || type.equals(Item.AIR)) {
+				i.remove();
+			}
+		}
+		
 		Item itemList[] = new Item[items.size()];
 		return items.toArray(itemList);
 	}

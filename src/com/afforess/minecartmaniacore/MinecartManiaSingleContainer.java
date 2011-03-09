@@ -47,22 +47,21 @@ public abstract class MinecartManiaSingleContainer implements MinecartManiaInven
 		if (item.getTypeId() == Material.AIR.getId()) {
 			return false;
 		}
-		Inventory inventory = getInventory();
 		//Backup contents
-		ItemStack[] backup = inventory.getContents().clone();
+		ItemStack[] backup = getContents().clone();
 		ItemStack backupItem = new ItemStack(item.getTypeId(), item.getAmount(), item.getDurability());
 		
 		//First attempt to merge the itemstack with existing item stacks that aren't full (< 64)
-		for (int i = 0; i < inventory.getSize(); i++) {
-			if (inventory.getItem(i) != null) {
-				if (inventory.getItem(i).getTypeId() == item.getTypeId() && inventory.getItem(i).getDurability() == item.getDurability()) {
-					if (inventory.getItem(i).getAmount() + item.getAmount() <= 64) {
-						inventory.setItem(i, new ItemStack(item.getTypeId(), inventory.getItem(i).getAmount() + item.getAmount(), item.getDurability()));
+		for (int i = 0; i < size(); i++) {
+			if (getItem(i) != null) {
+				if (getItem(i).getTypeId() == item.getTypeId() && getItem(i).getDurability() == item.getDurability()) {
+					if (getItem(i).getAmount() + item.getAmount() <= 64) {
+						setItem(i, new ItemStack(item.getTypeId(), getItem(i).getAmount() + item.getAmount(), item.getDurability()));
 						return true;
 					}
 					else {
-						int diff = inventory.getItem(i).getAmount() + item.getAmount() - 64;
-						inventory.setItem(i, new ItemStack(item.getTypeId(), 64, item.getDurability()));
+						int diff = getItem(i).getAmount() + item.getAmount() - 64;
+						setItem(i, new ItemStack(item.getTypeId(), 64, item.getDurability()));
 						item = new ItemStack(item.getTypeId(), diff, item.getDurability());
 					}
 				}
@@ -70,14 +69,14 @@ public abstract class MinecartManiaSingleContainer implements MinecartManiaInven
 		}
 		
 		//Attempt to add the item to an empty slot
-		int emptySlot = inventory.firstEmpty();
+		int emptySlot = firstEmpty();
 		if (emptySlot > -1) {
-			inventory.setItem(emptySlot, item);
+			setItem(emptySlot, item);
 			return true;
 		}
 			
 		//if we fail, reset the inventory and item back to previous values
-		inventory.setContents(backup);
+		getInventory().setContents(backup);
 		item = backupItem;
 		return false;
 	}
@@ -110,31 +109,30 @@ public abstract class MinecartManiaSingleContainer implements MinecartManiaInven
 	 * @return true if the items were successfully removed
 	 */
 	public boolean removeItem(int type, int amount, short durability) {
-		Inventory inventory = getInventory();
 		//Backup contents
-		ItemStack[] backup = inventory.getContents().clone();
+		ItemStack[] backup = getContents().clone();
 		
-		for (int i = 0; i < inventory.getSize(); i++) {
-			if (inventory.getItem(i) != null) {
-				if (inventory.getItem(i).getTypeId() == type && (durability == -1 || (getItem(i).getDurability() == durability))) {
-					if (inventory.getItem(i).getAmount() - amount > 0) {
-						inventory.setItem(i, new ItemStack(type, inventory.getItem(i).getAmount() - amount, durability));
+		for (int i = 0; i < size(); i++) {
+			if (getItem(i) != null) {
+				if (getItem(i).getTypeId() == type && (durability == -1 || (getItem(i).getDurability() == durability))) {
+					if (getItem(i).getAmount() - amount > 0) {
+						setItem(i, new ItemStack(type, getItem(i).getAmount() - amount, durability));
 						return true;
 					}
-					else if (inventory.getItem(i).getAmount() - amount == 0) {
-						inventory.clear(i);
+					else if (getItem(i).getAmount() - amount == 0) {
+						setItem(i, null);
 						return true;
 					}
 					else{
 						amount -=  inventory.getItem(i).getAmount();
-						inventory.clear(i);
+						setItem(i, null);
 					}
 				}
 			}
 		}
 
 		//if we fail, reset the inventory back to previous values
-		inventory.setContents(backup);
+		getInventory().setContents(backup);
 		return false;
 	}
 

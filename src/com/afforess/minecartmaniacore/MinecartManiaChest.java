@@ -77,10 +77,11 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements 
 		return null;
     }
 	 
-	 /**
-	 ** Returns the value from the loaded data
-	 ** @param key the string key the data value is associated with
-	 **/
+	/**
+	 * Returns the value from the loaded data
+	 * @param key the string key the data value is associated with
+	 * @return the object stored by the key
+	 */
 	 public Object getDataValue(String key) {
 		 if (data.containsKey(key)) {
 			 return data.get(key);
@@ -102,11 +103,10 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements 
 	 }
 	
 	/**
-	 * attempts to add an itemstack to this chest. It adds items in a 'smart' manner, merging with existing itemstacks, until they
+	 * Attempts to add an itemstack to this chest. It adds items in a 'smart' manner, merging with existing itemstacks, until they
 	 * reach the maximum size (64). If it fails, it will not alter the chest's previous contents.
-	 * Causes of failure: Full Chest, Concurrent modification.
 	 * @param item to add
-	 **/
+	 */
 	public boolean addItem(ItemStack item) {
 		if (item == null) {
 			return true;
@@ -115,22 +115,21 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements 
 		if (item.getTypeId() == Item.AIR.getId()) {
 			return false;
 		}
-		Inventory inventory =  getChest().getInventory();
 		//Backup contents
-		ItemStack[] backup = inventory.getContents().clone();
+		ItemStack[] backup = getContents().clone();
 		ItemStack backupItem = new ItemStack(item.getTypeId(), item.getAmount(), item.getDurability());
 		
 		//First attempt to merge the itemstack with existing item stacks that aren't full (< 64)
-		for (int i = 0; i < inventory.getSize(); i++) {
-			if (inventory.getItem(i) != null) {
-				if (inventory.getItem(i).getTypeId() == item.getTypeId() && inventory.getItem(i).getDurability() == item.getDurability()) {
-					if (inventory.getItem(i).getAmount() + item.getAmount() <= 64) {
-						inventory.setItem(i, new ItemStack(item.getTypeId(), inventory.getItem(i).getAmount() + item.getAmount(), item.getDurability()));
+		for (int i = 0; i < size(); i++) {
+			if (getItem(i) != null) {
+				if (getItem(i).getTypeId() == item.getTypeId() && getItem(i).getDurability() == item.getDurability()) {
+					if (getItem(i).getAmount() + item.getAmount() <= 64) {
+						setItem(i, new ItemStack(item.getTypeId(), getItem(i).getAmount() + item.getAmount(), item.getDurability()));
 						return true;
 					}
 					else {
-						int diff = inventory.getItem(i).getAmount() + item.getAmount() - 64;
-						inventory.setItem(i, new ItemStack(item.getTypeId(), inventory.getItem(i).getAmount() + item.getAmount(), item.getDurability()));
+						int diff = getItem(i).getAmount() + item.getAmount() - 64;
+						setItem(i, new ItemStack(item.getTypeId(), getItem(i).getAmount() + item.getAmount(), item.getDurability()));
 						item = new ItemStack(item.getTypeId(), diff);
 					}
 				}
@@ -138,9 +137,9 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements 
 		}
 		
 		//Attempt to add the item to an empty slot
-		int emptySlot = inventory.firstEmpty();
+		int emptySlot = firstEmpty();
 		if (emptySlot > -1) {
-			inventory.setItem(emptySlot, item);
+			setItem(emptySlot, item);
 			update();
 			return true;
 		}
@@ -164,39 +163,38 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements 
 		}
 			
 		//if we fail, reset the inventory and item back to previous values
-		inventory.setContents(backup);
+		getChest().getInventory().setContents(backup);
 		item = backupItem;
 		return false;
 	}
 	
 	
 	/**
-	 ** attempts to remove the specified amount of an item type from this chest. If it fails, it will not alter the chests previous contents.
-	 ** @param itemtype to remove
-	 ** @param the amount to remove
-	 ** @param the durability of the item to remove (-1 for generic durability)
-	 **/
+	 * Attempts to remove the specified amount of an item type from this chest. If it fails, it will not alter the chests previous contents.
+	 * @param type to remove
+	 * @param amount to remove
+	 * @param durability of the item to remove
+	 */
 	public boolean removeItem(int type, int amount, short durability) {
-		Inventory inventory =  getChest().getInventory();
 		//Backup contents
-		ItemStack[] backup = inventory.getContents().clone();
+		ItemStack[] backup = getContents().clone();
 		
-		for (int i = 0; i < inventory.getSize(); i++) {
-			if (inventory.getItem(i) != null) {
-				if (inventory.getItem(i).getTypeId() == type && (durability == -1 || (getItem(i).getDurability() == durability))) {
-					if (inventory.getItem(i).getAmount() - amount > 0) {
-						inventory.setItem(i, new ItemStack(type, inventory.getItem(i).getAmount() - amount, durability));
+		for (int i = 0; i < size(); i++) {
+			if (getItem(i) != null) {
+				if (getItem(i).getTypeId() == type && (durability == -1 || (getItem(i).getDurability() == durability))) {
+					if (getItem(i).getAmount() - amount > 0) {
+						setItem(i, new ItemStack(type, getItem(i).getAmount() - amount, durability));
 						update();
 						return true;
 					}
-					else if (inventory.getItem(i).getAmount() - amount == 0) {
-						inventory.clear(i);
+					else if (getItem(i).getAmount() - amount == 0) {
+						setItem(i, null);
 						update();
 						return true;
 					}
 					else{
-						amount -=  inventory.getItem(i).getAmount();
-						inventory.clear(i);
+						amount -=  getItem(i).getAmount();
+						setItem(i, null);
 					}
 				}
 			}
@@ -220,39 +218,7 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements 
 		
 			
 		//if we fail, reset the inventory back to previous values
-		inventory.setContents(backup);
-		return false;
-	}
-	
-	/**
-	 ** Returns true if this chest or it's neighbor chest contains an itemstack of the given item id
-	 ** @param item id to search for
-	 ** @param the durability of the item to remove (-1 for generic durability)
-	 **/
-	public boolean contains(int type, short durability) {
-		for (int i = 0; i < size(); i++) {
-			if (getItem(i) != null) {
-				if (getItem(i).getTypeId() == type && ((durability == -1 || getItem(i).getDurability() == -1) || (getItem(i).getDurability() == durability))) {
-					return true;
-				}
-			}
-		}
-		
-		MinecartManiaChest neighbor = getNeighborChest();
-		if (neighbor != null) {
-			//flag to prevent infinite recursion
-			if (getDataValue("neighbor") == null) {
-				neighbor.setDataValue("neighbor", Boolean.TRUE);
-				if (neighbor.contains(type, durability)) {
-					return true;
-				}
-			}
-			else {
-				//reset flag
-				setDataValue("neighbor", null);
-			}
-		}
-		
+		getChest().getInventory().setContents(backup);
 		return false;
 	}
 
