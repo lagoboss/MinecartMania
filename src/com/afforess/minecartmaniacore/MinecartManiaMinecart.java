@@ -508,6 +508,49 @@ loop:   for (Sign sign : signList) {
 		return blocks;
 	}
 	
+	public ArrayList<Block> getAdjacentBlocks(int range) {
+		//default constructor size is purely for efficiency reasons - and to show off my math skills
+		ArrayList<Block> blockList = new ArrayList<Block>((int)Math.floor(Math.pow(1 + (range * 2), 3)));
+		Block center = MinecartManiaWorld.getBlockAt(minecart.getWorld(), getX(), getY(), getZ());
+		for (int dx = -(range); dx <= range; dx++){
+			for (int dy = -(range); dy <= range; dy++){
+				for (int dz = -(range); dz <= range; dz++){
+					blockList.add(center.getRelative(dx, dy, dz));
+				}
+			}
+		}
+		return blockList;
+	}
+	
+	public ArrayList<Block> getPreviousLocationAdjacentBlocks(int range) {
+		ArrayList<Block> blockList = new ArrayList<Block>((int)Math.floor(Math.pow(1 + (range * 2), 3)));
+		Block center = MinecartManiaWorld.getBlockAt(minecart.getWorld(), previousLocation.getBlockX(), previousLocation.getBlockY(), previousLocation.getBlockZ());
+		for (int dx = -(range); dx <= range; dx++){
+			for (int dy = -(range); dy <= range; dy++){
+				for (int dz = -(range); dz <= range; dz++){
+					blockList.add(center.getRelative(dx, dy, dz));
+				}
+			}
+		}
+		return blockList;
+	}
+	
+	public ArrayList<Block> getBlocksBeneath(int range) {
+		ArrayList<Block> blockList = new ArrayList<Block>();
+		for (int dy = -range; dy <= 0; dy++) {
+			blockList.add(MinecartManiaWorld.getBlockAt(minecart.getWorld(), getX(), getY()+dy, getZ()));
+		}
+		return blockList;
+	}
+	
+	public ArrayList<Block> getPreviousLocationBlocksBeneath(int range) {
+		ArrayList<Block> blockList = new ArrayList<Block>();
+		for (int dy = -range; dy <= 0; dy++) {
+			blockList.add(MinecartManiaWorld.getBlockAt(minecart.getWorld(), previousLocation.getBlockX(), previousLocation.getBlockY()+dy, previousLocation.getBlockZ()));
+		}
+		return blockList;
+	}
+	
 	public boolean isMovingAway(Location l) {
 		//North of us
 		if (l.getBlockX() - getX() < 0) {

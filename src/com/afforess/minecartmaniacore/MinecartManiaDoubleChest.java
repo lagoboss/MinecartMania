@@ -148,6 +148,25 @@ public class MinecartManiaDoubleChest implements MinecartManiaInventory{
 	}
 	
 	/**
+	 * Set's the contents of this inventory with an array of items.
+	 * @param contents to set as the inventory
+	 */
+	public void setContents(ItemStack[] contents) {
+		ItemStack[] side1 = new ItemStack[chest1.size()];
+		ItemStack[] side2 = new ItemStack[chest2.size()];
+		for (int i = 0; i < contents.length; i++) {
+			if (i < side1.length) {
+				side1[i] = contents[i];
+			}
+			else {
+				side2[i-side1.length] = contents[i];
+			}
+		}
+		chest1.setContents(side1);
+		chest2.setContents(side2);
+	}
+	
+	/**
 	 * Get's the first slot containing the given material, or -1 if none contain it
 	 * @param material to search for
 	 * @return the first slot with the given material

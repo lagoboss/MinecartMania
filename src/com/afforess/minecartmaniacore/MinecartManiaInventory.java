@@ -45,4 +45,6 @@ public interface MinecartManiaInventory {
 	//public Inventory getInventory();
 	
 	public ItemStack[] getContents();
+	
+	public void setContents(ItemStack[] contents);
 }

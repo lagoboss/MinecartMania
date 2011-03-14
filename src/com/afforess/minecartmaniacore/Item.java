@@ -245,6 +245,7 @@ public enum Item {
     private final int id;
     private final short data;
     private boolean hasData;
+    private int amount = -1;
     private static final Map<ArrayList<Integer>, Item> lookupId = new HashMap<ArrayList<Integer>, Item>();
     private static final Map<String, Item> lookupName = new HashMap<String, Item>();
 
@@ -294,6 +295,18 @@ public enum Item {
     public boolean hasData() {
     	return hasData;
     }
+    
+    public void setAmount(int amount) {
+		this.amount = amount;
+	}
+
+	public int getAmount() {
+		return amount;
+	}
+	
+	public boolean isInfinite() {
+		return amount == -1;
+	}
     
     /**
      * Finds the bukkit material associated with this item id, and returns it
@@ -370,7 +383,7 @@ public enum Item {
     	return lookupId.get(m.getId());
     }
 
-    static {
+	static {
         for (Item i : values()) {
         	ArrayList<Integer> a = new ArrayList<Integer>(2);
         	a.add(i.getId());

@@ -78,7 +78,7 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 		}
 			
 		//if we fail, reset the inventory and item back to previous values
-		getInventory().setContents(backup);
+		setContents(backup);
 		item = backupItem;
 		return false;
 	}
@@ -132,7 +132,7 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 		}
 
 		//if we fail, reset the inventory back to previous values
-		getInventory().setContents(backup);
+		setContents(backup);
 		return false;
 	}
 
@@ -169,6 +169,14 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 	 */
 	public ItemStack[] getContents() {
 		return getInventory().getContents();
+	}
+	
+	/**
+	 * Set's the contents of this inventory with an array of items.
+	 * @param contents to set as the inventory
+	 */
+	public void setContents(ItemStack[] contents) {
+		getInventory().setContents(contents);
 	}
 	
 	/**

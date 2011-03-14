@@ -97,10 +97,21 @@ public class ItemUtils {
 					Item end = getFirstItemStringToMaterial(set[1]);
 					if (start != null && end != null) {
 						for (int item = start.getId(); item <= end.getId(); item++) {
-							toAdd.addAll(Item.getItem(item));
+							items.addAll(Item.getItem(item));
 						}
 						continue; //skip to the next item
 					}
+				}
+				
+				//check for specific amount
+				int amount = -1;
+				if (keys[i].contains("@")) {
+					String[] data = keys[i].split("@");
+					keys[i] = data[0];
+					try {
+						amount = Integer.parseInt(data[1]);
+					} catch(Exception e) {}
+					
 				}
 				
 				//Parse the numbers first. Can be separated by ":"
@@ -140,6 +151,7 @@ public class ItemUtils {
 				//Now add or remove the items we processed
 				for (Item type : toAdd) {
 					if (type != null) {
+						type.setAmount(amount);
 						if (!remove) {
 							items.add(type);
 						}
