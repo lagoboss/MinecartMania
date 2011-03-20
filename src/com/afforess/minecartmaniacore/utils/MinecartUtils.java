@@ -18,7 +18,6 @@ import org.bukkit.util.Vector;
 import com.afforess.minecartmaniacore.Item;
 import com.afforess.minecartmaniacore.MinecartManiaCore;
 import com.afforess.minecartmaniacore.MinecartManiaMinecart;
-import com.afforess.minecartmaniacore.MinecartManiaTaskScheduler;
 import com.afforess.minecartmaniacore.MinecartManiaWorld;
 import com.afforess.minecartmaniacore.event.MinecartNearEntityEvent;
 
@@ -279,18 +278,16 @@ public class MinecartUtils {
 		return false;
 	}
 
-	public static void updateNearbyItems(MinecartManiaMinecart minecart) {
+	public static void updateNearbyItems(final MinecartManiaMinecart minecart) {
 		if (minecart.getDataValue("MinecartNearEntityEvent") != null) {
 			return;
 		}
-		Object[] param = { minecart, minecart.minecart.getWorld().getEntities() };
-		@SuppressWarnings("rawtypes")
-		Class[] paramtype = { MinecartManiaMinecart.class, List.class };
-		try {
-			//No reason to keep this on the main thread, fire it on a second thread
-			MinecartManiaTaskScheduler.doAsyncTask(MinecartUtils.class.getMethod("doMinecartNearEntityCheck", paramtype), 5, param);
-		} catch (Exception e1) {
-			
-		}
+		final List<Entity> list = minecart.minecart.getWorld().getEntities();
+		Runnable run = new Runnable() {
+			public void run() {
+				doMinecartNearEntityCheck(minecart, list);
+			}
+		};
+		MinecartManiaCore.server.getScheduler().scheduleAsyncDelayedTask(MinecartManiaCore.instance, run);
 	}	
 }

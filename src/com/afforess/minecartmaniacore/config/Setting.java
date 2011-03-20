@@ -36,21 +36,4 @@ public class Setting {
 	public Plugin getPlugin() {
 		return MinecartManiaCore.server.getPluginManager().getPlugin(plugin);
 	}
-	
-	public boolean isBoolean() {
-		return value instanceof Boolean;
-	}
-	
-	public boolean isInteger() {
-		return value instanceof Integer;
-	}
-	
-	public boolean isDouble() {
-		return value instanceof Double;
-	}
-	
-	public boolean isString() {
-		return value instanceof String;
-	}
-
 }

@@ -130,7 +130,7 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements 
 					else {
 						int diff = getItem(i).getAmount() + item.getAmount() - 64;
 						setItem(i, new ItemStack(item.getTypeId(), getItem(i).getAmount() + item.getAmount(), item.getDurability()));
-						item = new ItemStack(item.getTypeId(), diff);
+						item = new ItemStack(item.getTypeId(), diff, item.getDurability());
 					}
 				}
 			}

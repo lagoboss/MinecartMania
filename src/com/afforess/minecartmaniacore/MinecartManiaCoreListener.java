@@ -31,6 +31,7 @@ import org.bukkit.event.block.BlockListener;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.bukkit.inventory.ItemStack;
 
+import com.afforess.minecartmaniacore.config.ControlBlockList;
 import com.afforess.minecartmaniacore.event.MinecartActionEvent;
 import com.afforess.minecartmaniacore.event.MinecartClickedEvent;
 import com.afforess.minecartmaniacore.event.MinecartIntersectionEvent;
@@ -83,18 +84,11 @@ public class MinecartManiaCoreListener extends VehicleListener{
 				MinecartActionEvent mae = new MinecartActionEvent(minecart);
 				MinecartManiaCore.server.getPluginManager().callEvent(mae);
 				
-				minecart.doHighSpeedBooster();
-				minecart.doLowSpeedBooster();
-				minecart.doHighSpeedBrake();
-				minecart.doLowSpeedBrake();
+				minecart.doSpeedMultiplierBlock();
+				minecart.doPlatformBlock();
+				minecart.doCatcherBlock();
 				
 				boolean action = mae.isActionTaken();
-		    	if (!action) {
-		    		action = minecart.doReverse();
-		    	}
-		    	if (!action) {
-		    		action = minecart.doCatcherBlock();
-		    	}
 		    	if (!action) {
 		    		action = minecart.doEjectorBlock();
 		    	}
@@ -174,7 +168,7 @@ public class MinecartManiaCoreListener extends VehicleListener{
 			return;
 		}
 		final MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart((Minecart)event.getVehicle());
-		if (minecart.getBlockIdBeneath() == MinecartManiaWorld.getCatcherBlockId()) {
+		if (ControlBlockList.isCatcherBlock(minecart.getItemBeneath())) {
 			if (!minecart.isMoving()) {
 				ArrayList<Sign> signs = SignUtils.getAdjacentSignList(minecart, 2);
 signs:			for (Sign sign : signs) {

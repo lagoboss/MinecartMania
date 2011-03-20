@@ -1,5 +1,8 @@
 package com.afforess.minecartmaniacore;
 
+import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.bukkit.Material;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.StorageMinecart;
@@ -10,6 +13,8 @@ import org.bukkit.inventory.ItemStack;
  * @author Afforess
  */
 public class MinecartManiaStorageCart extends MinecartManiaMinecart implements MinecartManiaInventory{
+	private ConcurrentHashMap<Item, Integer> maximumContents = new ConcurrentHashMap<Item, Integer>();
+	private ConcurrentHashMap<Item, Integer> minimumContents = new ConcurrentHashMap<Item, Integer>();
 
 	/**
 	 * Creates a storage minecart from the given bukkit minecart
@@ -27,13 +32,35 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 	public MinecartManiaStorageCart(Minecart cart, String owner) {
 		super(cart, owner);
 	}
-	
+
 	/**
 	 * Gets the bukkit inventory for this storage minecart
 	 * @return bukkit inventory
 	 */
 	public Inventory getInventory() {
 		return ((StorageMinecart)minecart).getInventory();
+	}
+	
+	public int getMaximumItem(Item item) {
+		if (maximumContents.containsKey(item)) {
+			return maximumContents.get(item);
+		}
+		return -1;
+	}
+	
+	public void setMaximumItem(Item item, int amount) {
+		maximumContents.put(item, amount);
+	}
+	
+	public int getMinimumItem(Item item) {
+		if (minimumContents.containsKey(item)) {
+			return minimumContents.get(item);
+		}
+		return -1;
+	}
+	
+	public void setMinimumItem(Item item, int amount) {
+		minimumContents.put(item, amount);
 	}
 	
 	/**
@@ -49,6 +76,19 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 		if (item.getTypeId() == Item.AIR.getId()) {
 			return false;
 		}
+		
+		//Check if this new item will exceed the maximum allowed
+		ArrayList<Item> list = Item.getItem(item.getTypeId());
+		for (Item i : list) {
+			if (!i.hasData() || i.getData() == item.getDurability()) {
+				if (getMaximumItem(i) != -1) {
+					if (getAmount(i) + item.getAmount() > getMaximumItem(i)) {
+						return false;
+					}
+				}
+			}
+		}
+		
 		//Backup contents
 		ItemStack[] backup = getContents().clone();
 		ItemStack backupItem = new ItemStack(item.getTypeId(), item.getAmount(), item.getDurability());
@@ -109,6 +149,20 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 	 */
 	@Override
 	public boolean removeItem(int type, int amount, short durability) {
+		
+		//Check if this will fall below the minimum allowed
+		ArrayList<Item> list = Item.getItem(type);
+		for (Item i : list) {
+			if (!i.hasData() || i.getData() == durability) {
+				if (getMinimumItem(i) != -1) {
+					if (getAmount(i) - amount < getMinimumItem(i)) {
+						return false;
+					}
+				}
+			}
+		}
+		
+		
 		//Backup contents
 		ItemStack[] backup = getContents().clone();
 		
@@ -306,5 +360,17 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 			}
 		}
 		return true;
+	}
+	
+	public int getAmount(Item item) {
+		int count = 0;
+		for (ItemStack i : getContents()) {
+			if (i != null && i.getTypeId() == item.getId()){
+				if (!item.hasData() || item.getData() == i.getDurability()) {
+					count += i.getAmount();
+				}
+			}
+		}
+		return count;
 	}
 }

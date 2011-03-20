@@ -10,7 +10,29 @@ import com.afforess.minecartmaniacore.MinecartManiaMinecart;
 import com.afforess.minecartmaniacore.MinecartManiaWorld;
 
 public class SignUtils {
-
+	private static Location cacheLoc = null;
+	private static ArrayList<Sign> cache = null;
+	private static int cacheRange = -1;
+	
+	//While it's reset often, tests indicate it is used in 2/5 of calls for standard minecarts, and 19/20 of calls for storage minecarts.
+	private static ArrayList<Sign> getCache(Location loc, int range) {
+		if (cacheLoc != null && loc.toVector().equals(cacheLoc.toVector())) {
+			if (range == cacheRange) {
+				return cache;
+			}
+		}
+		return null;
+	}
+	
+	private static void setCache(ArrayList<Sign> signList, Location loc, int range) {
+		SignUtils.cacheLoc = loc;
+		SignUtils.cacheRange = range;
+		SignUtils.cache = signList;
+	}
+	
+	public static boolean signMatches(Sign s1, Sign s2) {
+		return s1.getBlock().getLocation().equals(s2.getBlock().getLocation());
+	}
 
 	public static Sign getSignAt(World w, int x, int y, int z) {
 		if (MinecartManiaWorld.getBlockAt(w, x, y, z).getState() instanceof Sign) {
@@ -28,6 +50,12 @@ public class SignUtils {
 	}
 
 	public static ArrayList<Sign> getAdjacentSignList(World w, int x, int y, int z, int range) {
+		//Attempt using the cache
+		Location loc = new Location(w, x, y, z);
+		if (getCache(loc, range) != null) {
+			return getCache(loc, range);
+		}
+		
 		ArrayList<Sign> signList = new ArrayList<Sign>();
 		for (int dx = -(range); dx <= range; dx++){
 			for (int dy = -(range); dy <= range; dy++){
@@ -39,6 +67,8 @@ public class SignUtils {
 				}
 			}
 		}
+		
+		setCache(signList, loc, range);
 		return signList;
 	}
 

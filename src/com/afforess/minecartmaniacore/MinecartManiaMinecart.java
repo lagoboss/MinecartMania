@@ -1,6 +1,7 @@
 package com.afforess.minecartmaniacore;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -14,11 +15,15 @@ import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.StorageMinecart;
 import org.bukkit.entity.PoweredMinecart;
+import org.bukkit.event.Event.Type;
+import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
+import com.afforess.minecartmaniacore.config.ControlBlockList;
 import com.afforess.minecartmaniacore.event.MinecartBoostEvent;
 import com.afforess.minecartmaniacore.event.MinecartBrakeEvent;
+import com.afforess.minecartmaniacore.event.MinecartCaughtEvent;
 import com.afforess.minecartmaniacore.event.MinecartLaunchedEvent;
 import com.afforess.minecartmaniacore.event.MinecartManiaMinecartCreatedEvent;
 import com.afforess.minecartmaniacore.event.MinecartManiaMinecartDestroyedEvent;
@@ -215,7 +220,11 @@ public class MinecartManiaMinecart {
 	 }
 	
 	public int getBlockIdBeneath() {
-		return MinecartManiaWorld.getBlockAt(minecart.getWorld(), getX(), getY()-1, getZ()).getTypeId();
+		return MinecartManiaWorld.getBlockIdAt(minecart.getWorld(), getX(), getY()-1, getZ());
+	}
+	
+	public Item getItemBeneath() {
+		return Item.getItem(MinecartManiaWorld.getBlockIdAt(minecart.getWorld(), getX(), getY()-1, getZ()), MinecartManiaWorld.getBlockData(minecart.getWorld(), getX(), getY()-1, getZ()));
 	}
 	
 	public boolean isPoweredBeneath() {
@@ -231,56 +240,52 @@ public class MinecartManiaMinecart {
 		setMotionZ(getMotionZ() * -1);
 	}
 	
-	public boolean doReverse() {
-		if (getBlockIdBeneath() == MinecartManiaWorld.getReverseBlockId() && !isPoweredBeneath()){
-			reverse();
-    		return true;
-    	}
-		return false;
-	}
-
-	public boolean doLowSpeedBrake() {
-		if (getBlockIdBeneath() == MinecartManiaWorld.getLowSpeedBrakeBlockId() && !isPoweredBeneath()){
-			MinecartBrakeEvent mbe = new MinecartBrakeEvent(this, MinecartManiaWorld.getLowSpeedBrakeBlockDivisor());
-			MinecartManiaCore.server.getPluginManager().callEvent(mbe);
-			multiplyMotion(1 / mbe.getBrakeDivisor());
-    		return mbe.getBrakeDivisor() !=  1.0D;
-    	}
-		return false;
-	}
-
-	public boolean doHighSpeedBrake() {
-		if (getBlockIdBeneath() == MinecartManiaWorld.getHighSpeedBrakeBlockId() && !isPoweredBeneath()){
-			MinecartBrakeEvent mbe = new MinecartBrakeEvent(this, MinecartManiaWorld.getHighSpeedBrakeBlockDivisor());
-			MinecartManiaCore.server.getPluginManager().callEvent(mbe);
-			multiplyMotion(1 / mbe.getBrakeDivisor());
-    		return mbe.getBrakeDivisor() !=  1.0D;
-    	}
-		return false;
-	}
-
-	public boolean doLowSpeedBooster() {
-		if (getBlockIdBeneath() == MinecartManiaWorld.getLowSpeedBoosterBlockId() && !isPoweredBeneath()){
-			MinecartBoostEvent mbe = new MinecartBoostEvent(this, MinecartManiaWorld.getLowSpeedBoosterBlockMultiplier());
-			MinecartManiaCore.server.getPluginManager().callEvent(mbe);
-			multiplyMotion(mbe.getBoostMultiplier());
-    		return mbe.getBoostMultiplier() != 1.0D;
+	public boolean doSpeedMultiplierBlock() {
+		if (ControlBlockList.getSpeedMultiplier(getItemBeneath()) != 1.0D && !isPoweredBeneath()){
+			if (ControlBlockList.getSpeedMultiplier(getItemBeneath()) == -1.0D) {
+				reverse();
+			}
+			else if (ControlBlockList.getSpeedMultiplier(getItemBeneath()) < 1.0D) {
+				MinecartBrakeEvent mbe = new MinecartBrakeEvent(this, 1 / ControlBlockList.getSpeedMultiplier(getItemBeneath()));
+				MinecartManiaCore.server.getPluginManager().callEvent(mbe);
+				multiplyMotion(1 / mbe.getBrakeDivisor());
+	    		return mbe.getBrakeDivisor() !=  1.0D;
+			}
+			else if (ControlBlockList.getSpeedMultiplier(getItemBeneath()) > 1.0D) {
+				MinecartBoostEvent mbe = new MinecartBoostEvent(this, ControlBlockList.getSpeedMultiplier(getItemBeneath()));
+				MinecartManiaCore.server.getPluginManager().callEvent(mbe);
+				multiplyMotion(mbe.getBoostMultiplier());
+	    		return mbe.getBoostMultiplier() != 1.0D;
+			}
     	}
 		return false;
 	}
 	
-	public boolean doHighSpeedBooster() {
-		if (getBlockIdBeneath() == MinecartManiaWorld.getHighSpeedBoosterBlockId() && !isPoweredBeneath()){
-			MinecartBoostEvent mbe = new MinecartBoostEvent(this, MinecartManiaWorld.getHighSpeedBoosterBlockMultiplier());
-			MinecartManiaCore.server.getPluginManager().callEvent(mbe);
-			multiplyMotion(mbe.getBoostMultiplier());
-    		return mbe.getBoostMultiplier() != 1.0D;
-    	}
+	public boolean doPlatformBlock() {
+		if (ControlBlockList.isPlatformBlock(getItemBeneath()) && isStandardMinecart()) {
+			if (!isPoweredBeneath()) {
+				if (minecart.getPassenger() == null) {
+					List<LivingEntity> list = minecart.getWorld().getLivingEntities();
+					double range = getEntityDetectionRange() * getEntityDetectionRange();
+					for (LivingEntity le : list) {
+						if (le.getLocation().toVector().distanceSquared(minecart.getLocation().toVector()) < range) {
+							//Let the world know about this
+							VehicleEnterEvent vee = new VehicleEnterEvent(Type.VEHICLE_ENTER, minecart, le);
+							MinecartManiaCore.server.getPluginManager().callEvent(vee);
+							if (!vee.isCancelled()) {
+								minecart.setPassenger(le);
+								return true;
+							}
+						}
+					}
+				}
+			}
+		}
 		return false;
 	}
-	
+
 	public void doLauncherBlock() {
-		if (getBlockIdBeneath() == MinecartManiaWorld.getCatcherBlockId()){
+		if (ControlBlockList.isLauncherBlock(getItemBeneath())){
 			if (isPoweredBeneath()) {
 				if (!isMoving()) {
 					launchCart();
@@ -290,10 +295,14 @@ public class MinecartManiaMinecart {
 	}
 
 	public boolean doCatcherBlock() {
-		if (getBlockIdBeneath() == MinecartManiaWorld.getCatcherBlockId()){
+		if (ControlBlockList.isCatcherBlock(getItemBeneath())){
 			if (!isPoweredBeneath()) {
-				stopCart();
-				return true;
+				MinecartCaughtEvent mce = new MinecartCaughtEvent(this);
+				MinecartManiaCore.server.getPluginManager().callEvent(mce);
+				if (!mce.isActionTaken()) {
+					stopCart();
+					return true;
+				}
 			}
 		}
 		return false;
@@ -415,7 +424,7 @@ loop:   for (Sign sign : signList) {
 	}
 
 	public boolean doEjectorBlock() {
-		if (getBlockIdBeneath() == MinecartManiaWorld.getEjectorBlockId() && !isPoweredBeneath()) {
+		if (ControlBlockList.isEjectorBlock(getItemBeneath()) && !isPoweredBeneath()) {
 			if (minecart.getPassenger() != null) {
 				return minecart.eject();
 			}
@@ -717,9 +726,7 @@ loop:   for (Sign sign : signList) {
 			for (int dx = -(range); dx <= range; dx++){
 				for (int dz = -(range); dz <= range; dz++){
 					Chunk chunk = current.getWorld().getChunkAt(current.getX() + dx, current.getZ() + dz);
-					if (!current.getWorld().isChunkLoaded(chunk)) {
-						current.getWorld().loadChunk(chunk);
-					}
+					current.getWorld().loadChunk(chunk);
 				}
 			}
 		}

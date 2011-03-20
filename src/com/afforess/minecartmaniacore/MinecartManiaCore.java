@@ -1,16 +1,15 @@
 package com.afforess.minecartmaniacore;
 import java.io.File;
+import java.io.PrintWriter;
 import java.util.logging.Logger;
 import org.bukkit.Server;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.afforess.minecartmaniacore.config.SettingList;
+import com.afforess.minecartmaniacore.config.MinecartManiaConfigurationParser;
 
 public class MinecartManiaCore extends JavaPlugin {
 	
@@ -37,7 +36,11 @@ public class MinecartManiaCore extends JavaPlugin {
 		if (!path.isEmpty()) {
 			dataDirectory = path + dataDirectory;
 		}
-		Configuration.loadConfiguration(description, SettingList.config);
+		
+		writeItemsFile();
+		
+		SettingList.initialize();
+		MinecartManiaConfigurationParser.read("MinecartManiaConfiguration.xml", dataDirectory, SettingList.getSettingList());
 
 		getServer().getPluginManager().registerEvent(Event.Type.VEHICLE_UPDATE, listener, Priority.Normal, this);
 		getServer().getPluginManager().registerEvent(Event.Type.VEHICLE_COLLISION_ENTITY, listener, Priority.Normal, this);
@@ -54,10 +57,35 @@ public class MinecartManiaCore extends JavaPlugin {
 		
 	}
 	
-	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
-		if (commandLabel.contains("reloadconfig")) {
-			Configuration.loadConfiguration(description, SettingList.config);
+	private void writeItemsFile() {
+		try {
+			File items = new File(dataDirectory + File.separator + "items.txt");
+			PrintWriter pw = new PrintWriter(items);
+			pw.append("This file is a list of all the data values, and matching item names for Minecart Mania. \nThis list is never used, and changes made to this file will be ignored");
+			pw.append("\n");
+			pw.append("\n");
+			pw.append("Items:");
+			pw.append("\n");
+			for (Item item : Item.values()) {
+				String name = "Item Name: " + item.toString();
+				pw.append(name);
+				String id = "";
+				for (int i = name.length()-1; i < 40; i++) {
+					id += " ";
+				}
+				pw.append(id);
+				id = "Item Id: " + String.valueOf(item.getId());
+				pw.append(id);
+				String data = "";
+				for (int i = id.length()-1; i < 15; i++) {
+					data += " ";
+				}
+				data += "Item Data: " + String.valueOf(item.getData());
+				pw.append(data);
+				pw.append("\n");
+			}
+			pw.close();
 		}
-		return true;
+		catch (Exception e) {}
 	}
 }

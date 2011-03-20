@@ -359,50 +359,6 @@ public class MinecartManiaWorld {
 		return 0;
 	 }
 	 
-
-	public static int getReverseBlockId() {
-		return getIntValue(getConfigurationValue("Reverse Block"));
-	}
-	
-	public static int getHighSpeedBoosterBlockId() {
-		return getIntValue(getConfigurationValue("High Speed Booster Block"));
-	}
-	
-	public static double getHighSpeedBoosterBlockMultiplier() {
-		return getDoubleValue(getConfigurationValue("High Speed Booster Block Multiplier"));
-	}
-	
-	public static int getLowSpeedBoosterBlockId() {
-		return getIntValue(getConfigurationValue("Low Speed Booster Block"));
-	}
-	
-	public static double getLowSpeedBoosterBlockMultiplier() {
-		return getDoubleValue(getConfigurationValue("Low Speed Booster Block Multiplier"));
-	}
-	
-	public static int getHighSpeedBrakeBlockId() {
-		return getIntValue(getConfigurationValue("High Speed Brake Block"));
-	}
-	
-	public static double getHighSpeedBrakeBlockDivisor() {
-		return getDoubleValue(getConfigurationValue("High Speed Brake Block Divisor"));
-	}
-	
-	public static int getLowSpeedBrakeBlockId() {
-		return getIntValue(getConfigurationValue("Low Speed Brake Block"));
-	}
-	
-	public static double getLowSpeedBrakeBlockDivisor() {
-		return getDoubleValue(getConfigurationValue("Low Speed Brake Block Divisor"));
-	}
-	
-	public static int getCatcherBlockId() {
-		return getIntValue(getConfigurationValue("Catcher Block"));
-	}
-	
-	public static int getEjectorBlockId() {
-		return getIntValue(getConfigurationValue("Ejector Block"));
-	}
 	
 	public static int getMaximumMinecartSpeedPercent() {
 		return getIntValue(getConfigurationValue("Maximum Minecart Speed Percent"));

@@ -2,8 +2,10 @@ package com.afforess.minecartmaniacore.utils;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import com.afforess.minecartmaniacore.Item;
+import com.afforess.minecartmaniacore.config.ItemAliasList;
 import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
 
 public class ItemUtils {
@@ -114,38 +116,46 @@ public class ItemUtils {
 					
 				}
 				
-				//Parse the numbers first. Can be separated by ":"
-				try {
-					//item with specific data value ("17;2" - item id, data value [redwood log])
-					int data = -1;
-					if (keys[i].contains(";")){
-						String[] info = keys[i].split(";");
-						String num = StringUtils.getNumber(info[1]);
-						data = Integer.parseInt(num);
-					}
-					String num = StringUtils.getNumber(keys[i]);
-					int id = Integer.parseInt(num);
-					if (data != -1)
-						toAdd.add(Item.getItem(id, data));
-					else
-						toAdd.addAll(Item.getItem(id));
+				//try any aliases
+				List<Item> alias = ItemAliasList.getItemsForAlias(keys[i]);
+				if (!alias.isEmpty()) {
+					toAdd.addAll(alias);
 				}
-				catch (Exception exception) {
-					//Now try string names
-					keys[i] = keys[i].replace(' ','_');
-					Item best = null;
-					for (Item e : Item.values()) {
-						if (e != null) {
-							String item = e.toString().toLowerCase();
-							if (item.contains(keys[i])) {
-								//If two items have the same partial string in them (e.g diamond and diamond shovel) the shorter name wins
-								if (best == null || item.length() < best.toString().length()) {
-									best = e;
+				else {
+				
+					//Parse the numbers first. Can be separated by ":"
+					try {
+						//item with specific data value ("17;2" - item id, data value [redwood log])
+						int data = -1;
+						if (keys[i].contains(";")){
+							String[] info = keys[i].split(";");
+							String num = StringUtils.getNumber(info[1]);
+							data = Integer.parseInt(num);
+						}
+						String num = StringUtils.getNumber(keys[i]);
+						int id = Integer.parseInt(num);
+						if (data != -1)
+							toAdd.add(Item.getItem(id, data));
+						else
+							toAdd.addAll(Item.getItem(id));
+					}
+					catch (Exception exception) {
+						//Now try string names
+						keys[i] = keys[i].replace(' ','_');
+						Item best = null;
+						for (Item e : Item.values()) {
+							if (e != null) {
+								String item = e.toString().toLowerCase();
+								if (item.contains(keys[i])) {
+									//If two items have the same partial string in them (e.g diamond and diamond shovel) the shorter name wins
+									if (best == null || item.length() < best.toString().length()) {
+										best = e;
+									}
 								}
 							}
 						}
+						toAdd.add(best);
 					}
-					toAdd.add(best);
 				}
 				
 				//Now add or remove the items we processed

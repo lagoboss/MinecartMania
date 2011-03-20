@@ -317,7 +317,7 @@ public enum Item {
     }
     
     public boolean equals(Item i) {
-    	return i != null && i.getId() == id && i.getData() == i.getData();
+    	return i != null && i.getId() == id && data == i.getData();
     }
     
     public boolean equals(Material m) {
@@ -380,7 +380,10 @@ public enum Item {
      *  @return the Item if found, or null
      */
     public static Item materialToItem(Material m) {
-    	return lookupId.get(m.getId());
+    	ArrayList<Integer> a = new ArrayList<Integer>(2);
+    	a.add(m.getId());
+    	a.add(0);
+    	return lookupId.get(a);
     }
 
 	static {
