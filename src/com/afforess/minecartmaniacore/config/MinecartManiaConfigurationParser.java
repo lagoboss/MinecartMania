@@ -30,7 +30,11 @@ import com.afforess.minecartmaniacore.utils.StringUtils;
 public class MinecartManiaConfigurationParser {
 	
 	public static void read(String filename, String directory, Setting[] settings) {
-		File config = new File(directory + File.separator + filename);
+		File dir = new File(directory);
+		if (!dir.exists()) {
+			dir.mkdir();
+		}
+		File config = new File(directory, filename);
 		if (!config.exists()) {
 			try {
 				config.createNewFile();
@@ -147,7 +151,7 @@ public class MinecartManiaConfigurationParser {
 		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 		transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
 		DOMSource source = new DOMSource(doc);
-		StreamResult result = new StreamResult(config);
+		StreamResult result = new StreamResult(config.toURI().getPath());
 		transformer.transform(source, result);
 	}
 
