@@ -33,6 +33,13 @@ public abstract class MinecartManiaSingleContainer implements MinecartManiaInven
 	public void updateInventory(Inventory inventory) {
 		this.inventory = inventory;
 	}
+	
+	public boolean canAddItem(ItemStack item) {
+		if (item.getTypeId() == Material.AIR.getId()) {
+			return false;
+		}
+		return true;
+	}
 
 	/**
 	 * Attempts to add an itemstack. It adds items in a 'smart' manner, merging with existing itemstacks, until they
@@ -41,11 +48,11 @@ public abstract class MinecartManiaSingleContainer implements MinecartManiaInven
 	 * @return true if the item was successfully added
 	 */
 	public boolean addItem(ItemStack item) {
+		if (!canAddItem(item)) {
+			return false;
+		}
 		if (item == null) {
 			return true;
-		}
-		if (item.getTypeId() == Material.AIR.getId()) {
-			return false;
 		}
 		//Backup contents
 		ItemStack[] backup = getContents().clone();
@@ -100,6 +107,10 @@ public abstract class MinecartManiaSingleContainer implements MinecartManiaInven
 		return addItem(new ItemStack(type, 1));
 	}
 	
+	public boolean canRemoveItem(int type, int amount, short durability) {
+		return true;
+	}
+	
 	/**
 	 * Attempts to remove the specified amount of an item type. If it fails, it will not alter the previous contents.
 	 * If the durability is -1, it will only match item type id's and ignore durability
@@ -109,6 +120,9 @@ public abstract class MinecartManiaSingleContainer implements MinecartManiaInven
 	 * @return true if the items were successfully removed
 	 */
 	public boolean removeItem(int type, int amount, short durability) {
+		if (!canRemoveItem(type, amount, durability)) {
+			return false;
+		}
 		//Backup contents
 		ItemStack[] backup = getContents().clone();
 		
@@ -255,6 +269,18 @@ public abstract class MinecartManiaSingleContainer implements MinecartManiaInven
 			}
 		}
 		return -1;
+	}
+	
+	public int amount(Item item) {
+		int count = 0;
+		for (int i = 0; i < size(); i++) {
+			if (getItem(i) != null) {
+				if (getItem(i).getTypeId() == item.getId() && (!item.hasData() || getItem(i).getDurability() == item.getData())) {
+					count += getItem(i).getAmount();
+				}
+			}
+		}
+		return count;
 	}
 	
 	/**

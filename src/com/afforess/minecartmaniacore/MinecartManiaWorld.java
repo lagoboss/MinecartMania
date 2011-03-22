@@ -419,6 +419,7 @@ public class MinecartManiaWorld {
 	 **/	
 	public static int getBlockIdAt(World w, int x, int y, int z) {
 		try {
+			
 			return ((CraftWorld)w).getHandle().getTypeId(x, y, z);
 		}
 		catch (Exception e) {

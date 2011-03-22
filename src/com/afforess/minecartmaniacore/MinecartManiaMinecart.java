@@ -725,7 +725,7 @@ loop:   for (Sign sign : signList) {
 			int range = 1;
 			for (int dx = -(range); dx <= range; dx++){
 				for (int dz = -(range); dz <= range; dz++){
-					Chunk chunk = current.getWorld().getChunkAt(current.getX() + dx, current.getZ() + dz);
+					Chunk chunk = current.getWorld().getChunkAt((current.getX() + dx) >> 4, (current.getZ() + dz) >> 4);
 					current.getWorld().loadChunk(chunk);
 				}
 			}

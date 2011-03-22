@@ -28,6 +28,10 @@ public class MinecartManiaDoubleChest implements MinecartManiaInventory{
 		return false;
 	}
 	
+	public boolean canAddItem(ItemStack item) {
+		return chest1.canAddItem(item) || chest2.canAddItem(item);
+	}
+	
 	/**
 	 * Attempts to add an itemstack to this storage minecart. It adds items in a 'smart' manner, merging with existing itemstacks, until they
 	 * reach the maximum size (64). If it fails, it will not alter the storage minecart's previous contents.
@@ -53,6 +57,10 @@ public class MinecartManiaDoubleChest implements MinecartManiaInventory{
 	 **/
 	public boolean addItem(int type, int amount) {
 		return chest1.addItem(type, amount);
+	}
+	
+	public boolean canRemoveItem(int type, int amount, short durability) {
+		return chest1.canRemoveItem(type, amount, durability) || chest2.canRemoveItem(type, amount, durability);
 	}
 	
 	/**
@@ -259,6 +267,10 @@ public class MinecartManiaDoubleChest implements MinecartManiaInventory{
 	 */
 	public boolean contains(int type, short durability) {
 		return chest1.contains(type, durability) || chest2.contains(type, durability);
+	}
+	
+	public int amount(Item item) {
+		return chest1.amount(item) + chest2.amount(item);
 	}
 
 }

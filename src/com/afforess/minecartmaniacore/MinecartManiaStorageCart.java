@@ -63,6 +63,25 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 		minimumContents.put(item, amount);
 	}
 	
+	public boolean canAddItem(ItemStack item) {
+		if (item.getTypeId() == Item.AIR.getId()) {
+			return false;
+		}
+		
+		//Check if this new item will exceed the maximum allowed
+		ArrayList<Item> list = Item.getItem(item.getTypeId());
+		for (Item i : list) {
+			if (!i.hasData() || i.getData() == item.getDurability()) {
+				if (getMaximumItem(i) != -1) {
+					if (amount(i) + item.getAmount() > getMaximumItem(i)) {
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
+	
 	/**
 	 * attempts to add an itemstack to this storage minecart. It adds items in a 'smart' manner, merging with existing itemstacks, until they
 	 * reach the maximum size (64). If it fails, it will not alter the storage minecart's previous contents.
@@ -73,22 +92,10 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 		if (item == null) {
 			return true;
 		}
-		if (item.getTypeId() == Item.AIR.getId()) {
+		if (!canAddItem(item)) {
 			return false;
 		}
-		
-		//Check if this new item will exceed the maximum allowed
-		ArrayList<Item> list = Item.getItem(item.getTypeId());
-		for (Item i : list) {
-			if (!i.hasData() || i.getData() == item.getDurability()) {
-				if (getMaximumItem(i) != -1) {
-					if (getAmount(i) + item.getAmount() > getMaximumItem(i)) {
-						return false;
-					}
-				}
-			}
-		}
-		
+
 		//Backup contents
 		ItemStack[] backup = getContents().clone();
 		ItemStack backupItem = new ItemStack(item.getTypeId(), item.getAmount(), item.getDurability());
@@ -140,6 +147,21 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 		return addItem(new ItemStack(type, amount));
 	}
 	
+	public boolean canRemoveItem(int type, int amount, short durability) {
+		//Check if this will fall below the minimum allowed
+		ArrayList<Item> list = Item.getItem(type);
+		for (Item i : list) {
+			if (!i.hasData() || i.getData() == durability) {
+				if (getMinimumItem(i) != -1) {
+					if (amount(i) - amount < getMinimumItem(i)) {
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
+	
 	/**
 	 * attempts to remove the specified amount of an item type from this storage minecart. If it fails, it will not alter the storage minecart's previous contents.
 	 * @param type to remove
@@ -149,20 +171,10 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 	 */
 	@Override
 	public boolean removeItem(int type, int amount, short durability) {
-		
-		//Check if this will fall below the minimum allowed
-		ArrayList<Item> list = Item.getItem(type);
-		for (Item i : list) {
-			if (!i.hasData() || i.getData() == durability) {
-				if (getMinimumItem(i) != -1) {
-					if (getAmount(i) - amount < getMinimumItem(i)) {
-						return false;
-					}
-				}
-			}
+		if (!canRemoveItem(type, amount, durability)) {
+			return false;
 		}
-		
-		
+
 		//Backup contents
 		ItemStack[] backup = getContents().clone();
 		
@@ -362,7 +374,7 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 		return true;
 	}
 	
-	public int getAmount(Item item) {
+	public int amount(Item item) {
 		int count = 0;
 		for (ItemStack i : getContents()) {
 			if (i != null && i.getTypeId() == item.getId()){

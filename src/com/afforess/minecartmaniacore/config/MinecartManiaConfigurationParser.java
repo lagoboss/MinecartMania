@@ -68,7 +68,7 @@ public class MinecartManiaConfigurationParser {
 	private static void read(File config, Setting[] settings) throws ParserConfigurationException, SAXException, IOException {
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 		 DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-		 Document doc = dBuilder.parse(config);
+		 Document doc = dBuilder.parse(config.toURI().getPath());
 		 doc.getDocumentElement().normalize();
 		 
 		 for (Setting s : settings) {

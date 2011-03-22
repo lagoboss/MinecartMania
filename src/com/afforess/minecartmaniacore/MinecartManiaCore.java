@@ -36,7 +36,7 @@ public class MinecartManiaCore extends JavaPlugin {
 		if (!path.isEmpty()) {
 			dataDirectory = path + dataDirectory;
 		}
-		
+
 		writeItemsFile();
 		
 		SettingList.initialize();
