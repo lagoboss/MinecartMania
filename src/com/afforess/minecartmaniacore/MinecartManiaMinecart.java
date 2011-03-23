@@ -242,8 +242,8 @@ public class MinecartManiaMinecart {
 	
 	public boolean doSpeedMultiplierBlock() {
 		if (ControlBlockList.getSpeedMultiplier(getItemBeneath()) != 1.0D && !isPoweredBeneath()){
-			if (ControlBlockList.getSpeedMultiplier(getItemBeneath()) == -1.0D) {
-				reverse();
+			if (ControlBlockList.getSpeedMultiplier(getItemBeneath()) < 0D) {
+				multiplyMotion(ControlBlockList.getSpeedMultiplier(getItemBeneath()));
 			}
 			else if (ControlBlockList.getSpeedMultiplier(getItemBeneath()) < 1.0D) {
 				MinecartBrakeEvent mbe = new MinecartBrakeEvent(this, 1 / ControlBlockList.getSpeedMultiplier(getItemBeneath()));
@@ -722,11 +722,25 @@ loop:   for (Sign sign : signList) {
 	public void updateChunks() {
 		if (MinecartManiaWorld.isKeepMinecartsLoaded()) {
 			Chunk current = minecart.getLocation().getBlock().getChunk();
+			Chunk old = previousLocation.toLocation(minecart.getWorld()).getBlock().getChunk();
 			int range = 1;
+			ArrayList<Chunk> toLoad = new ArrayList<Chunk>();
 			for (int dx = -(range); dx <= range; dx++){
 				for (int dz = -(range); dz <= range; dz++){
-					Chunk chunk = current.getWorld().getChunkAt((current.getX() + dx) >> 4, (current.getZ() + dz) >> 4);
+					Chunk chunk = current.getWorld().getChunkAt(current.getX() + dx, current.getZ() + dz);
+					toLoad.add(chunk);
 					current.getWorld().loadChunk(chunk);
+				}
+			}
+			//we've just moved chunks, and we must manually unload chunks
+			if (current.getX() != old.getX() || current.getZ() != old.getZ()) {
+				for (int dx = -(range); dx <= range; dx++){
+					for (int dz = -(range); dz <= range; dz++){
+						Chunk chunk = current.getWorld().getChunkAt(old.getX() + dx, old.getZ() + dz);
+						if (!toLoad.contains(chunk)) {
+							old.getWorld().unloadChunkRequest(old.getX() + dx, old.getZ() + dz);
+						}
+					}
 				}
 			}
 		}
