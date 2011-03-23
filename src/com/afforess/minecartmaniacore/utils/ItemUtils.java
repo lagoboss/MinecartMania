@@ -1,6 +1,7 @@
 package com.afforess.minecartmaniacore.utils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -55,14 +56,14 @@ public class ItemUtils {
 
 			//Check the given direction and intended direction from the sign
 			CompassDirection direction = CompassDirection.NO_DIRECTION;
-			if (str.contains("+")) {
-				String[] data = str.split("\\+");
-				str = data[1];
-				String dir = data[0].toLowerCase().trim();
-				if (dir.contains("n")) direction = CompassDirection.NORTH;
-				if (dir.contains("s")) direction = CompassDirection.SOUTH;
-				if (dir.contains("e")) direction = CompassDirection.EAST;
-				if (dir.contains("w")) direction = CompassDirection.WEST;
+			int index = str.indexOf("+");
+			if (index == 1) {
+				String dir = str.substring(0, 1);
+				if (dir.equals("n")) direction = CompassDirection.NORTH;
+				if (dir.equals("s")) direction = CompassDirection.SOUTH;
+				if (dir.equals("e")) direction = CompassDirection.EAST;
+				if (dir.equals("w")) direction = CompassDirection.WEST;
+				str = str.substring(2,str.length()); // remove the direction for further parsing.
 			}
 			if (direction != facing && direction != CompassDirection.NO_DIRECTION) {
 				continue;
@@ -80,97 +81,26 @@ public class ItemUtils {
 			
 			String[] keys = str.split(":");
 			for (int i = 0; i < keys.length; i++) {
-				if (keys[i] == null || keys[i].isEmpty()) continue;
+				String part = keys[i];
+				List<Item> parsedset = parsePart(part);
 				
-				//List of items to process
-				ArrayList<Item> toAdd = new ArrayList<Item>();
+				if(parsedset == null || parsedset.size() < 1)
+				    continue;
 				
-				//check if we need to remove this item
-				boolean remove = keys[i].contains("!");
-				if (remove) {
-					keys[i] = keys[i].replace('!', ' ');
+				for(Item item : parsedset){
+				    if(item.getAmount() == -2)
+				        items.remove(item);
+				    else if(item.getAmount() != -1) {
+				        if(items.contains(item))
+				            items.remove(item);
+				        
+				        items.add(item);
+				    } else
+				        items.add(item);
 				}
-				keys[i] = keys[i].trim();
-				
-				//Check if this is a set of items
-				if (keys[i].contains("-")) {
-					String[] set = keys[i].split("-");
-					Item start = getFirstItemStringToMaterial(set[0]);
-					Item end = getFirstItemStringToMaterial(set[1]);
-					if (start != null && end != null) {
-						for (int item = start.getId(); item <= end.getId(); item++) {
-							items.addAll(Item.getItem(item));
-						}
-						continue; //skip to the next item
-					}
-				}
-				
-				//check for specific amount
-				int amount = -1;
-				if (keys[i].contains("@")) {
-					String[] data = keys[i].split("@");
-					keys[i] = data[0];
-					try {
-						amount = Integer.parseInt(data[1]);
-					} catch(Exception e) {}
-					
-				}
-				
-				//try any aliases
-				List<Item> alias = ItemAliasList.getItemsForAlias(keys[i]);
-				if (!alias.isEmpty()) {
-					toAdd.addAll(alias);
-				}
-				else {
-				
-					//Parse the numbers first. Can be separated by ":"
-					try {
-						//item with specific data value ("17;2" - item id, data value [redwood log])
-						int data = -1;
-						if (keys[i].contains(";")){
-							String[] info = keys[i].split(";");
-							String num = StringUtils.getNumber(info[1]);
-							data = Integer.parseInt(num);
-						}
-						String num = StringUtils.getNumber(keys[i]);
-						int id = Integer.parseInt(num);
-						if (data != -1)
-							toAdd.add(Item.getItem(id, data));
-						else
-							toAdd.addAll(Item.getItem(id));
-					}
-					catch (Exception exception) {
-						//Now try string names
-						keys[i] = keys[i].replace(' ','_');
-						Item best = null;
-						for (Item e : Item.values()) {
-							if (e != null) {
-								String item = e.toString().toLowerCase();
-								if (item.contains(keys[i])) {
-									//If two items have the same partial string in them (e.g diamond and diamond shovel) the shorter name wins
-									if (best == null || item.length() < best.toString().length()) {
-										best = e;
-									}
-								}
-							}
-						}
-						toAdd.add(best);
-					}
-				}
-				
-				//Now add or remove the items we processed
-				for (Item type : toAdd) {
-					if (type != null) {
-						type.setAmount(amount);
-						if (!remove) {
-							items.add(type);
-						}
-						else {
-							items.remove(type);
-						}
-					}
-				}
+				    
 			}
+			
 		}
 		
 		
@@ -186,5 +116,95 @@ public class ItemUtils {
 		Item itemList[] = new Item[items.size()];
 		return items.toArray(itemList);
 	}
-
+	
+	private static final String AMOUNT = "@";
+	private static final String RANGE = "-";
+	private static final String REMOVE = "!";
+	private static final String DATA = ";";
+	
+	/**
+	 * Please don't change this order as it might screw up certain priorities!
+	 * 
+	 * @param part
+	 * @return
+	 */
+	private static List<Item> parsePart(String part) {
+	    try {
+    	    if(part.contains(AMOUNT)) {
+    	        return parseAmount(part);
+    	    } else if(part.contains(REMOVE)) {
+    	        return parseNegative(part);
+    	    } else if(part.contains(DATA)) {
+    	        return Arrays.asList(new Item[] {parseData(part)});
+    	    } else if(part.contains(RANGE)) {
+    	        return parseRange(part);
+    	    } else {
+    	        return parseNormal(part);
+    	    }
+	    } catch(Exception e) {
+	        return null;
+	    }
+	}
+	private static List<Item> parseAmount(String part){
+	    String[] split   = part.split(AMOUNT);
+	    List<Item> items = parsePart(split[0]);
+	    
+	    int amount = Integer.parseInt(split[1]);
+	    for(Item item : items)
+            item.setAmount(amount);
+	    
+	    return items;
+	}
+	private static List<Item> parseNegative(String part){
+	    part = part.replace(REMOVE, "");
+	    List<Item> items = parsePart(part);
+	    
+	    for(Item item : items)
+	        item.setAmount(-2);
+	    
+	    return items;
+	}
+	private static List<Item> parseRange(String part){
+	    String[] split   = part.split(RANGE);
+	    List<Item> start = parseNormal(split[0]);
+	    List<Item> end = parseNormal(split[1]);
+        List<Item> items = new ArrayList<Item>();
+        for(int item = start.get(0).getId();item <= end.get(0).getId();item++) {
+            items.addAll(Item.getItem(item));
+        }
+        return items;
+	}
+	private static Item parseData(String part){
+	    String[] split   = part.split(DATA);
+	    List<Item> items = parsePart(split[0]);
+	    int data = Integer.parseInt(split[1]);
+	    for(Item item : items)
+	        if(item.getData() == data)
+	            return item;
+	    
+	    return null;
+	}
+	private static List<Item> parseNormal(String part){
+	    try {
+	        return Item.getItem(Integer.parseInt(part));
+	    } catch(NumberFormatException exception) {
+	        List<Item> alias = ItemAliasList.getItemsForAlias(part);
+	        if(alias.size() > 0)
+	            return alias;
+	        
+	        Item best = null;
+            for (Item e : Item.values()) {
+                if (e != null) {
+                    String item = e.toString().toLowerCase();
+                    if (item.contains(part)) {
+                        //If two items have the same partial string in them (e.g diamond and diamond shovel) the shorter name wins
+                        if (best == null || item.length() < best.toString().length()) {
+                            best = e;
+                        }
+                    }
+                }
+            }
+            return Arrays.asList(new Item[] {best});
+	    }
+	}
 }
