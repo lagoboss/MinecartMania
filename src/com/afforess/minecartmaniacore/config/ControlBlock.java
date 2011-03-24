@@ -4,32 +4,19 @@ import com.afforess.minecartmaniacore.Item;
 
 public class ControlBlock {
 	
-	private Item type;
-	private double multiplier;
-	private boolean catcher;
-	private boolean launcher;
-	private boolean ejector; 
-	private boolean platform;
-	private boolean station;
+	private Item type = null;
+	private double multiplier = 1.0;
+	private boolean catcher = false;
+	private double launchSpeed = 0D;
+	private boolean ejector = false;
+	private boolean platform = false;
+	private boolean station = false;
+	private boolean redstoneDisable = false;
+	private boolean requiresRedstone = false;
+	private boolean spawnMinecart = false;
+	private boolean killMinecart = false;
 	
 	public ControlBlock() {
-		this.type = null;
-		this.multiplier = 1.0;
-		this.catcher = false;
-		this.launcher = false;
-		this.ejector = false;
-		this.platform = false;
-		this.station = false;
-	}
-	
-	public ControlBlock(Item type, double multiplier, boolean catcher, boolean launcher, boolean ejector, boolean platform, boolean station) {
-		this.type = type;
-		this.multiplier = multiplier;
-		this.catcher = catcher;
-		this.launcher = launcher;
-		this.ejector = ejector;
-		this.platform = platform;
-		this.station = station;
 	}
 	
 	public Item getType() {
@@ -56,12 +43,12 @@ public class ControlBlock {
 		catcher = val;
 	}
 	
-	public boolean isLauncherBlock() {
-		return launcher;
+	public double getLauncherSpeed() {
+		return launchSpeed;
 	}
 	
-	protected void setLauncherBlock(boolean val) {
-		launcher = val;
+	protected void setLauncherSpeed(double d) {
+		launchSpeed = d;
 	}
 	
 	public boolean isEjectorBlock() {
@@ -88,7 +75,39 @@ public class ControlBlock {
 		station = val;
 	}
 	
+	public boolean isRedstoneDisables() {
+		return redstoneDisable;
+	}
+	
+	protected void setRedstoneDisables(boolean val) {
+		redstoneDisable = val;
+	}
+	
+	public boolean isReqRedstone() {
+		return requiresRedstone;
+	}
+	
+	protected void setReqRedstone(boolean val) {
+		requiresRedstone = val;
+	}
+	
+	public boolean isSpawnMinecart() {
+		return spawnMinecart;
+	}
+	
+	protected void setSpawnMinecart(boolean val) {
+		spawnMinecart = val;
+	}
+	
+	public boolean isKillMinecart() {
+		return killMinecart;
+	}
+	
+	protected void setKillMinecart(boolean val) {
+		killMinecart = val;
+	}
+	
 	public String toString() {
-		return "[" + getType() + ":" + getMultiplier() + ":" + isCatcherBlock() + ":" + isLauncherBlock() + ":" + isEjectorBlock() + ":" + isPlatformBlock() + ":" + isStationBlock() + "]";
+		return "[" + getType() + ":" + getMultiplier() + ":" + isCatcherBlock() + ":" + getLauncherSpeed() + ":" + isEjectorBlock() + ":" + isPlatformBlock() + ":" + isStationBlock() + "]";
 	}
 }

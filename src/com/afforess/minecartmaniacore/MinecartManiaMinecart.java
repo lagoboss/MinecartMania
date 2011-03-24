@@ -60,7 +60,7 @@ public class MinecartManiaMinecart {
 	}
 	
 	private void initialize() {
-		setEntityDetectionRange(MinecartManiaWorld.getIntValue(MinecartManiaWorld.getConfigurationValue("Nearby Collection Range")));
+		setEntityDetectionRange(MinecartManiaWorld.getIntValue(MinecartManiaWorld.getConfigurationValue("NearbyCollectionRange")));
 		cal = Calendar.getInstance();
 		setWasMovingLastTick(isMoving());
 		previousMotion = minecart.getVelocity().clone();
@@ -241,21 +241,28 @@ public class MinecartManiaMinecart {
 	}
 	
 	public boolean doSpeedMultiplierBlock() {
-		if (ControlBlockList.getSpeedMultiplier(getItemBeneath()) != 1.0D && !isPoweredBeneath()){
-			if (ControlBlockList.getSpeedMultiplier(getItemBeneath()) < 0D) {
-				multiplyMotion(ControlBlockList.getSpeedMultiplier(getItemBeneath()));
-			}
-			else if (ControlBlockList.getSpeedMultiplier(getItemBeneath()) < 1.0D) {
-				MinecartBrakeEvent mbe = new MinecartBrakeEvent(this, 1 / ControlBlockList.getSpeedMultiplier(getItemBeneath()));
-				MinecartManiaCore.server.getPluginManager().callEvent(mbe);
-				multiplyMotion(1 / mbe.getBrakeDivisor());
-	    		return mbe.getBrakeDivisor() !=  1.0D;
-			}
-			else if (ControlBlockList.getSpeedMultiplier(getItemBeneath()) > 1.0D) {
-				MinecartBoostEvent mbe = new MinecartBoostEvent(this, ControlBlockList.getSpeedMultiplier(getItemBeneath()));
-				MinecartManiaCore.server.getPluginManager().callEvent(mbe);
-				multiplyMotion(mbe.getBoostMultiplier());
-	    		return mbe.getBoostMultiplier() != 1.0D;
+		double multiplier = ControlBlockList.getSpeedMultiplier(getItemBeneath());
+		if (multiplier != 1.0D) {
+			if (!ControlBlockList.isReqRedstone(getItemBeneath()) || isPoweredBeneath()) {
+				if (!ControlBlockList.isRedstoneDisables(getItemBeneath()) || !isPoweredBeneath()) {
+					if (multiplier < 0.0D) {
+						setMotionX(getMotionX() * multiplier);
+						setMotionY(getMotionY() * multiplier);
+						setMotionZ(getMotionZ() * multiplier);
+					}
+					else if (multiplier < 1.0D) {
+						MinecartBrakeEvent mbe = new MinecartBrakeEvent(this, 1 / multiplier);
+						MinecartManiaCore.server.getPluginManager().callEvent(mbe);
+						multiplyMotion(1 / mbe.getBrakeDivisor());
+			    		return mbe.getBrakeDivisor() !=  1.0D;
+					}
+					else if (multiplier > 1.0D) {
+						MinecartBoostEvent mbe = new MinecartBoostEvent(this, multiplier);
+						MinecartManiaCore.server.getPluginManager().callEvent(mbe);
+						multiplyMotion(mbe.getBoostMultiplier());
+			    		return mbe.getBoostMultiplier() != 1.0D;
+					}
+				}
 			}
     	}
 		return false;
@@ -263,18 +270,20 @@ public class MinecartManiaMinecart {
 	
 	public boolean doPlatformBlock() {
 		if (ControlBlockList.isPlatformBlock(getItemBeneath()) && isStandardMinecart()) {
-			if (!isPoweredBeneath()) {
-				if (minecart.getPassenger() == null) {
-					List<LivingEntity> list = minecart.getWorld().getLivingEntities();
-					double range = getEntityDetectionRange() * getEntityDetectionRange();
-					for (LivingEntity le : list) {
-						if (le.getLocation().toVector().distanceSquared(minecart.getLocation().toVector()) < range) {
-							//Let the world know about this
-							VehicleEnterEvent vee = new VehicleEnterEvent(Type.VEHICLE_ENTER, minecart, le);
-							MinecartManiaCore.server.getPluginManager().callEvent(vee);
-							if (!vee.isCancelled()) {
-								minecart.setPassenger(le);
-								return true;
+			if (!ControlBlockList.isReqRedstone(getItemBeneath()) || isPoweredBeneath()) {
+				if (!ControlBlockList.isRedstoneDisables(getItemBeneath()) || !isPoweredBeneath()) {
+					if (minecart.getPassenger() == null) {
+						List<LivingEntity> list = minecart.getWorld().getLivingEntities();
+						double range = getEntityDetectionRange() * getEntityDetectionRange();
+						for (LivingEntity le : list) {
+							if (le.getLocation().toVector().distanceSquared(minecart.getLocation().toVector()) < range) {
+								//Let the world know about this
+								VehicleEnterEvent vee = new VehicleEnterEvent(Type.VEHICLE_ENTER, minecart, le);
+								MinecartManiaCore.server.getPluginManager().callEvent(vee);
+								if (!vee.isCancelled()) {
+									minecart.setPassenger(le);
+									return true;
+								}
 							}
 						}
 					}
@@ -285,10 +294,10 @@ public class MinecartManiaMinecart {
 	}
 
 	public void doLauncherBlock() {
-		if (ControlBlockList.isLauncherBlock(getItemBeneath())){
+		if (ControlBlockList.getLaunchSpeed(getItemBeneath()) != 0.0D){
 			if (isPoweredBeneath()) {
 				if (!isMoving()) {
-					launchCart();
+					launchCart(ControlBlockList.getLaunchSpeed(getItemBeneath()));
 				}
 			}
 		}
@@ -308,8 +317,23 @@ public class MinecartManiaMinecart {
 		return false;
 	}
 	
+	public boolean doKillBlock() {
+		if (ControlBlockList.isKillMinecartBlock(getItemBeneath())) {
+			if (!ControlBlockList.isReqRedstone(getItemBeneath()) || isPoweredBeneath()) {
+				if (!ControlBlockList.isRedstoneDisables(getItemBeneath()) || !isPoweredBeneath()) {
+					kill();
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
 	public void launchCart() {
-
+		launchCart(0.6D);
+	}
+	
+	public void launchCart(double speed) {
 		ArrayList<Sign> signList = SignUtils.getAdjacentSignList(this, 2);
 loop:   for (Sign sign : signList) {
 			for (int i = 0; i < 4; i++) {
@@ -334,7 +358,7 @@ loop:   for (Sign sign : signList) {
 					if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX()-1, getY(), getZ(), 2, DirectionUtils.CompassDirection.NORTH)) {
 						sign.setLine(i, "[Launch North]");
 						sign.update();
-						setMotion(DirectionUtils.CompassDirection.NORTH, 0.6D);
+						setMotion(DirectionUtils.CompassDirection.NORTH, speed);
 						break loop;
 					}
 				}
@@ -342,7 +366,7 @@ loop:   for (Sign sign : signList) {
 					if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX(), getY(), getZ()-1, 2, DirectionUtils.CompassDirection.EAST)) {
 						sign.setLine(i, "[Launch East]");
 						sign.update();
-						setMotion(DirectionUtils.CompassDirection.EAST, 0.6D);
+						setMotion(DirectionUtils.CompassDirection.EAST, speed);
 						break loop;
 					}
 				}
@@ -350,7 +374,7 @@ loop:   for (Sign sign : signList) {
 					if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX()+1, getY(), getZ(), 2, DirectionUtils.CompassDirection.SOUTH)) {
 						sign.setLine(i, "[Launch South]");
 						sign.update();
-						setMotion(DirectionUtils.CompassDirection.SOUTH, 0.6D);
+						setMotion(DirectionUtils.CompassDirection.SOUTH, speed);
 						break loop;
 					}
 				}
@@ -358,7 +382,7 @@ loop:   for (Sign sign : signList) {
 					if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX(), getY(), getZ()+1, 2, DirectionUtils.CompassDirection.WEST)) {
 						sign.setLine(i, "[Launch West]");
 						sign.update();
-						setMotion(DirectionUtils.CompassDirection.WEST, 0.6D);
+						setMotion(DirectionUtils.CompassDirection.WEST, speed);
 						break loop;
 					}
 				}
@@ -367,7 +391,7 @@ loop:   for (Sign sign : signList) {
 						if (MinecartUtils.validMinecartTrackAnyDirection(minecart.getWorld(), getX(), getY(), getZ()+1, 2)) {
 							sign.setLine(i, "[Previous Dir]");
 							sign.update();
-							setMotion(this.getPreviousFacingDir(), 0.6D);
+							setMotion(this.getPreviousFacingDir(), speed);
 							break loop;
 						}
 					}
@@ -376,16 +400,16 @@ loop:   for (Sign sign : signList) {
 		}
 		if (!isMoving()) {
 			if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX()-1, getY(), getZ(), 2, DirectionUtils.CompassDirection.NORTH)) {
-				setMotion(DirectionUtils.CompassDirection.NORTH, 0.6D);
+				setMotion(DirectionUtils.CompassDirection.NORTH, speed);
 			}
 			else if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX(), getY(), getZ()-1, 2, DirectionUtils.CompassDirection.EAST)) {
-				setMotion(DirectionUtils.CompassDirection.EAST, 0.6D);
+				setMotion(DirectionUtils.CompassDirection.EAST, speed);
 			}
 			else if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX()+1, getY(), getZ(), 2, DirectionUtils.CompassDirection.SOUTH)) {
-				setMotion(DirectionUtils.CompassDirection.SOUTH, 0.6D);
+				setMotion(DirectionUtils.CompassDirection.SOUTH, speed);
 			}
 			else if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX(), getY(), getZ()+1, 2, DirectionUtils.CompassDirection.WEST)) {
-				setMotion(DirectionUtils.CompassDirection.WEST, 0.6D);
+				setMotion(DirectionUtils.CompassDirection.WEST, speed);
 			}
 		}
 		
@@ -424,9 +448,13 @@ loop:   for (Sign sign : signList) {
 	}
 
 	public boolean doEjectorBlock() {
-		if (ControlBlockList.isEjectorBlock(getItemBeneath()) && !isPoweredBeneath()) {
-			if (minecart.getPassenger() != null) {
-				return minecart.eject();
+		if (ControlBlockList.isEjectorBlock(getItemBeneath())) {
+			if (!ControlBlockList.isReqRedstone(getItemBeneath()) || isPoweredBeneath()) {
+				if (!ControlBlockList.isRedstoneDisables(getItemBeneath()) || !isPoweredBeneath()) {
+					if (minecart.getPassenger() != null) {
+						return minecart.eject();
+					}
+				}
 			}
 		}
 		return false;

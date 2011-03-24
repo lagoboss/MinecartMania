@@ -1,12 +1,21 @@
 package com.afforess.minecartmaniacore;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
+import org.bukkit.block.Sign;
 import org.bukkit.event.block.BlockListener;
 import org.bukkit.event.block.BlockRedstoneEvent;
+
+import com.afforess.minecartmaniacore.config.ControlBlockList;
 import com.afforess.minecartmaniacore.event.ChestPoweredEvent;
+import com.afforess.minecartmaniacore.utils.SignUtils;
 
 public class MinecartManiaCoreBlockListener extends BlockListener{
+	private HashMap<Location, Long> lastSpawn = new HashMap<Location, Long>();
     public void onBlockRedstoneChange(BlockRedstoneEvent event) {    
     	if (event.getOldCurrent() > 0 && event.getNewCurrent() > 0) {
     		return;
@@ -36,8 +45,67 @@ public class MinecartManiaCoreBlockListener extends BlockListener{
 							}
 						}
 					}
+					if (ControlBlockList.isSpawnMinecartBlock(Item.materialToItem(b.getType()))) {
+						if (!ControlBlockList.isReqRedstone(Item.materialToItem(b.getType())) || power) {
+							if (!ControlBlockList.isRedstoneDisables(Item.materialToItem(b.getType())) || !power) {
+								if (b.getRelative(0, 1, 0).getTypeId() == Item.RAILS.getId()) {
+									Long lastSpawn = this.lastSpawn.get(b.getLocation());
+									if (lastSpawn == null || (Math.abs(System.currentTimeMillis() - lastSpawn) > 1000)) {
+										Location spawn = b.getLocation().clone();
+										spawn.setY(spawn.getY() + 1);
+										MinecartManiaMinecart minecart = MinecartManiaWorld.spawnMinecart(spawn, getMinecartType(b.getLocation()), null);
+										this.lastSpawn.put(b.getLocation(), System.currentTimeMillis());
+										if (ControlBlockList.getLaunchSpeed(Item.materialToItem(b.getType())) != 0.0) {
+											minecart.launchCart(ControlBlockList.getLaunchSpeed(Item.materialToItem(b.getType())));
+										}
+									}
+								}
+							}
+						}
+					}
 				}
 			}
     	}
     }
+    
+    private static Item getMinecartType(Location loc) {
+		ArrayList<Sign> signList = SignUtils.getAdjacentSignList(loc, 2);
+
+		boolean empty = false;
+		boolean powered = false;
+		boolean storage = false;
+		for (Sign sign : signList) {
+			if (sign.getLine(0).toLowerCase().contains("dispenser")) {
+				sign.setLine(0, "[Dispenser]");
+				for (int i = 1; i < 4; i++) {
+					if (sign.getLine(i).toLowerCase().contains("empty")) {
+						sign.setLine(i, "[Empty]");
+						empty = true;
+					}
+					if (sign.getLine(i).toLowerCase().contains("powered")) {
+						sign.setLine(i, "[Powered]");
+						powered = true;
+					}
+					if (sign.getLine(i).toLowerCase().contains("storage")) {
+						sign.setLine(i, "[Storage]");
+						storage = true;
+					}
+				}
+				sign.update();
+			}
+		}
+		
+		if (empty) {
+			return Item.MINECART;
+		}
+		if (powered) {
+			return Item.POWERED_MINECART;
+		}
+		if (storage) {
+			return Item.STORAGE_MINECART;
+		}
+
+		//Returns standard minecart by default
+		return Item.MINECART;
+	}
 }

@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -23,16 +22,6 @@ import com.afforess.minecartmaniacore.event.MinecartNearEntityEvent;
 
 
 public class MinecartUtils {
-	
-	
-	/**
-	 * @deprecated
-	 * Will be removed by 15/3/11
-	 */
-	public static boolean isMinecartTrack(Block block) {
-		return block.getTypeId() == Material.RAILS.getId();
-	}
-	
 	public static boolean validMinecartTrackAnyDirection(World w, int x, int y, int z, int range) {
 		return validMinecartTrack(w, x, y, z, range, DirectionUtils.CompassDirection.NORTH) ||
 			validMinecartTrack(w, x, y, z, range, DirectionUtils.CompassDirection.EAST) || 
@@ -195,7 +184,7 @@ public class MinecartUtils {
 				boolean kill = e instanceof Arrow;
 				//kill nearby animals before we bump into them
 				if (distance <= 2) {
-					kill = kill || killmobs && (e instanceof LivingEntity && (!(e instanceof Player)));
+					kill = kill || killmobs && (e instanceof LivingEntity && (!(e instanceof Player))) && (minecart.minecart.getPassenger() == null || e.getEntityId() != minecart.minecart.getPassenger().getEntityId());
 				}
 				mnee.setActionTaken(kill);
 				mnee.setDrop(e instanceof Arrow ? new ItemStack(Material.ARROW, 1) : null);
@@ -248,13 +237,13 @@ public class MinecartUtils {
 					test.setZ(current.getZ()-3);
 					Location loc = EntityUtils.getValidLocation(test.getBlock(), 1);
 					if (loc != null) {
-						e.teleportTo(loc);
+						e.teleport(loc);
 						return true;
 					}
 					test.setZ(current.getZ()+3);
 					loc = EntityUtils.getValidLocation(test.getBlock(), 1);
 					if (loc != null) {
-						e.teleportTo(loc);
+						e.teleport(loc);
 						return true;
 					}
 				}
@@ -263,13 +252,13 @@ public class MinecartUtils {
 					test.setX(current.getX()-3);
 					Location loc = EntityUtils.getValidLocation(test.getBlock(), 1);
 					if (loc != null) {
-						e.teleportTo(loc);
+						e.teleport(loc);
 						return true;
 					}
 					test.setX(current.getX()+3);
 					loc = EntityUtils.getValidLocation(test.getBlock(), 1);
 					if (loc != null) {
-						e.teleportTo(loc);
+						e.teleport(loc);
 						return true;
 					}
 				}

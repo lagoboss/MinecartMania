@@ -6,7 +6,7 @@ import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.event.world.WorldListener;
 
 public class MinecartManiaCoreWorldListener extends WorldListener{
-    public void onChunkUnloaded(ChunkUnloadEvent event) {
+    public void onChunkUnload(ChunkUnloadEvent event) {
     	if (!event.isCancelled()) {
     		if (MinecartManiaWorld.isKeepMinecartsLoaded()) {
     			ArrayList<MinecartManiaMinecart> minecarts = MinecartManiaWorld.getMinecartManiaMinecartList();

@@ -14,7 +14,6 @@ import org.bukkit.block.Furnace;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.craftbukkit.entity.CraftEntity;
-import org.bukkit.craftbukkit.entity.CraftMinecart;
 import org.bukkit.craftbukkit.entity.CraftPoweredMinecart;
 import org.bukkit.craftbukkit.entity.CraftStorageMinecart;
 import org.bukkit.entity.Entity;
@@ -42,20 +41,6 @@ public class MinecartManiaWorld {
 	 public static MinecartManiaMinecart getMinecartManiaMinecart(Minecart minecart) {
         MinecartManiaMinecart testMinecart = minecarts.get(new Integer(minecart.getEntityId()));
         if (testMinecart == null) {
-        	
-        	//Special handling to create storage and powered minecart correctly until Bukkit fixes their bug
-        	CraftMinecart cm = (CraftMinecart)minecart;
-        	EntityMinecart em = (EntityMinecart)cm.getHandle();
-        	CraftServer cs = (CraftServer)MinecartManiaCore.server;
-        	if (em.d == 1) {
-        		CraftStorageMinecart csm = new CraftStorageMinecart(cs, em); 
-        		minecart = (Minecart)csm;
-        	}
-        	if (em.d == 2) {
-        		CraftPoweredMinecart csm = new CraftPoweredMinecart(cs, em); 
-        		minecart = (Minecart)csm;
-        	}
-        	//End workaround
         	MinecartManiaMinecart newCart;
         	if (minecart instanceof StorageMinecart) {
         		newCart = new MinecartManiaStorageCart(minecart);
@@ -361,19 +346,19 @@ public class MinecartManiaWorld {
 	 
 	
 	public static int getMaximumMinecartSpeedPercent() {
-		return getIntValue(getConfigurationValue("Maximum Minecart Speed Percent"));
+		return getIntValue(getConfigurationValue("MaximumMinecartSpeedPercent"));
 	}
 	
 	public static int getDefaultMinecartSpeedPercent() {
-		return getIntValue(getConfigurationValue("Default Minecart Speed Percent"));
+		return getIntValue(getConfigurationValue("DefaultMinecartSpeedPercent"));
 	}
 	
 	public static int getMinecartsClearRailsSetting() {
-		return getIntValue(getConfigurationValue("Minecarts Clear Rails"));
+		return getIntValue(getConfigurationValue("MinecartsClearRails"));
 	}
 	
 	public static boolean isKeepMinecartsLoaded() {
-		Object o = getConfigurationValue("Keep Minecarts Loaded");
+		Object o = getConfigurationValue("KeepMinecartsLoaded");
 		if (o != null) {
 			Boolean value = (Boolean)o;
 			return value.booleanValue();
@@ -382,7 +367,7 @@ public class MinecartManiaWorld {
 	}
 	
 	public static boolean isMinecartsKillMobs() {
-		Object o = getConfigurationValue("Minecarts Kill Mobs");
+		Object o = getConfigurationValue("MinecartsKillMobs");
 		if (o != null) {
 			Boolean value = (Boolean)o;
 			return value.booleanValue();
@@ -391,7 +376,7 @@ public class MinecartManiaWorld {
 	}
 
 	public static boolean isReturnMinecartToOwner() {
-		Object o = getConfigurationValue("Minecarts return to owner");
+		Object o = getConfigurationValue("MinecartsReturnToOwner");
 		if (o != null) {
 			Boolean value = (Boolean)o;
 			return value.booleanValue();

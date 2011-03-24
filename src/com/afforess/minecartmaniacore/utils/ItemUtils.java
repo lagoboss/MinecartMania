@@ -8,7 +8,9 @@ import java.util.List;
 import com.afforess.minecartmaniacore.Item;
 import com.afforess.minecartmaniacore.config.ItemAliasList;
 import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
-
+/**
+ * Authors: Afforess, Meaglin
+ */
 public class ItemUtils {
 	
 	/**
@@ -88,6 +90,7 @@ public class ItemUtils {
 				    continue;
 				
 				for(Item item : parsedset){
+					if (item == null) continue;
 				    if(item.getAmount() == -2)
 				        items.remove(item);
 				    else if(item.getAmount() != -1) {
