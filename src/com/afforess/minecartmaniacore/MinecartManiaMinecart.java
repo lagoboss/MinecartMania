@@ -60,7 +60,7 @@ public class MinecartManiaMinecart {
 	}
 	
 	private void initialize() {
-		setEntityDetectionRange(MinecartManiaWorld.getIntValue(MinecartManiaWorld.getConfigurationValue("NearbyCollectionRange")));
+		setEntityDetectionRange(MinecartManiaWorld.getIntValue(MinecartManiaWorld.getConfigurationValue("Range")));
 		cal = Calendar.getInstance();
 		setWasMovingLastTick(isMoving());
 		previousMotion = minecart.getVelocity().clone();

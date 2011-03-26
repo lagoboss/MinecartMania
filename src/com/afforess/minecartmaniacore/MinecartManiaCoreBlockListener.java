@@ -45,9 +45,10 @@ public class MinecartManiaCoreBlockListener extends BlockListener{
 							}
 						}
 					}
-					if (ControlBlockList.isSpawnMinecartBlock(Item.materialToItem(b.getType()))) {
-						if (!ControlBlockList.isReqRedstone(Item.materialToItem(b.getType())) || power) {
-							if (!ControlBlockList.isRedstoneDisables(Item.materialToItem(b.getType())) || !power) {
+					Item type =  Item.getItem(b.getTypeId(), b.getData());
+					if (ControlBlockList.isSpawnMinecartBlock(type)) {
+						if (!ControlBlockList.isReqRedstone(type) || power) {
+							if (!ControlBlockList.isRedstoneDisables(type) || !power) {
 								if (b.getRelative(0, 1, 0).getTypeId() == Item.RAILS.getId()) {
 									Long lastSpawn = this.lastSpawn.get(b.getLocation());
 									if (lastSpawn == null || (Math.abs(System.currentTimeMillis() - lastSpawn) > 1000)) {
