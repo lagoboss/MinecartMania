@@ -27,6 +27,7 @@ import org.bukkit.event.vehicle.VehicleEntityCollisionEvent;
 import org.bukkit.event.vehicle.VehicleEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.event.vehicle.VehicleListener;
+import org.bukkit.event.vehicle.VehicleUpdateEvent;
 import org.bukkit.event.block.BlockListener;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.bukkit.inventory.ItemStack;
@@ -50,7 +51,8 @@ public class MinecartManiaCoreListener extends VehicleListener{
 		core = instance;
 	}
 	
-	 public void onVehicleUpdate(VehicleEvent event) {
+	@Override
+	public void onVehicleUpdate(VehicleUpdateEvent event) {
 		if (event.getVehicle() instanceof Minecart) {
 			Minecart cart = (Minecart)event.getVehicle();
 			MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart(cart);
@@ -73,6 +75,12 @@ public class MinecartManiaCoreListener extends VehicleListener{
 			minecart.doRealisticFriction();
 			minecart.doLauncherBlock();
 			minecart.updateChunks();
+			
+			//total hack workaround because of the inability to create runnables/threads w/o IllegalAccessError
+			if (minecart.getDataValue("launch") != null) {
+				minecart.launchCart();
+				minecart.setDataValue("launch", null);
+			}
 			
 			if (minecart.hasChangedPosition()) {
 				
@@ -104,6 +112,7 @@ public class MinecartManiaCoreListener extends VehicleListener{
 		}
     }
 	
+	@Override
 	public void onVehicleDamage(VehicleDamageEvent event) {
 		if (event.getVehicle() instanceof Minecart) {
     		MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart((Minecart)event.getVehicle());
@@ -129,6 +138,7 @@ public class MinecartManiaCoreListener extends VehicleListener{
 		}
     }
 	
+	@Override
 	public void onVehicleEntityCollision(VehicleEntityCollisionEvent event) {
     	if (event.getVehicle() instanceof Minecart) {
     		Minecart cart = (Minecart)event.getVehicle();
@@ -166,30 +176,35 @@ public class MinecartManiaCoreListener extends VehicleListener{
 			}
     	}
     }
-	
+
+	@Override
 	public void onVehicleEnter(VehicleEnterEvent event) {
 		if (event.isCancelled() || !(event.getVehicle() instanceof Minecart)) {
 			return;
 		}
+		
 		final MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart((Minecart)event.getVehicle());
+		if (minecart.minecart.getPassenger() != null) {
+			return;
+		}
 		if (ControlBlockList.isCatcherBlock(minecart.getItemBeneath())) {
 			if (!minecart.isMoving()) {
 				ArrayList<Sign> signs = SignUtils.getAdjacentSignList(minecart, 2);
-signs:			for (Sign sign : signs) {
+signs:			for (final Sign sign : signs) {
 					for (int i = 0; i < 4; i++) {
 						if (sign.getLine(i).toLowerCase().contains("launch player")) {
 							sign.setLine(i, "[Launch Player]");
-							sign.update();
-							
 							//This task must run next tick, because the player has not yet entered the minecart once the event is fired
 							//and we must wait until the player is in the minecart to launch (affects direction signs)
-							Runnable launch = new Runnable() {
-								public void run() {
-									minecart.launchCart();
-								}
-							};
-							MinecartManiaCore.server.getScheduler().scheduleSyncDelayedTask(MinecartManiaCore.instance, launch, 1);
-							
+							//Thread launch = new Thread() {
+							//	public void run() {
+							//		minecart.launchCart();
+							//		
+							//	}
+							//};
+							//MinecartManiaCore.server.getScheduler().scheduleSyncDelayedTask(core, launch, 1);
+							minecart.setDataValue("launch", true);
+							sign.update();
 							break signs;
 						}
 					}
@@ -197,5 +212,6 @@ signs:			for (Sign sign : signs) {
 			}
 		}
 	}
+
 
 }

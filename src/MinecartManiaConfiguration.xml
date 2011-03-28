@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <MinecartManiaConfiguration>
-	<version>1.0</version>
+	<version>1.1</version>
     <!--Minecarts that collide with mobs and animals will kill them and continue uninterrupted.-->
     <MinecartsKillMobs>true</MinecartsKillMobs>
     <!--If set to 0, Minecarts Will not clear rails. If set to 1, Minecarts will clear the rails of non-living objects in the way (items, arrows, snowballs, etc).
@@ -16,6 +16,10 @@
     <MaximumMinecartSpeedPercent>165</MaximumMinecartSpeedPercent>
     <!--Adjusts the maximum minecart speed. 100% is equal to the vanilla Minecart speed. Large values will cause minecarts to derail.-->
     <DefaultMinecartSpeedPercent>100</DefaultMinecartSpeedPercent>
+	 <!--The range minecarts will collect items at, farm around themselves, collect from chests, etc...-->
+    <Range>2</Range>
+    <!--The maximum range that minecarts can have. Overrides signs.-->
+    <MaximumRange>10</MaximumRange>
     <ControlBlocks>
         <ControlBlock>
             <!--Item Name or Item Id for this control block-->
@@ -23,9 +27,9 @@
             <!--Speed Multiplier for this block-->
             <SpeedMultiplier/>
             <!--Marks this as a catcher block-->
-            <Catch>true</Catch>
+            <Catch redstone="disables">true</Catch>
             <!--Speed at which minecarts are launched. 0.6 is full speed.-->
-            <LauncherSpeed>0.6</LauncherSpeed>
+            <LauncherSpeed redstone="enables">0.6</LauncherSpeed>
             <!--Marks this as a ejector block-->
             <Eject/>
             <!--Marks this as a platform block-->
@@ -36,14 +40,10 @@
 			<SpawnMinecart/>
 			<!--This block will kill minecarts, when the conditions are met-->
 			<KillMinecart/>
-			<!--This block requires redstone power to operate-->
-			<ReqRedstone/>
-			<!--This block will not operate when powered by redstone-->
-			<RedstoneDisables/>
         </ControlBlock>
         <ControlBlock>
             <BlockType>GOLD_BLOCK</BlockType>
-            <SpeedMultiplier>16.0</SpeedMultiplier>
+            <SpeedMultiplier redstone="disables">16.0</SpeedMultiplier>
             <Catch/>
             <LauncherSpeed/>
             <Eject/>
@@ -51,12 +51,10 @@
             <Station/>
 			<SpawnMinecart/>
 			<KillMinecart/>
-			<ReqRedstone/>
-			<RedstoneDisables>true</RedstoneDisables>
         </ControlBlock>
         <ControlBlock>
             <BlockType>GOLD_ORE</BlockType>
-            <SpeedMultiplier>4.0</SpeedMultiplier>
+            <SpeedMultiplier redstone="disables">4.0</SpeedMultiplier>
             <Catch/>
             <LauncherSpeed/>
             <Eject/>
@@ -64,12 +62,10 @@
             <Station/>
 			<SpawnMinecart/>
 			<KillMinecart/>
-			<ReqRedstone/>
-			<RedstoneDisables>true</RedstoneDisables>
         </ControlBlock>
         <ControlBlock>
             <BlockType>WOOL</BlockType>
-            <SpeedMultiplier>-1.0</SpeedMultiplier>
+            <SpeedMultiplier redstone="disables">-1.0</SpeedMultiplier>
             <Catch/>
             <LauncherSpeed/>
             <Eject/>
@@ -77,12 +73,10 @@
             <Station/>
 			<SpawnMinecart/>
 			<KillMinecart/>
-			<ReqRedstone/>
-			<RedstoneDisables>true</RedstoneDisables>
         </ControlBlock>
         <ControlBlock>
             <BlockType>SOUL_SAND</BlockType>
-            <SpeedMultiplier>0.075</SpeedMultiplier>
+            <SpeedMultiplier redstone="disables">0.075</SpeedMultiplier>
             <Catch/>
             <LauncherSpeed/>
             <Eject/>
@@ -90,12 +84,10 @@
             <Station/>
 			<SpawnMinecart/>
 			<KillMinecart/>
-			<ReqRedstone/>
-			<RedstoneDisables>true</RedstoneDisables>
         </ControlBlock>
         <ControlBlock>
             <BlockType>GRAVEL</BlockType>
-            <SpeedMultiplier>0.25</SpeedMultiplier>
+            <SpeedMultiplier redstone="disables">0.25</SpeedMultiplier>
             <Catch/>
             <LauncherSpeed/>
             <Eject/>
@@ -103,21 +95,17 @@
             <Station/>
 			<SpawnMinecart/>
 			<KillMinecart/>
-			<ReqRedstone/>
-			<RedstoneDisables>true</RedstoneDisables>
         </ControlBlock>
         <ControlBlock>
             <BlockType>IRON_BLOCK</BlockType>
             <SpeedMultiplier/>
             <Catch/>
             <LauncherSpeed/>
-            <Eject>true</Eject>
+            <Eject redstone="disables">true</Eject>
             <Platform/>
             <Station/>
 			<SpawnMinecart/>
 			<KillMinecart/>
-			<ReqRedstone/>
-			<RedstoneDisables>true</RedstoneDisables>
         </ControlBlock>
         <ControlBlock>
             <BlockType>BRICK</BlockType>
@@ -126,11 +114,9 @@
             <LauncherSpeed/>
             <Eject/>
             <Platform/>
-            <Station>true</Station>
+            <Station redstone="default">true</Station>
 			<SpawnMinecart/>
 			<KillMinecart/>
-			<ReqRedstone/>
-			<RedstoneDisables/>
         </ControlBlock>
         <ControlBlock>
             <BlockType>LIGHT_GREEN_WOOL</BlockType>
@@ -138,28 +124,24 @@
             <Catch/>
             <LauncherSpeed/>
             <Eject/>
-            <Platform>true</Platform>
+            <Platform redstone="disables">true</Platform>
             <Station/>
 			<SpawnMinecart/>
 			<KillMinecart/>
-			<ReqRedstone/>
-			<RedstoneDisables>true</RedstoneDisables>
-        </ControlBlock>
-		<ControlBlock>
-            <BlockType>DIAMOND_ORE</BlockType>
-            <SpeedMultiplier/>
-            <Catch/>
-            <LauncherSpeed>0.6</LauncherSpeed>
-            <Eject/>
-            <Platform/>
-            <Station/>
-			<SpawnMinecart>true</SpawnMinecart>
-			<KillMinecart/>
-			<ReqRedstone>true</ReqRedstone>
-			<RedstoneDisables/>
         </ControlBlock>
 		<ControlBlock>
             <BlockType>DIAMOND_BLOCK</BlockType>
+            <SpeedMultiplier/>
+            <Catch/>
+            <LauncherSpeed redstone="enables">0.6</LauncherSpeed>
+            <Eject/>
+            <Platform/>
+            <Station/>
+			<SpawnMinecart redstone="enables">true</SpawnMinecart>
+			<KillMinecart/>
+        </ControlBlock>
+		<ControlBlock>
+            <BlockType>DIAMOND_ORE</BlockType>
             <SpeedMultiplier/>
             <Catch/>
             <LauncherSpeed/>
@@ -167,9 +149,7 @@
             <Platform/>
             <Station/>
 			<SpawnMinecart/>
-			<KillMinecart>true</KillMinecart>
-			<ReqRedstone/>
-			<RedstoneDisables/>
+			<KillMinecart redstone="disables">true</KillMinecart>
         </ControlBlock>
     </ControlBlocks>
     <ItemAliases>

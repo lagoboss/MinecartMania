@@ -15,7 +15,6 @@ import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.StorageMinecart;
 import org.bukkit.entity.PoweredMinecart;
-import org.bukkit.event.Event.Type;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
@@ -227,6 +226,10 @@ public class MinecartManiaMinecart {
 		return Item.getItem(MinecartManiaWorld.getBlockIdAt(minecart.getWorld(), getX(), getY()-1, getZ()), MinecartManiaWorld.getBlockData(minecart.getWorld(), getX(), getY()-1, getZ()));
 	}
 	
+	public Block getBlockBeneath() {
+		return MinecartManiaWorld.getBlockAt(minecart.getWorld(), getX(), getY()-1, getZ());
+	}
+	
 	public boolean isPoweredBeneath() {
 		if (MinecartManiaWorld.isBlockIndirectlyPowered(minecart.getWorld(), getX(), getY()-1, getZ()) || MinecartManiaWorld.isBlockIndirectlyPowered(minecart.getWorld(), getX(), getY(), getZ())) {
 			return true;
@@ -243,25 +246,23 @@ public class MinecartManiaMinecart {
 	public boolean doSpeedMultiplierBlock() {
 		double multiplier = ControlBlockList.getSpeedMultiplier(getItemBeneath());
 		if (multiplier != 1.0D) {
-			if (!ControlBlockList.isReqRedstone(getItemBeneath()) || isPoweredBeneath()) {
-				if (!ControlBlockList.isRedstoneDisables(getItemBeneath()) || !isPoweredBeneath()) {
-					if (multiplier < 0.0D) {
-						setMotionX(getMotionX() * multiplier);
-						setMotionY(getMotionY() * multiplier);
-						setMotionZ(getMotionZ() * multiplier);
-					}
-					else if (multiplier < 1.0D) {
-						MinecartBrakeEvent mbe = new MinecartBrakeEvent(this, 1 / multiplier);
-						MinecartManiaCore.server.getPluginManager().callEvent(mbe);
-						multiplyMotion(1 / mbe.getBrakeDivisor());
-			    		return mbe.getBrakeDivisor() !=  1.0D;
-					}
-					else if (multiplier > 1.0D) {
-						MinecartBoostEvent mbe = new MinecartBoostEvent(this, multiplier);
-						MinecartManiaCore.server.getPluginManager().callEvent(mbe);
-						multiplyMotion(mbe.getBoostMultiplier());
-			    		return mbe.getBoostMultiplier() != 1.0D;
-					}
+			if (ControlBlockList.isValidSpeedMultiplierBlock(getBlockBeneath())) {
+				if (multiplier < 0.0D) {
+					setMotionX(getMotionX() * multiplier);
+					setMotionY(getMotionY() * multiplier);
+					setMotionZ(getMotionZ() * multiplier);
+				}
+				else if (multiplier < 1.0D) {
+					MinecartBrakeEvent mbe = new MinecartBrakeEvent(this, 1 / multiplier);
+					MinecartManiaCore.server.getPluginManager().callEvent(mbe);
+					multiplyMotion(1 / mbe.getBrakeDivisor());
+		    		return mbe.getBrakeDivisor() !=  1.0D;
+				}
+				else if (multiplier > 1.0D) {
+					MinecartBoostEvent mbe = new MinecartBoostEvent(this, multiplier);
+					MinecartManiaCore.server.getPluginManager().callEvent(mbe);
+					multiplyMotion(mbe.getBoostMultiplier());
+		    		return mbe.getBoostMultiplier() != 1.0D;
 				}
 			}
     	}
@@ -270,20 +271,18 @@ public class MinecartManiaMinecart {
 	
 	public boolean doPlatformBlock() {
 		if (ControlBlockList.isPlatformBlock(getItemBeneath()) && isStandardMinecart()) {
-			if (!ControlBlockList.isReqRedstone(getItemBeneath()) || isPoweredBeneath()) {
-				if (!ControlBlockList.isRedstoneDisables(getItemBeneath()) || !isPoweredBeneath()) {
-					if (minecart.getPassenger() == null) {
-						List<LivingEntity> list = minecart.getWorld().getLivingEntities();
-						double range = getEntityDetectionRange() * getEntityDetectionRange();
-						for (LivingEntity le : list) {
-							if (le.getLocation().toVector().distanceSquared(minecart.getLocation().toVector()) < range) {
-								//Let the world know about this
-								VehicleEnterEvent vee = new VehicleEnterEvent(Type.VEHICLE_ENTER, minecart, le);
-								MinecartManiaCore.server.getPluginManager().callEvent(vee);
-								if (!vee.isCancelled()) {
-									minecart.setPassenger(le);
-									return true;
-								}
+			if (!ControlBlockList.isValidPlatformBlock(getBlockBeneath())) {
+				if (minecart.getPassenger() == null) {
+					List<LivingEntity> list = minecart.getWorld().getLivingEntities();
+					double range = getEntityDetectionRange() * getEntityDetectionRange();
+					for (LivingEntity le : list) {
+						if (le.getLocation().toVector().distanceSquared(minecart.getLocation().toVector()) < range) {
+							//Let the world know about this
+							VehicleEnterEvent vee = new VehicleEnterEvent(minecart, le);
+							MinecartManiaCore.server.getPluginManager().callEvent(vee);
+							if (!vee.isCancelled()) {
+								minecart.setPassenger(le);
+								return true;
 							}
 						}
 					}
@@ -318,13 +317,9 @@ public class MinecartManiaMinecart {
 	}
 	
 	public boolean doKillBlock() {
-		if (ControlBlockList.isKillMinecartBlock(getItemBeneath())) {
-			if (!ControlBlockList.isReqRedstone(getItemBeneath()) || isPoweredBeneath()) {
-				if (!ControlBlockList.isRedstoneDisables(getItemBeneath()) || !isPoweredBeneath()) {
-					kill();
-					return true;
-				}
-			}
+		if (ControlBlockList.isValidKillMinecartBlock(getBlockBeneath())) {
+			kill();
+			return true;
 		}
 		return false;
 	}
@@ -448,13 +443,9 @@ loop:   for (Sign sign : signList) {
 	}
 
 	public boolean doEjectorBlock() {
-		if (ControlBlockList.isEjectorBlock(getItemBeneath())) {
-			if (!ControlBlockList.isReqRedstone(getItemBeneath()) || isPoweredBeneath()) {
-				if (!ControlBlockList.isRedstoneDisables(getItemBeneath()) || !isPoweredBeneath()) {
-					if (minecart.getPassenger() != null) {
-						return minecart.eject();
-					}
-				}
+		if (ControlBlockList.isValidEjectorBlock(getBlockBeneath())) {
+			if (minecart.getPassenger() != null) {
+				return minecart.eject();
 			}
 		}
 		return false;

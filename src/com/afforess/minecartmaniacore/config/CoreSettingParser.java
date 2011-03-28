@@ -17,7 +17,7 @@ import com.afforess.minecartmaniacore.MinecartManiaCore;
 import com.afforess.minecartmaniacore.MinecartManiaWorld;
 
 public class CoreSettingParser implements SettingParser{
-	private static final double version = 1.0;
+	private static final double version = 1.1;
 	
 	public boolean isUpToDate(Document document) {
 		try {
@@ -35,7 +35,7 @@ public class CoreSettingParser implements SettingParser{
 		Object value;
 		NodeList list;
 		String setting;
-		
+
 		try {
 			//Parse Simple Settings First
 			setting = "MinecartsKillMobs";
@@ -67,6 +67,16 @@ public class CoreSettingParser implements SettingParser{
 			list = document.getElementsByTagName(setting);
 			value = MinecartManiaConfigurationParser.toInt(list.item(0).getChildNodes().item(0).getNodeValue(), 100);
 			MinecartManiaWorld.getConfiguration().put(setting, value);
+			
+			setting = "Range";
+			list = document.getElementsByTagName(setting);
+			value = MinecartManiaConfigurationParser.toInt(list.item(0).getChildNodes().item(0).getNodeValue(), 2);
+			MinecartManiaWorld.getConfiguration().put(setting, value);
+			
+			setting = "MaximumRange";
+			list = document.getElementsByTagName(setting);
+			value = MinecartManiaConfigurationParser.toInt(list.item(0).getChildNodes().item(0).getNodeValue(), 25);
+			MinecartManiaWorld.getConfiguration().put(setting, value);
 	
 			//read arrays
 			ControlBlockList.controlBlocks = new ArrayList<ControlBlock>();
@@ -79,48 +89,48 @@ public class CoreSettingParser implements SettingParser{
 					
 					NodeList templist = element.getElementsByTagName("BlockType").item(0).getChildNodes();
 					Node tempNode = (Node) templist.item(0);
-					cb.setType(MinecartManiaConfigurationParser.toItem(tempNode != null ? tempNode.getNodeValue() : null));
+					cb.setType(MinecartManiaConfigurationParser.toItem(getNodeValue(tempNode)));
 					
 					templist = element.getElementsByTagName("SpeedMultiplier").item(0).getChildNodes();
 					tempNode = (Node) templist.item(0);
-					cb.setMultiplier(MinecartManiaConfigurationParser.toDouble(tempNode != null ? tempNode.getNodeValue() : null, 1.0));
+					cb.setMultiplierState(parseRedstoneState(getParentFirstAttributeValue(tempNode)));
+					cb.setMultiplier(MinecartManiaConfigurationParser.toDouble(getNodeValue(tempNode), 1.0));
 					
 					templist = element.getElementsByTagName("Catch").item(0).getChildNodes();
 					tempNode = (Node) templist.item(0);
-					cb.setCatcherBlock(MinecartManiaConfigurationParser.toBool(tempNode != null ? tempNode.getNodeValue() : null));
+					cb.setCatcherState(parseRedstoneState(getParentFirstAttributeValue(tempNode)));
+					cb.setCatcherBlock(MinecartManiaConfigurationParser.toBool(getNodeValue(tempNode)));
 					
 					templist = element.getElementsByTagName("LauncherSpeed").item(0).getChildNodes();
 					tempNode = (Node) templist.item(0);
-					cb.setLauncherSpeed(MinecartManiaConfigurationParser.toDouble(tempNode != null ? tempNode.getNodeValue() : null, 0.0));
+					cb.setLauncherState(parseRedstoneState(getParentFirstAttributeValue(tempNode)));
+					cb.setLauncherSpeed(MinecartManiaConfigurationParser.toDouble(getNodeValue(tempNode), 0.0));
 					
 					templist = element.getElementsByTagName("Eject").item(0).getChildNodes();
 					tempNode = (Node) templist.item(0);
-					cb.setEjectorBlock(MinecartManiaConfigurationParser.toBool(tempNode != null ? tempNode.getNodeValue() : null));
+					cb.setEjectorState(parseRedstoneState(getParentFirstAttributeValue(tempNode)));
+					cb.setEjectorBlock(MinecartManiaConfigurationParser.toBool(getNodeValue(tempNode)));
 					
 					templist = element.getElementsByTagName("Platform").item(0).getChildNodes();
 					tempNode = (Node) templist.item(0);
-					cb.setPlatformBlock(MinecartManiaConfigurationParser.toBool(tempNode != null ? tempNode.getNodeValue() : null));
+					cb.setPlatformState(parseRedstoneState(getParentFirstAttributeValue(tempNode)));
+					cb.setPlatformBlock(MinecartManiaConfigurationParser.toBool(getNodeValue(tempNode)));
 					
 					templist = element.getElementsByTagName("Station").item(0).getChildNodes();
 					tempNode = (Node) templist.item(0);
-					cb.setStationBlock(MinecartManiaConfigurationParser.toBool(tempNode != null ? tempNode.getNodeValue() : null));
+					cb.setStationState(parseRedstoneState(getParentFirstAttributeValue(tempNode)));
+					cb.setStationBlock(MinecartManiaConfigurationParser.toBool(getNodeValue(tempNode)));
 					
 					templist = element.getElementsByTagName("SpawnMinecart").item(0).getChildNodes();
 					tempNode = (Node) templist.item(0);
-					cb.setSpawnMinecart(MinecartManiaConfigurationParser.toBool(tempNode != null ? tempNode.getNodeValue() : null));
+					cb.setSpawnState(parseRedstoneState(getParentFirstAttributeValue(tempNode)));
+					cb.setSpawnMinecart(MinecartManiaConfigurationParser.toBool(getNodeValue(tempNode)));
 					
 					templist = element.getElementsByTagName("KillMinecart").item(0).getChildNodes();
 					tempNode = (Node) templist.item(0);
-					cb.setKillMinecart(MinecartManiaConfigurationParser.toBool(tempNode != null ? tempNode.getNodeValue() : null));
-					
-					templist = element.getElementsByTagName("ReqRedstone").item(0).getChildNodes();
-					tempNode = (Node) templist.item(0);
-					cb.setReqRedstone(MinecartManiaConfigurationParser.toBool(tempNode != null ? tempNode.getNodeValue() : null));
-					
-					templist = element.getElementsByTagName("RedstoneDisables").item(0).getChildNodes();
-					tempNode = (Node) templist.item(0);
-					cb.setRedstoneDisables(MinecartManiaConfigurationParser.toBool(tempNode != null ? tempNode.getNodeValue() : null));
-					
+					cb.setKillState(parseRedstoneState(getParentFirstAttributeValue(tempNode)));
+					cb.setKillMinecart(MinecartManiaConfigurationParser.toBool(getNodeValue(tempNode)));
+
 					ControlBlockList.controlBlocks.add(cb);
 				}
 			 }
@@ -169,5 +179,22 @@ public class CoreSettingParser implements SettingParser{
 			return false;
 		}
 		return true;
+	}
+	
+	private String getNodeValue(Node node) {
+		if (node == null) return null;
+		return node.getNodeValue();
+	}
+	
+	private String getParentFirstAttributeValue(Node node) {
+		if (node == null || node.getParentNode() == null || node.getParentNode().getAttributes() == null) return null;
+		return getNodeValue(node.getParentNode().getAttributes().item(0));
+	}
+	
+	private RedstoneState parseRedstoneState(String str) {
+		if (str == null || str.equalsIgnoreCase("default")) return RedstoneState.Default;
+		if (str.toLowerCase().contains("enable")) return RedstoneState.Enables;
+		if (str.toLowerCase().contains("disable")) return RedstoneState.Disables;
+		return RedstoneState.Default;
 	}
 }

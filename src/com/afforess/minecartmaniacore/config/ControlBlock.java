@@ -6,15 +6,21 @@ public class ControlBlock {
 	
 	private Item type = null;
 	private double multiplier = 1.0;
+	private RedstoneState multiplierState = RedstoneState.Default;
 	private boolean catcher = false;
+	private RedstoneState catcherState = RedstoneState.Default;
 	private double launchSpeed = 0D;
+	private RedstoneState launcherState = RedstoneState.Default;
 	private boolean ejector = false;
+	private RedstoneState ejectorState = RedstoneState.Default;
 	private boolean platform = false;
+	private RedstoneState platformState = RedstoneState.Default;
 	private boolean station = false;
-	private boolean redstoneDisable = false;
-	private boolean requiresRedstone = false;
+	private RedstoneState stationState = RedstoneState.Default;
 	private boolean spawnMinecart = false;
+	private RedstoneState spawnState = RedstoneState.Default;
 	private boolean killMinecart = false;
+	private RedstoneState killState = RedstoneState.Default;
 	
 	public ControlBlock() {
 	}
@@ -35,12 +41,28 @@ public class ControlBlock {
 		this.multiplier = multiplier;
 	}
 	
+	protected void setMultiplierState(RedstoneState multiplierState) {
+		this.multiplierState = multiplierState;
+	}
+
+	public RedstoneState getMultiplierState() {
+		return multiplierState;
+	}
+	
 	public boolean isCatcherBlock() {
 		return catcher;
 	}
 	
 	protected void setCatcherBlock(boolean val) {
 		catcher = val;
+	}
+	
+	public RedstoneState getCatcherState() {
+		return catcherState;
+	}
+	
+	protected void setCatcherState(RedstoneState state) {
+		catcherState = state;
 	}
 	
 	public double getLauncherSpeed() {
@@ -51,6 +73,14 @@ public class ControlBlock {
 		launchSpeed = d;
 	}
 	
+	protected void setLauncherState(RedstoneState launcherState) {
+		this.launcherState = launcherState;
+	}
+
+	public RedstoneState getLauncherState() {
+		return launcherState;
+	}
+	
 	public boolean isEjectorBlock() {
 		return ejector;
 	}
@@ -59,12 +89,29 @@ public class ControlBlock {
 		ejector = val;
 	}
 	
+	protected void setEjectorState(RedstoneState ejectorState) {
+		this.ejectorState = ejectorState;
+	}
+
+	public RedstoneState getEjectorState() {
+		return ejectorState;
+	}
+
+	
 	public boolean isPlatformBlock() {
 		return platform;
 	}
 	
 	protected void setPlatformBlock(boolean val) {
 		platform = val;
+	}
+	
+	protected void setPlatformState(RedstoneState platformState) {
+		this.platformState = platformState;
+	}
+
+	public RedstoneState getPlatformState() {
+		return platformState;
 	}
 	
 	public boolean isStationBlock() {
@@ -75,21 +122,14 @@ public class ControlBlock {
 		station = val;
 	}
 	
-	public boolean isRedstoneDisables() {
-		return redstoneDisable;
+	protected void setStationState(RedstoneState stationState) {
+		this.stationState = stationState;
 	}
-	
-	protected void setRedstoneDisables(boolean val) {
-		redstoneDisable = val;
+
+	public RedstoneState getStationState() {
+		return stationState;
 	}
-	
-	public boolean isReqRedstone() {
-		return requiresRedstone;
-	}
-	
-	protected void setReqRedstone(boolean val) {
-		requiresRedstone = val;
-	}
+
 	
 	public boolean isSpawnMinecart() {
 		return spawnMinecart;
@@ -99,12 +139,28 @@ public class ControlBlock {
 		spawnMinecart = val;
 	}
 	
+	protected void setSpawnState(RedstoneState spawnState) {
+		this.spawnState = spawnState;
+	}
+
+	public RedstoneState getSpawnState() {
+		return spawnState;
+	}
+	
 	public boolean isKillMinecart() {
 		return killMinecart;
 	}
 	
 	protected void setKillMinecart(boolean val) {
 		killMinecart = val;
+	}
+	
+	protected void setKillState(RedstoneState killState) {
+		this.killState = killState;
+	}
+
+	public RedstoneState getKillState() {
+		return killState;
 	}
 	
 	public String toString() {

@@ -11,6 +11,7 @@ import org.bukkit.event.block.BlockListener;
 import org.bukkit.event.block.BlockRedstoneEvent;
 
 import com.afforess.minecartmaniacore.config.ControlBlockList;
+import com.afforess.minecartmaniacore.config.RedstoneState;
 import com.afforess.minecartmaniacore.event.ChestPoweredEvent;
 import com.afforess.minecartmaniacore.utils.SignUtils;
 
@@ -47,8 +48,8 @@ public class MinecartManiaCoreBlockListener extends BlockListener{
 					}
 					Item type =  Item.getItem(b.getTypeId(), b.getData());
 					if (ControlBlockList.isSpawnMinecartBlock(type)) {
-						if (!ControlBlockList.isReqRedstone(type) || power) {
-							if (!ControlBlockList.isRedstoneDisables(type) || !power) {
+						if (ControlBlockList.getControlBlock(type).getSpawnState() != RedstoneState.Enables || power) {
+							if (ControlBlockList.getControlBlock(type).getSpawnState() != RedstoneState.Disables || !power) {
 								if (b.getRelative(0, 1, 0).getTypeId() == Item.RAILS.getId()) {
 									Long lastSpawn = this.lastSpawn.get(b.getLocation());
 									if (lastSpawn == null || (Math.abs(System.currentTimeMillis() - lastSpawn) > 1000)) {

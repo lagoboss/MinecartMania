@@ -5,7 +5,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.server.EntityMinecart;
 
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
@@ -14,6 +13,7 @@ import org.bukkit.block.Furnace;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.craftbukkit.entity.CraftEntity;
+import org.bukkit.craftbukkit.entity.CraftMinecart;
 import org.bukkit.craftbukkit.entity.CraftPoweredMinecart;
 import org.bukkit.craftbukkit.entity.CraftStorageMinecart;
 import org.bukkit.entity.Entity;
@@ -41,6 +41,20 @@ public class MinecartManiaWorld {
 	 public static MinecartManiaMinecart getMinecartManiaMinecart(Minecart minecart) {
         MinecartManiaMinecart testMinecart = minecarts.get(new Integer(minecart.getEntityId()));
         if (testMinecart == null) {
+
+        	//Special handling to create storage and powered minecart correctly until Bukkit fixes their bug
+        	CraftMinecart cm = (CraftMinecart)minecart;
+        	EntityMinecart em = (EntityMinecart)cm.getHandle();
+        	CraftServer cs = (CraftServer)MinecartManiaCore.server;
+        	if (em.d == 1) {
+        		CraftStorageMinecart csm = new CraftStorageMinecart(cs, em); 
+        		minecart = (Minecart)csm;
+        	} 	
+        	else if (em.d == 2) {
+        		CraftPoweredMinecart csm = new CraftPoweredMinecart(cs, em); 
+        		minecart = (Minecart)csm;
+        	}
+        	//End workaround
         	MinecartManiaMinecart newCart;
         	if (minecart instanceof StorageMinecart) {
         		newCart = new MinecartManiaStorageCart(minecart);
@@ -523,30 +537,7 @@ public class MinecartManiaWorld {
 		setBlockPowered(w, x, y, z-1, power);
 		setBlockPowered(w, x, y, z+1, power);
 	}
-	
-	/** Spawns a minecart at the given coordinates. Includes a "fudge factor" to get the minecart to properly line up with minecart tracks.
-	 ** @param w World to take effect in
-	 ** @param x coordinate
-	 ** @param y coordinate
-	 ** @param z coordinate
-	 ** @param Material type of minecart to spawn
-	 ** @param Owner of this minecart (player or chest). Can be null
-	 *  @deprecated
-	 **/
-	public static MinecartManiaMinecart spawnMinecart(World w, int x, int y, int z, Material type, Object owner) {
-		return spawnMinecart(w, x, y, z, Item.materialToItem(type), owner);
-	}
-	
-	/** Spawns a minecart at the given coordinates. Includes a "fudge factor" to get the minecart to properly line up with minecart tracks.
-	 ** @param Location to spawn the minecart at
-	 ** @param Material type of minecart to spawn
-	 ** @param Owner of this minecart (player or chest). Can be null
-	 *  @deprecated
-	 **/
-	public static MinecartManiaMinecart spawnMinecart(Location l, Material type, Object owner) {
-		return spawnMinecart(l.getWorld(), l.getBlockX(), l.getBlockY(), l.getBlockZ(), Item.materialToItem(type), owner);
-	}
-	
+
 	/** Spawns a minecart at the given coordinates. Includes a "fudge factor" to get the minecart to properly line up with minecart tracks.
 	 ** @param Location to spawn the minecart at
 	 ** @param Material type of minecart to spawn
