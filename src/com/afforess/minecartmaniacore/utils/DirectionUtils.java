@@ -179,9 +179,8 @@ public abstract class DirectionUtils {
 		 return -1;
 	 }
 
-	public static CompassDirection getOppositeDirection(
-			CompassDirection directionOfMotion) {
-		int val = directionOfMotion.getType();
+	public static CompassDirection getOppositeDirection(CompassDirection direction) {
+		int val = direction.getType();
 		if (val < 4)
 			val += 4;
 		else

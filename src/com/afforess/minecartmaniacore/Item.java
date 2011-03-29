@@ -249,12 +249,12 @@ public enum Item {
     private static final Map<ArrayList<Integer>, Item> lookupId = new HashMap<ArrayList<Integer>, Item>();
     private static final Map<String, Item> lookupName = new HashMap<String, Item>();
 
-    private Item(final int id) {
+    Item(final int id) {
         this(id, 0);
         hasData = false;
     }
 
-    private Item(final int id, final int data) {
+    Item(final int id, final int data) {
         this.id = id;
         this.data = (short)data;
         hasData = true;
