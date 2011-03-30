@@ -17,7 +17,7 @@
     <!--Adjusts the maximum minecart speed. 100% is equal to the vanilla Minecart speed. Large values will cause minecarts to derail.-->
     <DefaultMinecartSpeedPercent>100</DefaultMinecartSpeedPercent>
 	 <!--The range minecarts will collect items at, farm around themselves, collect from chests, etc...-->
-    <Range>2</Range>
+    <Range>4</Range>
     <!--The maximum range that minecarts can have. Overrides signs.-->
     <MaximumRange>10</MaximumRange>
     <ControlBlocks>

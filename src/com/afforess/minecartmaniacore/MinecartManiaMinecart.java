@@ -43,7 +43,7 @@ public class MinecartManiaMinecart {
 	private boolean wasMovingLastTick;
 	private String owner = "none";
 	private ConcurrentHashMap<String, Object> data = new ConcurrentHashMap<String,Object>();
-	private int entityDetectionRange = 2;
+	private int range = 4;
 	public static final double MAXIMUM_MOMENTUM = 1E150D;
 	
 	public MinecartManiaMinecart(Minecart cart) {
@@ -270,20 +270,18 @@ public class MinecartManiaMinecart {
 	}
 	
 	public boolean doPlatformBlock() {
-		if (ControlBlockList.isPlatformBlock(getItemBeneath()) && isStandardMinecart()) {
-			if (!ControlBlockList.isValidPlatformBlock(getBlockBeneath())) {
-				if (minecart.getPassenger() == null) {
-					List<LivingEntity> list = minecart.getWorld().getLivingEntities();
-					double range = getEntityDetectionRange() * getEntityDetectionRange();
-					for (LivingEntity le : list) {
-						if (le.getLocation().toVector().distanceSquared(minecart.getLocation().toVector()) < range) {
-							//Let the world know about this
-							VehicleEnterEvent vee = new VehicleEnterEvent(minecart, le);
-							MinecartManiaCore.server.getPluginManager().callEvent(vee);
-							if (!vee.isCancelled()) {
-								minecart.setPassenger(le);
-								return true;
-							}
+		if (ControlBlockList.isValidPlatformBlock(getBlockBeneath()) && isStandardMinecart()) {
+			if (minecart.getPassenger() == null) {
+				List<LivingEntity> list = minecart.getWorld().getLivingEntities();
+				double range = getEntityDetectionRange() * getEntityDetectionRange();
+				for (LivingEntity le : list) {
+					if (le.getLocation().toVector().distanceSquared(minecart.getLocation().toVector()) < range) {
+						//Let the world know about this
+						VehicleEnterEvent vee = new VehicleEnterEvent(minecart, le);
+						MinecartManiaCore.server.getPluginManager().callEvent(vee);
+						if (!vee.isCancelled()) {
+							minecart.setPassenger(le);
+							return true;
 						}
 					}
 				}
@@ -350,7 +348,7 @@ loop:   for (Sign sign : signList) {
 					sign.update();
 				}
 				if (sign.getLine(i).toLowerCase().contains("launch north")) {
-					if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX()-1, getY(), getZ(), 2, DirectionUtils.CompassDirection.NORTH)) {
+					if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX(), getY(), getZ(), 2, DirectionUtils.CompassDirection.NORTH)) {
 						sign.setLine(i, "[Launch North]");
 						sign.update();
 						setMotion(DirectionUtils.CompassDirection.NORTH, speed);
@@ -358,7 +356,7 @@ loop:   for (Sign sign : signList) {
 					}
 				}
 				if (sign.getLine(i).toLowerCase().contains("launch east")) {
-					if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX(), getY(), getZ()-1, 2, DirectionUtils.CompassDirection.EAST)) {
+					if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX(), getY(), getZ(), 2, DirectionUtils.CompassDirection.EAST)) {
 						sign.setLine(i, "[Launch East]");
 						sign.update();
 						setMotion(DirectionUtils.CompassDirection.EAST, speed);
@@ -366,7 +364,7 @@ loop:   for (Sign sign : signList) {
 					}
 				}
 				if (sign.getLine(i).toLowerCase().contains("launch south")) {
-					if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX()+1, getY(), getZ(), 2, DirectionUtils.CompassDirection.SOUTH)) {
+					if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX(), getY(), getZ(), 2, DirectionUtils.CompassDirection.SOUTH)) {
 						sign.setLine(i, "[Launch South]");
 						sign.update();
 						setMotion(DirectionUtils.CompassDirection.SOUTH, speed);
@@ -374,7 +372,7 @@ loop:   for (Sign sign : signList) {
 					}
 				}
 				if (sign.getLine(i).toLowerCase().contains("launch west")) {
-					if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX(), getY(), getZ()+1, 2, DirectionUtils.CompassDirection.WEST)) {
+					if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX(), getY(), getZ(), 2, DirectionUtils.CompassDirection.WEST)) {
 						sign.setLine(i, "[Launch West]");
 						sign.update();
 						setMotion(DirectionUtils.CompassDirection.WEST, speed);
@@ -383,7 +381,7 @@ loop:   for (Sign sign : signList) {
 				}
 				if (sign.getLine(i).toLowerCase().contains("previous dir")) {
 					if (!this.getPreviousFacingDir().equals(DirectionUtils.CompassDirection.NO_DIRECTION)) {
-						if (MinecartUtils.validMinecartTrackAnyDirection(minecart.getWorld(), getX(), getY(), getZ()+1, 2)) {
+						if (MinecartUtils.validMinecartTrackAnyDirection(minecart.getWorld(), getX(), getY(), getZ(), 2)) {
 							sign.setLine(i, "[Previous Dir]");
 							sign.update();
 							setMotion(this.getPreviousFacingDir(), speed);
@@ -730,12 +728,22 @@ loop:   for (Sign sign : signList) {
 		minecart.remove();
 	}
 
+	@Deprecated
 	public void setEntityDetectionRange(int range) {
-		this.entityDetectionRange = range;
+		this.range = range;
+	}
+	
+	public void setRange(int range) {
+		this.range = range;
 	}
 
+	@Deprecated
 	public int getEntityDetectionRange() {
-		return entityDetectionRange;
+		return range;
+	}
+	
+	public int getRange() {
+		return range;
 	}
 
 	public void updateChunks() {
@@ -792,5 +800,19 @@ loop:   for (Sign sign : signList) {
 		}
 		
 		return false;
+	}
+	
+	public MinecartManiaMinecart copy(Minecart newMinecart) {
+		MinecartManiaMinecart newCopy = MinecartManiaWorld.getMinecartManiaMinecart(newMinecart);
+		newCopy.cal = this.cal;
+		newCopy.data = this.data;
+		newCopy.range = this.range;
+		newCopy.owner = this.owner;
+		newCopy.previousFacingDir = this.previousFacingDir;
+		newCopy.previousLocation = this.previousLocation;
+		newCopy.previousMotion = this.previousMotion;
+		newCopy.wasMovingLastTick = this.wasMovingLastTick;
+		
+		return newCopy;
 	}
 }

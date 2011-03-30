@@ -10,6 +10,8 @@ import org.bukkit.inventory.ItemStack;
 
 public class MinecartManiaChest extends MinecartManiaSingleContainer implements MinecartManiaInventory{
 
+	public static final int SPAWN_DELAY = 250;
+	private long lastSpawnTime = -1;
 	private final Location chest;
 	private boolean redstonePower;
 	private ConcurrentHashMap<String, Object> data = new ConcurrentHashMap<String,Object>();
@@ -240,5 +242,13 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements 
 
 	public Inventory getInventory() {
 		return getChest().getInventory();
+	}
+	
+	public boolean canSpawnMinecart() {
+		if (lastSpawnTime == -1 || Math.abs(System.currentTimeMillis() - lastSpawnTime) > SPAWN_DELAY) {
+			lastSpawnTime = System.currentTimeMillis();
+			return true;
+		}
+		return false;
 	}
 }

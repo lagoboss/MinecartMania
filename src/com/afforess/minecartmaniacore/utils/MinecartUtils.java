@@ -168,7 +168,7 @@ public class MinecartUtils {
 		minecart.setDataValue("MinecartNearEntityEvent", true);
 		ArrayList<MinecartNearEntityEvent> deadQueue = new ArrayList<MinecartNearEntityEvent>(50);
     	Vector location = minecart.minecart.getLocation().toVector();
-    	int rangeSquared = minecart.getEntityDetectionRange() * minecart.getEntityDetectionRange();
+    	int rangeSquared = minecart.getRange() * minecart.getRange();
     	boolean killmobs = MinecartManiaWorld.isMinecartsKillMobs();
     	
     	for (Entity e : entities) {
