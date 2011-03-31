@@ -83,7 +83,7 @@ public class ItemUtils {
 			
 			String[] keys = str.split(":");
 			for (int i = 0; i < keys.length; i++) {
-				String part = keys[i];
+				String part = keys[i].trim();
 				List<Item> parsedset = parsePart(part);
 				
 				if(parsedset == null || parsedset.size() < 1)

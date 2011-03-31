@@ -20,6 +20,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import com.afforess.minecartmaniacore.config.ControlBlockList;
+import com.afforess.minecartmaniacore.event.MinecartActionEvent;
 import com.afforess.minecartmaniacore.event.MinecartBoostEvent;
 import com.afforess.minecartmaniacore.event.MinecartBrakeEvent;
 import com.afforess.minecartmaniacore.event.MinecartCaughtEvent;
@@ -44,6 +45,7 @@ public class MinecartManiaMinecart {
 	private String owner = "none";
 	private ConcurrentHashMap<String, Object> data = new ConcurrentHashMap<String,Object>();
 	private int range = 4;
+	private boolean dead = false;
 	public static final double MAXIMUM_MOMENTUM = 1E150D;
 	
 	public MinecartManiaMinecart(Minecart cart) {
@@ -64,8 +66,10 @@ public class MinecartManiaMinecart {
 		setWasMovingLastTick(isMoving());
 		previousMotion = minecart.getVelocity().clone();
 		previousLocation = minecart.getLocation().toVector().clone();
+		previousLocation.setY(previousLocation.getX() -1); //fool game into thinking we've already moved
 		minecart.setMaxSpeed(MinecartManiaWorld.getDefaultMinecartSpeedPercent() * 0.4D / 100);
 		MinecartManiaCore.server.getPluginManager().callEvent(new MinecartManiaMinecartCreatedEvent(this));
+		MinecartManiaCore.server.getPluginManager().callEvent(new MinecartActionEvent(this));
 	}
 
 	/**
@@ -86,6 +90,10 @@ public class MinecartManiaMinecart {
 		if (closestPlayer != null) {
 			owner = closestPlayer.getName();
 		}
+	}
+	
+	public boolean isDead() {
+		return dead;
 	}
 
 	public Vector getPreviousLocation() {
@@ -724,8 +732,8 @@ loop:   for (Sign sign : signList) {
 		MinecartManiaMinecartDestroyedEvent mmmee = new MinecartManiaMinecartDestroyedEvent(this);
 		MinecartManiaCore.server.getPluginManager().callEvent(mmmee);
 		
-		MinecartManiaWorld.delMinecartManiaMinecart(minecart.getEntityId());
 		minecart.remove();
+		dead = true;
 	}
 
 	@Deprecated

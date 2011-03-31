@@ -65,7 +65,7 @@ public class MinecartManiaFurnace extends MinecartManiaSingleContainer implement
 		 }
 	 }
 	 
-	 public Inventory getInventory() {
-			return getFurnace().getInventory();
-		}
+	public Inventory getInventory() {
+		return getFurnace().getInventory();
+	}
 }

@@ -33,12 +33,17 @@ public class MinecartManiaWorld {
 	private static ConcurrentHashMap<Location,MinecartManiaFurnace> furnaces = new ConcurrentHashMap<Location,MinecartManiaFurnace>();
 	private static ConcurrentHashMap<String,MinecartManiaPlayer> players = new ConcurrentHashMap<String,MinecartManiaPlayer>();
 	private static ConcurrentHashMap<String, Object> configuration = new ConcurrentHashMap<String,Object>();
+	private static boolean initialized = false;
 	
 	/**
 	 ** Returns a new MinecartManiaMinecart from storage if it already exists, or creates and stores a new MinecartManiaMinecart object, and returns it
 	 ** @param the minecart to wrap
 	 **/
 	 public static MinecartManiaMinecart getMinecartManiaMinecart(Minecart minecart) {
+		if (!initialized) {
+			initialized = true;
+			pruneMinecarts();
+		}
         MinecartManiaMinecart testMinecart = minecarts.get(new Integer(minecart.getEntityId()));
         if (testMinecart == null) {
 
@@ -80,7 +85,23 @@ public class MinecartManiaWorld {
         }
         return false;
     }
-	 
+	
+	private static void pruneMinecarts() {
+		Iterator<Entry<Integer, MinecartManiaMinecart>> i = minecarts.entrySet().iterator();
+		while (i.hasNext()) {
+			Entry<Integer, MinecartManiaMinecart> e = i.next();
+			if (e.getValue().isDead() || isDead(e.getValue().minecart)) {
+				i.remove();
+			}
+		}
+		Runnable r = new Runnable () {
+			public void run() {
+				MinecartManiaWorld.pruneMinecarts();
+			}
+		};
+		MinecartManiaCore.server.getScheduler().scheduleSyncDelayedTask(MinecartManiaCore.instance, r, 20 * 60 * 5);
+	}
+	
 	 /**
 	 ** Returns any minecart at the given location, or null if none is present
 	 ** @param the x - coordinate to check

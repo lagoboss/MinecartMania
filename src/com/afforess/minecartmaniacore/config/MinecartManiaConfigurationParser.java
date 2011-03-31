@@ -21,11 +21,12 @@ public class MinecartManiaConfigurationParser {
 		if (!config.exists()) {
 			parser.write(config);
 		}
+		config = new File(directory, filename);
 		Document doc = null;
 		try {
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			 doc = dBuilder.parse(config.toURI().getPath());
+			doc = dBuilder.parse(config.toURI().getPath());
 			doc.getDocumentElement().normalize();
 		}
 		catch (Exception e) {
@@ -35,6 +36,16 @@ public class MinecartManiaConfigurationParser {
 			if (!parser.write(config)) {
 				Logger.getLogger("minecraft").severe("[Minecart Mania] FAILED TO WRITE CONFIGURATION! Directory: " + directory + " File: " + filename);
 			}
+		}
+		config = new File(directory, filename);
+		try {
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			doc = dBuilder.parse(config.toURI().getPath());
+			doc.getDocumentElement().normalize();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
 		}
 		
 		if (!parser.read(doc)) {

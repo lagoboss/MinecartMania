@@ -56,6 +56,10 @@ public class MinecartManiaCoreListener extends VehicleListener{
 		if (event.getVehicle() instanceof Minecart) {
 			Minecart cart = (Minecart)event.getVehicle();
 			MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart(cart);
+			
+			if (minecart.isDead()) {
+				return;
+			}
 
 			minecart.updateCalendar(); 
 			if (minecart.isMoving()) {
@@ -84,9 +88,6 @@ public class MinecartManiaCoreListener extends VehicleListener{
 			
 			if (minecart.hasChangedPosition()) {
 				
-				if (minecart.doKillBlock()){
-					return;
-				}
 				
 				if (minecart.isAtIntersection()) {
 					MinecartIntersectionEvent mie = new MinecartIntersectionEvent(minecart);
@@ -108,6 +109,9 @@ public class MinecartManiaCoreListener extends VehicleListener{
 		    	
 				minecart.updateMotion();
 				minecart.updateLocation();
+				
+				//should do last
+				minecart.doKillBlock();
 			}
 		}
     }

@@ -10,7 +10,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class MinecartManiaChest extends MinecartManiaSingleContainer implements MinecartManiaInventory{
 
-	public static final int SPAWN_DELAY = 250;
+	public static int SPAWN_DELAY = 1000;
 	private long lastSpawnTime = -1;
 	private final Location chest;
 	private boolean redstonePower;

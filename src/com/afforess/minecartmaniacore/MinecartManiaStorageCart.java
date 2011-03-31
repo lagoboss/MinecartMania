@@ -42,7 +42,7 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 	}
 	
 	public int getMaximumItem(Item item) {
-		if (maximumContents.containsKey(item)) {
+		if (maximumContents != null && maximumContents.containsKey(item)) {
 			return maximumContents.get(item);
 		}
 		return -1;
@@ -53,7 +53,7 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 	}
 	
 	public int getMinimumItem(Item item) {
-		if (minimumContents.containsKey(item)) {
+		if (minimumContents != null && minimumContents.containsKey(item)) {
 			return minimumContents.get(item);
 		}
 		return -1;

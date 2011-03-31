@@ -24,6 +24,7 @@ public class MinecartManiaCore extends JavaPlugin {
 	public static File data;
 	public static File MinecartManiaCore;
 	public static String dataDirectory = "plugins" + File.separator + "MinecartMania";
+	public static boolean WormholeXTreme = false;
 	
 	
 
@@ -39,6 +40,8 @@ public class MinecartManiaCore extends JavaPlugin {
 		if (!path.isEmpty()) {
 			dataDirectory = path + dataDirectory;
 		}
+		
+		WormholeXTreme = server.getPluginManager().getPlugin("WormholeXTreme") != null;
 
 		writeItemsFile();
 

@@ -3,6 +3,11 @@ import org.bukkit.event.CustomEventListener;
 import org.bukkit.event.Event;
 import org.bukkit.event.Listener;
 
+import com.afforess.minecartmaniacore.MinecartManiaCore;
+import com.afforess.minecartmaniacore.MinecartManiaMinecart;
+import com.afforess.minecartmaniacore.MinecartManiaWorld;
+import com.wormhole_xtreme.wormhole.event.StargateMinecartTeleportEvent;
+
 
 public class MinecartManiaListener extends CustomEventListener implements Listener{
 
@@ -154,6 +159,19 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
      * @param event
      */
 	public void onCustomEvent(Event event) {
+		//Special case
+		if (MinecartManiaCore.WormholeXTreme) {
+			try {
+				if (event instanceof StargateMinecartTeleportEvent) {
+					StargateMinecartTeleportEvent e = (StargateMinecartTeleportEvent)event;
+					MinecartManiaMinecart oldMinecart = MinecartManiaWorld.getMinecartManiaMinecart(e.getOldMinecart());
+					oldMinecart.copy(e.getNewMinecart());
+					oldMinecart.kill(false);
+				}
+			}
+			catch (Exception e) {}
+		}
+		
 		if (event instanceof MinecartActionEvent) {
 			onMinecartActionEvent((MinecartActionEvent)event);
 		}
