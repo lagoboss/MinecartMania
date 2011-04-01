@@ -49,7 +49,9 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 	}
 	
 	public void setMaximumItem(Item item, int amount) {
-		maximumContents.put(item, amount);
+		if (maximumContents != null) {
+			maximumContents.put(item, amount);
+		}
 	}
 	
 	public int getMinimumItem(Item item) {
@@ -60,7 +62,9 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 	}
 	
 	public void setMinimumItem(Item item, int amount) {
-		minimumContents.put(item, amount);
+		if (minimumContents != null) {
+			minimumContents.put(item, amount);
+		}
 	}
 	
 	public boolean canAddItem(ItemStack item) {
@@ -83,7 +87,7 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 	}
 	
 	private static int maxStack(ItemStack item) {
-		if (!(Boolean)MinecartManiaWorld.getConfigurationValue("StackAllItems")) {
+		if (item.getMaxStackSize() != -1 && !(Boolean)MinecartManiaWorld.getConfigurationValue("StackAllItems")) {
 			return item.getMaxStackSize();
 		}
 		return 64;

@@ -104,12 +104,12 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements 
 		 }
 	 }
 	 
-	 private static int maxStack(ItemStack item) {
-			if (!(Boolean)MinecartManiaWorld.getConfigurationValue("StackAllItems")) {
-				return item.getMaxStackSize();
-			}
-			return 64;
+	private static int maxStack(ItemStack item) {
+		if (item.getMaxStackSize() != -1 && !(Boolean)MinecartManiaWorld.getConfigurationValue("StackAllItems")) {
+			return item.getMaxStackSize();
 		}
+		return 64;
+	}
 	
 	/**
 	 * Attempts to add an itemstack to this chest. It adds items in a 'smart' manner, merging with existing itemstacks, until they

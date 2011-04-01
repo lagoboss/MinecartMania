@@ -42,7 +42,7 @@ public abstract class MinecartManiaSingleContainer implements MinecartManiaInven
 	}
 	
 	private static int maxStack(ItemStack item) {
-		if (!(Boolean)MinecartManiaWorld.getConfigurationValue("StackAllItems")) {
+		if (item.getMaxStackSize() != -1 && !(Boolean)MinecartManiaWorld.getConfigurationValue("StackAllItems")) {
 			return item.getMaxStackSize();
 		}
 		return 64;
