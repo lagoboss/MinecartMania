@@ -26,8 +26,6 @@ public class MinecartManiaCore extends JavaPlugin {
 	public static String dataDirectory = "plugins" + File.separator + "MinecartMania";
 	public static boolean WormholeXTreme = false;
 	
-	
-
 	public void onEnable(){
 		server = this.getServer();
 		description = this.getDescription();
@@ -44,6 +42,8 @@ public class MinecartManiaCore extends JavaPlugin {
 		WormholeXTreme = server.getPluginManager().getPlugin("WormholeXTreme") != null;
 
 		writeItemsFile();
+		
+		MinecartManiaWorld.pruneMinecarts();
 
 		MinecartManiaConfigurationParser.read("MinecartManiaConfiguration.xml", dataDirectory, new CoreSettingParser());
 
@@ -54,12 +54,12 @@ public class MinecartManiaCore extends JavaPlugin {
 		getServer().getPluginManager().registerEvent(Event.Type.CHUNK_UNLOAD, worldListener, Priority.Normal, this);
 		getServer().getPluginManager().registerEvent(Event.Type.REDSTONE_CHANGE, blockListener, Priority.Monitor, this);
 
-		PluginDescriptionFile pdfFile = this.getDescription();
-		log.info( pdfFile.getName() + " version " + pdfFile.getVersion() + " is enabled!" );
+		log.info( description.getName() + " version " + description.getVersion() + " is enabled!" );
 	}
 	
 	public void onDisable(){
-		
+		server.getScheduler().cancelTasks(instance);
+		log.info( description.getName() + " version " + description.getVersion() + " is disabled!" );
 	}
 	
 	private void writeItemsFile() {

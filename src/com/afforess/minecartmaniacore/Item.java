@@ -121,6 +121,7 @@ public enum Item {
     CAKE_BLOCK(92),
     DIODE_BLOCK_OFF(93),
     DIODE_BLOCK_ON(94),
+    LOCKED_CHEST(95),
     // ----- Item Separator -----
     IRON_SPADE(256),
     IRON_PICKAXE(257),
@@ -239,6 +240,7 @@ public enum Item {
     CAKE(354),
     BED(355),
     DIODE(356),
+    COOKIE(357),
     GOLD_RECORD(2256),
     GREEN_RECORD(2257);
 

@@ -17,7 +17,7 @@ import com.afforess.minecartmaniacore.MinecartManiaCore;
 import com.afforess.minecartmaniacore.MinecartManiaWorld;
 
 public class CoreSettingParser implements SettingParser{
-	private static final double version = 1.1;
+	private static final double version = 1.2;
 	
 	public boolean isUpToDate(Document document) {
 		try {
@@ -76,6 +76,11 @@ public class CoreSettingParser implements SettingParser{
 			setting = "MaximumRange";
 			list = document.getElementsByTagName(setting);
 			value = MinecartManiaConfigurationParser.toInt(list.item(0).getChildNodes().item(0).getNodeValue(), 25);
+			MinecartManiaWorld.getConfiguration().put(setting, value);
+			
+			setting = "StackAllItems";
+			list = document.getElementsByTagName(setting);
+			value = MinecartManiaConfigurationParser.toBool(list.item(0).getChildNodes().item(0).getNodeValue());
 			MinecartManiaWorld.getConfiguration().put(setting, value);
 	
 			//read arrays

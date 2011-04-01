@@ -33,17 +33,12 @@ public class MinecartManiaWorld {
 	private static ConcurrentHashMap<Location,MinecartManiaFurnace> furnaces = new ConcurrentHashMap<Location,MinecartManiaFurnace>();
 	private static ConcurrentHashMap<String,MinecartManiaPlayer> players = new ConcurrentHashMap<String,MinecartManiaPlayer>();
 	private static ConcurrentHashMap<String, Object> configuration = new ConcurrentHashMap<String,Object>();
-	private static boolean initialized = false;
-	
+
 	/**
 	 ** Returns a new MinecartManiaMinecart from storage if it already exists, or creates and stores a new MinecartManiaMinecart object, and returns it
 	 ** @param the minecart to wrap
 	 **/
 	 public static MinecartManiaMinecart getMinecartManiaMinecart(Minecart minecart) {
-		if (!initialized) {
-			initialized = true;
-			pruneMinecarts();
-		}
         MinecartManiaMinecart testMinecart = minecarts.get(new Integer(minecart.getEntityId()));
         if (testMinecart == null) {
 
@@ -86,7 +81,7 @@ public class MinecartManiaWorld {
         return false;
     }
 	
-	private static void pruneMinecarts() {
+	public static void pruneMinecarts() {
 		Iterator<Entry<Integer, MinecartManiaMinecart>> i = minecarts.entrySet().iterator();
 		while (i.hasNext()) {
 			Entry<Integer, MinecartManiaMinecart> e = i.next();
@@ -438,14 +433,7 @@ public class MinecartManiaWorld {
 	 ** @param z coordinate
 	 **/	
 	public static int getBlockIdAt(World w, int x, int y, int z) {
-		try {
-			
-			return ((CraftWorld)w).getHandle().getTypeId(x, y, z);
-		}
-		catch (Exception e) {
-			return w.getBlockTypeIdAt(x, y, z);
-		}
-		
+		return w.getBlockTypeIdAt(x, y, z);
 	}
 	
 	/**
@@ -457,12 +445,7 @@ public class MinecartManiaWorld {
 	 ** @param z coordinate
 	 **/
 	public static void setBlockAt(World w, int type, int x, int y, int z) {
-		try {
-			((CraftWorld)w).getHandle().e(x, y, z, type);
-		}
-		catch (Exception e) {
-			w.getBlockAt(x, y, z).setTypeId(type);
-		}
+		w.getBlockAt(x, y, z).setTypeId(type);
 	}
 	
 	/**
@@ -473,12 +456,7 @@ public class MinecartManiaWorld {
 	 ** @param z coordinate
 	 **/
 	public static byte getBlockData(World w, int x, int y, int z) {
-		try {
-			return (byte) ((CraftWorld)w).getHandle().getData(x, y, z);
-		}
-		catch (Exception e) {
-			return w.getBlockAt(x, y, z).getData();
-		}
+		return w.getBlockAt(x, y, z).getData();
 	}
 	
 	/**
@@ -490,8 +468,6 @@ public class MinecartManiaWorld {
 	 ** @param new data to set
 	 **/
 	public static void setBlockData(World w, int x, int y, int z, int data) {
-		//Better to crash than to write bad data!
-		if (data < 0 || data > Byte.MAX_VALUE) throw new IllegalArgumentException();
 		w.getBlockAt(x, y, z).setData((byte) (data));
 	}
 	
@@ -599,44 +575,26 @@ public class MinecartManiaWorld {
 			//m = w.spawnStorageMinecart(new Location(w, x + 0.5D, y, z + 0.5D));
 		}
 		MinecartManiaMinecart minecart = null;
+		String ownerName = "none";
 		if (owner != null) {
 			if (owner instanceof Player) {
-				if (m instanceof StorageMinecart) {
-					minecart = new MinecartManiaStorageCart(m, ((Player)owner).getName());
-				}
-				else {
-					minecart = new MinecartManiaMinecart(m, ((Player)owner).getName());
-				}
-				
-				minecarts.put(m.getEntityId(), minecart);
+				ownerName = ((Player)owner).getName();
 			}
-			if (owner instanceof MinecartManiaChest) {
-				if (m instanceof StorageMinecart) {
-					minecart = new MinecartManiaStorageCart(m, ((MinecartManiaChest)owner).toString());
-				}
-				else {
-					minecart = new MinecartManiaMinecart(m, ((MinecartManiaChest)owner).toString());
-				}
-				minecarts.put(m.getEntityId(), minecart);
+			else if (owner instanceof MinecartManiaPlayer) {
+				ownerName = ((MinecartManiaPlayer)owner).getName();
 			}
+			else if (owner instanceof MinecartManiaChest) {
+				ownerName = ((MinecartManiaChest)owner).toString();
+			}
+		}
+		if (m instanceof StorageMinecart) {
+			minecart = new MinecartManiaStorageCart(m, ownerName);
 		}
 		else {
-			if (m instanceof StorageMinecart) {
-				minecart = new MinecartManiaStorageCart(m);
-			}
-			else {
-				minecart = new MinecartManiaMinecart(m);
-			}
-			minecarts.put(m.getEntityId(), minecart);
+			minecart = new MinecartManiaMinecart(m, ownerName);
 		}
+		minecarts.put(m.getEntityId(), minecart);
 		return minecart;
-	}
-	
-	/**
-	 * @deprecated
-	 */
-	public static void kill(final Entity e) {
-		e.remove();
 	}
 	
 	public static boolean isDead(Entity e) {
@@ -646,9 +604,7 @@ public class MinecartManiaWorld {
 	
 	public static void dropItem(final Location loc, final ItemStack item) {
 		//force this to run on the main thread
-		MinecartManiaCore.server.getScheduler().scheduleSyncDelayedTask(MinecartManiaCore.instance, new Runnable() { public void run() {
-			loc.getWorld().dropItem(loc, item);
-			}});
+		MinecartManiaCore.server.getScheduler().scheduleSyncDelayedTask(MinecartManiaCore.instance, new Runnable() { public void run() {loc.getWorld().dropItem(loc, item);	}});
 	}
 }
 

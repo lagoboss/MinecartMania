@@ -6,7 +6,7 @@ import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.event.world.WorldListener;
 
 public class MinecartManiaCoreWorldListener extends WorldListener{
-	public static final int CHUNK_RANGE = 3;
+	public static final int CHUNK_RANGE = 6;
     public void onChunkUnload(ChunkUnloadEvent event) {
     	if (!event.isCancelled()) {
     		if (MinecartManiaWorld.isKeepMinecartsLoaded()) {

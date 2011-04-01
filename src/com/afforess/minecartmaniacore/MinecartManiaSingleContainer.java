@@ -40,6 +40,13 @@ public abstract class MinecartManiaSingleContainer implements MinecartManiaInven
 		}
 		return true;
 	}
+	
+	private static int maxStack(ItemStack item) {
+		if (!(Boolean)MinecartManiaWorld.getConfigurationValue("StackAllItems")) {
+			return item.getMaxStackSize();
+		}
+		return 64;
+	}
 
 	/**
 	 * Attempts to add an itemstack. It adds items in a 'smart' manner, merging with existing itemstacks, until they
@@ -58,17 +65,19 @@ public abstract class MinecartManiaSingleContainer implements MinecartManiaInven
 		ItemStack[] backup = getContents().clone();
 		ItemStack backupItem = new ItemStack(item.getTypeId(), item.getAmount(), item.getDurability());
 		
+		int max = maxStack(item);
+		
 		//First attempt to merge the itemstack with existing item stacks that aren't full (< 64)
 		for (int i = 0; i < size(); i++) {
 			if (getItem(i) != null) {
 				if (getItem(i).getTypeId() == item.getTypeId() && getItem(i).getDurability() == item.getDurability()) {
-					if (getItem(i).getAmount() + item.getAmount() <= 64) {
+					if (getItem(i).getAmount() + item.getAmount() <= max) {
 						setItem(i, new ItemStack(item.getTypeId(), getItem(i).getAmount() + item.getAmount(), item.getDurability()));
 						return true;
 					}
 					else {
-						int diff = getItem(i).getAmount() + item.getAmount() - 64;
-						setItem(i, new ItemStack(item.getTypeId(), 64, item.getDurability()));
+						int diff = getItem(i).getAmount() + item.getAmount() - max;
+						setItem(i, new ItemStack(item.getTypeId(), max, item.getDurability()));
 						item = new ItemStack(item.getTypeId(), diff, item.getDurability());
 					}
 				}

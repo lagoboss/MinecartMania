@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <MinecartManiaConfiguration>
-	<version>1.1</version>
+	<version>1.2</version>
     <!--Minecarts that collide with mobs and animals will kill them and continue uninterrupted.-->
     <MinecartsKillMobs>true</MinecartsKillMobs>
     <!--If set to 0, Minecarts Will not clear rails. If set to 1, Minecarts will clear the rails of non-living objects in the way (items, arrows, snowballs, etc).
@@ -20,6 +20,8 @@
     <Range>4</Range>
     <!--The maximum range that minecarts can have. Overrides signs.-->
     <MaximumRange>10</MaximumRange>
+	<!--Stack All Items (Regardless of Notch's stacking limit on certain items)-->
+    <StackAllItems>true</StackAllItems>
     <ControlBlocks>
         <ControlBlock>
             <!--Item Name or Item Id for this control block-->

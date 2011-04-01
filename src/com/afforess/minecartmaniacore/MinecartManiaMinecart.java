@@ -324,7 +324,7 @@ public class MinecartManiaMinecart {
 	
 	public boolean doKillBlock() {
 		if (ControlBlockList.isValidKillMinecartBlock(getBlockBeneath())) {
-			kill();
+			kill(getOwner() instanceof MinecartManiaChest);
 			return true;
 		}
 		return false;
@@ -758,7 +758,7 @@ loop:   for (Sign sign : signList) {
 		if (MinecartManiaWorld.isKeepMinecartsLoaded()) {
 			Chunk current = minecart.getLocation().getBlock().getChunk();
 			Chunk old = previousLocation.toLocation(minecart.getWorld()).getBlock().getChunk();
-			int range = 1;
+			int range = 6;
 			ArrayList<Chunk> toLoad = new ArrayList<Chunk>();
 			for (int dx = -(range); dx <= range; dx++){
 				for (int dz = -(range); dz <= range; dz++){
