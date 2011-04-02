@@ -20,7 +20,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import com.afforess.minecartmaniacore.config.ControlBlockList;
-import com.afforess.minecartmaniacore.event.MinecartActionEvent;
 import com.afforess.minecartmaniacore.event.MinecartBoostEvent;
 import com.afforess.minecartmaniacore.event.MinecartBrakeEvent;
 import com.afforess.minecartmaniacore.event.MinecartCaughtEvent;
@@ -28,6 +27,7 @@ import com.afforess.minecartmaniacore.event.MinecartLaunchedEvent;
 import com.afforess.minecartmaniacore.event.MinecartManiaMinecartCreatedEvent;
 import com.afforess.minecartmaniacore.event.MinecartManiaMinecartDestroyedEvent;
 import com.afforess.minecartmaniacore.event.MinecartTimeEvent;
+import com.afforess.minecartmaniacore.utils.BlockUtils;
 import com.afforess.minecartmaniacore.utils.DirectionUtils;
 import com.afforess.minecartmaniacore.utils.MinecartUtils;
 import com.afforess.minecartmaniacore.utils.SignUtils;
@@ -47,6 +47,7 @@ public class MinecartManiaMinecart {
 	private int range = 4;
 	private boolean dead = false;
 	public static final double MAXIMUM_MOMENTUM = 1E150D;
+	public boolean createdLastTick = true;
 	
 	public MinecartManiaMinecart(Minecart cart) {
 		minecart = cart; 
@@ -61,7 +62,7 @@ public class MinecartManiaMinecart {
 	}
 	
 	private void initialize() {
-		setEntityDetectionRange(MinecartManiaWorld.getIntValue(MinecartManiaWorld.getConfigurationValue("Range")));
+		setRange(MinecartManiaWorld.getIntValue(MinecartManiaWorld.getConfigurationValue("Range")));
 		cal = Calendar.getInstance();
 		setWasMovingLastTick(isMoving());
 		previousMotion = minecart.getVelocity().clone();
@@ -69,7 +70,6 @@ public class MinecartManiaMinecart {
 		previousLocation.setY(previousLocation.getX() -1); //fool game into thinking we've already moved
 		minecart.setMaxSpeed(MinecartManiaWorld.getDefaultMinecartSpeedPercent() * 0.4D / 100);
 		MinecartManiaCore.server.getPluginManager().callEvent(new MinecartManiaMinecartCreatedEvent(this));
-		MinecartManiaCore.server.getPluginManager().callEvent(new MinecartActionEvent(this));
 	}
 
 	/**
@@ -543,46 +543,19 @@ loop:   for (Sign sign : signList) {
 	}
 	
 	public ArrayList<Block> getAdjacentBlocks(int range) {
-		//default constructor size is purely for efficiency reasons - and to show off my math skills
-		ArrayList<Block> blockList = new ArrayList<Block>((int)Math.floor(Math.pow(1 + (range * 2), 3)));
-		Block center = MinecartManiaWorld.getBlockAt(minecart.getWorld(), getX(), getY(), getZ());
-		for (int dx = -(range); dx <= range; dx++){
-			for (int dy = -(range); dy <= range; dy++){
-				for (int dz = -(range); dz <= range; dz++){
-					blockList.add(center.getRelative(dx, dy, dz));
-				}
-			}
-		}
-		return blockList;
+		return BlockUtils.getAdjacentBlocks(minecart.getLocation(), range);
 	}
 	
 	public ArrayList<Block> getPreviousLocationAdjacentBlocks(int range) {
-		ArrayList<Block> blockList = new ArrayList<Block>((int)Math.floor(Math.pow(1 + (range * 2), 3)));
-		Block center = MinecartManiaWorld.getBlockAt(minecart.getWorld(), previousLocation.getBlockX(), previousLocation.getBlockY(), previousLocation.getBlockZ());
-		for (int dx = -(range); dx <= range; dx++){
-			for (int dy = -(range); dy <= range; dy++){
-				for (int dz = -(range); dz <= range; dz++){
-					blockList.add(center.getRelative(dx, dy, dz));
-				}
-			}
-		}
-		return blockList;
+		return BlockUtils.getAdjacentBlocks(getPreviousLocation().toLocation(minecart.getWorld()), range);
 	}
 	
 	public ArrayList<Block> getBlocksBeneath(int range) {
-		ArrayList<Block> blockList = new ArrayList<Block>();
-		for (int dy = -range; dy <= 0; dy++) {
-			blockList.add(MinecartManiaWorld.getBlockAt(minecart.getWorld(), getX(), getY()+dy, getZ()));
-		}
-		return blockList;
+		return BlockUtils.getBlocksBeneath(minecart.getLocation(), range);
 	}
 	
 	public ArrayList<Block> getPreviousLocationBlocksBeneath(int range) {
-		ArrayList<Block> blockList = new ArrayList<Block>();
-		for (int dy = -range; dy <= 0; dy++) {
-			blockList.add(MinecartManiaWorld.getBlockAt(minecart.getWorld(), previousLocation.getBlockX(), previousLocation.getBlockY()+dy, previousLocation.getBlockZ()));
-		}
-		return blockList;
+		return BlockUtils.getBlocksBeneath(getPreviousLocation().toLocation(minecart.getWorld()), range);
 	}
 	
 	public boolean isMovingAway(Location l) {

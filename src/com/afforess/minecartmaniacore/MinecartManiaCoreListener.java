@@ -86,8 +86,8 @@ public class MinecartManiaCoreListener extends VehicleListener{
 				minecart.setDataValue("launch", null);
 			}
 			
-			if (minecart.hasChangedPosition()) {
-				
+			if (minecart.hasChangedPosition() || minecart.createdLastTick) {
+				minecart.createdLastTick = false;
 				
 				if (minecart.isAtIntersection()) {
 					MinecartIntersectionEvent mie = new MinecartIntersectionEvent(minecart);
