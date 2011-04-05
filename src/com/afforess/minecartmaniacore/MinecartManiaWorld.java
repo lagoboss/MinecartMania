@@ -16,6 +16,7 @@ import org.bukkit.craftbukkit.entity.CraftEntity;
 import org.bukkit.craftbukkit.entity.CraftMinecart;
 import org.bukkit.craftbukkit.entity.CraftPoweredMinecart;
 import org.bukkit.craftbukkit.entity.CraftStorageMinecart;
+import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
@@ -597,9 +598,21 @@ public class MinecartManiaWorld {
 		return minecart;
 	}
 	
+	@Deprecated
 	public static boolean isDead(Entity e) {
 		CraftEntity ce = (CraftEntity)e;
 		return ce.getHandle().dead;
+	}
+	
+	public static int getMaxStackSize(ItemStack item) {
+		if (item == null) {
+			return 64;
+		}
+		CraftItemStack stack = new CraftItemStack(item.getTypeId(), item.getAmount(), item.getDurability());
+		if (stack.getMaxStackSize() != -1) {
+			return stack.getMaxStackSize();
+		}
+		return 64;
 	}
 	
 	public static void dropItem(final Location loc, final ItemStack item) {

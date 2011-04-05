@@ -46,7 +46,10 @@ public class MinecartManiaCoreBlockListener extends BlockListener{
 							}
 						}
 					}
-					Item type =  Item.getItem(b.getTypeId(), b.getData());
+					Item type = Item.getItem(b.getTypeId(), b.getData());
+					if (Item.getItem(b.getTypeId()).size() == 1) {
+						type = Item.getItem(b.getTypeId()).get(0);
+					}
 					if (ControlBlockList.isSpawnMinecartBlock(type)) {
 						if (ControlBlockList.getControlBlock(type).getSpawnState() != RedstoneState.Enables || power) {
 							if (ControlBlockList.getControlBlock(type).getSpawnState() != RedstoneState.Disables || !power) {

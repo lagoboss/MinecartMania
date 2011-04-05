@@ -86,13 +86,6 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 		return true;
 	}
 	
-	private static int maxStack(ItemStack item) {
-		if (item.getMaxStackSize() != -1 && !(Boolean)MinecartManiaWorld.getConfigurationValue("StackAllItems")) {
-			return item.getMaxStackSize();
-		}
-		return 64;
-	}
-	
 	/**
 	 * attempts to add an itemstack to this storage minecart. It adds items in a 'smart' manner, merging with existing itemstacks, until they
 	 * reach the maximum size (64). If it fails, it will not alter the storage minecart's previous contents.
@@ -111,7 +104,7 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 		ItemStack[] backup = getContents().clone();
 		ItemStack backupItem = new ItemStack(item.getTypeId(), item.getAmount(), item.getDurability());
 		
-		int max = maxStack(item);
+		int max = MinecartManiaWorld.getMaxStackSize(item);
 		
 		//First attempt to merge the itemstack with existing item stacks that aren't full (< 64)
 		for (int i = 0; i < size(); i++) {

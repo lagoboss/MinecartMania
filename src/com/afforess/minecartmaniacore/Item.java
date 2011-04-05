@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * An enum of all items accepted by the official server + client
@@ -247,7 +249,6 @@ public enum Item {
     private final int id;
     private final short data;
     private boolean hasData;
-    private int amount = -1;
     private static final Map<ArrayList<Integer>, Item> lookupId = new HashMap<ArrayList<Integer>, Item>();
     private static final Map<String, Item> lookupName = new HashMap<String, Item>();
 
@@ -298,24 +299,18 @@ public enum Item {
     	return hasData;
     }
     
-    public void setAmount(int amount) {
-		this.amount = amount;
-	}
-
-	public int getAmount() {
-		return amount;
-	}
-	
-	public boolean isInfinite() {
-		return amount == -1;
-	}
-    
     /**
      * Finds the bukkit material associated with this item id, and returns it
      * @return the material if found, or null
      */
     public Material toMaterial() {
     	return Material.getMaterial(id);
+    }
+    
+    public ItemStack toItemStack() {
+    	ItemStack item = new ItemStack(id);
+    	if (hasData()) item.setDurability(data);
+    	return item;
     }
     
     public boolean equals(Item i) {
@@ -332,6 +327,10 @@ public enum Item {
     
     public boolean equals(int id) {
     	return id == this.id;
+    }
+    
+    public boolean equals(AbstractItem item) {
+    	return equals(item.type());
     }
 
     /**
@@ -363,6 +362,38 @@ public enum Item {
     		}
     	}
     	return list;
+    }
+    
+    /**
+     * Attempts to get the item associated with this block
+     *
+     * @param block to get the Item of
+     * @return Item if found
+     */
+    public static Item getItem(Block block) {
+    	ArrayList<Item> list = getItem(block.getTypeId());
+    	if (list.size() == 1) {
+    		return list.get(0);
+    	}
+    	return getItem(block.getTypeId(), block.getData());
+    }
+    
+    /**
+     * Attempts to get the item associated with this ItemStack
+     *
+     * @param item to get the Item of
+     * @return Item if found
+     */
+    public static Item getItem(ItemStack item) {
+    	Item i;
+    	ArrayList<Item> list = getItem(item.getTypeId());
+    	if (list.size() == 1) {
+    		i = list.get(0);
+    	}
+    	else {
+    		i = getItem(item.getTypeId(), item.getDurability());
+    	}
+    	return i;
     }
 
     /**

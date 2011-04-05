@@ -153,6 +153,16 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
 		
 	}
 	
+	
+	/**
+     * Called when a minecart changes it's direction of motion
+     * 
+     * @param event
+     */
+	public void onMinecartDirectionChangeEvent(MinecartDirectionChangeEvent event) {
+		
+	}
+	
 	/**
      * Avoid using.
      * 
@@ -216,6 +226,9 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
 		}
 		else if (event instanceof MinecartCaughtEvent) {
 			onMinecartCaughtEvent((MinecartCaughtEvent)event);
+		}
+		else if (event instanceof MinecartDirectionChangeEvent) {
+			onMinecartDirectionChangeEvent((MinecartDirectionChangeEvent)event);
 		}
 	}
 

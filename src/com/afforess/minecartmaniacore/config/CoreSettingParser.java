@@ -82,7 +82,7 @@ public class CoreSettingParser implements SettingParser{
 			list = document.getElementsByTagName(setting);
 			value = MinecartManiaConfigurationParser.toBool(list.item(0).getChildNodes().item(0).getNodeValue());
 			MinecartManiaWorld.getConfiguration().put(setting, value);
-	
+			
 			//read arrays
 			ControlBlockList.controlBlocks = new ArrayList<ControlBlock>();
 			list = document.getElementsByTagName("ControlBlock");
@@ -151,9 +151,9 @@ public class CoreSettingParser implements SettingParser{
 					String key = tempNode != null ? tempNode.getNodeValue() : null;
 					
 					ArrayList<Item> values = new ArrayList<Item>();
-					templist = element.getElementsByTagName("ItemType").item(0).getChildNodes();
+					templist = element.getElementsByTagName("ItemType");
 					for (int i = 0; i < templist.getLength(); i++) {
-						tempNode = (Node) templist.item(i);
+						tempNode = (Node) templist.item(i).getChildNodes().item(0);
 						values.add(MinecartManiaConfigurationParser.toItem(tempNode != null ? tempNode.getNodeValue() : null));
 					}
 					

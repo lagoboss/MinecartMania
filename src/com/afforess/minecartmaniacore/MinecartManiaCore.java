@@ -33,12 +33,6 @@ public class MinecartManiaCore extends JavaPlugin {
 		log = Logger.getLogger("Minecraft");
 		data = getDataFolder();
 		MinecartManiaCore = this.getFile();
-		String path = data.getPath();
-		path = path.replace("plugins"+File.separatorChar+"MinecartManiaCore", "");
-		if (!path.isEmpty()) {
-			dataDirectory = path + dataDirectory;
-		}
-		
 		WormholeXTreme = server.getPluginManager().getPlugin("WormholeXTreme") != null;
 
 		writeItemsFile();

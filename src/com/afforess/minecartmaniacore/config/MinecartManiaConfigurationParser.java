@@ -6,6 +6,8 @@ import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
+
+import com.afforess.minecartmaniacore.AbstractItem;
 import com.afforess.minecartmaniacore.Item;
 import com.afforess.minecartmaniacore.utils.ItemUtils;
 import com.afforess.minecartmaniacore.utils.StringUtils;
@@ -80,9 +82,9 @@ public class MinecartManiaConfigurationParser {
 	
 	public static Item toItem(String str) {
 		if (str == null) return null;
-		Item[] list = ItemUtils.getItemStringToMaterial(str);
+		AbstractItem[] list = ItemUtils.getItemStringToMaterial(str);
 		if (list != null && list.length > 0) {
-			return list[0];
+			return list[0].type();
 		}
 		return null;
 	}

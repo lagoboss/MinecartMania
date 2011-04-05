@@ -35,6 +35,7 @@ import org.bukkit.inventory.ItemStack;
 import com.afforess.minecartmaniacore.config.ControlBlockList;
 import com.afforess.minecartmaniacore.event.MinecartActionEvent;
 import com.afforess.minecartmaniacore.event.MinecartClickedEvent;
+import com.afforess.minecartmaniacore.event.MinecartDirectionChangeEvent;
 import com.afforess.minecartmaniacore.event.MinecartIntersectionEvent;
 import com.afforess.minecartmaniacore.event.MinecartMotionStartEvent;
 import com.afforess.minecartmaniacore.event.MinecartMotionStopEvent;
@@ -60,10 +61,12 @@ public class MinecartManiaCoreListener extends VehicleListener{
 			if (minecart.isDead()) {
 				return;
 			}
-
 			minecart.updateCalendar(); 
 			if (minecart.isMoving()) {
-				minecart.setPreviousFacingDir(minecart.getDirectionOfMotion());
+				if (minecart.getDirectionOfMotion() != minecart.getPreviousDirectionOfMotion()) {
+					MinecartManiaCore.server.getPluginManager().callEvent(new MinecartDirectionChangeEvent(minecart, minecart.getPreviousDirectionOfMotion(), minecart.getDirectionOfMotion()));
+					minecart.setPreviousDirectionOfMotion(minecart.getDirectionOfMotion());
+				}
 			}
 			
 			//Fire new events
@@ -78,7 +81,9 @@ public class MinecartManiaCoreListener extends VehicleListener{
 			minecart.setWasMovingLastTick(minecart.isMoving());
 			minecart.doRealisticFriction();
 			minecart.doLauncherBlock();
-			minecart.updateChunks();
+			if (minecart.isMoving()) {
+				minecart.updateChunks();
+			}
 			
 			//total hack workaround because of the inability to create runnables/threads w/o IllegalAccessError
 			if (minecart.getDataValue("launch") != null) {
@@ -198,16 +203,8 @@ signs:			for (final Sign sign : signs) {
 					for (int i = 0; i < 4; i++) {
 						if (sign.getLine(i).toLowerCase().contains("launch player")) {
 							sign.setLine(i, "[Launch Player]");
-							//This task must run next tick, because the player has not yet entered the minecart once the event is fired
-							//and we must wait until the player is in the minecart to launch (affects direction signs)
-							//Thread launch = new Thread() {
-							//	public void run() {
-							//		minecart.launchCart();
-							//		
-							//	}
-							//};
-							//MinecartManiaCore.server.getScheduler().scheduleSyncDelayedTask(core, launch, 1);
 							minecart.setDataValue("launch", true);
+							minecart.setDataValue("hold sign data", null);
 							sign.update();
 							break signs;
 						}

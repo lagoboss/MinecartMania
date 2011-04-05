@@ -193,15 +193,7 @@ public class MinecartManiaMinecart {
 	public int getZ(){
 		return minecart.getLocation().getBlockZ();
 	}
-	
-	public void setPreviousFacingDir(DirectionUtils.CompassDirection dir) {
-		previousFacingDir = dir;
-	}
 
-	public DirectionUtils.CompassDirection getPreviousFacingDir() {
-		return previousFacingDir;
-	}
-	
 	/**
 	 ** Returns the value from the loaded data
 	 ** @param the string key the data value is associated with
@@ -231,7 +223,11 @@ public class MinecartManiaMinecart {
 	}
 	
 	public Item getItemBeneath() {
-		return Item.getItem(MinecartManiaWorld.getBlockIdAt(minecart.getWorld(), getX(), getY()-1, getZ()), MinecartManiaWorld.getBlockData(minecart.getWorld(), getX(), getY()-1, getZ()));
+		Item item = Item.getItem(MinecartManiaWorld.getBlockIdAt(minecart.getWorld(), getX(), getY()-1, getZ()), MinecartManiaWorld.getBlockData(minecart.getWorld(), getX(), getY()-1, getZ()));
+		if (Item.getItem(MinecartManiaWorld.getBlockIdAt(minecart.getWorld(), getX(), getY()-1, getZ())).size() == 1) {
+			item = Item.getItem(MinecartManiaWorld.getBlockIdAt(minecart.getWorld(), getX(), getY()-1, getZ())).get(0);
+		}
+		return item;
 	}
 	
 	public Block getBlockBeneath() {
@@ -446,6 +442,36 @@ loop:   for (Sign sign : signList) {
 		if (getMotionX() > 0.0D) return CompassDirection.SOUTH;
 		if (getMotionZ() > 0.0D) return CompassDirection.WEST;
 		return CompassDirection.NO_DIRECTION;
+	}
+	
+	public CompassDirection getPreviousDirectionOfMotion() {
+		return previousFacingDir;
+	}
+	
+	public void setPreviousDirectionOfMotion(CompassDirection direction) {
+		previousFacingDir = direction;
+	}
+	
+	@Deprecated
+	public void setPreviousFacingDir(DirectionUtils.CompassDirection dir) {
+		previousFacingDir = dir;
+	}
+
+	@Deprecated
+	public DirectionUtils.CompassDirection getPreviousFacingDir() {
+		return previousFacingDir;
+	}
+	
+	/**
+	 * Attempts a "best guess" at the direction of the minecart. 
+	 * If the minecart is moving, it will return the correct direction, but if it's stopped, it will use the value stored in memory.
+	 * @return CompassDirection that the minecart is moving towards
+	 */
+	public CompassDirection getDirection() {
+		if (isMoving()) {
+			return getDirectionOfMotion();
+		}
+		return getPreviousDirectionOfMotion();
 	}
 
 	public boolean doEjectorBlock() {
