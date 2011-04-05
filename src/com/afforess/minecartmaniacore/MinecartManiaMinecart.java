@@ -334,23 +334,6 @@ public class MinecartManiaMinecart {
 		ArrayList<Sign> signList = SignUtils.getAdjacentSignList(this, 2);
 loop:   for (Sign sign : signList) {
 			for (int i = 0; i < 4; i++) {
-				//Temporarily update old signs
-				if (sign.getLine(i).contains("[North]")) {
-					sign.setLine(i, "[Launch North]");
-					sign.update();
-				}
-				if (sign.getLine(i).contains("[East]")) {
-					sign.setLine(i, "[Launch East]");
-					sign.update();
-				}
-				if (sign.getLine(i).contains("[South]")) {
-					sign.setLine(i, "[Launch South]");
-					sign.update();
-				}
-				if (sign.getLine(i).contains("[West]")) {
-					sign.setLine(i, "[Launch West]");
-					sign.update();
-				}
 				if (sign.getLine(i).toLowerCase().contains("launch north")) {
 					if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX(), getY(), getZ(), 2, DirectionUtils.CompassDirection.NORTH)) {
 						sign.setLine(i, "[Launch North]");
@@ -396,16 +379,16 @@ loop:   for (Sign sign : signList) {
 			}
 		}
 		if (!isMoving()) {
-			if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX()-1, getY(), getZ(), 2, DirectionUtils.CompassDirection.NORTH)) {
+			if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX(), getY(), getZ(), 2, DirectionUtils.CompassDirection.NORTH)) {
 				setMotion(DirectionUtils.CompassDirection.NORTH, speed);
 			}
-			else if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX(), getY(), getZ()-1, 2, DirectionUtils.CompassDirection.EAST)) {
+			else if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX(), getY(), getZ(), 2, DirectionUtils.CompassDirection.EAST)) {
 				setMotion(DirectionUtils.CompassDirection.EAST, speed);
 			}
-			else if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX()+1, getY(), getZ(), 2, DirectionUtils.CompassDirection.SOUTH)) {
+			else if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX(), getY(), getZ(), 2, DirectionUtils.CompassDirection.SOUTH)) {
 				setMotion(DirectionUtils.CompassDirection.SOUTH, speed);
 			}
-			else if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX(), getY(), getZ()+1, 2, DirectionUtils.CompassDirection.WEST)) {
+			else if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX(), getY(), getZ(), 2, DirectionUtils.CompassDirection.WEST)) {
 				setMotion(DirectionUtils.CompassDirection.WEST, speed);
 			}
 		}

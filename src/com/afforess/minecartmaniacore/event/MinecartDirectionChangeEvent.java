@@ -3,8 +3,8 @@ package com.afforess.minecartmaniacore.event;
 import com.afforess.minecartmaniacore.MinecartManiaMinecart;
 import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
 
-public class MinecartDirectionChangeEvent  extends org.bukkit.event.Event{
-	private static final long serialVersionUID = -3750213642051820486L;
+public class MinecartDirectionChangeEvent extends MinecartManiaEvent{
+	private static final long serialVersionUID = -3750213642051820863L;
 	private MinecartManiaMinecart minecart;
 	private CompassDirection previous;
 	private CompassDirection current;

@@ -5,8 +5,8 @@ import org.bukkit.event.Cancellable;
 
 import com.afforess.minecartmaniacore.MinecartManiaChest;
 
-public class ChestSpawnMinecartEvent extends org.bukkit.event.Event implements Cancellable{
-	private static final long serialVersionUID = 7256378299724588074L;
+public class ChestSpawnMinecartEvent extends MinecartManiaEvent implements Cancellable{
+	private static final long serialVersionUID = 725637829972458807L;
 	private MinecartManiaChest chest;
 	private Location spawnLocation;
 	private boolean cancelled = false;

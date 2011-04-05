@@ -15,9 +15,11 @@ import org.w3c.dom.NodeList;
 import com.afforess.minecartmaniacore.Item;
 import com.afforess.minecartmaniacore.MinecartManiaCore;
 import com.afforess.minecartmaniacore.MinecartManiaWorld;
+import com.afforess.minecartmaniacore.debug.DebugMode;
+import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
 
 public class CoreSettingParser implements SettingParser{
-	private static final double version = 1.2;
+	private static final double version = 1.3;
 	
 	public boolean isUpToDate(Document document) {
 		try {
@@ -38,6 +40,12 @@ public class CoreSettingParser implements SettingParser{
 
 		try {
 			//Parse Simple Settings First
+			setting = "LoggingMode";
+			list = document.getElementsByTagName(setting);
+			value = list.item(0).getChildNodes().item(0).getNodeValue();
+			DebugMode mode = DebugMode.debugModeFromString((String)value);
+			MinecartManiaLogger.getInstance().switchDebugMode(mode);
+			
 			setting = "MinecartsKillMobs";
 			list = document.getElementsByTagName(setting);
 			value = MinecartManiaConfigurationParser.toBool(list.item(0).getChildNodes().item(0).getNodeValue());

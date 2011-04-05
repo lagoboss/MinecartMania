@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <MinecartManiaConfiguration>
-	<version>1.2</version>
+	<version>1.3</version>
+	<!--Console Logging Mode. Accepted Values: "None", "Severe", "Normal", "Debug"-->
+	<!--None will produce no console logs from MM. Not recommended.-->
+	<!--Severe will produce only console logs from severe errors from MM.-->
+	<!--Normal will produce standard startup console logs, and error logs from MM.-->
+	<!--Debug will produce standard startup console logs, error logs, and debugging logs from MM.-->
+    <LoggingMode>Normal</LoggingMode>
     <!--Minecarts that collide with mobs and animals will kill them and continue uninterrupted.-->
     <MinecartsKillMobs>true</MinecartsKillMobs>
     <!--If set to 0, Minecarts Will not clear rails. If set to 1, Minecarts will clear the rails of non-living objects in the way (items, arrows, snowballs, etc).

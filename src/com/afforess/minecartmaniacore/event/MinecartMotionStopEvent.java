@@ -2,11 +2,8 @@ package com.afforess.minecartmaniacore.event;
 
 import com.afforess.minecartmaniacore.MinecartManiaMinecart;
 
-public class MinecartMotionStopEvent extends org.bukkit.event.Event{
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 6645152664755993295L;
+public class MinecartMotionStopEvent extends MinecartManiaEvent{
+	private static final long serialVersionUID = 664515266475593295L;
 	private MinecartManiaMinecart minecart;
 	
 	public MinecartMotionStopEvent(MinecartManiaMinecart cart) {

@@ -5,11 +5,8 @@ import org.bukkit.inventory.ItemStack;
 
 import com.afforess.minecartmaniacore.MinecartManiaMinecart;
 
-public class MinecartNearEntityEvent extends org.bukkit.event.Event implements MinecartEvent{
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -5651976073064396505L;
+public class MinecartNearEntityEvent extends MinecartManiaEvent implements MinecartEvent{
+	private static final long serialVersionUID = -565197673064396505L;
 	private MinecartManiaMinecart minecart;	
 	private Entity entity;
 	private boolean action = false;

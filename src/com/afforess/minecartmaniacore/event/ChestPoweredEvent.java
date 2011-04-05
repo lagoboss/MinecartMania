@@ -1,12 +1,8 @@
 package com.afforess.minecartmaniacore.event;
 
 import com.afforess.minecartmaniacore.MinecartManiaChest;
-public class ChestPoweredEvent  extends org.bukkit.event.Event{
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 4589674451586580604L;
+public class ChestPoweredEvent extends MinecartManiaEvent{
+	private static final long serialVersionUID = 458967445158658060L;
 	private MinecartManiaChest chest;
 	private boolean powered;
 	private boolean wasPowered;

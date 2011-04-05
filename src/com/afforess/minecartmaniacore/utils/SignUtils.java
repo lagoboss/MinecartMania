@@ -51,6 +51,7 @@ public class SignUtils {
 
 	public static ArrayList<Sign> getAdjacentSignList(World w, int x, int y, int z, int range) {
 		//Attempt using the cache
+
 		Location loc = new Location(w, x, y, z);
 		if (getCache(loc, range) != null) {
 			return getCache(loc, range);
@@ -69,6 +70,7 @@ public class SignUtils {
 		}
 		
 		setCache(signList, loc, range);
+		
 		return signList;
 	}
 
@@ -111,18 +113,6 @@ public class SignUtils {
 
 		for (int dy = -range; dy <= 0; dy++) {
 			Sign sign = getSignAt(w, x, y+dy, z);
-			if (sign != null) {
-				signList.add(sign);
-			}
-		}
-		for (int dx = -(range); dx <= range; dx++){
-			Sign sign = getSignAt(w, x+dx, y, z);
-			if (sign != null) {
-				signList.add(sign);
-			}
-		}
-		for (int dz = -(range); dz <= range; dz++){
-			Sign sign = getSignAt(w, x, y, z+dz);
 			if (sign != null) {
 				signList.add(sign);
 			}

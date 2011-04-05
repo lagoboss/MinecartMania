@@ -4,11 +4,8 @@ import org.bukkit.util.Vector;
 
 import com.afforess.minecartmaniacore.MinecartManiaMinecart;
 
-public class MinecartLaunchedEvent extends org.bukkit.event.Event implements MinecartEvent {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -9100857175837504662L;
+public class MinecartLaunchedEvent extends MinecartManiaEvent implements MinecartEvent {
+	private static final long serialVersionUID = -910085717583704662L;
 	private MinecartManiaMinecart minecart;
 	private boolean action = false;
 	private Vector launchSpeed;

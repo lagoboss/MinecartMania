@@ -42,20 +42,6 @@ public class MinecartManiaWorld {
 	 public static MinecartManiaMinecart getMinecartManiaMinecart(Minecart minecart) {
         MinecartManiaMinecart testMinecart = minecarts.get(new Integer(minecart.getEntityId()));
         if (testMinecart == null) {
-
-        	//Special handling to create storage and powered minecart correctly until Bukkit fixes their bug
-        	CraftMinecart cm = (CraftMinecart)minecart;
-        	EntityMinecart em = (EntityMinecart)cm.getHandle();
-        	CraftServer cs = (CraftServer)MinecartManiaCore.server;
-        	if (em.d == 1) {
-        		CraftStorageMinecart csm = new CraftStorageMinecart(cs, em); 
-        		minecart = (Minecart)csm;
-        	} 	
-        	else if (em.d == 2) {
-        		CraftPoweredMinecart csm = new CraftPoweredMinecart(cs, em); 
-        		minecart = (Minecart)csm;
-        	}
-        	//End workaround
         	MinecartManiaMinecart newCart;
         	if (minecart instanceof StorageMinecart) {
         		newCart = new MinecartManiaStorageCart(minecart);
@@ -555,25 +541,14 @@ public class MinecartManiaWorld {
 	 **/
 	public static MinecartManiaMinecart spawnMinecart(World w, int x, int y, int z, Item type, Object owner) {
 		Minecart m;
-		CraftWorld cw = (CraftWorld)w;
-		CraftServer cs = (CraftServer)MinecartManiaCore.server;
 		if (type == null || type.getId() == Item.MINECART.getId()) {
 			m = w.spawnMinecart(new Location(w, x + 0.5D, y, z + 0.5D));
 		}
 		else if (type.getId() == Item.POWERED_MINECART.getId()) {
-			EntityMinecart em = new EntityMinecart(cw.getHandle(), x + 0.5D, y, z + 0.5D, 2);
-			CraftPoweredMinecart csm = new CraftPoweredMinecart(cs, em);
-			m = (Minecart)csm;
-			cw.getHandle().a(em);
-			//m = w.spawnPoweredMinecart(new Location(w, x + 0.5D, y, z + 0.5D));
+			m = w.spawnPoweredMinecart(new Location(w, x + 0.5D, y, z + 0.5D));
 		}
 		else {
-			//real men construct their minecarts from the bare ash, er, actually bukkit's implementation of spawning is broken.
-			EntityMinecart em = new EntityMinecart(cw.getHandle(), x + 0.5D, y, z + 0.5D, 1);
-			CraftStorageMinecart csm = new CraftStorageMinecart(cs, em);
-			m = (Minecart)csm;
-			cw.getHandle().a(em);
-			//m = w.spawnStorageMinecart(new Location(w, x + 0.5D, y, z + 0.5D));
+			m = w.spawnStorageMinecart(new Location(w, x + 0.5D, y, z + 0.5D));
 		}
 		MinecartManiaMinecart minecart = null;
 		String ownerName = "none";

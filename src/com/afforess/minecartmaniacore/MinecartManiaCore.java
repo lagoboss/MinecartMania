@@ -1,7 +1,6 @@
 package com.afforess.minecartmaniacore;
 import java.io.File;
 import java.io.PrintWriter;
-import java.util.logging.Logger;
 import org.bukkit.Server;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event;
@@ -11,13 +10,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.afforess.minecartmaniacore.config.CoreSettingParser;
 import com.afforess.minecartmaniacore.config.MinecartManiaConfigurationParser;
+import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
 
 public class MinecartManiaCore extends JavaPlugin {
 	
 	public final MinecartManiaCoreListener listener = new MinecartManiaCoreListener(this);
 	public final MinecartManiaCoreBlockListener blockListener = new MinecartManiaCoreBlockListener();
 	public final MinecartManiaCoreWorldListener worldListener = new MinecartManiaCoreWorldListener();
-	public static Logger log;
+	public static MinecartManiaLogger log = MinecartManiaLogger.getInstance();
 	public static Server server;
 	public static Plugin instance;
 	public static PluginDescriptionFile description;
@@ -30,7 +30,6 @@ public class MinecartManiaCore extends JavaPlugin {
 		server = this.getServer();
 		description = this.getDescription();
 		instance = this;
-		log = Logger.getLogger("Minecraft");
 		data = getDataFolder();
 		MinecartManiaCore = this.getFile();
 		WormholeXTreme = server.getPluginManager().getPlugin("WormholeXTreme") != null;

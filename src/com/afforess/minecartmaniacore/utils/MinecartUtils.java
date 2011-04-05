@@ -36,32 +36,32 @@ public class MinecartUtils {
 	
 	
 	//TODO this method is not a perfect detection of track. It will give false positives for having 2 sets of parallel track, and when double curves are used
-	public static boolean validMinecartTrack(World w, int x, int y, int z, int range, DirectionUtils.CompassDirection facingDir) {
-    	if (MinecartManiaWorld.getBlockAt(w, x, y, z).getTypeId() != Material.RAILS.getId()) {
-    		y--;
-    		if (MinecartManiaWorld.getBlockAt(w, x, y, z).getTypeId() != Material.RAILS.getId()) {
-    			return false;
-    		}
-    	}
-    	range--;
-    	while (range > 0) {
-    		if (facingDir == DirectionUtils.CompassDirection.NORTH) x--;
-    		if (facingDir == DirectionUtils.CompassDirection.EAST) z--;
-    		if (facingDir == DirectionUtils.CompassDirection.SOUTH) x++;
-    		if (facingDir == DirectionUtils.CompassDirection.WEST) z++;
-    		if (MinecartManiaWorld.getBlockAt(w, x, y-1, z).getTypeId() == Item.RAILS.getId()) y--;
-    		if (MinecartManiaWorld.getBlockAt(w, x, y+1, z).getTypeId() == Item.RAILS.getId()) y++;
-    		if (MinecartManiaWorld.getBlockAt(w, x, y, z).getTypeId() != Item.RAILS.getId()) return false;
-    		
-    		if (MinecartManiaWorld.getBlockAt(w, x-1, y, z).getTypeId() == Item.RAILS.getId()) facingDir = DirectionUtils.CompassDirection.NORTH;
-    		if (MinecartManiaWorld.getBlockAt(w, x, y, z-1).getTypeId() == Item.RAILS.getId()) facingDir = DirectionUtils.CompassDirection.EAST;
-    		if (MinecartManiaWorld.getBlockAt(w, x+1, y, z).getTypeId() == Item.RAILS.getId()) facingDir = DirectionUtils.CompassDirection.SOUTH;
-    		if (MinecartManiaWorld.getBlockAt(w, x, y, z-1).getTypeId() == Item.RAILS.getId()) facingDir = DirectionUtils.CompassDirection.WEST;
-    		range--;
-    	}
-    	
-    	return true;
-    }
+	public static boolean validMinecartTrack(World w, int x, int y, int z, int range, DirectionUtils.CompassDirection direction) {
+		if (MinecartManiaWorld.getBlockAt(w, x, y, z).getTypeId() != Material.RAILS.getId()) {
+			y--;
+			if (MinecartManiaWorld.getBlockAt(w, x, y, z).getTypeId() != Material.RAILS.getId()) {
+				return false;
+			}
+		}
+		range--;
+		while (range > 0) {
+			if (direction == DirectionUtils.CompassDirection.NORTH) x--;
+			if (direction == DirectionUtils.CompassDirection.EAST) z--;
+			if (direction == DirectionUtils.CompassDirection.SOUTH) x++;
+			if (direction == DirectionUtils.CompassDirection.WEST) z++;
+			if (MinecartManiaWorld.getBlockAt(w, x, y-1, z).getTypeId() == Item.RAILS.getId()) y--;
+			if (MinecartManiaWorld.getBlockAt(w, x, y+1, z).getTypeId() == Item.RAILS.getId()) y++;
+			if (MinecartManiaWorld.getBlockAt(w, x, y, z).getTypeId() != Item.RAILS.getId()) return false;
+			
+			if (MinecartManiaWorld.getBlockAt(w, x-1, y, z).getTypeId() == Item.RAILS.getId()) direction = DirectionUtils.CompassDirection.NORTH;
+			if (MinecartManiaWorld.getBlockAt(w, x, y, z-1).getTypeId() == Item.RAILS.getId()) direction = DirectionUtils.CompassDirection.EAST;
+			if (MinecartManiaWorld.getBlockAt(w, x+1, y, z).getTypeId() == Item.RAILS.getId()) direction = DirectionUtils.CompassDirection.SOUTH;
+			if (MinecartManiaWorld.getBlockAt(w, x, y, z-1).getTypeId() == Item.RAILS.getId()) direction = DirectionUtils.CompassDirection.WEST;
+			range--;
+		}
+		
+		return true;
+	}
 	
 	public static boolean isAtIntersection(World w, int x, int y, int z) {
 		int paths = 0;
@@ -167,17 +167,17 @@ public class MinecartUtils {
 		//Set a flag to stop this event from happening twice
 		minecart.setDataValue("MinecartNearEntityEvent", true);
 		ArrayList<MinecartNearEntityEvent> deadQueue = new ArrayList<MinecartNearEntityEvent>(50);
-    	Vector location = minecart.minecart.getLocation().toVector();
-    	int rangeSquared = minecart.getRange() * minecart.getRange();
-    	boolean killmobs = MinecartManiaWorld.isMinecartsKillMobs();
-    	
-    	for (Entity e : entities) {
-    		
-    		if (MinecartManiaWorld.isDead(e)) {
-    			continue;
-    		}
-    		double distance = e.getLocation().toVector().distanceSquared(location);
-    		
+		Vector location = minecart.minecart.getLocation().toVector();
+		int rangeSquared = minecart.getRange() * minecart.getRange();
+		boolean killmobs = MinecartManiaWorld.isMinecartsKillMobs();
+		
+		for (Entity e : entities) {
+			
+			if (MinecartManiaWorld.isDead(e)) {
+				continue;
+			}
+			double distance = e.getLocation().toVector().distanceSquared(location);
+			
 			if (distance <= rangeSquared) {
 				MinecartNearEntityEvent mnee = new MinecartNearEntityEvent(minecart, e);
 				//by default drop arrows
@@ -197,16 +197,16 @@ public class MinecartUtils {
 					clearedItemFromRails(e, minecart);
 				}
 			}
-    	}
-    	
-    	for (MinecartNearEntityEvent e : deadQueue) {
-    		if (e.getDrop() != null) {
-    			MinecartManiaWorld.dropItem(e.getEntity().getLocation(), e.getDrop());
-    		}
-    		e.getEntity().remove();
-    	}
-    	//Reset the flag
-    	minecart.setDataValue("MinecartNearEntityEvent", null);
+		}
+		
+		for (MinecartNearEntityEvent e : deadQueue) {
+			if (e.getDrop() != null) {
+				MinecartManiaWorld.dropItem(e.getEntity().getLocation(), e.getDrop());
+			}
+			e.getEntity().remove();
+		}
+		//Reset the flag
+		minecart.setDataValue("MinecartNearEntityEvent", null);
 	}
 	
 	private static boolean clearedItemFromRails(Entity e, MinecartManiaMinecart minecart) {

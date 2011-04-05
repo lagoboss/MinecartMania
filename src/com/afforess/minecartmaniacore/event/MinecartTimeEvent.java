@@ -4,11 +4,8 @@ import java.util.Calendar;
 
 import com.afforess.minecartmaniacore.MinecartManiaMinecart;
 
-	public class MinecartTimeEvent extends org.bukkit.event.Event {
-	/**
-		 * 
-		 */
-		private static final long serialVersionUID = 5065969344934650992L;
+public class MinecartTimeEvent extends MinecartManiaEvent {
+	private static final long serialVersionUID = 506596934934650992L;
 	private MinecartManiaMinecart minecart;	
 	private Calendar oldCalendar;
 	private Calendar currentCalendar;

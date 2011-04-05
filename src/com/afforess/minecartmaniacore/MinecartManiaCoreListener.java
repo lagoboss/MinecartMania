@@ -73,10 +73,12 @@ public class MinecartManiaCoreListener extends VehicleListener{
 			if (minecart.wasMovingLastTick() && !minecart.isMoving()) {
 				MinecartMotionStopEvent mmse = new MinecartMotionStopEvent(minecart);
 				MinecartManiaCore.server.getPluginManager().callEvent(mmse);
+				mmse.logProcessTime();
 			}
 			else if (!minecart.wasMovingLastTick() && minecart.isMoving()) {
 				MinecartMotionStartEvent mmse = new MinecartMotionStartEvent(minecart);
 				MinecartManiaCore.server.getPluginManager().callEvent(mmse);
+				mmse.logProcessTime();
 			}
 			minecart.setWasMovingLastTick(minecart.isMoving());
 			minecart.doRealisticFriction();
@@ -92,15 +94,17 @@ public class MinecartManiaCoreListener extends VehicleListener{
 			}
 			
 			if (minecart.hasChangedPosition() || minecart.createdLastTick) {
-				minecart.createdLastTick = false;
-				
 				if (minecart.isAtIntersection()) {
 					MinecartIntersectionEvent mie = new MinecartIntersectionEvent(minecart);
 					MinecartManiaCore.server.getPluginManager().callEvent(mie);
+					mie.logProcessTime();
 				}
 				
-				MinecartActionEvent mae = new MinecartActionEvent(minecart);
-				MinecartManiaCore.server.getPluginManager().callEvent(mae);
+					MinecartActionEvent mae = new MinecartActionEvent(minecart);
+				if (!minecart.createdLastTick) {
+					MinecartManiaCore.server.getPluginManager().callEvent(mae);
+					mae.logProcessTime();
+				}
 				
 				minecart.doSpeedMultiplierBlock();
 				minecart.doPlatformBlock();
@@ -117,6 +121,7 @@ public class MinecartManiaCoreListener extends VehicleListener{
 				
 				//should do last
 				minecart.doKillBlock();
+				minecart.createdLastTick = false;
 			}
 		}
     }
