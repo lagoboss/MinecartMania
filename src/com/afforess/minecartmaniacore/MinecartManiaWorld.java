@@ -11,7 +11,6 @@ import org.bukkit.block.Chest;
 import org.bukkit.block.Dispenser;
 import org.bukkit.block.Furnace;
 import org.bukkit.craftbukkit.CraftServer;
-import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.craftbukkit.entity.CraftEntity;
 import org.bukkit.craftbukkit.entity.CraftMinecart;
 import org.bukkit.craftbukkit.entity.CraftPoweredMinecart;
@@ -40,33 +39,46 @@ public class MinecartManiaWorld {
 	 ** @param the minecart to wrap
 	 **/
 	 public static MinecartManiaMinecart getMinecartManiaMinecart(Minecart minecart) {
-        MinecartManiaMinecart testMinecart = minecarts.get(new Integer(minecart.getEntityId()));
-        if (testMinecart == null) {
-        	MinecartManiaMinecart newCart;
-        	if (minecart instanceof StorageMinecart) {
-        		newCart = new MinecartManiaStorageCart(minecart);
-        	}
-        	else {
-        		newCart = new MinecartManiaMinecart(minecart);
-        	}
-        	minecarts.put(new Integer(minecart.getEntityId()), newCart);
-        	return newCart;
-        } else {
-           return testMinecart;
-        }
-    }
+		MinecartManiaMinecart testMinecart = minecarts.get(new Integer(minecart.getEntityId()));
+		if (testMinecart == null) {
+			//Special handling to create storage and powered minecart correctly until Bukkit fixes their bug
+			CraftMinecart cm = (CraftMinecart)minecart;	
+			EntityMinecart em = (EntityMinecart)cm.getHandle();
+			CraftServer cs = (CraftServer)MinecartManiaCore.server;
+			if (em.d == 1) {
+			  CraftStorageMinecart csm = new CraftStorageMinecart(cs, em); 
+			  minecart = (Minecart)csm;
+			}   
+			else if (em.d == 2) {
+			  CraftPoweredMinecart csm = new CraftPoweredMinecart(cs, em); 
+			  minecart = (Minecart)csm;
+			}
+			//End workaround
+			MinecartManiaMinecart newCart;
+			if (minecart instanceof StorageMinecart) {
+				newCart = new MinecartManiaStorageCart(minecart);
+			}
+			else {
+				newCart = new MinecartManiaMinecart(minecart);
+			}
+			minecarts.put(new Integer(minecart.getEntityId()), newCart);
+			return newCart;
+		} else {
+		   return testMinecart;
+		}
+	}
 	 
 	/**
 	 ** Returns true if the Minecart with the given entityID was deleted, false if not.
 	 ** @param the id of the minecart to delete
 	 **/
 	 public static boolean delMinecartManiaMinecart(int entityID) {
-        if (minecarts.containsKey(new Integer(entityID))) {
-            minecarts.remove(new Integer(entityID));
-            return true;
-        }
-        return false;
-    }
+		if (minecarts.containsKey(new Integer(entityID))) {
+			minecarts.remove(new Integer(entityID));
+			return true;
+		}
+		return false;
+	}
 	
 	public static void pruneMinecarts() {
 		Iterator<Entry<Integer, MinecartManiaMinecart>> i = minecarts.entrySet().iterator();
@@ -124,36 +136,36 @@ public class MinecartManiaWorld {
 	 ** @param the chest to wrap
 	 **/
 	 public static MinecartManiaChest getMinecartManiaChest(Chest chest) {
-        MinecartManiaChest testChest = chests.get(new Location(chest.getWorld(), chest.getX(), chest.getY(), chest.getZ()));
-        if (testChest == null) {
-	        MinecartManiaChest newChest = new MinecartManiaChest(chest);
-	        chests.put(new Location(chest.getWorld(), chest.getX(), chest.getY(), chest.getZ()), newChest);
-	        return newChest;
-        } 
-        else {
-        	//Verify that this block is still a chest (could have been changed)
-        	if (MinecartManiaWorld.getBlockIdAt(testChest.getWorld(), testChest.getX(), testChest.getY(), testChest.getZ()) == Item.CHEST.getId()) {
-        		testChest.updateInventory(testChest.getInventory());
-        		return testChest;
-        	}
-        	else {
-        		chests.remove(new Location(chest.getWorld(), chest.getX(), chest.getY(), chest.getZ()));
-        		return null;
-        	}
-        }
-    }
+		MinecartManiaChest testChest = chests.get(new Location(chest.getWorld(), chest.getX(), chest.getY(), chest.getZ()));
+		if (testChest == null) {
+			MinecartManiaChest newChest = new MinecartManiaChest(chest);
+			chests.put(new Location(chest.getWorld(), chest.getX(), chest.getY(), chest.getZ()), newChest);
+			return newChest;
+		} 
+		else {
+			//Verify that this block is still a chest (could have been changed)
+			if (MinecartManiaWorld.getBlockIdAt(testChest.getWorld(), testChest.getX(), testChest.getY(), testChest.getZ()) == Item.CHEST.getId()) {
+				testChest.updateInventory(testChest.getInventory());
+				return testChest;
+			}
+			else {
+				chests.remove(new Location(chest.getWorld(), chest.getX(), chest.getY(), chest.getZ()));
+				return null;
+			}
+		}
+	}
 	 
 	/**
 	 ** Returns true if the chest with the given location was deleted, false if not.
 	 ** @param the  location of the chest to delete
 	 **/
 	 public static boolean delMinecartManiaChest(Location v) {
-        if (chests.containsKey(v)) {
-            chests.remove(v);
-            return true;
-        }
-        return false;
-    }
+		if (chests.containsKey(v)) {
+			chests.remove(v);
+			return true;
+		}
+		return false;
+	}
 	
 	/**
 	* Returns an arraylist of all the MinecartManiaChests stored by this class
@@ -173,36 +185,36 @@ public class MinecartManiaWorld {
 	 ** @param the dispenser to wrap
 	 **/
 	 public static MinecartManiaDispenser getMinecartManiaDispenser(Dispenser dispenser) {
-        MinecartManiaDispenser testDispenser = dispensers.get(new Location(dispenser.getWorld(), dispenser.getX(), dispenser.getY(), dispenser.getZ()));
-        if (testDispenser == null) {
-        	MinecartManiaDispenser newDispenser = new MinecartManiaDispenser(dispenser);
-        	dispensers.put(new Location(dispenser.getWorld(), dispenser.getX(), dispenser.getY(), dispenser.getZ()), newDispenser);
-	        return newDispenser;
-        } 
-        else {
-        	//Verify that this block is still a dispenser (could have been changed)
-        	if (MinecartManiaWorld.getBlockIdAt(testDispenser.getWorld(), testDispenser.getX(), testDispenser.getY(), testDispenser.getZ()) == Item.DISPENSER.getId()) {
-        		testDispenser.updateInventory(testDispenser.getInventory());
-        		return testDispenser;
-        	}
-        	else {
-        		dispensers.remove(new Location(dispenser.getWorld(), dispenser.getX(), dispenser.getY(), dispenser.getZ()));
-        		return null;
-        	}
-        }
-    }
+		MinecartManiaDispenser testDispenser = dispensers.get(new Location(dispenser.getWorld(), dispenser.getX(), dispenser.getY(), dispenser.getZ()));
+		if (testDispenser == null) {
+			MinecartManiaDispenser newDispenser = new MinecartManiaDispenser(dispenser);
+			dispensers.put(new Location(dispenser.getWorld(), dispenser.getX(), dispenser.getY(), dispenser.getZ()), newDispenser);
+			return newDispenser;
+		} 
+		else {
+			//Verify that this block is still a dispenser (could have been changed)
+			if (MinecartManiaWorld.getBlockIdAt(testDispenser.getWorld(), testDispenser.getX(), testDispenser.getY(), testDispenser.getZ()) == Item.DISPENSER.getId()) {
+				testDispenser.updateInventory(testDispenser.getInventory());
+				return testDispenser;
+			}
+			else {
+				dispensers.remove(new Location(dispenser.getWorld(), dispenser.getX(), dispenser.getY(), dispenser.getZ()));
+				return null;
+			}
+		}
+	}
 	 
 	/**
 	 ** Returns true if the dispenser with the given location was deleted, false if not.
 	 ** @param the location of the dispenser to delete
 	 **/
 	 public static boolean delMinecartManiaDispenser(Location v) {
-        if (dispensers.containsKey(v)) {
-        	dispensers.remove(v);
-            return true;
-        }
-        return false;
-    }
+		if (dispensers.containsKey(v)) {
+			dispensers.remove(v);
+			return true;
+		}
+		return false;
+	}
 	 
 	/**
 	* Returns an arraylist of all the MinecartManiaDispensers stored by this class
@@ -223,36 +235,36 @@ public class MinecartManiaWorld {
 	 **/
 	 public static MinecartManiaFurnace getMinecartManiaFurnace(Furnace furnace) {
 		 MinecartManiaFurnace testFurnace = furnaces.get(new Location(furnace.getWorld(), furnace.getX(), furnace.getY(), furnace.getZ()));
-        if (testFurnace == null) {
-        	MinecartManiaFurnace newFurnace = new MinecartManiaFurnace(furnace);
-        	furnaces.put(new Location(furnace.getWorld(), furnace.getX(), furnace.getY(), furnace.getZ()), newFurnace);
-	        return newFurnace;
-        } 
-        else {
-        	//Verify that this block is still a furnace (could have been changed)
-        	if (MinecartManiaWorld.getBlockIdAt(testFurnace.getWorld(), testFurnace.getX(), testFurnace.getY(), testFurnace.getZ()) == Item.FURNACE.getId()
-        			|| MinecartManiaWorld.getBlockIdAt(testFurnace.getWorld(), testFurnace.getX(), testFurnace.getY(), testFurnace.getZ()) == Item.BURNING_FURNACE.getId()) {
-        		testFurnace.updateInventory(testFurnace.getInventory());
-        		return testFurnace;
-        	}
-        	else {
-        		furnaces.remove(new Location(furnace.getWorld(), furnace.getX(), furnace.getY(), furnace.getZ()));
-        		return null;
-        	}
-        }
-    }
+		if (testFurnace == null) {
+			MinecartManiaFurnace newFurnace = new MinecartManiaFurnace(furnace);
+			furnaces.put(new Location(furnace.getWorld(), furnace.getX(), furnace.getY(), furnace.getZ()), newFurnace);
+			return newFurnace;
+		} 
+		else {
+			//Verify that this block is still a furnace (could have been changed)
+			if (MinecartManiaWorld.getBlockIdAt(testFurnace.getWorld(), testFurnace.getX(), testFurnace.getY(), testFurnace.getZ()) == Item.FURNACE.getId()
+					|| MinecartManiaWorld.getBlockIdAt(testFurnace.getWorld(), testFurnace.getX(), testFurnace.getY(), testFurnace.getZ()) == Item.BURNING_FURNACE.getId()) {
+				testFurnace.updateInventory(testFurnace.getInventory());
+				return testFurnace;
+			}
+			else {
+				furnaces.remove(new Location(furnace.getWorld(), furnace.getX(), furnace.getY(), furnace.getZ()));
+				return null;
+			}
+		}
+	}
 	 
 	/**
 	 ** Returns true if the furnaces with the given location was deleted, false if not.
 	 ** @param the location of the furnaces to delete
 	 **/
 	 public static boolean delMinecartManiaFurnace(Location v) {
-        if (furnaces.containsKey(v)) {
-        	furnaces.remove(v);
-            return true;
-        }
-        return false;
-    }
+		if (furnaces.containsKey(v)) {
+			furnaces.remove(v);
+			return true;
+		}
+		return false;
+	}
 	 
 	/**
 	* Returns an arraylist of all the MinecartManiaFurnaces stored by this class
@@ -584,7 +596,7 @@ public class MinecartManiaWorld {
 			return 64;
 		}
 		CraftItemStack stack = new CraftItemStack(item.getTypeId(), item.getAmount(), item.getDurability());
-		if (stack.getMaxStackSize() != -1) {
+		if (stack.getMaxStackSize() != -1 && !(Boolean)MinecartManiaWorld.getConfigurationValue("StackAllItems")) {
 			return stack.getMaxStackSize();
 		}
 		return 64;
