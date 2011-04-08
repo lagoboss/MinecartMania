@@ -41,6 +41,9 @@ public class MinecartManiaPlayer extends MinecartManiaSingleContainer implements
 		lastStation = s;
 	}
 	
+	public void sendMessage(String message) {
+		getPlayer().sendMessage(message);
+	}
 	/**
 	 ** Returns the value from the loaded data
 	 ** @param the string key the data value is associated with

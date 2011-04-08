@@ -173,7 +173,7 @@ public class MinecartUtils {
 		
 		for (Entity e : entities) {
 			
-			if (MinecartManiaWorld.isDead(e)) {
+			if (e.isDead()) {
 				continue;
 			}
 			double distance = e.getLocation().toVector().distanceSquared(location);

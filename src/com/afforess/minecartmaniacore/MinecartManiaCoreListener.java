@@ -22,6 +22,7 @@ import org.bukkit.entity.Vehicle;
 import org.bukkit.event.Event;
 import org.bukkit.event.Event.Type;
 import org.bukkit.event.vehicle.VehicleDamageEvent;
+import org.bukkit.event.vehicle.VehicleDestroyEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.event.vehicle.VehicleEntityCollisionEvent;
 import org.bukkit.event.vehicle.VehicleEvent;
@@ -111,11 +112,11 @@ public class MinecartManiaCoreListener extends VehicleListener{
 				minecart.doCatcherBlock();
 
 				boolean action = mae.isActionTaken();
-		    	if (!action) {
-		    		action = minecart.doEjectorBlock();
-		    	}
-		    	MinecartUtils.updateNearbyItems(minecart);
-		    	
+				if (!action) {
+					action = minecart.doEjectorBlock();
+				}
+				MinecartUtils.updateNearbyItems(minecart);
+				
 				minecart.updateMotion();
 				minecart.updateLocation();
 				
@@ -124,39 +125,51 @@ public class MinecartManiaCoreListener extends VehicleListener{
 				minecart.createdLastTick = false;
 			}
 		}
-    }
+	}
+	
+	@Override
+	public void onVehicleDestroy(VehicleDestroyEvent event) {
+		if (event.getVehicle() instanceof Minecart && !event.isCancelled()) {
+			MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart((Minecart)event.getVehicle());
+			minecart.kill();
+			event.setCancelled(MinecartManiaWorld.isReturnMinecartToOwner());
+		}
+	}
 	
 	@Override
 	public void onVehicleDamage(VehicleDamageEvent event) {
 		if (event.getVehicle() instanceof Minecart) {
-    		MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart((Minecart)event.getVehicle());
-    		if (!event.isCancelled()) {
-	    		if ((event.getDamage() * 10) + minecart.minecart.getDamage() > 40) {
-	    			event.setDamage(0);
-	    			event.setCancelled(true);
-	    			minecart.kill();
-	    		}
-	    		else if (minecart.minecart.getPassenger() != null) {
-        			if (minecart.isOnRails()) {
-        				if(event.getAttacker() != null && event.getAttacker().getEntityId() == minecart.minecart.getPassenger().getEntityId()) {
-        					MinecartClickedEvent mce = new MinecartClickedEvent(minecart);
-        					MinecartManiaCore.server.getPluginManager().callEvent(mce);
-        					if (mce.isActionTaken()) {
-        						event.setDamage(0);
-        						event.setCancelled(true);
-        					}
-        				}
-        			}
-	    		}
-    		}
+			MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart((Minecart)event.getVehicle());
+			if (!event.isCancelled()) {
+				if ((event.getDamage() * 10) + minecart.minecart.getDamage() > 40) {
+					minecart.kill();
+					if (MinecartManiaWorld.isReturnMinecartToOwner()) {
+						event.setCancelled(true);
+						event.setDamage(0);
+					}
+					return; //minecart is dead
+				}
+				if (minecart.minecart.getPassenger() != null) {
+					if (minecart.isOnRails()) {
+						if(event.getAttacker() != null && event.getAttacker().getEntityId() == minecart.minecart.getPassenger().getEntityId()) {
+							MinecartClickedEvent mce = new MinecartClickedEvent(minecart);
+							MinecartManiaCore.server.getPluginManager().callEvent(mce);
+							if (mce.isActionTaken()) {
+								event.setDamage(0);
+								event.setCancelled(true);
+							}
+						}
+					}
+				}
+			}
 		}
-    }
+	}
 	
 	@Override
 	public void onVehicleEntityCollision(VehicleEntityCollisionEvent event) {
-    	if (event.getVehicle() instanceof Minecart) {
-    		Minecart cart = (Minecart)event.getVehicle();
-    		MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart(cart);
+		if (event.getVehicle() instanceof Minecart) {
+			Minecart cart = (Minecart)event.getVehicle();
+			MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart(cart);
 			Entity collisioner = event.getEntity();
 			
 			if (minecart.doCatcherBlock()) {
@@ -165,16 +178,6 @@ public class MinecartManiaCoreListener extends VehicleListener{
 				event.setPickupCancelled(true);
 				return;
 			}
-			
-			//TODO possible?
-			/*if (collisioner instanceof Minecart) {
-				event.setCancelled(true);
-				event.setCollisionCancelled(true);
-				minecart.minecart.setVelocity(minecart.getPreviousMotion());
-				MinecartManiaMinecart collisionerMinecart = MinecartManiaWorld.getMinecartManiaMinecart((Minecart)collisioner);
-				collisionerMinecart.minecart.setVelocity(collisionerMinecart.getPreviousMotion());
-			}*/
-
 			if (collisioner instanceof LivingEntity) {
 				LivingEntity victim = (LivingEntity)(collisioner);
 				if (!(victim instanceof Player)) {
@@ -188,8 +191,8 @@ public class MinecartManiaCoreListener extends VehicleListener{
 					}
 				}
 			}
-    	}
-    }
+		}
+	}
 
 	@Override
 	public void onVehicleEnter(VehicleEnterEvent event) {

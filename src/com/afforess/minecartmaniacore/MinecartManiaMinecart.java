@@ -675,47 +675,49 @@ loop:   for (Sign sign : signList) {
 	}
 	
 	public void kill(boolean returnToOwner) {
-		if (returnToOwner) {
-			//give the items back inside too
-			ArrayList<ItemStack> items = new ArrayList<ItemStack>();
-			if (isStorageMinecart()) {
-				for (ItemStack i : ((MinecartManiaStorageCart)this).getContents()) {
-					if (i != null && i.getType() != Material.AIR) {
-						items.add(i);
+		if (!dead) {
+			if (returnToOwner) {
+				//give the items back inside too
+				ArrayList<ItemStack> items = new ArrayList<ItemStack>();
+				if (isStorageMinecart()) {
+					for (ItemStack i : ((MinecartManiaStorageCart)this).getContents()) {
+						if (i != null && i.getType() != Material.AIR) {
+							items.add(i);
+						}
 					}
 				}
-			}
-			items.add(new ItemStack(getType(), 1));
-			
-			Object owner = getOwner();
-			MinecartManiaInventory inventory = null;
-			if (owner instanceof Player && MinecartManiaWorld.isReturnMinecartToOwner()) {
-				inventory = MinecartManiaWorld.getMinecartManiaPlayer((Player)owner);
-			}
-			else if (owner instanceof MinecartManiaChest && MinecartManiaWorld.isReturnMinecartToOwner()) {
-				inventory = ((MinecartManiaChest)owner);
-			}
-			
-			if (inventory != null) {
-				for (int i = 0; i < items.size(); i++) {
-					if (!inventory.addItem(items.get(i))) {
-						minecart.getWorld().dropItemNaturally(minecart.getLocation(), items.get(i));
+				items.add(new ItemStack(getType(), 1));
+				
+				Object owner = getOwner();
+				MinecartManiaInventory inventory = null;
+				if (owner instanceof Player && MinecartManiaWorld.isReturnMinecartToOwner()) {
+					inventory = MinecartManiaWorld.getMinecartManiaPlayer((Player)owner);
+				}
+				else if (owner instanceof MinecartManiaChest && MinecartManiaWorld.isReturnMinecartToOwner()) {
+					inventory = ((MinecartManiaChest)owner);
+				}
+				
+				if (inventory != null) {
+					for (int i = 0; i < items.size(); i++) {
+						if (!inventory.addItem(items.get(i))) {
+							minecart.getWorld().dropItemNaturally(minecart.getLocation(), items.get(i));
+						}
 					}
 				}
+				else {
+					for (ItemStack i : items) {
+						minecart.getWorld().dropItemNaturally(minecart.getLocation(), i);
+					}
+				}	
 			}
-			else {
-				for (ItemStack i : items) {
-					minecart.getWorld().dropItemNaturally(minecart.getLocation(), i);
-				}
-			}	
+			
+			//Fire destroyed event
+			MinecartManiaMinecartDestroyedEvent mmmee = new MinecartManiaMinecartDestroyedEvent(this);
+			MinecartManiaCore.server.getPluginManager().callEvent(mmmee);
+			
+			minecart.remove();
+			dead = true;
 		}
-		
-		//Fire destroyed event
-		MinecartManiaMinecartDestroyedEvent mmmee = new MinecartManiaMinecartDestroyedEvent(this);
-		MinecartManiaCore.server.getPluginManager().callEvent(mmmee);
-		
-		minecart.remove();
-		dead = true;
 	}
 
 	@Deprecated

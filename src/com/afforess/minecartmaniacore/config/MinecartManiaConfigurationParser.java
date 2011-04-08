@@ -35,6 +35,11 @@ public class MinecartManiaConfigurationParser {
 			e.printStackTrace();
 		}
 		if (!parser.isUpToDate(doc)) {
+			File old = new File(directory, filename + ".bak");
+			if (old.exists()) {
+				old.delete();
+			}
+			config.renameTo(old);
 			if (!parser.write(config)) {
 				Logger.getLogger("minecraft").severe("[Minecart Mania] FAILED TO WRITE CONFIGURATION! Directory: " + directory + " File: " + filename);
 			}

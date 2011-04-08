@@ -281,7 +281,12 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 	 * @return the first empty slot in this storage minecart
 	 */
 	public int firstEmpty() {
-		return getInventory().firstEmpty();
+		for (int i = 0; i < size(); i++) {
+			if (getItem(i) == null) {
+				return i;
+			}
+		}
+		return -1;
 	}
 	
 	/**

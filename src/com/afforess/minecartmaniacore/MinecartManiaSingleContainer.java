@@ -201,7 +201,12 @@ public abstract class MinecartManiaSingleContainer implements MinecartManiaInven
 	 * @return the first empty slot
 	 */
 	public int firstEmpty() {
-		return getInventory().firstEmpty();
+		for (int i = 0; i < size(); i++) {
+			if (getItem(i) == null) {
+				return i;
+			}
+		}
+		return -1;
 	}
 
 	/**

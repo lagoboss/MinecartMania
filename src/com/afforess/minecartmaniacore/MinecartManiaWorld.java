@@ -26,6 +26,9 @@ import org.bukkit.material.Lever;
 import org.bukkit.material.MaterialData;
 import org.bukkit.Location;
 
+import com.afforess.minecartmaniacore.debug.DebugTimer;
+import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
+
 public class MinecartManiaWorld {
 	private static ConcurrentHashMap<Integer,MinecartManiaMinecart> minecarts = new ConcurrentHashMap<Integer,MinecartManiaMinecart>();
 	private static ConcurrentHashMap<Location,MinecartManiaChest> chests = new ConcurrentHashMap<Location,MinecartManiaChest>();
@@ -33,12 +36,14 @@ public class MinecartManiaWorld {
 	private static ConcurrentHashMap<Location,MinecartManiaFurnace> furnaces = new ConcurrentHashMap<Location,MinecartManiaFurnace>();
 	private static ConcurrentHashMap<String,MinecartManiaPlayer> players = new ConcurrentHashMap<String,MinecartManiaPlayer>();
 	private static ConcurrentHashMap<String, Object> configuration = new ConcurrentHashMap<String,Object>();
+	private static int counter = 0;
 
 	/**
 	 ** Returns a new MinecartManiaMinecart from storage if it already exists, or creates and stores a new MinecartManiaMinecart object, and returns it
 	 ** @param the minecart to wrap
 	 **/
 	 public static MinecartManiaMinecart getMinecartManiaMinecart(Minecart minecart) {
+		prune();
 		MinecartManiaMinecart testMinecart = minecarts.get(new Integer(minecart.getEntityId()));
 		if (testMinecart == null) {
 			//Special handling to create storage and powered minecart correctly until Bukkit fixes their bug
@@ -79,6 +84,59 @@ public class MinecartManiaWorld {
 		}
 		return false;
 	}
+	 
+	 
+	public static void prune() {
+		counter++;
+		if (counter % 10000 == 0) {
+			counter = 0;
+			DebugTimer time = new DebugTimer("Pruning");
+			int minecart = minecarts.size();
+			int chest = chests.size();
+			int dispenser = dispensers.size();
+			int furnace = furnaces.size();
+			pruneFurnaces();
+			pruneDispensers();
+			pruneChests();
+			pruneMinecarts();
+			minecart -= minecarts.size();
+			chest -= chests.size();
+			dispenser -= dispensers.size();
+			furnace -= furnaces.size();
+			MinecartManiaLogger.getInstance().debug(String.format("Finished Pruning. Removed %d minecarts, %d chests, %d dispensers, and %d furnaces from memory", minecart, chest, dispenser, furnace));
+			time.logProcessTime();
+		}
+	}
+	
+	public static void pruneFurnaces() {
+		Iterator<Entry<Location, MinecartManiaFurnace>> i = furnaces.entrySet().iterator();
+		while (i.hasNext()) {
+			Entry<Location, MinecartManiaFurnace> e = i.next();
+			if (e.getKey().getBlock().getTypeId() != Item.FURNACE.getId() &&  e.getKey().getBlock().getTypeId() != Item.BURNING_FURNACE.getId()) {
+				i.remove();
+			}
+		}
+	}
+	
+	public static void pruneDispensers() {
+		Iterator<Entry<Location, MinecartManiaDispenser>> i = dispensers.entrySet().iterator();
+		while (i.hasNext()) {
+			Entry<Location, MinecartManiaDispenser> e = i.next();
+			if (e.getKey().getBlock().getTypeId() != Item.DISPENSER.getId()) {
+				i.remove();
+			}
+		}
+	}
+	
+	public static void pruneChests() {
+		Iterator<Entry<Location, MinecartManiaChest>> i = chests.entrySet().iterator();
+		while (i.hasNext()) {
+			Entry<Location, MinecartManiaChest> e = i.next();
+			if (e.getKey().getBlock().getTypeId() != Item.CHEST.getId()) {
+				i.remove();
+			}
+		}
+	}
 	
 	public static void pruneMinecarts() {
 		Iterator<Entry<Integer, MinecartManiaMinecart>> i = minecarts.entrySet().iterator();
@@ -88,12 +146,6 @@ public class MinecartManiaWorld {
 				i.remove();
 			}
 		}
-		Runnable r = new Runnable () {
-			public void run() {
-				MinecartManiaWorld.pruneMinecarts();
-			}
-		};
-		MinecartManiaCore.server.getScheduler().scheduleSyncDelayedTask(MinecartManiaCore.instance, r, 20 * 60 * 5);
 	}
 	
 	 /**
