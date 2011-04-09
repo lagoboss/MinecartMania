@@ -142,7 +142,7 @@ public class MinecartManiaWorld {
 		Iterator<Entry<Integer, MinecartManiaMinecart>> i = minecarts.entrySet().iterator();
 		while (i.hasNext()) {
 			Entry<Integer, MinecartManiaMinecart> e = i.next();
-			if (e.getValue().isDead() || isDead(e.getValue().minecart)) {
+			if (e.getValue().isDead() || e.getValue().minecart.isDead()) {
 				i.remove();
 			}
 		}

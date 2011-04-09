@@ -8,6 +8,7 @@ import java.util.List;
 import com.afforess.minecartmaniacore.AbstractItem;
 import com.afforess.minecartmaniacore.Item;
 import com.afforess.minecartmaniacore.config.ItemAliasList;
+import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
 import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
 /**
  * Authors: Afforess, Meaglin
@@ -40,6 +41,19 @@ public class ItemUtils {
 	public static AbstractItem[] getItemStringListToMaterial(String[] list) {
 		return getItemStringListToMaterial(list, null);
 	}
+	
+	public static CompassDirection getLineItemDirection(String str) {
+		CompassDirection direction = CompassDirection.NO_DIRECTION;
+		int index = str.indexOf("+");
+		if (index == 1) {
+			String dir = str.substring(0, 1);
+			if (dir.equalsIgnoreCase("n")) direction = CompassDirection.NORTH;
+			if (dir.equalsIgnoreCase("s")) direction = CompassDirection.SOUTH;
+			if (dir.equalsIgnoreCase("e")) direction = CompassDirection.EAST;
+			if (dir.equalsIgnoreCase("w")) direction = CompassDirection.WEST;
+		}
+		return direction;
+	}
 
 	/**
 	 * Returns the list of material for each item name or id found in the given array of strings, or an empty array if there was no item names or ids.
@@ -58,14 +72,8 @@ public class ItemUtils {
 			}
 
 			//Check the given direction and intended direction from the sign
-			CompassDirection direction = CompassDirection.NO_DIRECTION;
-			int index = str.indexOf("+");
-			if (index == 1) {
-				String dir = str.substring(0, 1);
-				if (dir.equalsIgnoreCase("n")) direction = CompassDirection.NORTH;
-				if (dir.equalsIgnoreCase("s")) direction = CompassDirection.SOUTH;
-				if (dir.equalsIgnoreCase("e")) direction = CompassDirection.EAST;
-				if (dir.equalsIgnoreCase("w")) direction = CompassDirection.WEST;
+			CompassDirection direction = getLineItemDirection(str);
+			if (direction != CompassDirection.NO_DIRECTION) {
 				str = str.substring(2,str.length()); // remove the direction for further parsing.
 			}
 			if (facing != null && direction != facing && direction != CompassDirection.NO_DIRECTION) {
@@ -79,7 +87,6 @@ public class ItemUtils {
 						items.add(new AbstractItem(m));
 					}
 				}
-				continue;
 			}
 			
 			String[] keys = str.split(":");
@@ -88,21 +95,21 @@ public class ItemUtils {
 				List<AbstractItem> parsedset = parsePart(part);
 				
 				if(parsedset == null || parsedset.size() < 1)
-				    continue;
+					continue;
 				
 				for(AbstractItem item : parsedset){
 					if (item == null) continue;
-				    if(item.getAmount() == -2)
-				        items.remove(item);
-				    else if(item.getAmount() != -1) {
-				        if(items.contains(item))
-				            items.remove(item);
-				        
-				        items.add(item);
-				    } else
-				        items.add(item);
+					if(item.getAmount() == -2)
+						items.remove(item);
+					else if(item.getAmount() != -1) {
+						if(items.contains(item))
+							items.remove(item);
+						
+						items.add(item);
+					} else
+						items.add(item);
 				}
-				    
+					
 			}
 			
 		}
@@ -133,82 +140,83 @@ public class ItemUtils {
 	 * @return
 	 */
 	private static List<AbstractItem> parsePart(String part) {
-	    try {
-    	    if(part.contains(AMOUNT)) {
-    	        return parseAmount(part);
-    	    } else if(part.contains(REMOVE)) {
-    	        return parseNegative(part);
-    	    } else if(part.contains(DATA)) {
-    	        return Arrays.asList(new AbstractItem[] {parseData(part)});
-    	    } else if(part.contains(RANGE)) {
-    	        return parseRange(part);
-    	    } else {
-    	        return parseNormal(part);
-    	    }
-	    } catch(Exception e) {
-	        return null;
-	    }
+		try {
+			if(part.contains(AMOUNT)) {
+				return parseAmount(part);
+			} else if(part.contains(REMOVE)) {
+				return parseNegative(part);
+			} else if(part.contains(DATA)) {
+				return Arrays.asList(new AbstractItem[] {parseData(part)});
+			} else if(part.contains(RANGE)) {
+				return parseRange(part);
+			} else {
+				return parseNormal(part);
+			}
+		} catch(Exception e) {
+			return null;
+		}
 	}
 	private static List<AbstractItem> parseAmount(String part){
-	    String[] split   = part.split(AMOUNT);
-	    List<AbstractItem> items = parsePart(split[0]);
-	    
-	    int amount = Integer.parseInt(split[1]);
-	    for(AbstractItem item : items)
-            item.setAmount(amount);
-	    
-	    return items;
+		String[] split   = part.split(AMOUNT);
+		List<AbstractItem> items = parsePart(split[0]);
+		
+		int amount = Integer.parseInt(split[1]);
+		for(AbstractItem item : items)
+			item.setAmount(amount);
+		
+		return items;
 	}
 	private static List<AbstractItem> parseNegative(String part){
-	    part = part.replace(REMOVE, "");
-	    List<AbstractItem> items = parsePart(part);
-	    
-	    for(AbstractItem item : items)
-	        item.setAmount(-2);
-	    
-	    return items;
+		part = part.replace(REMOVE, "");
+		List<AbstractItem> items = parsePart(part);
+		for(AbstractItem item : items) {
+			item.setAmount(-2);
+			MinecartManiaLogger.getInstance().debug("Removing Item: " + item.type());
+		}
+		
+		return items;
 	}
 	private static List<AbstractItem> parseRange(String part){
-	    String[] split   = part.split(RANGE);
-	    List<AbstractItem> start = parseNormal(split[0]);
-	    List<AbstractItem> end = parseNormal(split[1]);
-        List<AbstractItem> items = new ArrayList<AbstractItem>();
-        for(int item = start.get(0).getId();item <= end.get(0).getId();item++) {
-            items.addAll(AbstractItem.getItem(item));
-        }
-        return items;
+		String[] split   = part.split(RANGE);
+		List<AbstractItem> start = parseNormal(split[0]);
+		List<AbstractItem> end = parseNormal(split[1]);
+		List<AbstractItem> items = new ArrayList<AbstractItem>();
+		for(int item = start.get(0).getId();item <= end.get(0).getId();item++) {
+			items.addAll(AbstractItem.getItem(item));
+		}
+		return items;
 	}
 	private static AbstractItem parseData(String part){
-	    String[] split   = part.split(DATA);
-	    List<AbstractItem> items = parsePart(split[0]);
-	    int data = Integer.parseInt(split[1]);
-	    for(AbstractItem item : items)
-	        if(item.getData() == data)
-	            return item;
-	    
-	    return null;
+		String[] split   = part.split(DATA);
+		List<AbstractItem> items = parsePart(split[0]);
+		int data = Integer.parseInt(split[1]);
+		for(AbstractItem item : items)
+			if(item.getData() == data)
+				return item;
+		
+		return null;
 	}
 	private static List<AbstractItem> parseNormal(String part){
-	    try {
-	        return AbstractItem.getItem(Integer.parseInt(part));
-	    } catch(NumberFormatException exception) {
-	        List<Item> alias = ItemAliasList.getItemsForAlias(part);
-	        if(alias.size() > 0)
-	            return AbstractItem.itemListToAbstractItemList(alias);
-	        
-	        Item best = null;
-            for (Item e : Item.values()) {
-                if (e != null) {
-                    String item = e.toString().toLowerCase();
-                    if (item.contains(part)) {
-                        //If two items have the same partial string in them (e.g diamond and diamond shovel) the shorter name wins
-                        if (best == null || item.length() < best.toString().length()) {
-                            best = e;
-                        }
-                    }
-                }
-            }
-            return Arrays.asList(new AbstractItem[] {new AbstractItem(best)});
-	    }
+		try {
+			return AbstractItem.getItem(Integer.parseInt(part));
+		} catch(NumberFormatException exception) {
+			List<Item> alias = ItemAliasList.getItemsForAlias(part);
+			if(alias.size() > 0)
+				return AbstractItem.itemListToAbstractItemList(alias);
+			
+			Item best = null;
+			for (Item e : Item.values()) {
+				if (e != null) {
+					String item = e.toString().toLowerCase();
+					if (item.contains(part)) {
+						//If two items have the same partial string in them (e.g diamond and diamond shovel) the shorter name wins
+						if (best == null || item.length() < best.toString().length()) {
+							best = e;
+						}
+					}
+				}
+			}
+			return Arrays.asList(new AbstractItem[] {new AbstractItem(best)});
+		}
 	}
 }

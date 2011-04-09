@@ -1,4 +1,5 @@
 package com.afforess.minecartmaniacore.event;
+import org.akrieger.Nethrar.NethrarMinecartTeleportEvent;
 import org.bukkit.event.CustomEventListener;
 import org.bukkit.event.Event;
 import org.bukkit.event.Listener;
@@ -177,6 +178,19 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
 					MinecartManiaMinecart oldMinecart = MinecartManiaWorld.getMinecartManiaMinecart(e.getOldMinecart());
 					oldMinecart.copy(e.getNewMinecart());
 					oldMinecart.kill(false);
+					return;
+				}
+			}
+			catch (Exception e) {}
+		}
+		if (MinecartManiaCore.Nethrar) {
+			try {
+				if (event instanceof NethrarMinecartTeleportEvent) {
+					NethrarMinecartTeleportEvent e = (NethrarMinecartTeleportEvent)event;
+					MinecartManiaMinecart oldMinecart = MinecartManiaWorld.getMinecartManiaMinecart(e.getOldCart());
+					oldMinecart.copy(e.getNewCart());
+					oldMinecart.kill(false);
+					return;
 				}
 			}
 			catch (Exception e) {}

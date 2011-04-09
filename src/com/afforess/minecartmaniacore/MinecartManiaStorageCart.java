@@ -32,6 +32,17 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 	public MinecartManiaStorageCart(Minecart cart, String owner) {
 		super(cart, owner);
 	}
+	
+	public int getItemRange() {
+		if (getDataValue("ItemCollectionRange") != null) {
+			return (Integer)getDataValue("ItemCollectionRange");
+		}
+		return MinecartManiaWorld.getIntValue(MinecartManiaWorld.getConfigurationValue("ItemCollectionRange"));
+	}
+	
+	public void setItemRange(int range) {
+		setDataValue("ItemCollectionRange", range);
+	}
 
 	/**
 	 * Gets the bukkit inventory for this storage minecart

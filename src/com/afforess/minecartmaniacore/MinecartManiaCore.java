@@ -26,6 +26,7 @@ public class MinecartManiaCore extends JavaPlugin {
 	public static File MinecartManiaCore;
 	public static String dataDirectory = "plugins" + File.separator + "MinecartMania";
 	public static boolean WormholeXTreme = false;
+	public static boolean Nethrar = false;
 	
 	public void onEnable(){
 		server = this.getServer();
@@ -34,6 +35,7 @@ public class MinecartManiaCore extends JavaPlugin {
 		data = getDataFolder();
 		MinecartManiaCore = this.getFile();
 		WormholeXTreme = server.getPluginManager().getPlugin("WormholeXTreme") != null;
+		Nethrar = server.getPluginManager().getPlugin("Nethrar") != null;
 
 		writeItemsFile();
 
