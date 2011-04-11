@@ -128,10 +128,35 @@ public class ItemUtils {
 		return items.toArray(itemList);
 	}
 	
-	private static final String AMOUNT = "@";
-	private static final String RANGE = "-";
-	private static final String REMOVE = "!";
-	private static final String DATA = ";";
+
+	protected enum TYPE {
+		AMOUNT("@"),
+		REMOVE("!"),
+		RANGE("-"),
+		DATA(";"),
+		NONE("");
+		
+		private final String tag;
+		TYPE(String tag) {
+			this.tag = tag;
+		}
+		public String getTag()	{
+			return tag;
+		}
+		@Override
+		public String toString() {
+			return tag;
+		}
+
+		public static TYPE getType(String part)	{
+			if(part.contains(RANGE.getTag())) // Range is parsed first Always!
+				return RANGE;
+			if(part.contains(REMOVE.getTag())) // since this 1 doesn't need special priority handling
+				return REMOVE;
+			
+			return (part.lastIndexOf(DATA.getTag()) > part.lastIndexOf(AMOUNT.getTag()) ? DATA : (part.contains(AMOUNT.getTag())  ? AMOUNT : NONE) );
+		}
+	}
 	
 	/**
 	 * Please don't change this order as it might screw up certain priorities!
@@ -141,23 +166,24 @@ public class ItemUtils {
 	 */
 	private static List<AbstractItem> parsePart(String part) {
 		try {
-			if(part.contains(AMOUNT)) {
-				return parseAmount(part);
-			} else if(part.contains(REMOVE)) {
-				return parseNegative(part);
-			} else if(part.contains(DATA)) {
-				return Arrays.asList(new AbstractItem[] {parseData(part)});
-			} else if(part.contains(RANGE)) {
-				return parseRange(part);
-			} else {
-				return parseNormal(part);
+			switch(TYPE.getType(part)) {
+				case RANGE:
+					return parseRange(part);
+				case DATA:
+					return Arrays.asList(parseData(part));
+				case REMOVE:
+					return parseNegative(part);
+				case AMOUNT:
+					return parseAmount(part);
+				default:
+					return parseNormal(part);
 			}
 		} catch(Exception e) {
 			return null;
 		}
 	}
 	private static List<AbstractItem> parseAmount(String part){
-		String[] split   = part.split(AMOUNT);
+		String[] split   = part.split(TYPE.AMOUNT.getTag());
 		List<AbstractItem> items = parsePart(split[0]);
 		
 		int amount = Integer.parseInt(split[1]);
@@ -167,7 +193,7 @@ public class ItemUtils {
 		return items;
 	}
 	private static List<AbstractItem> parseNegative(String part){
-		part = part.replace(REMOVE, "");
+		part = part.replace(TYPE.REMOVE.getTag(), "");
 		List<AbstractItem> items = parsePart(part);
 		for(AbstractItem item : items) {
 			item.setAmount(-2);
@@ -177,17 +203,35 @@ public class ItemUtils {
 		return items;
 	}
 	private static List<AbstractItem> parseRange(String part){
-		String[] split   = part.split(RANGE);
-		List<AbstractItem> start = parseNormal(split[0]);
-		List<AbstractItem> end = parseNormal(split[1]);
+		String[] split   = part.split(TYPE.RANGE.getTag());
+		List<AbstractItem> start = parsePart(split[0]);
+		List<AbstractItem> end = parsePart(split[1]);
 		List<AbstractItem> items = new ArrayList<AbstractItem>();
-		for(int item = start.get(0).getId();item <= end.get(0).getId();item++) {
-			items.addAll(AbstractItem.getItem(item));
+		AbstractItem startitem = start.get(0);
+		AbstractItem enditem = end.get(end.size()-1);
+		for(int item = startitem.getId();item <= enditem.getId();item++) {
+			for(AbstractItem i : AbstractItem.getItem(item)) {
+				if(i.getId() == startitem.getId()) {
+					if(!startitem.hasData() || i.getData() >= startitem.getData())
+						items.add(i);
+				} else if(i.getId() == enditem.getId()) {
+					if(!enditem.hasData() || i.getData() <= enditem.getData())	 
+						items.add(i);
+				} else
+					items.add(i);
+			}
+		}
+		if(startitem.getAmount() != -1) {
+			for(AbstractItem i : items)
+				i.setAmount(startitem.getAmount());
+		} else if(enditem.getAmount() != -1) {
+			for(AbstractItem i : items)
+				i.setAmount(enditem.getAmount());
 		}
 		return items;
 	}
 	private static AbstractItem parseData(String part){
-		String[] split   = part.split(DATA);
+		String[] split   = part.split(TYPE.DATA.getTag());
 		List<AbstractItem> items = parsePart(split[0]);
 		int data = Integer.parseInt(split[1]);
 		for(AbstractItem item : items)
