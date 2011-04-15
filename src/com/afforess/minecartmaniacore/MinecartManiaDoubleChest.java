@@ -1,7 +1,11 @@
 package com.afforess.minecartmaniacore;
 
+import net.minecraft.server.InventoryLargeChest;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.inventory.CraftInventory;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -16,6 +20,11 @@ public class MinecartManiaDoubleChest implements MinecartManiaInventory{
 	public MinecartManiaDoubleChest(MinecartManiaChest left, MinecartManiaChest right) {
 		this.chest1 = left;
 		this.chest2 = right;
+	}
+	
+	public Inventory getBukkitInventory() {
+		InventoryLargeChest large = new InventoryLargeChest("Large Chest", ((CraftInventory)chest1.getBukkitInventory()).getInventory(), ((CraftInventory)chest2.getBukkitInventory()).getInventory());
+		return new CraftInventory(large);
 	}
 	
 	public boolean equals(Location loc) {

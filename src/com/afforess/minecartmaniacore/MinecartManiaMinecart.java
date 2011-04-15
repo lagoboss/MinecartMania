@@ -367,11 +367,11 @@ loop:   for (Sign sign : signList) {
 					}
 				}
 				if (sign.getLine(i).toLowerCase().contains("previous dir")) {
-					if (!this.getPreviousFacingDir().equals(DirectionUtils.CompassDirection.NO_DIRECTION)) {
+					if (!this.getDirection().equals(DirectionUtils.CompassDirection.NO_DIRECTION)) {
 						if (MinecartUtils.validMinecartTrackAnyDirection(minecart.getWorld(), getX(), getY(), getZ(), 2)) {
 							sign.setLine(i, "[Previous Dir]");
 							sign.update();
-							setMotion(this.getPreviousFacingDir(), speed);
+							setMotion(this.getDirection(), speed);
 							break loop;
 						}
 					}
@@ -675,7 +675,7 @@ loop:   for (Sign sign : signList) {
 	}
 	
 	public void kill(boolean returnToOwner) {
-		if (!dead) {
+		if (!dead && !minecart.isDead()) {
 			if (returnToOwner) {
 				//give the items back inside too
 				ArrayList<ItemStack> items = new ArrayList<ItemStack>();

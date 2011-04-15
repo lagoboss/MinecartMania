@@ -25,6 +25,15 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 	}
 	
 	/**
+	 * The bukkit inventory that this container represents
+	 * 
+	 * @return the inventory
+	 */
+	public Inventory getBukkitInventory() {
+		return getInventory();
+	}
+	
+	/**
 	 * Creates a storage minecart from the given bukkit minecart, with the given owner
 	 * @param cart to create from
 	 * @param owner that created the minecart

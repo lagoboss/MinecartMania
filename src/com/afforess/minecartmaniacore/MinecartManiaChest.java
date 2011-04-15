@@ -55,6 +55,17 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements 
 	}
 	
 	/**
+	 * Returns the double chest that this chest is a part of, or null if it is a single chest
+	 * @return the double chest
+	 */
+	public MinecartManiaDoubleChest getLargeChest() {
+		if (getNeighborChest() != null) {
+			return new MinecartManiaDoubleChest(this, getNeighborChest());
+		}
+		return null;
+	}
+	
+	/**
 	 * Returns the neighbor chest to this chest, or null if none exists
 	 * @param w the world to search in
 	 * @param x coordinate to search

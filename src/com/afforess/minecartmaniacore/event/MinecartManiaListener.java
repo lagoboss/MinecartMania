@@ -18,157 +18,184 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
 	
 
 	/**
-     * Called when a minecart attempts to perform any action. Only occurs after a minecart changes position
-     * 
-     * @param event
-     */
+	 * Called when a minecart attempts to perform any action. Only occurs after a minecart changes position
+	 * 
+	 * @param event
+	 */
 	public void onMinecartActionEvent(MinecartActionEvent event) {
 		
 	}
 	
 	/**
-     * Called when the internal clock of a minecart is updated (each second)
-     * 
-     * @param event
-     */
+	 * Called when the internal clock of a minecart is updated (each second)
+	 * 
+	 * @param event
+	 */
 	public void onMinecartTimeEvent(MinecartTimeEvent event) {
 		
 	}
 	
 	/**
-     * Called when a minecart that was not moving last tick began moving this tick
-     * 
-     * @param event
-     */
+	 * Called when a minecart that was not moving last tick began moving this tick
+	 * 
+	 * @param event
+	 */
 	public void onMinecartMotionStartEvent(MinecartMotionStartEvent event) {
 		
 	}
 	
 	/**
-     * Called when a minecart that was moving last tick stopped moving this tick
-     * 
-     * @param event
-     */
+	 * Called when a minecart that was moving last tick stopped moving this tick
+	 * 
+	 * @param event
+	 */
 	public void onMinecartMotionStopEvent(MinecartMotionStopEvent event) {
 		
 	}
 	
 	/**
-     * Called when a minecart reaches an intersection
-     * An intersection is considered any point where there is at least 3 minecart tracks intersecting, one forward, one backward, one perpendicular.
-     * 
-     * @param event
-     */
+	 * Called when a minecart reaches an intersection
+	 * An intersection is considered any point where there is at least 3 minecart tracks intersecting, one forward, one backward, one perpendicular.
+	 * 
+	 * @param event
+	 */
 	public void onMinecartIntersectionEvent(MinecartIntersectionEvent event) {
 		
 	}
 	
 	/**
-     * Called when the redstone power state adjacent to any chest changes.
-     * 
-     * @param event
-     */
+	 * Called when the redstone power state adjacent to any chest changes.
+	 * 
+	 * @param event
+	 */
 	public void onChestPoweredEvent(ChestPoweredEvent event) {
 		
 	}
 	
 	/**
-     * Called when a MinecartManiaMinecart is destroyed
-     * 
-     * @param event
-     */
+	 * Called when a MinecartManiaMinecart is destroyed
+	 * 
+	 * @param event
+	 */
 	public void onMinecartManiaMinecartDestroyedEvent(MinecartManiaMinecartDestroyedEvent event) {
 		
 	}
 	
 	/**
-     * Called when a MinecartManiaMinecart is created. This is not nessecary the same as when the generic type Minecart is created.
-     * 
-     * @param event
-     */
+	 * Called when a MinecartManiaMinecart is created. This is not nessecary the same as when the generic type Minecart is created.
+	 * 
+	 * @param event
+	 */
 	public void onMinecartManiaMinecartCreatedEvent(MinecartManiaMinecartCreatedEvent event) {
 		
 	}
 	
 	/**
-     * Called when a minecart is being launched by a launcher block, can be overriden
-     * 
-     * @param event
-     */
+	 * Called when a minecart is being launched by a launcher block, can be overriden
+	 * 
+	 * @param event
+	 */
 	public void onMinecartLaunchedEvent(MinecartLaunchedEvent event) {
 		
 	}
 	
 	
 	/**
-     * Called when a chest attempts to spawn a minecart. Can be cancelled, or the location changed.
-     * 
-     * @param event
-     */
+	 * Called when a chest attempts to spawn a minecart. Can be cancelled, or the location changed.
+	 * 
+	 * @param event
+	 */
 	public void onChestSpawnMinecartEvent(ChestSpawnMinecartEvent event) {
 		
 	}
 	
 	/**
-     * Called when a minecart each time a minecart moves 1 full block, and is within the minecarts range of a nearby entity
-     * 
-     * @param event
-     */
+	 * Called when a minecart each time a minecart moves 1 full block, and is within the minecarts range of a nearby entity
+	 * 
+	 * @param event
+	 */
 	public void onMinecartNearEntityEvent(MinecartNearEntityEvent event) {
 		
 	}
 	
 	/**
-     * Called when a player inside of a minecart tap on the minecart from the inside
-     * 
-     * @param event
-     */
+	 * Called when a player inside of a minecart tap on the minecart from the inside
+	 * 
+	 * @param event
+	 */
 	public void onMinecartClickedEvent(MinecartClickedEvent event) {
 		
 	}
 	
 	/**
-     * Called when a minecart is boosted by a control block
-     * 
-     * @param event
-     */
+	 * Called when a minecart is boosted by a control block
+	 * 
+	 * @param event
+	 */
 	public void onMinecartBoostedEvent(MinecartBoostEvent event) {
 		
 	}
 	
 	/**
-     * Called when a minecart is braked from a control block
-     * 
-     * @param event
-     */
+	 * Called when a minecart is braked from a control block
+	 * 
+	 * @param event
+	 */
 	public void onMinecartBrakedEvent(MinecartBrakeEvent event) {
 		
 	}
 	
 	/**
-     * Called when a minecart is caught by a catcher block
-     * 
-     * @param event
-     */
+	 * Called when a minecart is caught by a catcher block
+	 * 
+	 * @param event
+	 */
 	public void onMinecartCaughtEvent(MinecartCaughtEvent event) {
 		
 	}
 	
 	
 	/**
-     * Called when a minecart changes it's direction of motion
-     * 
-     * @param event
-     */
+	 * Called when a minecart changes it's direction of motion
+	 * 
+	 * @param event
+	 */
 	public void onMinecartDirectionChangeEvent(MinecartDirectionChangeEvent event) {
 		
 	}
 	
 	/**
-     * Avoid using.
-     * 
-     * @param event
-     */
+	 * Called when a minecart's speed will be altered by a speed multipler block.
+	 * 
+	 * @param event
+	 */
+	public void onMinecartSpeedMultiplierEvent(MinecartSpeedMultiplierEvent event) {
+		
+	}
+	
+	/**
+	 * Called when a minecart's will be killed by a minecart kill block
+	 * 
+	 * @param event
+	 */
+	public void onMinecartKillEvent(MinecartKillEvent event) {
+		
+	}	
+	
+	/**
+	 * Called when a minecart's will be spawned by a minecart spawner block
+	 * 
+	 * @param event
+	 */
+	public void onMinecartSpawnEvent(MinecartSpawnEvent event) {
+		
+	}
+	
+	/**
+	 * Avoid using.
+	 * 
+	 * @param event
+	 */
 	public void onCustomEvent(Event event) {
 		//Special case
 		if (MinecartManiaCore.WormholeXTreme) {

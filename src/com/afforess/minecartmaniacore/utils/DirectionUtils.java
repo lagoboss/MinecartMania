@@ -12,68 +12,68 @@ import com.afforess.minecartmaniacore.MinecartManiaWorld;
 
 public abstract class DirectionUtils {
 	 public enum CompassDirection {
-	        NO_DIRECTION(-1),
-	        NORTH(0),
-	        NORTH_EAST(1),
-	        EAST(2),
-	        SOUTH_EAST(3),
-	        SOUTH(4),
-	        SOUTH_WEST(5),
-	        WEST(6),
-	        NORTH_WEST(7)
-	        ;
-	        private int id;
-	        private static Map<Integer, CompassDirection> map;
+			NO_DIRECTION(-1),
+			NORTH(0),
+			NORTH_EAST(1),
+			EAST(2),
+			SOUTH_EAST(3),
+			SOUTH(4),
+			SOUTH_WEST(5),
+			WEST(6),
+			NORTH_WEST(7)
+			;
+			private int id;
+			private static Map<Integer, CompassDirection> map;
 
-	        private CompassDirection(int id){
-	            this.id = id;
-	            add( id, this );
-	        }
+			private CompassDirection(int id){
+				this.id = id;
+				add( id, this );
+			}
 
-	        private static void add( int type, CompassDirection name ) {
-	            if (map == null) {
-	                map = new HashMap<Integer, CompassDirection>();
-	            }
+			private static void add( int type, CompassDirection name ) {
+				if (map == null) {
+					map = new HashMap<Integer, CompassDirection>();
+				}
 
-	            map.put(type, name);
-	        }
+				map.put(type, name);
+			}
 
-	        public int getType() {
-	            return id;
-	        }
+			public int getType() {
+				return id;
+			}
 
-	        public static CompassDirection fromId(final int type) {
-	            return map.get(type);
-	        }
-	        
-	        public String toString() {
-	        	if (this.equals(CompassDirection.NORTH)) {
-	        		return "North";
-	        	}
-	        	if (this.equals(CompassDirection.NORTH_EAST)) {
-	        		return "North-East";
-	        	}
-	        	if (this.equals(CompassDirection.EAST)) {
-	        		return "East";
-	        	}
-	        	if (this.equals(CompassDirection.SOUTH_EAST)) {
-	        		return "South-East";
-	        	}
-	        	if (this.equals(CompassDirection.SOUTH)) {
-	        		return "South";
-	        	}
-	        	if (this.equals(CompassDirection.SOUTH_WEST)) {
-	        		return "South-West";
-	        	}
-	        	if (this.equals(CompassDirection.WEST)) {
-	        		return "West";
-	        	}
-	        	if (this.equals(CompassDirection.NORTH_WEST)) {
-	        		return "North-West";
-	        	}
-	        	return "No Direction";
-	        }
-	    }
+			public static CompassDirection fromId(final int type) {
+				return map.get(type);
+			}
+			
+			public String toString() {
+				if (this.equals(CompassDirection.NORTH)) {
+					return "North";
+				}
+				if (this.equals(CompassDirection.NORTH_EAST)) {
+					return "North-East";
+				}
+				if (this.equals(CompassDirection.EAST)) {
+					return "East";
+				}
+				if (this.equals(CompassDirection.SOUTH_EAST)) {
+					return "South-East";
+				}
+				if (this.equals(CompassDirection.SOUTH)) {
+					return "South";
+				}
+				if (this.equals(CompassDirection.SOUTH_WEST)) {
+					return "South-West";
+				}
+				if (this.equals(CompassDirection.WEST)) {
+					return "West";
+				}
+				if (this.equals(CompassDirection.NORTH_WEST)) {
+					return "North-West";
+				}
+				return "No Direction";
+			}
+		}
 	 
 	 public static boolean isEqualOrNoDirection(CompassDirection e1, CompassDirection e2)
 	 {
@@ -215,19 +215,19 @@ public abstract class DirectionUtils {
 		double leeway = 15;
 		if (direction.equals(CompassDirection.NORTH) || direction.equals(CompassDirection.SOUTH)) {
 			if (isFacingEast(degrees, leeway)) {
-	            return CompassDirection.EAST;
-	        }
+				return CompassDirection.EAST;
+			}
 			if (isFacingWest(degrees, leeway)) {
-	        	return CompassDirection.WEST;
-	        }
+				return CompassDirection.WEST;
+			}
 		}
 		else if (direction.equals(CompassDirection.EAST) || direction.equals(CompassDirection.WEST)) {
 			if (isFacingNorth(degrees, leeway)) {
-	            return CompassDirection.NORTH;
-	        }
+				return CompassDirection.NORTH;
+			}
 			if (isFacingSouth(degrees, leeway)) {
-	            return CompassDirection.SOUTH;
-	        }
+				return CompassDirection.SOUTH;
+			}
 		}
 		
 		return direction;
@@ -242,17 +242,17 @@ public abstract class DirectionUtils {
 			degrees -= 360D;
 		}
 		if (isFacingNorth(degrees, 0)) {
-            return CompassDirection.NORTH;
-        }
+			return CompassDirection.NORTH;
+		}
 		if (isFacingEast(degrees, 0)) {
-            return CompassDirection.EAST;
-        }
+			return CompassDirection.EAST;
+		}
 		if (isFacingSouth(degrees, 0)) {
-            return CompassDirection.SOUTH;
-        }
+			return CompassDirection.SOUTH;
+		}
 		if (isFacingWest(degrees, 0)) {
-        	return CompassDirection.WEST;
-        }
+			return CompassDirection.WEST;
+		}
 		
 		return CompassDirection.NO_DIRECTION;
 	}

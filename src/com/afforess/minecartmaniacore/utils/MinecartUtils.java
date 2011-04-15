@@ -8,9 +8,11 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Vehicle;
+import org.bukkit.entity.Wolf;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
@@ -169,8 +171,6 @@ public class MinecartUtils {
 		ArrayList<MinecartNearEntityEvent> deadQueue = new ArrayList<MinecartNearEntityEvent>(50);
 		Vector location = minecart.minecart.getLocation().toVector();
 		int rangeSquared = minecart.getRange() * minecart.getRange();
-		boolean killmobs = MinecartManiaWorld.isMinecartsKillMobs();
-		
 		for (Entity e : entities) {
 			
 			if (e.isDead()) {
@@ -181,13 +181,13 @@ public class MinecartUtils {
 			if (distance <= rangeSquared) {
 				MinecartNearEntityEvent mnee = new MinecartNearEntityEvent(minecart, e);
 				//by default drop arrows
-				boolean kill = e instanceof Arrow;
+				boolean kill = false;
 				//kill nearby animals before we bump into them
 				if (distance <= 2) {
-					kill = kill || killmobs && (e instanceof LivingEntity && (!(e instanceof Player))) && (minecart.minecart.getPassenger() == null || e.getEntityId() != minecart.minecart.getPassenger().getEntityId());
+					kill = shouldKillEntity(minecart, e);
 				}
 				mnee.setActionTaken(kill);
-				mnee.setDrop(e instanceof Arrow ? new ItemStack(Material.ARROW, 1) : null);
+				mnee.setDrop(getDefaultDrop(e));
 				MinecartManiaCore.server.getPluginManager().callEvent(mnee);
 				//If cancelled, kill them once we are done calling events
 				if (mnee.isActionTaken()) {
@@ -207,6 +207,36 @@ public class MinecartUtils {
 		}
 		//Reset the flag
 		minecart.setDataValue("MinecartNearEntityEvent", null);
+	}
+	
+	private static boolean shouldKillEntity(MinecartManiaMinecart minecart, Entity entity) {
+		if (entity instanceof Arrow) {
+			return true; //special case, replaces them with arrow itemstack
+		}
+		if (MinecartManiaWorld.isMinecartsKillMobs()) {
+			if (entity instanceof LivingEntity) {
+				if (entity instanceof HumanEntity) {
+					return false;
+				}
+				if (entity instanceof Wolf) {
+					return false;
+				}
+				if (minecart.minecart.getPassenger() != null) {
+					if (minecart.minecart.getPassenger().getEntityId() == entity.getEntityId()) {
+						return false;
+					}
+				}
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private static ItemStack getDefaultDrop(Entity entity) {
+		if (entity instanceof Arrow) {
+			return new ItemStack(Item.ARROW.getId(), 1);
+		}
+		return null;
 	}
 	
 	private static boolean clearedItemFromRails(Entity e, MinecartManiaMinecart minecart) {

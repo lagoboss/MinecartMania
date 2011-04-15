@@ -34,6 +34,10 @@ public class MinecartManiaConfigurationParser {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
+		//if (parser instanceof CoreSettingParser) {
+		//	System.out.println("attempting to update");
+		//	((CoreSettingParser)parser).update(config);
+		//}
 		if (!parser.isUpToDate(doc)) {
 			File old = new File(directory, filename + ".bak");
 			if (old.exists()) {

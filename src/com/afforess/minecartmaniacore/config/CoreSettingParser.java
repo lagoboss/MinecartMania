@@ -7,6 +7,14 @@ import java.util.ArrayList;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -174,6 +182,68 @@ public class CoreSettingParser implements SettingParser{
 		}
 		
 		return true;
+	}
+	
+	public void update(File config) {
+		
+		Document document = null;
+		//write(config);
+		try {
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			document = dBuilder.parse(config.toURI().getPath());
+			document.getDocumentElement().normalize();
+			
+			Element root = (Element) document.getElementsByTagName("MinecartManiaConfiguration").item(0);
+			System.out.println("Root: " + root);
+			
+			//Parse Simple Settings First
+			updateSetting(document, "MinecartsKillMobs", "true", root);
+			updateSetting(document, "MinecartsClearRails", "1", root);
+			updateSetting(document, "KeepMinecartsLoaded", "false", root);
+			updateSetting(document, "MinecartsReturnToOwner", "true", root);
+			updateSetting(document, "MaximumMinecartSpeedPercent", "165", root);
+			updateSetting(document, "DefaultMinecartSpeedPercent", "100", root);
+			updateSetting(document, "Range", "4", root);
+			updateSetting(document, "MaximumRange", "10", root);
+			updateSetting(document, "StackAllItems", "true", root);
+			
+
+			
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			Transformer transformer = transformerFactory.newTransformer();
+			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+			transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+			DOMSource source = new DOMSource(document);
+			StreamResult result = new StreamResult(config);
+			transformer.transform(source, result);
+			
+		}
+		catch (Exception e) {e.printStackTrace();}
+	}
+	
+	private void updateSetting(Document document, String setting, String defaultVal, Element root) {
+		Node node = getNodeForTag(document, setting);
+		if (node == null) {
+			node = document.createElement(setting);
+			node.appendChild(document.createTextNode(defaultVal));
+			root.appendChild(node);
+		}
+	}
+	
+	private Node getNodeForTag(Document document, String tag) {
+		System.out.println(document.getElementsByTagName(tag));
+		if (document.getElementsByTagName(tag) != null) {
+			System.out.println(document.getElementsByTagName(tag).item(0));
+			if (document.getElementsByTagName(tag).item(0) != null) {
+				System.out.println(document.getElementsByTagName(tag).item(0).getChildNodes());
+				if (document.getElementsByTagName(tag).item(0).getChildNodes() != null) {
+					System.out.println(document.getElementsByTagName(tag).item(0).getChildNodes().item(0));
+					return document.getElementsByTagName(tag).item(0).getChildNodes().item(0);
+				}
+			}
+		}
+		return null;
 	}
 
 	@Override

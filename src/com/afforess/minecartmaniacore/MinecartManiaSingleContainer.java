@@ -17,10 +17,18 @@ public abstract class MinecartManiaSingleContainer implements MinecartManiaInven
 	 * The bukkit inventory that this container represents
 	 * 
 	 * @return the inventory
-	 * 
 	 */
 	public Inventory getInventory() {
 		return inventory;
+	}
+	
+	/**
+	 * The bukkit inventory that this container represents
+	 * 
+	 * @return the inventory
+	 */
+	public Inventory getBukkitInventory() {
+		return getInventory();
 	}
 	
 	/**

@@ -19,14 +19,20 @@ public class MinecartManiaLogger {
 		return instance;
 	}
 	
+	public void time(String s) {
+		if (mode == DebugMode.TIMER) {
+			log.info(prefix + s);
+		}
+	}
+	
 	public void debug(String s) {
-		if (mode == DebugMode.DEBUG) {
+		if (mode == DebugMode.DEBUG || mode == DebugMode.TIMER) {
 			log.info(prefix + s);
 		}
 	}
 	
 	public void log(String s) {
-		if (mode == DebugMode.DEBUG || mode == DebugMode.NORMAL) {
+		if (mode == DebugMode.DEBUG || mode == DebugMode.NORMAL || mode == DebugMode.TIMER) {
 			log.info(prefix + s);
 		}
 	}
@@ -36,7 +42,7 @@ public class MinecartManiaLogger {
 	}
 	
 	public void severe(String s) {
-		if (mode == DebugMode.DEBUG || mode == DebugMode.NORMAL || mode == DebugMode.SEVERE) {
+		if (mode == DebugMode.DEBUG || mode == DebugMode.NORMAL || mode == DebugMode.SEVERE || mode == DebugMode.TIMER) {
 			log.severe(prefix + s);
 		}
 	}

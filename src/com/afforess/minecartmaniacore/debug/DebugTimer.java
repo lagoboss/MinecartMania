@@ -14,7 +14,7 @@ public class DebugTimer {
 	}
 	
 	public void logProcessTime() {
-		MinecartManiaCore.log.debug("Process Time " + (name != null ? "(for " + name + ") " : "") + "took " + (System.currentTimeMillis() - start) + " ms");
+		MinecartManiaCore.log.time("Process Time " + (name != null ? "(for " + name + ") " : "") + "took " + (System.currentTimeMillis() - start) + " ms");
 	}
 
 }

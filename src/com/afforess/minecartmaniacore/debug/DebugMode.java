@@ -1,6 +1,7 @@
 package com.afforess.minecartmaniacore.debug;
 
 public enum DebugMode {
+	TIMER,
 	DEBUG,
 	NORMAL,
 	SEVERE,

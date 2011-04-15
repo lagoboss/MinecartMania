@@ -34,6 +34,7 @@ import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.afforess.minecartmaniacore.config.ControlBlockList;
+import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
 import com.afforess.minecartmaniacore.event.MinecartActionEvent;
 import com.afforess.minecartmaniacore.event.MinecartClickedEvent;
 import com.afforess.minecartmaniacore.event.MinecartDirectionChangeEvent;
@@ -140,13 +141,11 @@ public class MinecartManiaCoreListener extends VehicleListener{
 		if (event.getVehicle() instanceof Minecart) {
 			MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart((Minecart)event.getVehicle());
 			if (!event.isCancelled()) {
+				MinecartManiaLogger.getInstance().debug("Damage: " + event.getDamage() + " Existing: " + minecart.minecart.getDamage());
 				if ((event.getDamage() * 10) + minecart.minecart.getDamage() > 40) {
 					minecart.kill();
-					if (MinecartManiaWorld.isReturnMinecartToOwner()) {
-						event.setCancelled(true);
-						event.setDamage(0);
-					}
-					return; //minecart is dead
+					event.setCancelled(true);
+					event.setDamage(0);
 				}
 				if (minecart.minecart.getPassenger() != null) {
 					if (minecart.isOnRails()) {
