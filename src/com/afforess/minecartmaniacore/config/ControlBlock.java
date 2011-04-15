@@ -22,7 +22,7 @@ public class ControlBlock {
 	private boolean killMinecart = false;
 	private RedstoneState killState = RedstoneState.Default;
 	
-	public ControlBlock(Item type) {
+	public ControlBlock() {
 	}
 	
 	public Item getType() {
