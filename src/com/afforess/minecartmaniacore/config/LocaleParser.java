@@ -87,7 +87,9 @@ public class LocaleParser implements SettingParser{
 		if (value == null) {
 			return "Missing Text Key: " + key;
 		}
-		return String.format(parseColors(value), (Object[])args);
+		String result = String.format(parseColors(value), (Object[])args);
+		result = result.replace("\\n", "\n");
+		return result;
 	}
 	
 	private String getNodeValue(Node node) {

@@ -39,9 +39,9 @@ public class MinecartManiaWorld {
 	private static int counter = 0;
 
 	/**
-	 ** Returns a new MinecartManiaMinecart from storage if it already exists, or creates and stores a new MinecartManiaMinecart object, and returns it
-	 ** @param the minecart to wrap
-	 **/
+	 * Returns a new MinecartManiaMinecart from storage if it already exists, or creates and stores a new MinecartManiaMinecart object, and returns it
+	 * @param the minecart to wrap
+	 */
 	 public static MinecartManiaMinecart getMinecartManiaMinecart(Minecart minecart) {
 		prune();
 		MinecartManiaMinecart testMinecart = minecarts.get(new Integer(minecart.getEntityId()));
@@ -74,9 +74,9 @@ public class MinecartManiaWorld {
 	}
 	 
 	/**
-	 ** Returns true if the Minecart with the given entityID was deleted, false if not.
-	 ** @param the id of the minecart to delete
-	 **/
+	 * Returns true if the Minecart with the given entityID was deleted, false if not.
+	 * @param the id of the minecart to delete
+	 */
 	 public static boolean delMinecartManiaMinecart(int entityID) {
 		if (minecarts.containsKey(new Integer(entityID))) {
 			minecarts.remove(new Integer(entityID));
@@ -184,9 +184,9 @@ public class MinecartManiaWorld {
 	 }
 	 
 	 /**
-	 ** Returns a new MinecartManiaChest from storage if it already exists, or creates and stores a new MinecartManiaChest object, and returns it
-	 ** @param the chest to wrap
-	 **/
+	 * Returns a new MinecartManiaChest from storage if it already exists, or creates and stores a new MinecartManiaChest object, and returns it
+	 * @param the chest to wrap
+	 */
 	 public static MinecartManiaChest getMinecartManiaChest(Chest chest) {
 		MinecartManiaChest testChest = chests.get(new Location(chest.getWorld(), chest.getX(), chest.getY(), chest.getZ()));
 		if (testChest == null) {
@@ -208,9 +208,9 @@ public class MinecartManiaWorld {
 	}
 	 
 	/**
-	 ** Returns true if the chest with the given location was deleted, false if not.
-	 ** @param the  location of the chest to delete
-	 **/
+	 * Returns true if the chest with the given location was deleted, false if not.
+	 * @param the  location of the chest to delete
+	 */
 	 public static boolean delMinecartManiaChest(Location v) {
 		if (chests.containsKey(v)) {
 			chests.remove(v);

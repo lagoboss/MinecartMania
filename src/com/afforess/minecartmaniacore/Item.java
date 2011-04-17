@@ -308,7 +308,7 @@ public enum Item {
     }
     
     public ItemStack toItemStack() {
-    	ItemStack item = new ItemStack(id);
+    	ItemStack item = new ItemStack(id, 1, (short) 0);
     	if (hasData()) item.setDurability(data);
     	return item;
     }

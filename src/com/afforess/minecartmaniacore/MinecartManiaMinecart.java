@@ -235,7 +235,9 @@ public class MinecartManiaMinecart {
 	}
 	
 	public boolean isPoweredBeneath() {
-		if (MinecartManiaWorld.isBlockIndirectlyPowered(minecart.getWorld(), getX(), getY()-1, getZ()) || MinecartManiaWorld.isBlockIndirectlyPowered(minecart.getWorld(), getX(), getY(), getZ())) {
+		if (MinecartManiaWorld.isBlockPowered(minecart.getWorld(), getX(), getY()-2, getZ()) || 
+			MinecartManiaWorld.isBlockIndirectlyPowered(minecart.getWorld(), getX(), getY()-1, getZ()) || 
+			MinecartManiaWorld.isBlockIndirectlyPowered(minecart.getWorld(), getX(), getY(), getZ())) {
 			return true;
 		}
 		return false;

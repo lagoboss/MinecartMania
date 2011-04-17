@@ -3,6 +3,7 @@ package com.afforess.minecartmaniacore.utils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 
 import org.bukkit.Location;
@@ -25,6 +26,22 @@ public class BlockUtils {
 			}
 		}
 		return blockList;
+	}
+	
+	public static HashSet<Location> getAdjacentLocations(Location location, int range) {
+		HashSet<Location> set = new HashSet<Location>((int)Math.floor(Math.pow(1 + (range * 2), 3)));
+		for (int dx = -(range); dx <= range; dx++){
+			for (int dy = -(range); dy <= range; dy++){
+				for (int dz = -(range); dz <= range; dz++){
+					Location temp = new ComparableLocation(location);
+					temp.setX(temp.getX() + dx);
+					temp.setY(temp.getY() + dy);
+					temp.setZ(temp.getZ() + dz);
+					set.add(temp);
+				}
+			}
+		}
+		return set;
 	}
 	
 	public static ArrayList<Block> getBlocksBeneath(Location location, int range) {
