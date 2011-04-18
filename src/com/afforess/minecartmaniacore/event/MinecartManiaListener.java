@@ -192,6 +192,15 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
 	}
 	
 	/**
+	 * Called when a sign has been found for the first time
+	 * 
+	 * @param event
+	 */
+	public void onMinecartManiaSignFoundEvent(MinecartManiaSignFoundEvent event) {
+		
+	}
+	
+	/**
 	 * Avoid using.
 	 * 
 	 * @param event
@@ -270,6 +279,9 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
 		}
 		else if (event instanceof MinecartDirectionChangeEvent) {
 			onMinecartDirectionChangeEvent((MinecartDirectionChangeEvent)event);
+		}
+		else if (event instanceof MinecartManiaSignFoundEvent) {
+			onMinecartManiaSignFoundEvent((MinecartManiaSignFoundEvent)event);
 		}
 	}
 
