@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
@@ -23,6 +22,7 @@ import com.afforess.minecartmaniacore.config.ControlBlockList;
 import com.afforess.minecartmaniacore.event.MinecartBoostEvent;
 import com.afforess.minecartmaniacore.event.MinecartBrakeEvent;
 import com.afforess.minecartmaniacore.event.MinecartCaughtEvent;
+import com.afforess.minecartmaniacore.event.MinecartElevatorEvent;
 import com.afforess.minecartmaniacore.event.MinecartLaunchedEvent;
 import com.afforess.minecartmaniacore.event.MinecartManiaMinecartCreatedEvent;
 import com.afforess.minecartmaniacore.event.MinecartManiaMinecartDestroyedEvent;
@@ -489,7 +489,7 @@ loop:   for (Sign sign : signList) {
 	}
 	
 	public boolean isOnRails() {
-		return MinecartManiaWorld.getBlockAt(minecart.getWorld(), getX(), getY(), getZ()).getTypeId() == Material.RAILS.getId();
+		return MinecartUtils.isTrack(minecart.getLocation());
 	}
 	
 	/**
@@ -618,15 +618,15 @@ loop:   for (Sign sign : signList) {
 		return !isPoweredMinecart() && !isStorageMinecart();
 	}
 	
-	public Material getType() {
+	public Item getType() {
 		if (isPoweredMinecart()) {
-			return Material.POWERED_MINECART;
+			return Item.POWERED_MINECART;
 		}
 		if (isStorageMinecart()) {
-			return Material.STORAGE_MINECART;
+			return Item.STORAGE_MINECART;
 		}
 		
-		return Material.MINECART;
+		return Item.MINECART;
 	}
 
 	/**
@@ -683,12 +683,12 @@ loop:   for (Sign sign : signList) {
 				ArrayList<ItemStack> items = new ArrayList<ItemStack>();
 				if (isStorageMinecart()) {
 					for (ItemStack i : ((MinecartManiaStorageCart)this).getContents()) {
-						if (i != null && i.getType() != Material.AIR) {
+						if (i != null && i.getTypeId() != 0) {
 							items.add(i);
 						}
 					}
 				}
-				items.add(new ItemStack(getType(), 1));
+				items.add(new ItemStack(getType().toMaterial(), 1));
 				
 				Object owner = getOwner();
 				MinecartManiaInventory inventory = null;
@@ -808,5 +808,41 @@ loop:   for (Sign sign : signList) {
 		newCopy.wasMovingLastTick = this.wasMovingLastTick;
 		
 		return newCopy;
+	}
+
+	public boolean doElevatorBlock() {
+		if (ControlBlockList.isValidElevatorBlock(getBlockBeneath())) {
+			//Get where we are
+			Block elevatorBlock = getBlockBeneath();
+			int y = elevatorBlock.getY();
+			//Find the closest elevator block starting 2 blocks (so we do not find ourselves) away and expand from there.
+			for (int yOffset = 2; yOffset < 128; yOffset++) {
+				if (y + yOffset < 128) {
+					//See if we have a valid destination
+					if (MinecartUtils.isTrack(elevatorBlock.getRelative(0, yOffset, 0))
+							&& ControlBlockList.isElevatorBlock(Item.getItem(elevatorBlock.getRelative(0, yOffset-1, 0)))) {
+						//do the teleport and return
+						MinecartElevatorEvent event = new MinecartElevatorEvent(this, elevatorBlock.getRelative(0, yOffset, 0).getLocation());
+						MinecartManiaCore.server.getPluginManager().callEvent(event);
+						if (!event.isCancelled()) {
+							return minecart.teleport(event.getTeleportLocation());
+						}
+					}					
+				} 
+				if (y - yOffset > 0) {
+					//See if we have a valid destination
+					if (MinecartUtils.isTrack(elevatorBlock.getRelative(0, -yOffset, 0))
+							&& ControlBlockList.isElevatorBlock(Item.getItem(elevatorBlock.getRelative(0, -yOffset-1, 0)))) {
+						//do the teleport and return
+						MinecartElevatorEvent event = new MinecartElevatorEvent(this, elevatorBlock.getRelative(0, -yOffset, 0).getLocation());
+						MinecartManiaCore.server.getPluginManager().callEvent(event);
+						if (!event.isCancelled()) {
+							return minecart.teleport(event.getTeleportLocation());
+						}
+					}										
+				}
+			}
+		}
+		return false;
 	}
 }

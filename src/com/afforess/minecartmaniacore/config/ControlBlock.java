@@ -21,6 +21,8 @@ public class ControlBlock {
 	private RedstoneState spawnState = RedstoneState.Default;
 	private boolean killMinecart = false;
 	private RedstoneState killState = RedstoneState.Default;
+	private boolean elevator = false;
+	private RedstoneState elevatorState = RedstoneState.Default;
 	
 	public ControlBlock() {
 	}
@@ -161,6 +163,22 @@ public class ControlBlock {
 
 	public RedstoneState getKillState() {
 		return killState;
+	}
+	
+	public boolean isElevatorBlock() {
+		return elevator;
+	}
+
+	protected void setElevatorBlock(boolean val) {
+		elevator = val;
+	}
+
+	protected void setElevatorState(RedstoneState elevatorState) {
+		this.elevatorState = elevatorState;
+	}
+
+	public RedstoneState getElevatorState() {
+		return elevatorState;
 	}
 	
 	public String toString() {

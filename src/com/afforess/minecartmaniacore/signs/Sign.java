@@ -2,6 +2,7 @@ package com.afforess.minecartmaniacore.signs;
 
 import org.bukkit.Location;
 
+import com.afforess.minecartmaniacore.MinecartManiaMinecart;
 import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
 
 /**
@@ -30,6 +31,17 @@ public interface Sign {
 	 * @return lines of the sign
 	 */
 	public String[] getLines();
+	
+	/**
+	 * Get's the number of lines on the sign
+	 * @return number of lines
+	 */
+	public int getNumLines();
+	
+	/**
+	 * Adds brackets to this sign
+	 */
+	public void addBrackets();
 	
 	/**
 	 * Get's the location of the sign
@@ -62,5 +74,32 @@ public interface Sign {
 	 * @param sign
 	 */
 	public void update(org.bukkit.block.Sign sign);
+	
+	/**
+	 * Adds a sign action to the list of actions this sign must execute.
+	 * @param action to add
+	 */
+	public void addSignAction(SignAction action);
+	
+	/**
+	 * Removes a sign action from the list of actions this sign must exectue.
+	 * @param action to remove.
+	 * @return true if the action was removed.
+	 */
+	public boolean removeSignAction(SignAction action);
+	
+	/**
+	 * Checks to see if this sign has this action attached to it
+	 * @param action to check
+	 * @return true if the sign has the given action
+	 */
+	public boolean hasSignAction(SignAction action);
+	
+	/**
+	 * Executes all the actions attached to this sign.
+	 * @param minecart to execute the actions for.
+	 * @return true if at least one action was executed.
+	 */
+	public boolean executeActions(MinecartManiaMinecart minecart);
 
 }

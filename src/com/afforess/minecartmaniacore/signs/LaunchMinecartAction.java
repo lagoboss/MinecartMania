@@ -4,13 +4,13 @@ import org.bukkit.util.Vector;
 
 import com.afforess.minecartmaniacore.MinecartManiaMinecart;
 
-public class LaunchSign extends MinecartManiaSign implements ActionSign {
-
+public class LaunchMinecartAction implements SignAction {
 	private volatile Vector launchSpeed = null;
-	public LaunchSign(Sign sign) {
-		super(sign);
+	protected Sign sign;
+	public LaunchMinecartAction(Sign sign) {
+		this.sign = sign;
 	}
-	
+
 	@Override
 	public boolean execute(MinecartManiaMinecart minecart) {
 		Vector launch = calculateLaunchSpeed(false);
@@ -23,33 +23,27 @@ public class LaunchSign extends MinecartManiaSign implements ActionSign {
 		
 		return true;
 	}
-	
-	@Override
-	public void update(org.bukkit.block.Sign sign) {
-		super.update(sign);
-		calculateLaunchSpeed(true);
-	}
 
 	private Vector calculateLaunchSpeed(boolean force) {
 		if (launchSpeed == null || force) {
-			for (int i = 0; i < getNumLines(); i++) {
-				if (getLine(i).toLowerCase().contains("launch north")) {
+			for (int i = 0; i < sign.getNumLines(); i++) {
+				if (sign.getLine(i).toLowerCase().contains("launch north")) {
 					launchSpeed = new Vector(-0.6D, 0, 0);
 				}
-				else if (getLine(i).toLowerCase().contains("launch east")) {
+				else if (sign.getLine(i).toLowerCase().contains("launch east")) {
 					launchSpeed = new Vector(0, 0, -0.6D);
 				}
-				if (getLine(i).toLowerCase().contains("launch south")) {
+				if (sign.getLine(i).toLowerCase().contains("launch south")) {
 					launchSpeed = new Vector(0.6D, 0, 0);
 				}
-				if (getLine(i).toLowerCase().contains("launch west")) {
+				if (sign.getLine(i).toLowerCase().contains("launch west")) {
 					launchSpeed = new Vector(0, 0, 0.6D);
 				}
-				if (getLine(i).toLowerCase().contains("previous dir")) {
+				if (sign.getLine(i).toLowerCase().contains("previous dir")) {
 					launchSpeed = null;
 				}
 			}
-			this.addBrackets();
+			sign.addBrackets();
 		}
 		return launchSpeed;
 	}

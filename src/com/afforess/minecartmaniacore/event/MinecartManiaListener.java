@@ -108,16 +108,7 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
 	public void onChestSpawnMinecartEvent(ChestSpawnMinecartEvent event) {
 		
 	}
-	
-	/**
-	 * Called when a minecart each time a minecart moves 1 full block, and is within the minecarts range of a nearby entity
-	 * 
-	 * @param event
-	 */
-	public void onMinecartNearEntityEvent(MinecartNearEntityEvent event) {
-		
-	}
-	
+
 	/**
 	 * Called when a player inside of a minecart tap on the minecart from the inside
 	 * 
@@ -154,6 +145,14 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
 		
 	}
 	
+	/**
+	 * Called when a minecart is moved by an elevator block
+	 * 
+	 * @param event
+	 */
+	public void onMinecartElevatorEvent(MinecartElevatorEvent event) {
+
+	}
 	
 	/**
 	 * Called when a minecart changes it's direction of motion
@@ -259,9 +258,6 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
 		else if (event instanceof ChestSpawnMinecartEvent) {
 			onChestSpawnMinecartEvent((ChestSpawnMinecartEvent)event);
 		}
-		else if (event instanceof MinecartNearEntityEvent) {
-			onMinecartNearEntityEvent((MinecartNearEntityEvent)event);
-		}
 		else if (event instanceof MinecartManiaMinecartCreatedEvent) {
 			onMinecartManiaMinecartCreatedEvent((MinecartManiaMinecartCreatedEvent)event);
 		}
@@ -276,6 +272,9 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
 		}
 		else if (event instanceof MinecartCaughtEvent) {
 			onMinecartCaughtEvent((MinecartCaughtEvent)event);
+		}
+		else if (event instanceof MinecartElevatorEvent) {
+			onMinecartElevatorEvent((MinecartElevatorEvent)event);
 		}
 		else if (event instanceof MinecartDirectionChangeEvent) {
 			onMinecartDirectionChangeEvent((MinecartDirectionChangeEvent)event);

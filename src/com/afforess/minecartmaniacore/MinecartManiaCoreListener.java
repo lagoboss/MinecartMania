@@ -111,6 +111,7 @@ public class MinecartManiaCoreListener extends VehicleListener{
 				minecart.doSpeedMultiplierBlock();
 				minecart.doPlatformBlock();
 				minecart.doCatcherBlock();
+				minecart.doElevatorBlock();
 
 				boolean action = mae.isActionTaken();
 				if (!action) {

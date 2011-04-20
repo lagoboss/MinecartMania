@@ -151,6 +151,11 @@ public class CoreSettingParser implements SettingParser{
 					tempNode = (Node) templist.item(0);
 					cb.setKillState(parseRedstoneState(getParentFirstAttributeValue(tempNode)));
 					cb.setKillMinecart(MinecartManiaConfigurationParser.toBool(getNodeValue(tempNode)));
+					
+					templist = element.getElementsByTagName("Elevator").item(0).getChildNodes();
+					tempNode = (Node) templist.item(0);
+					cb.setElevatorState(parseRedstoneState(getParentFirstAttributeValue(tempNode)));
+					cb.setElevatorBlock(MinecartManiaConfigurationParser.toBool(getNodeValue(tempNode)));
 
 					ControlBlockList.controlBlocks.add(cb);
 				}

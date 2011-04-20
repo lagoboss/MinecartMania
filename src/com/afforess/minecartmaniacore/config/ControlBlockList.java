@@ -123,6 +123,18 @@ public class ControlBlockList {
 		return isSpawnMinecartBlock(blockToItem(block)) && isCorrectState(block, getControlBlock(blockToItem(block)).getSpawnState());
 	}
 	
+	public static boolean isElevatorBlock(Item item) {
+		ControlBlock block = getControlBlock(item);
+		if (block != null) {
+			return block.isElevatorBlock();
+		}
+		return false;
+	}
+
+	public static boolean isValidElevatorBlock(Block block) {
+		return isElevatorBlock(blockToItem(block)) && isCorrectState(block, getControlBlock(blockToItem(block)).getElevatorState());
+	}
+	
 	private static Item blockToItem(Block block) {
 		return Item.getItem(block.getTypeId(), block.getData());
 	}

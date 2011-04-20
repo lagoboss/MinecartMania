@@ -3,10 +3,10 @@ package com.afforess.minecartmaniacore.signs;
 import com.afforess.minecartmaniacore.MinecartManiaMinecart;
 
 /**
- * A sign that performs a specific action on a minecart (or it's passenger). 
+ * An action specific to a sign
  * @author Afforess
  */
-public interface ActionSign extends Sign {
+public interface SignAction{
 	
 	/**
 	 * Executes the action 
@@ -14,5 +14,4 @@ public interface ActionSign extends Sign {
 	 * @return true if an action was exectued
 	 */
 	public boolean execute(MinecartManiaMinecart minecart);
-
 }

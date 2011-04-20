@@ -1,22 +1,25 @@
 package com.afforess.minecartmaniacore.signs;
 
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Location;
 
+import com.afforess.minecartmaniacore.MinecartManiaMinecart;
 import com.afforess.minecartmaniacore.utils.ComparableLocation;
 import com.afforess.minecartmaniacore.utils.DirectionUtils;
 import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
 import com.afforess.minecartmaniacore.utils.StringUtils;
 import com.afforess.minecartmaniacore.utils.WordUtils;
 
-public class MinecartManiaSign implements Sign {
+public class MinecartManiaSign implements Sign{
 	protected final Location location;
 	protected volatile String[] lines;
+	protected ArrayList<SignAction> actions = new ArrayList<SignAction>(4);
 	protected final ConcurrentHashMap<Object, Object> data = new ConcurrentHashMap<Object, Object>();
 	
-	public MinecartManiaSign(Sign sign) {
-		location = new ComparableLocation(sign.getLocation());
+	public MinecartManiaSign(org.bukkit.block.Sign sign) {
+		location = new ComparableLocation(sign.getBlock().getLocation());
 		lines = getSign().getLines();
 	}
 	
@@ -87,10 +90,11 @@ public class MinecartManiaSign implements Sign {
 	@Override
 	public void update(org.bukkit.block.Sign sign) {
 		lines = sign.getLines();
+		actions = new ArrayList<SignAction>(4);
 	}
 	
-	private static int hashCode(String[] lines) {
-		int hash = 0;
+	private int hashCode(String[] lines) {
+		int hash = getLocation().hashCode();
 		for (int i = 0; i < lines.length; i++) {
 			if (!lines[i].isEmpty()) {
 				hash += lines[i].hashCode();
@@ -113,5 +117,31 @@ public class MinecartManiaSign implements Sign {
 			return hashCode() == hashCode(((org.bukkit.block.Sign)obj).getLines());
 		}
 		return false;
+	}
+
+	@Override
+	public void addSignAction(SignAction action) {
+		actions.add(action);
+	}
+
+	@Override
+	public boolean removeSignAction(SignAction action) {
+		return actions.remove(action);
+	}
+
+	@Override
+	public boolean hasSignAction(SignAction action) {
+		return actions.contains(action);
+	}
+
+	@Override
+	public boolean executeActions(MinecartManiaMinecart minecart) {
+		boolean didAction = false;
+		for (SignAction action : actions) {
+			if (action.execute(minecart)) {
+				didAction = true;
+			}
+		}
+		return didAction;
 	}
 }

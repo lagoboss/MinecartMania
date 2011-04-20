@@ -1,11 +1,9 @@
 package com.afforess.minecartmaniacore.utils;
 
 import java.util.List;
-import java.util.ArrayList;
-
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
@@ -13,17 +11,32 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Vehicle;
 import org.bukkit.entity.Wolf;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import com.afforess.minecartmaniacore.Item;
-import com.afforess.minecartmaniacore.MinecartManiaCore;
 import com.afforess.minecartmaniacore.MinecartManiaMinecart;
+import com.afforess.minecartmaniacore.MinecartManiaStorageCart;
 import com.afforess.minecartmaniacore.MinecartManiaWorld;
-import com.afforess.minecartmaniacore.event.MinecartNearEntityEvent;
-
+import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
 
 public class MinecartUtils {
+
+	public static boolean isTrack(Block block) {
+		return isTrack(block.getTypeId());
+	}
+	
+	public static boolean isTrack(Item item) {
+		return isTrack(item.getId());
+	}
+	
+	public static boolean isTrack(int id) {
+		return id == Item.RAILS.getId() || id == Item.POWERED_RAIL.getId() || id == Item.DETECTOR_RAIL.getId();
+	}
+	
+	public static boolean isTrack(Location location) {
+		return isTrack(location.getBlock().getTypeId());
+	}
+	
 	public static boolean validMinecartTrackAnyDirection(World w, int x, int y, int z, int range) {
 		return validMinecartTrack(w, x, y, z, range, DirectionUtils.CompassDirection.NORTH) ||
 			validMinecartTrack(w, x, y, z, range, DirectionUtils.CompassDirection.EAST) || 
@@ -36,33 +49,39 @@ public class MinecartUtils {
 		return data >= 0x2 && data <= 0x5;
 	}
 	
+	public static boolean validMinecartTrack(Location loc, int range, CompassDirection direction) {
+		return validMinecartTrack(loc.getWorld(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), range, direction);
+	}
 	
 	//TODO this method is not a perfect detection of track. It will give false positives for having 2 sets of parallel track, and when double curves are used
-	public static boolean validMinecartTrack(World w, int x, int y, int z, int range, DirectionUtils.CompassDirection direction) {
-		if (MinecartManiaWorld.getBlockAt(w, x, y, z).getTypeId() != Material.RAILS.getId()) {
+	public static boolean validMinecartTrack(World w, int x, int y, int z, int range, CompassDirection direction) {
+		if (!isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y, z))) {
 			y--;
-			if (MinecartManiaWorld.getBlockAt(w, x, y, z).getTypeId() != Material.RAILS.getId()) {
+			if (!isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y, z))) {
 				return false;
 			}
 		}
 		range--;
 		while (range > 0) {
-			if (direction == DirectionUtils.CompassDirection.NORTH) x--;
-			if (direction == DirectionUtils.CompassDirection.EAST) z--;
-			if (direction == DirectionUtils.CompassDirection.SOUTH) x++;
-			if (direction == DirectionUtils.CompassDirection.WEST) z++;
-			if (MinecartManiaWorld.getBlockAt(w, x, y-1, z).getTypeId() == Item.RAILS.getId()) y--;
-			if (MinecartManiaWorld.getBlockAt(w, x, y+1, z).getTypeId() == Item.RAILS.getId()) y++;
-			if (MinecartManiaWorld.getBlockAt(w, x, y, z).getTypeId() != Item.RAILS.getId()) return false;
+			if (direction == CompassDirection.NORTH) x--;
+			else if (direction == CompassDirection.EAST) z--;
+			else if (direction == CompassDirection.SOUTH) x++;
+			else if (direction == CompassDirection.WEST) z++;
+			if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y-1, z))) y--;
+			else if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y+1, z))) y++;
+			if (!isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y, z))) return false;
 			
-			if (MinecartManiaWorld.getBlockAt(w, x-1, y, z).getTypeId() == Item.RAILS.getId()) direction = DirectionUtils.CompassDirection.NORTH;
-			if (MinecartManiaWorld.getBlockAt(w, x, y, z-1).getTypeId() == Item.RAILS.getId()) direction = DirectionUtils.CompassDirection.EAST;
-			if (MinecartManiaWorld.getBlockAt(w, x+1, y, z).getTypeId() == Item.RAILS.getId()) direction = DirectionUtils.CompassDirection.SOUTH;
-			if (MinecartManiaWorld.getBlockAt(w, x, y, z-1).getTypeId() == Item.RAILS.getId()) direction = DirectionUtils.CompassDirection.WEST;
+			if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x-1, y, z))) direction = CompassDirection.NORTH;
+			else if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y, z-1))) direction = CompassDirection.EAST;
+			else if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x+1, y, z))) direction = CompassDirection.SOUTH;
+			else if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y, z+1))) direction = CompassDirection.WEST;
 			range--;
 		}
-		
 		return true;
+	}
+	
+	public static boolean isAtIntersection(Location loc) {
+		return isAtIntersection(loc.getWorld(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
 	}
 	
 	public static boolean isAtIntersection(World w, int x, int y, int z) {
@@ -71,22 +90,22 @@ public class MinecartUtils {
 		int data = MinecartManiaWorld.getBlockData(w, x, y, z);
 		
 		if (data == 0 || data == 1) {
-			if (MinecartManiaWorld.getBlockAt(w, x, y, z-1).getTypeId() == Item.RAILS.getId()) {
+			if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y, z-1))) {
 				if (MinecartManiaWorld.getBlockData(w, x, y, z-1) == 0) {
 					paths++;
 				}
 			}
-			if (MinecartManiaWorld.getBlockAt(w, x, y, z+1).getTypeId() == Item.RAILS.getId()) {
+			if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y, z+1))) {
 				if (MinecartManiaWorld.getBlockData(w, x, y, z+1) == 0) {
 					paths++;
 				}
 			}
-			if (MinecartManiaWorld.getBlockAt(w, x-1, y, z).getTypeId() == Item.RAILS.getId()) {
+			if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x-1, y, z))) {
 				if (MinecartManiaWorld.getBlockData(w, x-1, y, z) == 1) {
 					paths++;
 				}
 			}
-			if (MinecartManiaWorld.getBlockAt(w, x+1, y, z).getTypeId() == Item.RAILS.getId()) {
+			if (isTrack(MinecartManiaWorld.getBlockAt(w, x+1, y, z).getTypeId())) {
 				if (MinecartManiaWorld.getBlockData(w, x+1, y, z) == 1) {
 					paths++;
 				}
@@ -94,15 +113,15 @@ public class MinecartUtils {
 		}
 		
 		else if (data == 6) {
-			if (MinecartManiaWorld.getBlockAt(w, x+1, y, z).getTypeId() == Item.RAILS.getId() && MinecartManiaWorld.getBlockAt(w, x, y, z+1).getTypeId() == Item.RAILS.getId()) {
+			if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x+1, y, z)) && isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y, z+1))) {
 				if (MinecartManiaWorld.getBlockData(w, x+1, y, z) == 1 && MinecartManiaWorld.getBlockData(w, x, y, z+1) == 0) {
 					paths = 2;
-					if (MinecartManiaWorld.getBlockAt(w, x-1, y, z).getTypeId() == Item.RAILS.getId()) {
+					if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x-1, y, z))) {
 						if (MinecartManiaWorld.getBlockData(w, x-1, y, z) == 1) {
 							paths++; 
 						}
 					}
-					if (MinecartManiaWorld.getBlockAt(w, x, y, z-1).getTypeId() == Item.RAILS.getId()) {
+					if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y, z-1))) {
 						if (MinecartManiaWorld.getBlockData(w, x, y, z-1) == 0) {
 							paths++;
 						}
@@ -111,15 +130,15 @@ public class MinecartUtils {
 			}
 		}
 		else if (data == 7) {
-			if (MinecartManiaWorld.getBlockAt(w, x-1, y, z).getTypeId() == Item.RAILS.getId() && MinecartManiaWorld.getBlockAt(w, x, y, z+1).getTypeId() == Item.RAILS.getId()) {
+			if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x-1, y, z)) && isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y, z+1))) {
 				if (MinecartManiaWorld.getBlockData(w, x-1, y, z) == 1 && MinecartManiaWorld.getBlockData(w, x, y, z+1) == 0) {
 					paths = 2;
-					if (MinecartManiaWorld.getBlockAt(w, x+1, y, z).getTypeId() == Item.RAILS.getId()) {
+					if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x+1, y, z))) {
 						if (MinecartManiaWorld.getBlockData(w, x+1, y, z) == 1) {
 							paths++;
 						}
 					}
-					if (MinecartManiaWorld.getBlockAt(w, x, y, z-1).getTypeId() == Item.RAILS.getId()) {
+					if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y, z-1))) {
 						if (MinecartManiaWorld.getBlockData(w, x, y, z-1) == 0) {
 							paths++;
 						}
@@ -128,15 +147,15 @@ public class MinecartUtils {
 			}
 		}
 		else if (data == 8) {
-			if (MinecartManiaWorld.getBlockAt(w, x-1, y, z).getTypeId() == Item.RAILS.getId() && MinecartManiaWorld.getBlockAt(w, x, y, z-1).getTypeId() == Item.RAILS.getId()) {
+			if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x-1, y, z)) && isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y, z-1))) {
 				if (MinecartManiaWorld.getBlockData(w, x-1, y, z) == 1 && MinecartManiaWorld.getBlockData(w, x, y, z-1) == 0) {
 					paths = 2;
-					if (MinecartManiaWorld.getBlockAt(w, x+1, y, z).getTypeId() == Item.RAILS.getId()) {
+					if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x+1, y, z))) {
 						if (MinecartManiaWorld.getBlockData(w, x+1, y, z) == 1) {
 							paths++;
 						}
 					}
-					if (MinecartManiaWorld.getBlockAt(w, x, y, z+1).getTypeId() == Item.RAILS.getId()) {
+					if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y, z+1))) {
 						if (MinecartManiaWorld.getBlockData(w, x, y, z+1) == 0) {
 							paths++;
 						}
@@ -145,15 +164,15 @@ public class MinecartUtils {
 			}
 		}
 		else if (data == 9) {
-			if (MinecartManiaWorld.getBlockAt(w, x+1, y, z).getTypeId() == Item.RAILS.getId() && MinecartManiaWorld.getBlockAt(w, x, y, z-1).getTypeId() == Item.RAILS.getId()) {
+			if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x+1, y, z)) && isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y, z-1))) {
 				if (MinecartManiaWorld.getBlockData(w, x+1, y, z) == 1 && MinecartManiaWorld.getBlockData(w, x, y, z-1) == 0) {
 					paths = 2;
-					if (MinecartManiaWorld.getBlockAt(w, x-1, y, z).getTypeId() == Item.RAILS.getId()) {
+					if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x-1, y, z))) {
 						if (MinecartManiaWorld.getBlockData(w, x-1, y, z) == 1) {
 							paths++;
 						}
 					}
-					if (MinecartManiaWorld.getBlockAt(w, x, y, z+1).getTypeId() == Item.RAILS.getId()) {
+					if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y, z+1))) {
 						if (MinecartManiaWorld.getBlockData(w, x, y, z+1) == 0) {
 							paths++;
 						}
@@ -168,7 +187,6 @@ public class MinecartUtils {
 	public static void doMinecartNearEntityCheck(final MinecartManiaMinecart minecart, List<Entity> entities) {
 		//Set a flag to stop this event from happening twice
 		minecart.setDataValue("MinecartNearEntityEvent", true);
-		ArrayList<MinecartNearEntityEvent> deadQueue = new ArrayList<MinecartNearEntityEvent>(50);
 		Vector location = minecart.minecart.getLocation().toVector();
 		int rangeSquared = minecart.getRange() * minecart.getRange();
 		for (Entity e : entities) {
@@ -179,31 +197,22 @@ public class MinecartUtils {
 			double distance = e.getLocation().toVector().distanceSquared(location);
 			
 			if (distance <= rangeSquared) {
-				MinecartNearEntityEvent mnee = new MinecartNearEntityEvent(minecart, e);
-				//by default drop arrows
-				boolean kill = false;
-				//kill nearby animals before we bump into them
-				if (distance <= 2) {
-					kill = shouldKillEntity(minecart, e);
-				}
-				mnee.setActionTaken(kill);
-				mnee.setDrop(getDefaultDrop(e));
-				MinecartManiaCore.server.getPluginManager().callEvent(mnee);
-				//If cancelled, kill them once we are done calling events
-				if (mnee.isActionTaken()) {
-					deadQueue.add(mnee);
+				if (distance < 3 && shouldKillEntity(minecart, e)) {
+					if (minecart.isStorageMinecart() && e instanceof org.bukkit.entity.Item
+						&& ((MinecartManiaStorageCart)minecart).addItem(((org.bukkit.entity.Item)e).getItemStack())) {
+						;
+					}
+					else if (clearedItemFromRails(e, minecart)){
+						;
+					}
+					else {
+						e.remove();
+					}
 				}
 				else {
 					clearedItemFromRails(e, minecart);
 				}
 			}
-		}
-		
-		for (MinecartNearEntityEvent e : deadQueue) {
-			if (e.getDrop() != null) {
-				MinecartManiaWorld.dropItem(e.getEntity().getLocation(), e.getDrop());
-			}
-			e.getEntity().remove();
 		}
 		//Reset the flag
 		minecart.setDataValue("MinecartNearEntityEvent", null);
@@ -232,13 +241,6 @@ public class MinecartUtils {
 		return false;
 	}
 	
-	private static ItemStack getDefaultDrop(Entity entity) {
-		if (entity instanceof Arrow) {
-			return new ItemStack(Item.ARROW.getId(), 1);
-		}
-		return null;
-	}
-	
 	private static boolean clearedItemFromRails(Entity e, MinecartManiaMinecart minecart) {
 		if (MinecartManiaWorld.getMinecartsClearRailsSetting() != 0) {
 			if (e.getEntityId() == minecart.minecart.getEntityId()) {
@@ -261,7 +263,7 @@ public class MinecartUtils {
 			}
 		
 			if (minecart.isApproaching(e.getLocation().toVector())) {
-				Location current = e.getLocation().clone();
+				Location current = e.getLocation();
 				if (minecart.getMotionX() != 0.0D) {
 					Location test = current.clone();
 					test.setZ(current.getZ()-3);
@@ -302,11 +304,11 @@ public class MinecartUtils {
 			return;
 		}
 		final List<Entity> list = minecart.minecart.getWorld().getEntities();
-		Runnable run = new Runnable() {
+		Thread update = new Thread() {
 			public void run() {
 				doMinecartNearEntityCheck(minecart, list);
 			}
 		};
-		MinecartManiaCore.server.getScheduler().scheduleAsyncDelayedTask(MinecartManiaCore.instance, run);
+		update.start();
 	}	
 }

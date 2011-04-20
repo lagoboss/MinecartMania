@@ -5,7 +5,8 @@
 	<!--None will produce no console logs from MM. Not recommended.-->
 	<!--Severe will produce only console logs from severe errors from MM.-->
 	<!--Normal will produce standard startup console logs, and error logs from MM.-->
-	<!--Debug will produce standard startup console logs, error logs, and debugging logs from MM.--><!--Timer will produce standard startup console logs, error logs, debugging logs, and process time logs, from MM.-->
+	<!--Debug will produce standard startup console logs, error logs, and debugging logs from MM.-->
+	<!--Timer will produce standard startup console logs, error logs, debugging logs, and process time logs, from MM.-->
 	<LoggingMode>Normal</LoggingMode>
     <!--Minecarts that collide with mobs and animals will kill them and continue uninterrupted.-->
     <MinecartsKillMobs>true</MinecartsKillMobs>
@@ -48,6 +49,8 @@
 			<SpawnMinecart/>
 			<!--This block will kill minecarts, when the conditions are met-->
 			<KillMinecart/>
+			<!--This block will act as an elevator, teleporting minecarts up or down on the Y axis to a matching elevator block-->
+			<Elevator/>
         </ControlBlock>
         <ControlBlock>
             <BlockType>GOLD_BLOCK</BlockType>
@@ -59,6 +62,7 @@
             <Station/>
 			<SpawnMinecart/>
 			<KillMinecart/>
+			<Elevator/>
         </ControlBlock>
         <ControlBlock>
             <BlockType>GOLD_ORE</BlockType>
@@ -70,6 +74,7 @@
             <Station/>
 			<SpawnMinecart/>
 			<KillMinecart/>
+			<Elevator/>
         </ControlBlock>
         <ControlBlock>
             <BlockType>WOOL</BlockType>
@@ -92,6 +97,7 @@
             <Station/>
 			<SpawnMinecart/>
 			<KillMinecart/>
+			<Elevator/>
         </ControlBlock>
         <ControlBlock>
             <BlockType>GRAVEL</BlockType>
@@ -103,6 +109,7 @@
             <Station/>
 			<SpawnMinecart/>
 			<KillMinecart/>
+			<Elevator/>
         </ControlBlock>
         <ControlBlock>
             <BlockType>IRON_BLOCK</BlockType>
@@ -114,6 +121,7 @@
             <Station/>
 			<SpawnMinecart/>
 			<KillMinecart/>
+			<Elevator/>
         </ControlBlock>
         <ControlBlock>
             <BlockType>BRICK</BlockType>
@@ -125,6 +133,7 @@
             <Station redstone="default">true</Station>
 			<SpawnMinecart/>
 			<KillMinecart/>
+			<Elevator/>
         </ControlBlock>
         <ControlBlock>
             <BlockType>LIGHT_GREEN_WOOL</BlockType>
@@ -136,6 +145,7 @@
             <Station/>
 			<SpawnMinecart/>
 			<KillMinecart/>
+			<Elevator/>
         </ControlBlock>
 		<ControlBlock>
             <BlockType>DIAMOND_BLOCK</BlockType>
@@ -147,6 +157,7 @@
             <Station/>
 			<SpawnMinecart redstone="enables">true</SpawnMinecart>
 			<KillMinecart/>
+			<Elevator/>
         </ControlBlock>
 		<ControlBlock>
             <BlockType>DIAMOND_ORE</BlockType>
@@ -158,6 +169,19 @@
             <Station/>
 			<SpawnMinecart/>
 			<KillMinecart redstone="disables">true</KillMinecart>
+			<Elevator/>
+        </ControlBlock>
+		<ControlBlock>
+            <BlockType>RED_WOOL</BlockType>
+            <SpeedMultiplier/>
+            <Catch/>
+            <LauncherSpeed/>
+            <Eject/>
+            <Platform/>
+            <Station/>
+			<SpawnMinecart/>
+			<KillMinecart/>
+			<Elevator redstone="disables">true</Elevator>
         </ControlBlock>
     </ControlBlocks>
     <ItemAliases>
