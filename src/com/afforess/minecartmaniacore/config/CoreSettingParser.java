@@ -27,7 +27,7 @@ import com.afforess.minecartmaniacore.debug.DebugMode;
 import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
 
 public class CoreSettingParser implements SettingParser{
-	private static final double version = 1.3;
+	private static final double version = 1.4;
 	
 	public boolean isUpToDate(Document document) {
 		try {
