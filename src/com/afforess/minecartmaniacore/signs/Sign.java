@@ -98,8 +98,24 @@ public interface Sign {
 	/**
 	 * Executes all the actions attached to this sign.
 	 * @param minecart to execute the actions for.
+	 * @param sync forces the actions to be performed on the main thread
+	 * @return true if at least one action was executed.
+	 */
+	public boolean executeActions(MinecartManiaMinecart minecart, boolean sync);
+	
+	/**
+	 * Executes all the actions attached to this sign.
+	 * @param minecart to execute the actions for.
 	 * @return true if at least one action was executed.
 	 */
 	public boolean executeActions(MinecartManiaMinecart minecart);
 
+	
+	/**
+	 * Executes the given action, if and only if the sign contains the action already
+	 * @param minecart to execute the action for.
+	 * @param the action to execute
+	 * @return true if the action was executed
+	 */
+	public boolean executeAction(MinecartManiaMinecart minecart, Class<? extends SignAction> action);
 }

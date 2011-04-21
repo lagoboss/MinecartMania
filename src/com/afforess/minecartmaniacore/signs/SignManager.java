@@ -12,7 +12,7 @@ public class SignManager {
 	private static ConcurrentHashMap<Location, Sign> signList = new ConcurrentHashMap<Location, Sign>();
 	
 	public static Sign getSignAt(Location loc) {
-		if (!(loc.getBlock().getState() instanceof Sign)) {
+		if (!(loc.getBlock().getState() instanceof org.bukkit.block.Sign)) {
 			return null;
 		}
 		if (!(loc instanceof ComparableLocation)) {

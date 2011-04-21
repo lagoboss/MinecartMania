@@ -18,6 +18,7 @@ public class MinecartManiaCore extends JavaPlugin {
 	public final MinecartManiaCoreListener listener = new MinecartManiaCoreListener(this);
 	public final MinecartManiaCoreBlockListener blockListener = new MinecartManiaCoreBlockListener();
 	public final MinecartManiaCoreWorldListener worldListener = new MinecartManiaCoreWorldListener();
+	public final MinecartManiaActionListener actionListener = new MinecartManiaActionListener();
 	public static MinecartManiaLogger log = MinecartManiaLogger.getInstance();
 	public static Server server;
 	public static Plugin instance;
@@ -49,6 +50,7 @@ public class MinecartManiaCore extends JavaPlugin {
 		getServer().getPluginManager().registerEvent(Event.Type.VEHICLE_ENTER, listener, Priority.Monitor, this);
 		getServer().getPluginManager().registerEvent(Event.Type.CHUNK_UNLOAD, worldListener, Priority.Normal, this);
 		getServer().getPluginManager().registerEvent(Event.Type.REDSTONE_CHANGE, blockListener, Priority.Monitor, this);
+		getServer().getPluginManager().registerEvent(Event.Type.CUSTOM_EVENT, actionListener, Priority.Normal, this);
 
 		log.info( description.getName() + " version " + description.getVersion() + " is enabled!" );
 	}

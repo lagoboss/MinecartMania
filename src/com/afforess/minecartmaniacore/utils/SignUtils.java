@@ -8,6 +8,7 @@ import org.bukkit.block.Sign;
 
 import com.afforess.minecartmaniacore.MinecartManiaMinecart;
 import com.afforess.minecartmaniacore.MinecartManiaWorld;
+import com.afforess.minecartmaniacore.signs.SignManager;
 
 public class SignUtils {
 	public static boolean signMatches(Sign s1, Sign s2) {
@@ -40,6 +41,15 @@ public class SignUtils {
 					}
 				}
 			}
+		}
+		return signList;
+	}
+	
+	public static ArrayList<com.afforess.minecartmaniacore.signs.Sign> getAdjacentMinecartManiaSignList(Location location, int range) {
+		ArrayList<Sign> list = getAdjacentSignList(location, range);
+		ArrayList<com.afforess.minecartmaniacore.signs.Sign> signList = new ArrayList<com.afforess.minecartmaniacore.signs.Sign>(list.size());
+		for (Sign s : list) {
+			signList.add(SignManager.getSignAt(new Location(s.getWorld(), s.getX(), s.getY(), s.getZ())));
 		}
 		return signList;
 	}

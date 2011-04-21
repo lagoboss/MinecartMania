@@ -7,7 +7,6 @@ import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
-import org.bukkit.block.Sign;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Minecart;
@@ -19,14 +18,15 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import com.afforess.minecartmaniacore.config.ControlBlockList;
-import com.afforess.minecartmaniacore.event.MinecartBoostEvent;
-import com.afforess.minecartmaniacore.event.MinecartBrakeEvent;
 import com.afforess.minecartmaniacore.event.MinecartCaughtEvent;
 import com.afforess.minecartmaniacore.event.MinecartElevatorEvent;
 import com.afforess.minecartmaniacore.event.MinecartLaunchedEvent;
 import com.afforess.minecartmaniacore.event.MinecartManiaMinecartCreatedEvent;
 import com.afforess.minecartmaniacore.event.MinecartManiaMinecartDestroyedEvent;
+import com.afforess.minecartmaniacore.event.MinecartSpeedMultiplierEvent;
 import com.afforess.minecartmaniacore.event.MinecartTimeEvent;
+import com.afforess.minecartmaniacore.signs.LaunchMinecartAction;
+import com.afforess.minecartmaniacore.signs.Sign;
 import com.afforess.minecartmaniacore.utils.BlockUtils;
 import com.afforess.minecartmaniacore.utils.DirectionUtils;
 import com.afforess.minecartmaniacore.utils.MinecartUtils;
@@ -95,6 +95,10 @@ public class MinecartManiaMinecart {
 	public boolean isDead() {
 		return dead;
 	}
+	
+	public Location getLocation() {
+		return minecart.getLocation();
+	}
 
 	public Vector getPreviousLocation() {
 		return previousLocation.clone();
@@ -124,25 +128,37 @@ public class MinecartManiaMinecart {
 		}
 		return false;
 	}
-	
+
 	public double getMotionX() {
 		return minecart.getVelocity().getX();
 	}
 	
-	public double getMotionY() {
-		return minecart.getVelocity().getY();
-	}
-	
-	public double getMotionZ() {
-		return minecart.getVelocity().getZ();
+	public void changeMotionX(double change) {
+		setMotionX(getMotionX() + change);
 	}
 	
 	public void setMotionX(double motionX){
 		setMotion(motionX, getMotionY(), getMotionZ());
 	}
 	
+	public double getMotionY() {
+		return minecart.getVelocity().getY();
+	}
+	
+	public void changeMotionY(double change) {
+		setMotionY(getMotionY() + change);
+	}
+	
 	public void setMotionY(double motionY){
 		setMotion(getMotionX(), motionY, getMotionZ());
+	}
+	
+	public double getMotionZ() {
+		return minecart.getVelocity().getZ();
+	}
+	
+	public void changeMotionZ(double change) {
+		setMotionZ(getMotionZ() + change);
 	}
 	
 	public void setMotionZ(double motionZ){
@@ -249,29 +265,46 @@ public class MinecartManiaMinecart {
 		setMotionZ(getMotionZ() * -1);
 	}
 	
+	public void undoPoweredRails() {
+		//this server had decided to override the default boost value, so we need to undo notch's changes
+		if (ControlBlockList.getSpeedMultiplier(Item.getItem(getLocation().getBlock())) != 1.0D && isMoving()) {
+			int data = getLocation().getBlock().getData();
+			final double boost = 0.0078125D; //magic number from MC code
+			if (data == 2) {
+				changeMotionX(-boost);
+			}
+			else if (data == 3) {
+				changeMotionX(boost);
+			}
+			else if (data == 4) {
+				changeMotionZ(boost);
+			}
+			else if (data == 5) {
+				changeMotionZ(-boost);
+			}
+		}
+	}
+	
 	public boolean doSpeedMultiplierBlock() {
 		double multiplier = ControlBlockList.getSpeedMultiplier(getItemBeneath());
 		if (multiplier != 1.0D) {
 			if (ControlBlockList.isValidSpeedMultiplierBlock(getBlockBeneath())) {
-				if (multiplier < 0.0D) {
-					setMotionX(getMotionX() * multiplier);
-					setMotionY(getMotionY() * multiplier);
-					setMotionZ(getMotionZ() * multiplier);
-				}
-				else if (multiplier < 1.0D) {
-					MinecartBrakeEvent mbe = new MinecartBrakeEvent(this, 1 / multiplier);
-					MinecartManiaCore.server.getPluginManager().callEvent(mbe);
-					multiplyMotion(1 / mbe.getBrakeDivisor());
-		    		return mbe.getBrakeDivisor() !=  1.0D;
-				}
-				else if (multiplier > 1.0D) {
-					MinecartBoostEvent mbe = new MinecartBoostEvent(this, multiplier);
-					MinecartManiaCore.server.getPluginManager().callEvent(mbe);
-					multiplyMotion(mbe.getBoostMultiplier());
-		    		return mbe.getBoostMultiplier() != 1.0D;
-				}
+				MinecartSpeedMultiplierEvent msme = new MinecartSpeedMultiplierEvent(this, multiplier);
+				MinecartManiaCore.server.getPluginManager().callEvent(msme);
+				multiplyMotion(msme.getSpeedMultiplier());
+		    	return msme.isCancelled();
 			}
     	}
+		//check for powered rails
+		multiplier = ControlBlockList.getSpeedMultiplier(Item.getItem(getLocation().getBlock()));
+		if (multiplier != 1.0D) {
+			if (ControlBlockList.isValidSpeedMultiplierBlock(getLocation().getBlock())) {
+				MinecartSpeedMultiplierEvent msme = new MinecartSpeedMultiplierEvent(this, multiplier);
+				MinecartManiaCore.server.getPluginManager().callEvent(msme);
+				multiplyMotion(msme.getSpeedMultiplier());
+		    	return msme.isCancelled();
+			}
+		}
 		return false;
 	}
 	
@@ -333,51 +366,10 @@ public class MinecartManiaMinecart {
 	}
 	
 	public void launchCart(double speed) {
-		ArrayList<Sign> signList = SignUtils.getAdjacentSignList(this, 2);
-loop:   for (Sign sign : signList) {
-			for (int i = 0; i < 4; i++) {
-				if (sign.getLine(i).toLowerCase().contains("launch north")) {
-					if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX(), getY(), getZ(), 2, DirectionUtils.CompassDirection.NORTH)) {
-						sign.setLine(i, "[Launch North]");
-						sign.update();
-						setMotion(DirectionUtils.CompassDirection.NORTH, speed);
-						break loop;
-					}
-				}
-				if (sign.getLine(i).toLowerCase().contains("launch east")) {
-					if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX(), getY(), getZ(), 2, DirectionUtils.CompassDirection.EAST)) {
-						sign.setLine(i, "[Launch East]");
-						sign.update();
-						setMotion(DirectionUtils.CompassDirection.EAST, speed);
-						break loop;
-					}
-				}
-				if (sign.getLine(i).toLowerCase().contains("launch south")) {
-					if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX(), getY(), getZ(), 2, DirectionUtils.CompassDirection.SOUTH)) {
-						sign.setLine(i, "[Launch South]");
-						sign.update();
-						setMotion(DirectionUtils.CompassDirection.SOUTH, speed);
-						break loop;
-					}
-				}
-				if (sign.getLine(i).toLowerCase().contains("launch west")) {
-					if (MinecartUtils.validMinecartTrack(minecart.getWorld(), getX(), getY(), getZ(), 2, DirectionUtils.CompassDirection.WEST)) {
-						sign.setLine(i, "[Launch West]");
-						sign.update();
-						setMotion(DirectionUtils.CompassDirection.WEST, speed);
-						break loop;
-					}
-				}
-				if (sign.getLine(i).toLowerCase().contains("previous dir")) {
-					if (!this.getDirection().equals(DirectionUtils.CompassDirection.NO_DIRECTION)) {
-						if (MinecartUtils.validMinecartTrackAnyDirection(minecart.getWorld(), getX(), getY(), getZ(), 2)) {
-							sign.setLine(i, "[Previous Dir]");
-							sign.update();
-							setMotion(this.getDirection(), speed);
-							break loop;
-						}
-					}
-				}
+		ArrayList<Sign> signList = SignUtils.getAdjacentMinecartManiaSignList(getLocation(), 2);
+		for (Sign sign : signList) {
+			if (sign.executeAction(this, LaunchMinecartAction.class)) {
+				break;
 			}
 		}
 		if (!isMoving()) {

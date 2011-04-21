@@ -10,7 +10,7 @@ public class MinecartSpeedMultiplierEvent extends MinecartManiaEvent implements 
 	private MinecartManiaMinecart minecart;
 	private double multiplier;
 	private final double origMultiplier;
-	protected MinecartSpeedMultiplierEvent(MinecartManiaMinecart minecart, double multiplier) {
+	public MinecartSpeedMultiplierEvent(MinecartManiaMinecart minecart, double multiplier) {
 		super("MinecartSpeedAlterEvent");
 		this.minecart = minecart;
 		this.multiplier = multiplier;

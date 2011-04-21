@@ -14,4 +14,22 @@ public class LaunchPlayerAction implements SignAction{
 		minecart.setDataValue("hold sign data", null);
 		return true;
 	}
+
+	@Override
+	public boolean async() {
+		return true;
+	}
+
+	@Override
+	public boolean valid(Sign sign) {
+		for (String line : sign.getLines()) {
+			if (line.toLowerCase().contains("launch player")) {
+				sign.addBrackets();
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	
 }

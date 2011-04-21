@@ -41,6 +41,9 @@ import com.afforess.minecartmaniacore.event.MinecartDirectionChangeEvent;
 import com.afforess.minecartmaniacore.event.MinecartIntersectionEvent;
 import com.afforess.minecartmaniacore.event.MinecartMotionStartEvent;
 import com.afforess.minecartmaniacore.event.MinecartMotionStopEvent;
+import com.afforess.minecartmaniacore.signs.LaunchPlayerAction;
+import com.afforess.minecartmaniacore.signs.MinecartManiaSign;
+import com.afforess.minecartmaniacore.signs.SignManager;
 import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
 import com.afforess.minecartmaniacore.utils.EntityUtils;
 import com.afforess.minecartmaniacore.utils.MinecartUtils;
@@ -85,6 +88,7 @@ public class MinecartManiaCoreListener extends VehicleListener{
 			minecart.setWasMovingLastTick(minecart.isMoving());
 			minecart.doRealisticFriction();
 			minecart.doLauncherBlock();
+			minecart.undoPoweredRails();
 			if (minecart.isMoving()) {
 				minecart.updateChunks();
 			}
@@ -206,15 +210,10 @@ public class MinecartManiaCoreListener extends VehicleListener{
 		if (ControlBlockList.isCatcherBlock(minecart.getItemBeneath())) {
 			if (!minecart.isMoving()) {
 				ArrayList<Sign> signs = SignUtils.getAdjacentSignList(minecart, 2);
-signs:			for (final Sign sign : signs) {
-					for (int i = 0; i < 4; i++) {
-						if (sign.getLine(i).toLowerCase().contains("launch player")) {
-							sign.setLine(i, "[Launch Player]");
-							minecart.setDataValue("launch", true);
-							minecart.setDataValue("hold sign data", null);
-							sign.update();
-							break signs;
-						}
+				for (Sign s : signs) {
+					com.afforess.minecartmaniacore.signs.Sign sign = SignManager.getSignAt(s.getBlock().getLocation());
+					if (sign.executeAction(minecart, LaunchPlayerAction.class)) {
+						break;
 					}
 				}
 			}

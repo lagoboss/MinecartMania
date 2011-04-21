@@ -1,6 +1,7 @@
 package com.afforess.minecartmaniacore.signs;
 
-import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Location;
@@ -15,7 +16,7 @@ import com.afforess.minecartmaniacore.utils.WordUtils;
 public class MinecartManiaSign implements Sign{
 	protected final Location location;
 	protected volatile String[] lines;
-	protected ArrayList<SignAction> actions = new ArrayList<SignAction>(4);
+	protected HashSet<SignAction> actions = new HashSet<SignAction>();
 	protected final ConcurrentHashMap<Object, Object> data = new ConcurrentHashMap<Object, Object>();
 	
 	public MinecartManiaSign(org.bukkit.block.Sign sign) {
@@ -90,7 +91,7 @@ public class MinecartManiaSign implements Sign{
 	@Override
 	public void update(org.bukkit.block.Sign sign) {
 		lines = sign.getLines();
-		actions = new ArrayList<SignAction>(4);
+		actions = new HashSet<SignAction>();
 	}
 	
 	private int hashCode(String[] lines) {
@@ -133,15 +134,37 @@ public class MinecartManiaSign implements Sign{
 	public boolean hasSignAction(SignAction action) {
 		return actions.contains(action);
 	}
+	
+	@Override
+	public boolean executeActions(MinecartManiaMinecart minecart, boolean sync) {
+		for (SignAction action : actions) {
+			if (!sync && action.async()) {
+				(new SignActionThread(minecart, action)).start();
+			}
+			else {
+				action.execute(minecart);
+			}
+		}
+		return actions.size() > 0;
+	}
 
 	@Override
 	public boolean executeActions(MinecartManiaMinecart minecart) {
-		boolean didAction = false;
-		for (SignAction action : actions) {
-			if (action.execute(minecart)) {
-				didAction = true;
+		return executeActions(minecart, false);
+	}
+	
+	@Override
+	public boolean executeAction(MinecartManiaMinecart minecart, Class<? extends SignAction> action) {
+		Iterator<SignAction> i = actions.iterator();
+		boolean success = false;
+		while(i.hasNext()){
+			SignAction executor = i.next();
+			if (action.isInstance(executor)) {
+				if (executor.execute(minecart)) {
+					success = true;
+				}
 			}
 		}
-		return didAction;
+		return success;
 	}
 }

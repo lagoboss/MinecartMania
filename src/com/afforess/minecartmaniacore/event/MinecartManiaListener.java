@@ -117,25 +117,7 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
 	public void onMinecartClickedEvent(MinecartClickedEvent event) {
 		
 	}
-	
-	/**
-	 * Called when a minecart is boosted by a control block
-	 * 
-	 * @param event
-	 */
-	public void onMinecartBoostedEvent(MinecartBoostEvent event) {
-		
-	}
-	
-	/**
-	 * Called when a minecart is braked from a control block
-	 * 
-	 * @param event
-	 */
-	public void onMinecartBrakedEvent(MinecartBrakeEvent event) {
-		
-	}
-	
+
 	/**
 	 * Called when a minecart is caught by a catcher block
 	 * 
@@ -263,12 +245,6 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
 		}
 		else if (event instanceof MinecartClickedEvent) {
 			onMinecartClickedEvent((MinecartClickedEvent)event);
-		}
-		else if (event instanceof MinecartBoostEvent) {
-			onMinecartBoostedEvent((MinecartBoostEvent)event);
-		}
-		else if (event instanceof MinecartBrakeEvent) {
-			onMinecartBrakedEvent((MinecartBrakeEvent)event);
 		}
 		else if (event instanceof MinecartCaughtEvent) {
 			onMinecartCaughtEvent((MinecartCaughtEvent)event);

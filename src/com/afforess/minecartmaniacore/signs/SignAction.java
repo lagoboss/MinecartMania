@@ -14,4 +14,17 @@ public interface SignAction{
 	 * @return true if an action was exectued
 	 */
 	public boolean execute(MinecartManiaMinecart minecart);
+	
+	/**
+	 * Whether this action can be exectuted on a separate thread
+	 * @return true if this can be executed on a separate thread
+	 */
+	public boolean async();
+	
+	/**
+	 * Whether the sign is valid for this SignAction
+	 * @param sign to check against
+	 * @return true if the sign is valid
+	 */
+	public boolean valid(Sign sign);
 }
