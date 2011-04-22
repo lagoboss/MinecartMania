@@ -40,8 +40,11 @@ public class MinecartManiaSign implements Sign{
 
 	@Override
 	public void setLine(int line, String text) {
-		lines[line] = text;
-		getSign().setLine(line, text);
+		if (text.length() < 16) 
+			lines[line] = text;
+		else
+			lines[line] = text.substring(0, 15);
+		getSign().setLine(line, lines[line]);
 		getSign().update();
 	}
 	
@@ -52,10 +55,9 @@ public class MinecartManiaSign implements Sign{
 	public void addBrackets() {
 		for (int i = 0; i < getNumLines(); i++) {
 			if (!getLine(i).isEmpty()) {
-				getSign().setLine(i, WordUtils.capitalize(StringUtils.addBrackets((getLine(i)))));
+				setLine(i, WordUtils.capitalize(StringUtils.addBrackets((getLine(i)))));
 			}
 		}
-		getSign().update();
 	}
 
 	@Override

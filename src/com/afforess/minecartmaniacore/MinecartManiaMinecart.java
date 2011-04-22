@@ -34,6 +34,7 @@ import com.afforess.minecartmaniacore.signs.LaunchMinecartAction;
 import com.afforess.minecartmaniacore.signs.Sign;
 import com.afforess.minecartmaniacore.utils.BlockUtils;
 import com.afforess.minecartmaniacore.utils.DirectionUtils;
+import com.afforess.minecartmaniacore.utils.EntityUtils;
 import com.afforess.minecartmaniacore.utils.MinecartUtils;
 import com.afforess.minecartmaniacore.utils.SignUtils;
 import com.afforess.minecartmaniacore.utils.StringUtils;
@@ -846,7 +847,7 @@ public class MinecartManiaMinecart {
 			ControlBlock cb = ControlBlockList.getControlBlock(Item.getItem(block));
 			if (cb != null && cb.updateToPoweredRail) {
 				Block rail = block.getRelative(0, 1, 0);
-				if (MinecartUtils.isTrack(rail) && !MinecartUtils.isCurvedTrack(rail) && !MinecartUtils.isSlopedTrack(rail)) {
+				if (MinecartUtils.isTrack(rail) && !MinecartUtils.isCurvedTrack(rail)) {
 					rail.setTypeId(Item.POWERED_RAIL.getId());
 					//analyze for replacement block
 					HashMap<Item, Integer> replacement = new HashMap<Item, Integer>();
@@ -864,8 +865,10 @@ public class MinecartManiaMinecart {
 					while(i.hasNext()) {
 						Entry<Item, Integer> entry = i.next();
 						if (best == null || entry.getValue() > count) {
-							best = entry.getKey();
-							count = entry.getValue();
+							if (EntityUtils.isSolidMaterial(entry.getKey().toMaterial())) {
+								best = entry.getKey();
+								count = entry.getValue();
+							}
 						}
 					}
 					if (best != null) {
