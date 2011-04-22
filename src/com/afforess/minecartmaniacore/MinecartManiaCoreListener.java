@@ -100,6 +100,7 @@ public class MinecartManiaCoreListener extends VehicleListener{
 			}
 			
 			if (minecart.hasChangedPosition() || minecart.createdLastTick) {
+				minecart.updateToPoweredRails();
 				if (minecart.isAtIntersection()) {
 					MinecartIntersectionEvent mie = new MinecartIntersectionEvent(minecart);
 					MinecartManiaCore.server.getPluginManager().callEvent(mie);

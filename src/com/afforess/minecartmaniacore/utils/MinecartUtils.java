@@ -44,9 +44,18 @@ public class MinecartUtils {
 			validMinecartTrack(w, x, y, z, range, DirectionUtils.CompassDirection.WEST);
 	}
 	
+	public static boolean isSlopedTrack(Block rail) {
+		return isSlopedTrack(rail.getWorld(), rail.getX(), rail.getY(), rail.getZ());
+	}
+	
 	public static boolean isSlopedTrack(World w, int x, int y, int z) {
 		int data = MinecartManiaWorld.getBlockData(w, x, y, z);
 		return data >= 0x2 && data <= 0x5;
+	}
+	
+	public static boolean isCurvedTrack(Block rail) {
+		int data = rail.getData();
+		return data > 5 && data < 10;
 	}
 	
 	public static boolean validMinecartTrack(Location loc, int range, CompassDirection direction) {

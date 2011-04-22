@@ -1,12 +1,14 @@
 package com.afforess.minecartmaniacore.config;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.afforess.minecartmaniacore.Item;
 
 public class ControlBlock {
 	
 	private Item type = null;
-	private double multiplier = 1.0;
-	private RedstoneState multiplierState = RedstoneState.Default;
+	private List<SpeedMultiplier> multipliers = new ArrayList<SpeedMultiplier>();
 	private boolean catcher = false;
 	private RedstoneState catcherState = RedstoneState.Default;
 	private double launchSpeed = 0D;
@@ -23,6 +25,7 @@ public class ControlBlock {
 	private RedstoneState killState = RedstoneState.Default;
 	private boolean elevator = false;
 	private RedstoneState elevatorState = RedstoneState.Default;
+	public boolean updateToPoweredRail = false; //temporary, remove for MC 1.6
 	
 	public ControlBlock() {
 	}
@@ -35,20 +38,12 @@ public class ControlBlock {
 		this.type = type;
 	}
 	
-	public double getMultiplier() {
-		return multiplier;
+	public List<SpeedMultiplier> getSpeedMultipliers() {
+		return multipliers;
 	}
 	
-	protected void setMultiplier(double multiplier) {
-		this.multiplier = multiplier;
-	}
-	
-	protected void setMultiplierState(RedstoneState multiplierState) {
-		this.multiplierState = multiplierState;
-	}
-
-	public RedstoneState getMultiplierState() {
-		return multiplierState;
+	protected void setSpeedMultipliers(List<SpeedMultiplier> list) {
+		this.multipliers = list;
 	}
 	
 	public boolean isCatcherBlock() {
@@ -182,6 +177,6 @@ public class ControlBlock {
 	}
 	
 	public String toString() {
-		return "[" + getType() + ":" + getMultiplier() + ":" + isCatcherBlock() + ":" + getLauncherSpeed() + ":" + isEjectorBlock() + ":" + isPlatformBlock() + ":" + isStationBlock() + "]";
+		return "[" + getType() + ":" + isCatcherBlock() + ":" + getLauncherSpeed() + ":" + isEjectorBlock() + ":" + isPlatformBlock() + ":" + isStationBlock() + "]";
 	}
 }

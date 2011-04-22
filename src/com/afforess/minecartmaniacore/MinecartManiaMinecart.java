@@ -1,7 +1,11 @@
 package com.afforess.minecartmaniacore;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -17,6 +21,7 @@ import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
+import com.afforess.minecartmaniacore.config.ControlBlock;
 import com.afforess.minecartmaniacore.config.ControlBlockList;
 import com.afforess.minecartmaniacore.event.MinecartCaughtEvent;
 import com.afforess.minecartmaniacore.event.MinecartElevatorEvent;
@@ -171,13 +176,10 @@ public class MinecartManiaMinecart {
 	 * @param multiplier
 	 */
 	public void multiplyMotion(double multiplier) {
-		if (MAXIMUM_MOMENTUM / multiplier > Math.abs(getMotionX())) {
+		if (MAXIMUM_MOMENTUM / Math.abs(multiplier) > Math.abs(getMotionX())) {
 			setMotionX(getMotionX() * multiplier);
 		}
-		if (MAXIMUM_MOMENTUM / multiplier > Math.abs(getMotionY())) {
-			setMotionY(getMotionY() * multiplier);
-		}
-		if (MAXIMUM_MOMENTUM / multiplier > Math.abs(getMotionZ())) {
+		if (MAXIMUM_MOMENTUM / Math.abs(multiplier) > Math.abs(getMotionZ())) {
 			setMotionZ(getMotionZ() * multiplier);
 		}
 	}
@@ -234,20 +236,24 @@ public class MinecartManiaMinecart {
 		 }
 	 }
 	
+	 
 	public int getBlockIdBeneath() {
 		return MinecartManiaWorld.getBlockIdAt(minecart.getWorld(), getX(), getY()-1, getZ());
 	}
 	
 	public Item getItemBeneath() {
-		Item item = Item.getItem(MinecartManiaWorld.getBlockIdAt(minecart.getWorld(), getX(), getY()-1, getZ()), MinecartManiaWorld.getBlockData(minecart.getWorld(), getX(), getY()-1, getZ()));
-		if (Item.getItem(MinecartManiaWorld.getBlockIdAt(minecart.getWorld(), getX(), getY()-1, getZ())).size() == 1) {
-			item = Item.getItem(MinecartManiaWorld.getBlockIdAt(minecart.getWorld(), getX(), getY()-1, getZ())).get(0);
-		}
-		return item;
+		return Item.getItem(getBlockBeneath());
 	}
 	
 	public Block getBlockBeneath() {
-		return MinecartManiaWorld.getBlockAt(minecart.getWorld(), getX(), getY()-1, getZ());
+		if (ControlBlockList.getControlBlock(Item.getItem(getLocation().getBlock())) != null) {
+			return getLocation().getBlock();
+		}
+		else {
+			Location temp = getLocation();
+			temp.setY(temp.getY() - 1);
+			return temp.getBlock();
+		}
 	}
 	
 	public boolean isPoweredBeneath() {
@@ -267,7 +273,7 @@ public class MinecartManiaMinecart {
 	
 	public void undoPoweredRails() {
 		//this server had decided to override the default boost value, so we need to undo notch's changes
-		if (ControlBlockList.getSpeedMultiplier(Item.getItem(getLocation().getBlock())) != 1.0D && isMoving()) {
+		if (ControlBlockList.getSpeedMultiplier(this) != 1.0D && isMoving()) {
 			int data = getLocation().getBlock().getData();
 			final double boost = 0.0078125D; //magic number from MC code
 			if (data == 2) {
@@ -286,24 +292,20 @@ public class MinecartManiaMinecart {
 	}
 	
 	public boolean doSpeedMultiplierBlock() {
-		double multiplier = ControlBlockList.getSpeedMultiplier(getItemBeneath());
+		double multiplier = ControlBlockList.getSpeedMultiplier(this);
 		if (multiplier != 1.0D) {
-			if (ControlBlockList.isValidSpeedMultiplierBlock(getBlockBeneath())) {
-				MinecartSpeedMultiplierEvent msme = new MinecartSpeedMultiplierEvent(this, multiplier);
-				MinecartManiaCore.server.getPluginManager().callEvent(msme);
-				multiplyMotion(msme.getSpeedMultiplier());
-		    	return msme.isCancelled();
-			}
+			MinecartSpeedMultiplierEvent msme = new MinecartSpeedMultiplierEvent(this, multiplier);
+			MinecartManiaCore.server.getPluginManager().callEvent(msme);
+			multiplyMotion(msme.getSpeedMultiplier());
+	    	return msme.isCancelled();
     	}
 		//check for powered rails
-		multiplier = ControlBlockList.getSpeedMultiplier(Item.getItem(getLocation().getBlock()));
+		multiplier = ControlBlockList.getSpeedMultiplier(this);
 		if (multiplier != 1.0D) {
-			if (ControlBlockList.isValidSpeedMultiplierBlock(getLocation().getBlock())) {
-				MinecartSpeedMultiplierEvent msme = new MinecartSpeedMultiplierEvent(this, multiplier);
-				MinecartManiaCore.server.getPluginManager().callEvent(msme);
-				multiplyMotion(msme.getSpeedMultiplier());
-		    	return msme.isCancelled();
-			}
+			MinecartSpeedMultiplierEvent msme = new MinecartSpeedMultiplierEvent(this, multiplier);
+			MinecartManiaCore.server.getPluginManager().callEvent(msme);
+			multiplyMotion(msme.getSpeedMultiplier());
+	    	return msme.isCancelled();
 		}
 		return false;
 	}
@@ -736,8 +738,8 @@ public class MinecartManiaMinecart {
 		if (MinecartManiaWorld.isKeepMinecartsLoaded()) {
 			Chunk current = minecart.getLocation().getBlock().getChunk();
 			Chunk old = previousLocation.toLocation(minecart.getWorld()).getBlock().getChunk();
-			int range = 6;
-			ArrayList<Chunk> toLoad = new ArrayList<Chunk>();
+			int range = 3;
+			HashSet<Chunk> toLoad = new HashSet<Chunk>();
 			for (int dx = -(range); dx <= range; dx++){
 				for (int dz = -(range); dz <= range; dz++){
 					Chunk chunk = current.getWorld().getChunkAt(current.getX() + dx, current.getZ() + dz);
@@ -836,5 +838,41 @@ public class MinecartManiaMinecart {
 			}
 		}
 		return false;
+	}
+	
+	public void updateToPoweredRails() {
+		List<Block> blocks = getAdjacentBlocks(2);
+		for (Block block : blocks) {
+			ControlBlock cb = ControlBlockList.getControlBlock(Item.getItem(block));
+			if (cb != null && cb.updateToPoweredRail) {
+				Block rail = block.getRelative(0, 1, 0);
+				if (MinecartUtils.isTrack(rail) && !MinecartUtils.isCurvedTrack(rail) && !MinecartUtils.isSlopedTrack(rail)) {
+					rail.setTypeId(Item.POWERED_RAIL.getId());
+					//analyze for replacement block
+					HashMap<Item, Integer> replacement = new HashMap<Item, Integer>();
+					for (Block loop : BlockUtils.getAdjacentBlocks(block.getLocation(), 1)) {
+						if (replacement.containsKey(Item.getItem(loop))) {
+							replacement.put((Item.getItem(loop)), replacement.get(Item.getItem(loop)) + 1);
+						}
+						else {
+							replacement.put((Item.getItem(loop)), 1);
+						}
+					}
+					Item best = null;
+					int count = 0;
+					Iterator<Entry<Item, Integer>> i = replacement.entrySet().iterator();
+					while(i.hasNext()) {
+						Entry<Item, Integer> entry = i.next();
+						if (best == null || entry.getValue() > count) {
+							best = entry.getKey();
+							count = entry.getValue();
+						}
+					}
+					if (best != null) {
+						block.setTypeId(best.getId());
+					}
+				}
+			}
+		}
 	}
 }

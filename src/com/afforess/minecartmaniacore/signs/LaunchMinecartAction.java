@@ -3,6 +3,7 @@ package com.afforess.minecartmaniacore.signs;
 import org.bukkit.util.Vector;
 
 import com.afforess.minecartmaniacore.MinecartManiaMinecart;
+import com.afforess.minecartmaniacore.config.ControlBlockList;
 
 public class LaunchMinecartAction implements SignAction {
 	private volatile Vector launchSpeed = null;
@@ -14,9 +15,14 @@ public class LaunchMinecartAction implements SignAction {
 
 	@Override
 	public boolean execute(MinecartManiaMinecart minecart) {
+		if (!ControlBlockList.isCatcherBlock(minecart.getItemBeneath())) {
+			return false;
+		}
 		Vector launch = calculateLaunchSpeed(false);
 		if (previous) {
-			minecart.setMotion(minecart.getPreviousDirectionOfMotion(), 0.6D);
+			if (minecart.getPreviousDirectionOfMotion() != null) {
+				minecart.setMotion(minecart.getPreviousDirectionOfMotion(), 0.6D);
+			}
 		}
 		else {
 			minecart.minecart.setVelocity(launch);

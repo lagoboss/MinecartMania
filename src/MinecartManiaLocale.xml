@@ -124,7 +124,7 @@
 		</TextKey>
 		<TextKey>
 			<Key>SignCommandsMinecartLockedError</Key>
-			<Text>[YELLOW]Your minecart is locked. \n[YELLOW]It will unlock when you reach your destination.</Text>
+			<Text>[YELLOW]Your minecart is locked. \n[YELLOW]It will unlock at your destination.</Text>
 		</TextKey>
 		<TextKey>
 			<Key>SignCommandsDestination</Key>

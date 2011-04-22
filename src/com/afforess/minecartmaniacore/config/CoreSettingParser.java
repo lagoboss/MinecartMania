@@ -1,7 +1,6 @@
 package com.afforess.minecartmaniacore.config;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.jar.JarEntry;
@@ -25,9 +24,10 @@ import com.afforess.minecartmaniacore.MinecartManiaCore;
 import com.afforess.minecartmaniacore.MinecartManiaWorld;
 import com.afforess.minecartmaniacore.debug.DebugMode;
 import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
+import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
 
 public class CoreSettingParser implements SettingParser{
-	private static final double version = 1.4;
+	private static final double version = 1.5;
 	
 	public boolean isUpToDate(Document document) {
 		try {
@@ -112,50 +112,106 @@ public class CoreSettingParser implements SettingParser{
 					Node tempNode = (Node) templist.item(0);
 					cb.setType(MinecartManiaConfigurationParser.toItem(getNodeValue(tempNode)));
 					
-					templist = element.getElementsByTagName("SpeedMultiplier").item(0).getChildNodes();
-					tempNode = (Node) templist.item(0);
-					cb.setMultiplierState(parseRedstoneState(getParentFirstAttributeValue(tempNode)));
-					cb.setMultiplier(MinecartManiaConfigurationParser.toDouble(getNodeValue(tempNode), 1.0));
-					
+					templist = element.getElementsByTagName("SpeedMultiplier");
+					ArrayList<SpeedMultiplier> speedMultipliers = new ArrayList<SpeedMultiplier>();
+					if (templist != null) {
+						for (int multiplier = 0; multiplier < templist.getLength(); multiplier++) {
+							Node node = list.item(temp);
+							if (node.getNodeType() == Node.ELEMENT_NODE) {
+								Element elem = (Element)node;
+								SpeedMultiplier speed = new SpeedMultiplier();
+
+								NodeList templist2 = elem.getElementsByTagName("Redstone").item(multiplier).getChildNodes();
+								tempNode = (Node) templist2.item(0);
+								speed.redstone = parseRedstoneState(getNodeValue(tempNode));
+
+								templist2 = elem.getElementsByTagName("Multiplier").item(multiplier).getChildNodes();
+								tempNode = (Node) templist2.item(0);
+								speed.multiplier = MinecartManiaConfigurationParser.toDouble(getNodeValue(tempNode), 1.0);
+
+								templist2 = elem.getElementsByTagName("Direction").item(multiplier).getChildNodes();
+								tempNode = (Node) templist2.item(0);
+								speed.direction = parseDirectionState(getNodeValue(tempNode));
+	
+								//at this point, I am running out of variable names...
+								templist2 = elem.getElementsByTagName("MinecartTypes");
+								templist2 = ((Element)templist2.item(multiplier)).getElementsByTagName("MinecartType");
+								boolean types[] = new boolean[3];
+								for (int i = 0; i < templist2.getLength(); i++) {
+									Node node2 = templist2.item(i).getChildNodes().item(0);
+									String type = getNodeValue(node2);
+									if (type == null) {
+										continue;
+									}
+									if (type.equalsIgnoreCase("standard")) {
+										types[0] = true;
+									}
+									else if (type.equalsIgnoreCase("powered")) {
+										types[1] = true;
+									}
+									else if (type.equalsIgnoreCase("storage")) {
+										types[2] = true;
+									}
+								}
+								speed.types = types;
+
+								templist2 = elem.getElementsByTagName("Passenger").item(multiplier).getChildNodes();
+								tempNode = (Node) templist2.item(0);
+								speed.passenger = parsePassengerState(getNodeValue(tempNode));
+
+								speedMultipliers.add(speed);
+							}
+						}
+					}
+					cb.setSpeedMultipliers(speedMultipliers);
+
 					templist = element.getElementsByTagName("Catch").item(0).getChildNodes();
 					tempNode = (Node) templist.item(0);
 					cb.setCatcherState(parseRedstoneState(getParentFirstAttributeValue(tempNode)));
 					cb.setCatcherBlock(MinecartManiaConfigurationParser.toBool(getNodeValue(tempNode)));
-					
+
 					templist = element.getElementsByTagName("LauncherSpeed").item(0).getChildNodes();
 					tempNode = (Node) templist.item(0);
 					cb.setLauncherState(parseRedstoneState(getParentFirstAttributeValue(tempNode)));
 					cb.setLauncherSpeed(MinecartManiaConfigurationParser.toDouble(getNodeValue(tempNode), 0.0));
-					
+
 					templist = element.getElementsByTagName("Eject").item(0).getChildNodes();
 					tempNode = (Node) templist.item(0);
 					cb.setEjectorState(parseRedstoneState(getParentFirstAttributeValue(tempNode)));
 					cb.setEjectorBlock(MinecartManiaConfigurationParser.toBool(getNodeValue(tempNode)));
-					
+
 					templist = element.getElementsByTagName("Platform").item(0).getChildNodes();
 					tempNode = (Node) templist.item(0);
 					cb.setPlatformState(parseRedstoneState(getParentFirstAttributeValue(tempNode)));
 					cb.setPlatformBlock(MinecartManiaConfigurationParser.toBool(getNodeValue(tempNode)));
-					
+
 					templist = element.getElementsByTagName("Station").item(0).getChildNodes();
 					tempNode = (Node) templist.item(0);
 					cb.setStationState(parseRedstoneState(getParentFirstAttributeValue(tempNode)));
 					cb.setStationBlock(MinecartManiaConfigurationParser.toBool(getNodeValue(tempNode)));
-					
+
 					templist = element.getElementsByTagName("SpawnMinecart").item(0).getChildNodes();
 					tempNode = (Node) templist.item(0);
 					cb.setSpawnState(parseRedstoneState(getParentFirstAttributeValue(tempNode)));
 					cb.setSpawnMinecart(MinecartManiaConfigurationParser.toBool(getNodeValue(tempNode)));
-					
+
 					templist = element.getElementsByTagName("KillMinecart").item(0).getChildNodes();
 					tempNode = (Node) templist.item(0);
 					cb.setKillState(parseRedstoneState(getParentFirstAttributeValue(tempNode)));
 					cb.setKillMinecart(MinecartManiaConfigurationParser.toBool(getNodeValue(tempNode)));
-					
+
 					templist = element.getElementsByTagName("Elevator").item(0).getChildNodes();
 					tempNode = (Node) templist.item(0);
 					cb.setElevatorState(parseRedstoneState(getParentFirstAttributeValue(tempNode)));
 					cb.setElevatorBlock(MinecartManiaConfigurationParser.toBool(getNodeValue(tempNode)));
+					
+					//Allow this XML tag to be optional, since it's not permenant
+					try {
+						templist = element.getElementsByTagName("AutoConvertToPoweredRails").item(0).getChildNodes();
+						tempNode = (Node) templist.item(0);
+						cb.updateToPoweredRail = MinecartManiaConfigurationParser.toBool(getNodeValue(tempNode));
+					}
+					catch (Exception eTemp) {}
 
 					ControlBlockList.controlBlocks.add(cb);
 				}
@@ -183,6 +239,7 @@ public class CoreSettingParser implements SettingParser{
 			}
 		}
 		catch (Exception e) {
+			e.printStackTrace();
 			return false;
 		}
 		
@@ -257,13 +314,19 @@ public class CoreSettingParser implements SettingParser{
 			JarFile jar = new JarFile(MinecartManiaCore.MinecartManiaCore);
 			JarEntry entry = jar.getJarEntry("MinecartManiaConfiguration.xml");
 			InputStream is = jar.getInputStream(entry);
-			FileOutputStream os = new FileOutputStream(configFile);
-			byte[] buf = new byte[(int)entry.getSize()];
-			is.read(buf, 0, (int)entry.getSize());
-			os.write(buf);
-			os.close();
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document document = dBuilder.parse(is);
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			Transformer transformer = transformerFactory.newTransformer();
+			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+			transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+			DOMSource source = new DOMSource(document);
+			StreamResult result = new StreamResult(configFile);
+			transformer.transform(source, result);
 		}
 		catch (Exception e) {
+			e.printStackTrace();
 			return false;
 		}
 		return true;
@@ -279,10 +342,26 @@ public class CoreSettingParser implements SettingParser{
 		return getNodeValue(node.getParentNode().getAttributes().item(0));
 	}
 	
+	private CompassDirection parseDirectionState(String str) {
+		if (str == null || str.equalsIgnoreCase("any")) return CompassDirection.NO_DIRECTION;
+		if (str.equalsIgnoreCase("north")) return CompassDirection.NORTH;
+		if (str.equalsIgnoreCase("south")) return CompassDirection.SOUTH;
+		if (str.equalsIgnoreCase("east")) return CompassDirection.EAST;
+		if (str.equalsIgnoreCase("west")) return CompassDirection.WEST;
+		return CompassDirection.NO_DIRECTION;
+	}
+
 	private RedstoneState parseRedstoneState(String str) {
 		if (str == null || str.equalsIgnoreCase("default")) return RedstoneState.Default;
 		if (str.toLowerCase().contains("enable")) return RedstoneState.Enables;
 		if (str.toLowerCase().contains("disable")) return RedstoneState.Disables;
 		return RedstoneState.Default;
+	}
+	
+	private PassengerState parsePassengerState(String str) {
+		if (str == null || str.equalsIgnoreCase("default")) return PassengerState.Default;
+		if (str.toLowerCase().contains("enable")) return PassengerState.Enables;
+		if (str.toLowerCase().contains("disable")) return PassengerState.Disables;
+		return PassengerState.Default;
 	}
 }

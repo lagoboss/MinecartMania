@@ -136,6 +136,18 @@ public class MinecartManiaSign implements Sign{
 	}
 	
 	@Override
+	public boolean hasSignAction(Class<? extends SignAction> action) {
+		Iterator<SignAction> i = actions.iterator();
+		while(i.hasNext()){
+			SignAction executor = i.next();
+			if (action.isInstance(executor)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	@Override
 	public boolean executeActions(MinecartManiaMinecart minecart, boolean sync) {
 		for (SignAction action : actions) {
 			if (!sync && action.async()) {
@@ -167,4 +179,6 @@ public class MinecartManiaSign implements Sign{
 		}
 		return success;
 	}
+
+
 }

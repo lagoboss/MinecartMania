@@ -6,6 +6,8 @@ import java.util.List;
 import org.bukkit.block.Block;
 
 import com.afforess.minecartmaniacore.Item;
+import com.afforess.minecartmaniacore.MinecartManiaMinecart;
+import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
 
 public class ControlBlockList {
 	protected static ArrayList<ControlBlock> controlBlocks = new ArrayList<ControlBlock>();
@@ -27,16 +29,42 @@ public class ControlBlockList {
 		return null;
 	}
 	
-	public static double getSpeedMultiplier(Item item) {
+	public static boolean hasSpeedMultiplier(Item item) {
 		ControlBlock block = getControlBlock(item);
 		if (block != null) {
-			return block.getMultiplier();
+			return block.getSpeedMultipliers().size() > 0;
 		}
-		return 1.0D;
+		return false;
 	}
 	
-	public static boolean isValidSpeedMultiplierBlock(Block block) {
-		return getSpeedMultiplier(blockToItem(block)) != 1.0 && isCorrectState(block, getControlBlock(blockToItem(block)).getMultiplierState());
+	public static double getSpeedMultiplier(MinecartManiaMinecart minecart) {
+		ControlBlock block = getControlBlock(minecart.getItemBeneath());
+		if (block != null) {
+			List<SpeedMultiplier> multipliers = block.getSpeedMultipliers();
+			for (SpeedMultiplier speed : multipliers) {
+				if (!isCorrectState(minecart.getBlockBeneath(), speed.redstone)) {
+					continue;
+				}
+				if (speed.passenger == PassengerState.Disables && minecart.minecart.getPassenger() != null) {
+					continue;
+				}
+				if (speed.passenger == PassengerState.Enables && minecart.minecart.getPassenger() == null) {
+					continue;
+				}
+				if (speed.direction != CompassDirection.NO_DIRECTION && speed.direction != minecart.getDirection()) {
+					continue;
+				}
+				int type = 0;
+				if (minecart.isPoweredMinecart()) type = 1;
+				else if (minecart.isStorageMinecart()) type = 2;
+				if (!speed.types[type]) {
+					continue;
+				}
+				return speed.multiplier;
+			}
+			
+		}
+		return 1.0D;
 	}
 	
 	public static boolean isCatcherBlock(Item item) {

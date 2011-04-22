@@ -72,12 +72,12 @@ public class MinecartManiaConfigurationParser {
 	}
 	
 	public static int toInt(String str, int def) {
-		if (str == null) return 0;
+		if (str == null) return def;
 		try {
 			return Integer.parseInt(StringUtils.getNumber(str));
 		}
 		catch(Exception e) {}
-		return 0;
+		return def;
 	}
 	
 	public static double toDouble(String str, double def) {

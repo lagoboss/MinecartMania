@@ -50,11 +50,11 @@ public class MinecartManiaWorld {
 			CraftMinecart cm = (CraftMinecart)minecart;	
 			EntityMinecart em = (EntityMinecart)cm.getHandle();
 			CraftServer cs = (CraftServer)MinecartManiaCore.server;
-			if (em.d == 1) {
+			if (em.type == 1) {
 			  CraftStorageMinecart csm = new CraftStorageMinecart(cs, em); 
 			  minecart = (Minecart)csm;
 			}   
-			else if (em.d == 2) {
+			else if (em.type== 2) {
 			  CraftPoweredMinecart csm = new CraftPoweredMinecart(cs, em); 
 			  minecart = (Minecart)csm;
 			}
@@ -88,7 +88,7 @@ public class MinecartManiaWorld {
 	 
 	public static void prune() {
 		counter++;
-		if (counter % 10000 == 0) {
+		if (counter % 100000 == 0) {
 			counter = 0;
 			DebugTimer time = new DebugTimer("Pruning");
 			int minecart = minecarts.size();

@@ -95,6 +95,15 @@ public interface Sign {
 	 */
 	public boolean hasSignAction(SignAction action);
 	
+	
+	/**
+	 * Checks to see if this sign has a sign action of this type
+	 * Executes in O(n) time!
+	 * @param action to check
+	 * @return true if the sign has the given action
+	 */
+	public boolean hasSignAction(Class<? extends SignAction> action);
+	
 	/**
 	 * Executes all the actions attached to this sign.
 	 * @param minecart to execute the actions for.
