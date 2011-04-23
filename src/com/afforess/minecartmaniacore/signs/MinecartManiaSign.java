@@ -17,7 +17,7 @@ public class MinecartManiaSign implements Sign{
 	protected final Location location;
 	protected volatile String[] lines;
 	protected HashSet<SignAction> actions = new HashSet<SignAction>();
-	protected final ConcurrentHashMap<Object, Object> data = new ConcurrentHashMap<Object, Object>();
+	protected ConcurrentHashMap<Object, Object> data = new ConcurrentHashMap<Object, Object>();
 	
 	public MinecartManiaSign(org.bukkit.block.Sign sign) {
 		location = new ComparableLocation(sign.getBlock().getLocation());
@@ -94,6 +94,18 @@ public class MinecartManiaSign implements Sign{
 	public void update(org.bukkit.block.Sign sign) {
 		lines = sign.getLines();
 		actions = new HashSet<SignAction>();
+	}
+	
+	@Override
+	public void copy(Sign sign) {
+		if (sign instanceof MinecartManiaSign) {
+			MinecartManiaSign temp = (MinecartManiaSign)sign;
+			temp.data = this.data;
+			temp.lines = this.lines;
+			temp.actions = this.actions;
+			getSign().update();
+		}
+		
 	}
 	
 	private int hashCode(String[] lines) {

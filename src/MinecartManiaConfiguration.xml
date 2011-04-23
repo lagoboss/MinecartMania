@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <MinecartManiaConfiguration>
-	<version>1.5</version>
+	<version>1.51</version>
 	<!--Console Logging Mode. Accepted Values: "None", "Severe", "Normal", "Debug", "Timer"-->
 	<!--None will produce no console logs from MM. Not recommended.-->
 	<!--Severe will produce only console logs from severe errors from MM.-->
@@ -23,8 +23,10 @@
 	<MaximumMinecartSpeedPercent>165</MaximumMinecartSpeedPercent>
 	<!--Adjusts the maximum minecart speed. 100% is equal to the vanilla Minecart speed. Large values will cause minecarts to derail.-->
 	<DefaultMinecartSpeedPercent>100</DefaultMinecartSpeedPercent>
-	 <!--The range minecarts will collect items at, farm around themselves, collect from chests, etc...-->
+	 <!--The X and Z axis range minecarts will collect items at, farm around themselves, collect from chests, etc...-->
 	<Range>4</Range>
+	 <!--The Y axis range minecarts will collect items at, farm around themselves, collect from chests, etc...-->
+	<RangeY>4</RangeY>
 	<!--The maximum range that minecarts can have. Overrides signs.-->
 	<MaximumRange>10</MaximumRange>
 	<!--Stack All Items (Regardless of Notch's stacking limit on certain items)-->
@@ -211,7 +213,7 @@
 			<Catch/>
 			<LauncherSpeed/>
 			<Eject/>
-			<Platform redstone="disables">true</Platform>
+			<Platform redstone="disables" range="4">true</Platform>
 			<Station/>
 			<SpawnMinecart/>
 			<KillMinecart/>

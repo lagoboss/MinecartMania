@@ -17,6 +17,7 @@ public class ControlBlock {
 	private RedstoneState ejectorState = RedstoneState.Default;
 	private boolean platform = false;
 	private RedstoneState platformState = RedstoneState.Default;
+	private double platformRange = 4.0;
 	private boolean station = false;
 	private RedstoneState stationState = RedstoneState.Default;
 	private boolean spawnMinecart = false;
@@ -109,6 +110,14 @@ public class ControlBlock {
 
 	public RedstoneState getPlatformState() {
 		return platformState;
+	}
+	
+	public double getPlatformRange() {
+		return platformRange;
+	}
+	
+	protected void setPlatformRange(double range) {
+		platformRange = range;
 	}
 	
 	public boolean isStationBlock() {

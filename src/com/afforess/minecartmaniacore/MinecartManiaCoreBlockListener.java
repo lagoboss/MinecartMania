@@ -6,13 +6,14 @@ import java.util.HashMap;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
-import org.bukkit.block.Sign;
 import org.bukkit.event.block.BlockListener;
 import org.bukkit.event.block.BlockRedstoneEvent;
 
 import com.afforess.minecartmaniacore.config.ControlBlockList;
 import com.afforess.minecartmaniacore.config.RedstoneState;
 import com.afforess.minecartmaniacore.event.ChestPoweredEvent;
+import com.afforess.minecartmaniacore.signs.MinecartTypeSign;
+import com.afforess.minecartmaniacore.signs.Sign;
 import com.afforess.minecartmaniacore.utils.MinecartUtils;
 import com.afforess.minecartmaniacore.utils.SignUtils;
 
@@ -75,40 +76,20 @@ public class MinecartManiaCoreBlockListener extends BlockListener{
     }
     
     private static Item getMinecartType(Location loc) {
-		ArrayList<Sign> signList = SignUtils.getAdjacentSignList(loc, 2);
-
-		boolean empty = false;
-		boolean powered = false;
-		boolean storage = false;
+		ArrayList<Sign> signList = SignUtils.getAdjacentMinecartManiaSignList(loc, 2);
 		for (Sign sign : signList) {
-			if (sign.getLine(0).toLowerCase().contains("dispenser")) {
-				sign.setLine(0, "[Dispenser]");
-				for (int i = 1; i < 4; i++) {
-					if (sign.getLine(i).toLowerCase().contains("empty")) {
-						sign.setLine(i, "[Empty]");
-						empty = true;
-					}
-					if (sign.getLine(i).toLowerCase().contains("powered")) {
-						sign.setLine(i, "[Powered]");
-						powered = true;
-					}
-					if (sign.getLine(i).toLowerCase().contains("storage")) {
-						sign.setLine(i, "[Storage]");
-						storage = true;
-					}
+			if (sign instanceof MinecartTypeSign) {
+				MinecartTypeSign type = (MinecartTypeSign)sign;
+				if (type.canDispenseMinecartType(Item.MINECART)) {
+					return Item.MINECART;
 				}
-				sign.update();
+				if (type.canDispenseMinecartType(Item.POWERED_MINECART)) {
+					return Item.POWERED_MINECART;
+				}
+				if (type.canDispenseMinecartType(Item.STORAGE_MINECART)) {
+					return Item.STORAGE_MINECART;
+				}
 			}
-		}
-		
-		if (empty) {
-			return Item.MINECART;
-		}
-		if (powered) {
-			return Item.POWERED_MINECART;
-		}
-		if (storage) {
-			return Item.STORAGE_MINECART;
 		}
 
 		//Returns standard minecart by default

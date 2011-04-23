@@ -5,8 +5,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Chest;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.yi.acru.bukkit.Lockette.Lockette;
+import com.griefcraft.lwc.LWC;
 
 public class MinecartManiaChest extends MinecartManiaSingleContainer implements MinecartManiaInventory{
 
@@ -114,19 +117,58 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements 
 			 data.put(key, value);
 		 }
 	 }
+	 
+	 public boolean canAccess(Player player){
+		 if (MinecartManiaCore.ChestLock) {
+			 //ChestLock lock = (ChestLock)server.getPluginManager().getPlugin("ChestLock");
+			// Class<?> protection = lock.
+			 //for (Safe safe : Safes) {
+			 //TODO waiting on ChestLock public API
+		 }
+		 if (MinecartManiaCore.Lockette) {
+			if (Lockette.isProtected(getLocation().getBlock())) {
+				return Lockette.getProtectedOwner(getLocation().getBlock()).equals(player.getName());
+			}
+		 }
+		 if (MinecartManiaCore.LWC){
+			 LWC lock = (LWC)MinecartManiaCore.server.getPluginManager().getPlugin("LWC");
+			 return lock.canAccessProtection(player, getLocation().getBlock());
+		 }
+		 return true;
+	 }
+	 
+	 public boolean canAddItem(ItemStack item, Player player) {
+		 if (player != null) {
+			 if (!canAccess(player)) {
+				 return false;
+			 }
+		 }
+		 
+		 return super.canAddItem(item);
+	 }
+	 
+	 public boolean canRemoveItem(int type, int amount, short durability, Player player) {
+		 if (player != null) {
+			 if (!canAccess(player)) {
+				 return false;
+			 }
+		 }
+		 
+		 return super.canRemoveItem(type, amount, durability, player);
+	 }
 	
 	/**
 	 * Attempts to add an itemstack to this chest. It adds items in a 'smart' manner, merging with existing itemstacks, until they
 	 * reach the maximum size (64). If it fails, it will not alter the chest's previous contents.
 	 * @param item to add
 	 */
-	public boolean addItem(ItemStack item) {
+	@Override
+	public boolean addItem(ItemStack item, Player player) {
+		if (!canAddItem(item, player)) {
+			return false;
+		}
 		if (item == null) {
 			return true;
-		}
-		//WTF is it with air
-		if (item.getTypeId() == Item.AIR.getId()) {
-			return false;
 		}
 		//Backup contents
 		ItemStack[] backup = getContents().clone();
@@ -190,7 +232,10 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements 
 	 * @param amount to remove
 	 * @param durability of the item to remove
 	 */
-	public boolean removeItem(int type, int amount, short durability) {
+	public boolean removeItem(int type, int amount, short durability, Player player) {
+		if (!canRemoveItem(type, amount, durability, player)) {
+			return false;
+		}
 		//Backup contents
 		ItemStack[] backup = getContents().clone();
 		

@@ -6,6 +6,7 @@ import org.bukkit.Location;
 
 import com.afforess.minecartmaniacore.MinecartManiaCore;
 import com.afforess.minecartmaniacore.event.MinecartManiaSignFoundEvent;
+import com.afforess.minecartmaniacore.event.MinecartManiaSignUpdatedEvent;
 import com.afforess.minecartmaniacore.utils.ComparableLocation;
 
 public class SignManager {
@@ -23,7 +24,7 @@ public class SignManager {
 			org.bukkit.block.Sign sign = (org.bukkit.block.Sign)loc.getBlock().getState();
 			if (!temp.equals(sign)) {
 				temp.update(sign);
-				MinecartManiaSignFoundEvent mmsfe = new MinecartManiaSignFoundEvent(temp);
+				MinecartManiaSignFoundEvent mmsfe = new MinecartManiaSignUpdatedEvent(temp);
 				MinecartManiaCore.server.getPluginManager().callEvent(mmsfe);
 				temp = mmsfe.getSign();
 				signList.put(loc, temp);

@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Minecart;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.StorageMinecart;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -87,7 +88,7 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 		}
 	}
 	
-	public boolean canAddItem(ItemStack item) {
+	public boolean canAddItem(ItemStack item, Player player) {
 		if (item.getTypeId() == Item.AIR.getId()) {
 			return false;
 		}
@@ -106,13 +107,18 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 		return true;
 	}
 	
+	public boolean canAddItem(ItemStack item) {
+		return canAddItem(item, null);
+	}
+	
 	/**
 	 * attempts to add an itemstack to this storage minecart. It adds items in a 'smart' manner, merging with existing itemstacks, until they
 	 * reach the maximum size (64). If it fails, it will not alter the storage minecart's previous contents.
 	 * @param item to add
+	 * @param player who is adding the item
 	 * @return true if the item was successfully added
 	 */
-	public boolean addItem(ItemStack item) {
+	public boolean addItem(ItemStack item, Player player) {
 		if (item == null) {
 			return true;
 		}
@@ -157,6 +163,17 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 	}
 	
 	/**
+	 * attempts to add an itemstack to this storage minecart. It adds items in a 'smart' manner, merging with existing itemstacks, until they
+	 * reach the maximum size (64). If it fails, it will not alter the storage minecart's previous contents.
+	 * @param item to add
+	 * @param player who is adding the item
+	 * @return true if the item was successfully added
+	 */
+	public boolean addItem(ItemStack item) {
+		return addItem(item, null);
+	}
+	
+	/**
 	 ** attempts to add a single item of the given type to this storage minecart. If it fails, it will not alter the storage minecart's previous contents
 	 ** @param type to add
 	 **/
@@ -173,7 +190,7 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 		return addItem(new ItemStack(type, amount));
 	}
 	
-	public boolean canRemoveItem(int type, int amount, short durability) {
+	public boolean canRemoveItem(int type, int amount, short durability, Player player) {
 		//Check if this will fall below the minimum allowed
 		ArrayList<Item> list = Item.getItem(type);
 		for (Item i : list) {
@@ -188,15 +205,20 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 		return true;
 	}
 	
+	public boolean canRemoveItem(int type, int amount, short durability) {
+		return canRemoveItem(type, amount, durability, null);
+	}
+	
 	/**
 	 * attempts to remove the specified amount of an item type from this storage minecart. If it fails, it will not alter the storage minecart's previous contents.
 	 * @param type to remove
 	 * @param amount to remove
 	 * @param durability of the item to remove (-1 for generic durability)
+	 * @param player who is removing the item
 	 * @return true if the items were successfully removed
 	 */
 	@Override
-	public boolean removeItem(int type, int amount, short durability) {
+	public boolean removeItem(int type, int amount, short durability, Player player) {
 		if (!canRemoveItem(type, amount, durability)) {
 			return false;
 		}
@@ -227,6 +249,19 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 		setContents(backup);
 		return false;
 	}
+	
+	/**
+	 * attempts to remove the specified amount of an item type from this storage minecart. If it fails, it will not alter the storage minecart's previous contents.
+	 * @param type to remove
+	 * @param amount to remove
+	 * @param durability of the item to remove (-1 for generic durability)
+	 * @return true if the items were successfully removed
+	 */
+	@Override
+	public boolean removeItem(int type, int amount, short durability) {
+		return removeItem(type, amount, durability, null);
+	}
+
 
 	/**
 	 * attempts to remove the specified amount of an item type from this storage minecart. If it fails, it will not alter the storage minecart's previous contents.

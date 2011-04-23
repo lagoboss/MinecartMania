@@ -19,6 +19,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Vehicle;
+import org.bukkit.entity.Wolf;
 import org.bukkit.event.Event;
 import org.bukkit.event.Event.Type;
 import org.bukkit.event.vehicle.VehicleDamageEvent;
@@ -184,7 +185,7 @@ public class MinecartManiaCoreListener extends VehicleListener{
 			}
 			if (collisioner instanceof LivingEntity) {
 				LivingEntity victim = (LivingEntity)(collisioner);
-				if (!(victim instanceof Player)) {
+				if (!(victim instanceof Player) && !(victim instanceof Wolf)) {
 					if (MinecartManiaWorld.isMinecartsKillMobs()) {
 						if (minecart.isMoving()) {
 							victim.remove();

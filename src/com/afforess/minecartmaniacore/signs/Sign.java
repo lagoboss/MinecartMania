@@ -76,6 +76,12 @@ public interface Sign {
 	public void update(org.bukkit.block.Sign sign);
 	
 	/**
+	 * Copies the values and settings of this sign onto the given sign
+	 * @param sign to copy values to
+	 */
+	public void copy(Sign sign);
+	
+	/**
 	 * Adds a sign action to the list of actions this sign must execute.
 	 * @param action to add
 	 */

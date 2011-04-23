@@ -1,6 +1,7 @@
 package com.afforess.minecartmaniacore;
 
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 /**
@@ -42,21 +43,26 @@ public abstract class MinecartManiaSingleContainer implements MinecartManiaInven
 		this.inventory = inventory;
 	}
 	
-	public boolean canAddItem(ItemStack item) {
+	public boolean canAddItem(ItemStack item, Player player) {
 		if (item.getTypeId() == Material.AIR.getId()) {
 			return false;
 		}
 		return true;
+	}
+	
+	public boolean canAddItem(ItemStack item) {
+		return canAddItem(item, null);
 	}
 
 	/**
 	 * Attempts to add an itemstack. It adds items in a 'smart' manner, merging with existing itemstacks, until they
 	 * reach the maximum size (64). If it fails, it will not alter the previous contents.
 	 * @param item to add
+	 * @param player who is adding the item
 	 * @return true if the item was successfully added
 	 */
-	public boolean addItem(ItemStack item) {
-		if (!canAddItem(item)) {
+	public boolean addItem(ItemStack item, Player player) {
+		if (!canAddItem(item, player)) {
 			return false;
 		}
 		if (item == null) {
@@ -99,6 +105,16 @@ public abstract class MinecartManiaSingleContainer implements MinecartManiaInven
 	}
 	
 	/**
+	 * Attempts to add an itemstack. It adds items in a 'smart' manner, merging with existing itemstacks, until they
+	 * reach the maximum size (64). If it fails, it will not alter the previous contents.
+	 * @param item to add
+	 * @return true if the item was successfully added
+	 */
+	public boolean addItem(ItemStack item) {
+		return addItem(item, null);
+	}
+	
+	/**
 	 * Attempts to add an itemstack. If it fails, it will not alter the previous contents
 	 * @param type to add
 	 * @param amount to add
@@ -117,8 +133,12 @@ public abstract class MinecartManiaSingleContainer implements MinecartManiaInven
 		return addItem(new ItemStack(type, 1));
 	}
 	
-	public boolean canRemoveItem(int type, int amount, short durability) {
+	public boolean canRemoveItem(int type, int amount, short durability, Player player) {
 		return true;
+	}
+	
+	public boolean canRemoveItem(int type, int amount, short durability) {
+		return canRemoveItem(type, amount, durability, null);
 	}
 	
 	/**
@@ -126,10 +146,11 @@ public abstract class MinecartManiaSingleContainer implements MinecartManiaInven
 	 * If the durability is -1, it will only match item type id's and ignore durability
 	 * @param type to remove
 	 * @param amount to remove
-	 * @param durability of the item to remove 
+	 * @param durability of the item to remove
+	 * @param player who is removing the item 
 	 * @return true if the items were successfully removed
 	 */
-	public boolean removeItem(int type, int amount, short durability) {
+	public boolean removeItem(int type, int amount, short durability, Player player) {
 		if (!canRemoveItem(type, amount, durability)) {
 			return false;
 		}
@@ -158,6 +179,18 @@ public abstract class MinecartManiaSingleContainer implements MinecartManiaInven
 		//if we fail, reset the inventory back to previous values
 		setContents(backup);
 		return false;
+	}
+	
+	/**
+	 * Attempts to remove the specified amount of an item type. If it fails, it will not alter the previous contents.
+	 * If the durability is -1, it will only match item type id's and ignore durability
+	 * @param type to remove
+	 * @param amount to remove
+	 * @param durability of the item to remove
+	 * @return true if the items were successfully removed
+	 */
+	public boolean removeItem(int type, int amount, short durability) {
+		return removeItem(type, amount, durability, null);
 	}
 
 	/**

@@ -27,7 +27,7 @@ import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
 import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
 
 public class CoreSettingParser implements SettingParser{
-	private static final double version = 1.5;
+	private static final double version = 1.51;
 	
 	public boolean isUpToDate(Document document) {
 		try {
@@ -85,6 +85,11 @@ public class CoreSettingParser implements SettingParser{
 			MinecartManiaWorld.getConfiguration().put(setting, value);
 			
 			setting = "Range";
+			list = document.getElementsByTagName(setting);
+			value = MinecartManiaConfigurationParser.toInt(list.item(0).getChildNodes().item(0).getNodeValue(), 2);
+			MinecartManiaWorld.getConfiguration().put(setting, value);
+			
+			setting = "RangeY";
 			list = document.getElementsByTagName(setting);
 			value = MinecartManiaConfigurationParser.toInt(list.item(0).getChildNodes().item(0).getNodeValue(), 2);
 			MinecartManiaWorld.getConfiguration().put(setting, value);
@@ -167,42 +172,43 @@ public class CoreSettingParser implements SettingParser{
 
 					templist = element.getElementsByTagName("Catch").item(0).getChildNodes();
 					tempNode = (Node) templist.item(0);
-					cb.setCatcherState(parseRedstoneState(getParentFirstAttributeValue(tempNode)));
+					cb.setCatcherState(parseRedstoneState(getAttributeValue(tempNode, "redstone")));
 					cb.setCatcherBlock(MinecartManiaConfigurationParser.toBool(getNodeValue(tempNode)));
 
 					templist = element.getElementsByTagName("LauncherSpeed").item(0).getChildNodes();
 					tempNode = (Node) templist.item(0);
-					cb.setLauncherState(parseRedstoneState(getParentFirstAttributeValue(tempNode)));
+					cb.setLauncherState(parseRedstoneState(getAttributeValue(tempNode, "redstone")));
 					cb.setLauncherSpeed(MinecartManiaConfigurationParser.toDouble(getNodeValue(tempNode), 0.0));
 
 					templist = element.getElementsByTagName("Eject").item(0).getChildNodes();
 					tempNode = (Node) templist.item(0);
-					cb.setEjectorState(parseRedstoneState(getParentFirstAttributeValue(tempNode)));
+					cb.setEjectorState(parseRedstoneState(getAttributeValue(tempNode, "redstone")));
 					cb.setEjectorBlock(MinecartManiaConfigurationParser.toBool(getNodeValue(tempNode)));
 
 					templist = element.getElementsByTagName("Platform").item(0).getChildNodes();
 					tempNode = (Node) templist.item(0);
-					cb.setPlatformState(parseRedstoneState(getParentFirstAttributeValue(tempNode)));
+					cb.setPlatformState(parseRedstoneState(getAttributeValue(tempNode, "redstone")));
+					cb.setPlatformRange(MinecartManiaConfigurationParser.toDouble(getAttributeValue(tempNode, "range"), 4));
 					cb.setPlatformBlock(MinecartManiaConfigurationParser.toBool(getNodeValue(tempNode)));
 
 					templist = element.getElementsByTagName("Station").item(0).getChildNodes();
 					tempNode = (Node) templist.item(0);
-					cb.setStationState(parseRedstoneState(getParentFirstAttributeValue(tempNode)));
+					cb.setStationState(parseRedstoneState(getAttributeValue(tempNode, "redstone")));
 					cb.setStationBlock(MinecartManiaConfigurationParser.toBool(getNodeValue(tempNode)));
 
 					templist = element.getElementsByTagName("SpawnMinecart").item(0).getChildNodes();
 					tempNode = (Node) templist.item(0);
-					cb.setSpawnState(parseRedstoneState(getParentFirstAttributeValue(tempNode)));
+					cb.setSpawnState(parseRedstoneState(getAttributeValue(tempNode, "redstone")));
 					cb.setSpawnMinecart(MinecartManiaConfigurationParser.toBool(getNodeValue(tempNode)));
 
 					templist = element.getElementsByTagName("KillMinecart").item(0).getChildNodes();
 					tempNode = (Node) templist.item(0);
-					cb.setKillState(parseRedstoneState(getParentFirstAttributeValue(tempNode)));
+					cb.setKillState(parseRedstoneState(getAttributeValue(tempNode, "redstone")));
 					cb.setKillMinecart(MinecartManiaConfigurationParser.toBool(getNodeValue(tempNode)));
 
 					templist = element.getElementsByTagName("Elevator").item(0).getChildNodes();
 					tempNode = (Node) templist.item(0);
-					cb.setElevatorState(parseRedstoneState(getParentFirstAttributeValue(tempNode)));
+					cb.setElevatorState(parseRedstoneState(getAttributeValue(tempNode, "redstone")));
 					cb.setElevatorBlock(MinecartManiaConfigurationParser.toBool(getNodeValue(tempNode)));
 					
 					//Allow this XML tag to be optional, since it's not permenant
@@ -337,9 +343,9 @@ public class CoreSettingParser implements SettingParser{
 		return node.getNodeValue();
 	}
 	
-	private String getParentFirstAttributeValue(Node node) {
+	private String getAttributeValue(Node node, String attribute) {
 		if (node == null || node.getParentNode() == null || node.getParentNode().getAttributes() == null) return null;
-		return getNodeValue(node.getParentNode().getAttributes().item(0));
+		return getNodeValue(node.getParentNode().getAttributes().getNamedItem(attribute));
 	}
 	
 	private CompassDirection parseDirectionState(String str) {

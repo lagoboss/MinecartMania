@@ -1,6 +1,7 @@
 package com.afforess.minecartmaniacore;
 
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -20,6 +21,10 @@ public interface MinecartManiaInventory {
 	
 	public boolean canAddItem(ItemStack item);
 	
+	public boolean canAddItem(ItemStack item, Player player);
+	
+	public boolean addItem(ItemStack item, Player player);
+	
 	public boolean addItem(ItemStack item);
 	
 	public boolean addItem(int type);
@@ -28,6 +33,10 @@ public interface MinecartManiaInventory {
 	
 	public boolean canRemoveItem(int type, int amount, short durability);
 	
+	public boolean canRemoveItem(int type, int amount, short durability, Player player);
+	
+	public boolean removeItem(int type, int amount, short durability, Player player);
+
 	public boolean removeItem(int type, int amount, short durability);
 	
 	public boolean removeItem(int type, int amount);

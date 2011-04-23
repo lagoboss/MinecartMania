@@ -168,10 +168,14 @@ public class ControlBlockList {
 	}
 	
 	private static boolean isCorrectState(Block block, RedstoneState state) {
+		boolean power = block.isBlockIndirectlyPowered() || block.getRelative(0, -1, 0).isBlockIndirectlyPowered();
+		if (block.getTypeId() == Item.POWERED_RAIL.getId()) {
+			power = (block.getData() & 0x8) != 0;
+		}
 		switch(state) {
 			case Default: return true;
-			case Enables: return block.isBlockIndirectlyPowered() || block.getRelative(0, -1, 0).isBlockIndirectlyPowered();
-			case Disables: return !block.isBlockIndirectlyPowered() && !block.getRelative(0, -1, 0).isBlockIndirectlyPowered();
+			case Enables: return power;
+			case Disables: return !power;
 		}
 		return false;
 	}

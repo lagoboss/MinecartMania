@@ -5,6 +5,7 @@ import net.minecraft.server.InventoryLargeChest;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.inventory.CraftInventory;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -37,8 +38,23 @@ public class MinecartManiaDoubleChest implements MinecartManiaInventory{
 		return false;
 	}
 	
+	public boolean canAddItem(ItemStack item, Player player) {
+		return chest1.canAddItem(item, player) || chest2.canAddItem(item, player);
+	}
+	
 	public boolean canAddItem(ItemStack item) {
-		return chest1.canAddItem(item) || chest2.canAddItem(item);
+		return canAddItem(item, null);
+	}
+	
+	/**
+	 * Attempts to add an itemstack to this storage minecart. It adds items in a 'smart' manner, merging with existing itemstacks, until they
+	 * reach the maximum size (64). If it fails, it will not alter the storage minecart's previous contents.
+	 * @param item to add
+	 * @player who is adding the item
+	 * @return true if the item was successfully added
+	 */
+	public boolean addItem(ItemStack item, Player player) {
+		return chest1.addItem(item, player);
 	}
 	
 	/**
@@ -68,8 +84,24 @@ public class MinecartManiaDoubleChest implements MinecartManiaInventory{
 		return chest1.addItem(type, amount);
 	}
 	
+	public boolean canRemoveItem(int type, int amount, short durability, Player player) {
+		return chest1.canRemoveItem(type, amount, durability, player) || chest2.canRemoveItem(type, amount, durability, player);
+	}
+	
 	public boolean canRemoveItem(int type, int amount, short durability) {
-		return chest1.canRemoveItem(type, amount, durability) || chest2.canRemoveItem(type, amount, durability);
+		return canRemoveItem(type, amount, durability, null);
+	}
+	
+	/**
+	 * Attempts to remove the specified amount of an item type from this storage minecart. If it fails, it will not alter the storage minecart's previous contents
+	 * @param type to remove
+	 * @param amount to remove
+	 * @param durability of the item to remove
+	 * @param player who is removing the item
+	 * @return true if the items were successfully removed
+	 */
+	public boolean removeItem(int type, int amount, short durability, Player player) {
+		return chest1.removeItem(type, amount, durability, player);
 	}
 	
 	/**

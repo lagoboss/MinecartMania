@@ -51,6 +51,7 @@ public class MinecartManiaMinecart {
 	private String owner = "none";
 	private ConcurrentHashMap<String, Object> data = new ConcurrentHashMap<String,Object>();
 	private int range = 4;
+	private int rangeY = 4;
 	private boolean dead = false;
 	public static final double MAXIMUM_MOMENTUM = 1E150D;
 	public boolean createdLastTick = true;
@@ -69,6 +70,7 @@ public class MinecartManiaMinecart {
 	
 	private void initialize() {
 		setRange(MinecartManiaWorld.getIntValue(MinecartManiaWorld.getConfigurationValue("Range")));
+		setRangeY(MinecartManiaWorld.getIntValue(MinecartManiaWorld.getConfigurationValue("RangeY")));
 		cal = Calendar.getInstance();
 		setWasMovingLastTick(isMoving());
 		previousMotion = minecart.getVelocity().clone();
@@ -274,22 +276,31 @@ public class MinecartManiaMinecart {
 	
 	public void undoPoweredRails() {
 		//this server had decided to override the default boost value, so we need to undo notch's changes
-		if (ControlBlockList.getSpeedMultiplier(this) != 1.0D && isMoving()) {
-			int data = getLocation().getBlock().getData();
-			final double boost = 0.0078125D; //magic number from MC code
-			if (data == 2) {
-				changeMotionX(-boost);
-			}
-			else if (data == 3) {
-				changeMotionX(boost);
-			}
-			else if (data == 4) {
-				changeMotionZ(boost);
-			}
-			else if (data == 5) {
-				changeMotionZ(-boost);
+		if (getLocation().getBlock().getTypeId() == Item.POWERED_RAIL.getId()) {
+			if (ControlBlockList.getSpeedMultiplier(this) != 1.0D && isMoving()) {
+				int data = getLocation().getBlock().getData();
+				boolean powered = (data & 8) != 0;
+				final double boost = 0.0078125D; //magic number from MC code
+				if (powered) {
+					if (data == 2) {
+						changeMotionX(-boost);
+					}
+					else if (data == 3) {
+						changeMotionX(boost);
+					}
+					else if (data == 4) {
+						changeMotionZ(boost);
+					}
+					else if (data == 5) {
+						changeMotionZ(-boost);
+					}
+				}
+				else {
+					multiplyMotion(2.0D);
+				}
 			}
 		}
+			
 	}
 	
 	public boolean doSpeedMultiplierBlock() {
@@ -315,7 +326,8 @@ public class MinecartManiaMinecart {
 		if (ControlBlockList.isValidPlatformBlock(getBlockBeneath()) && isStandardMinecart()) {
 			if (minecart.getPassenger() == null) {
 				List<LivingEntity> list = minecart.getWorld().getLivingEntities();
-				double range = getEntityDetectionRange() * getEntityDetectionRange();
+				double range = ControlBlockList.getControlBlock(getItemBeneath()).getPlatformRange();
+				range *= range;
 				for (LivingEntity le : list) {
 					if (le.getLocation().toVector().distanceSquared(minecart.getLocation().toVector()) < range) {
 						//Let the world know about this
@@ -716,23 +728,21 @@ public class MinecartManiaMinecart {
 			dead = true;
 		}
 	}
-
-	@Deprecated
-	public void setEntityDetectionRange(int range) {
-		this.range = range;
-	}
 	
 	public void setRange(int range) {
 		this.range = range;
 	}
 
-	@Deprecated
-	public int getEntityDetectionRange() {
+	public int getRange() {
 		return range;
 	}
 	
-	public int getRange() {
-		return range;
+	public void setRangeY(int range) {
+		this.rangeY = range;
+	}
+	
+	public int getRangeY() {
+		return rangeY;
 	}
 
 	public void updateChunks() {
