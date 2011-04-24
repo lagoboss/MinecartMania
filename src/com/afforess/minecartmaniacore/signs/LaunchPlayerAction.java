@@ -30,6 +30,16 @@ public class LaunchPlayerAction implements SignAction{
 		}
 		return false;
 	}
+
+	@Override
+	public String getName() {
+		return "launchplayersign";
+	}
+
+	@Override
+	public String getFriendlyName() {
+		return "Launch Player Sign";
+	}
 	
 	
 }

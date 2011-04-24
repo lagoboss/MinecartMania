@@ -27,4 +27,16 @@ public interface SignAction{
 	 * @return true if the sign is valid
 	 */
 	public boolean valid(Sign sign);
+	
+	/**
+	 * Get's the name of this action
+	 * @return name
+	 */
+	public String getName();
+	
+	/**
+	 * Get's the human-readable name of this action
+	 * @return name
+	 */
+	public String getFriendlyName();
 }

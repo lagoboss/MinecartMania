@@ -6,6 +6,8 @@ import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 import com.afforess.minecartmaniacore.AbstractItem;
 import com.afforess.minecartmaniacore.Item;
@@ -94,6 +96,26 @@ public class MinecartManiaConfigurationParser {
 		AbstractItem[] list = ItemUtils.getItemStringToMaterial(str);
 		if (list != null && list.length > 0) {
 			return list[0].type();
+		}
+		return null;
+	}
+	
+	public static void updateSetting(Document document, String setting, String defaultVal, Element root) {
+		Node node = getNodeForTag(document, setting);
+		if (node == null) {
+			node = document.createElement(setting);
+			node.appendChild(document.createTextNode(defaultVal));
+			root.appendChild(node);
+		}
+	}
+	
+	public static Node getNodeForTag(Document document, String tag) {
+		if (document.getElementsByTagName(tag) != null) {
+			if (document.getElementsByTagName(tag).item(0) != null) {
+				if (document.getElementsByTagName(tag).item(0).getChildNodes() != null) {
+					return document.getElementsByTagName(tag).item(0).getChildNodes().item(0);
+				}
+			}
 		}
 		return null;
 	}

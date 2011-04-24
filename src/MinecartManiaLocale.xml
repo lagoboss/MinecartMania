@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <MinecartManiaConfiguration>
-	<version>1.0</version>
+	<version>1.01</version>
 	<!--
 	Keys are mapped to specific locations in MM's code. Do not add or remove keys unless you know what you are doing.
 	The text is the text that is displayed to the user. You are free to change the text to anything to suit your needs.
@@ -153,6 +153,26 @@
 		<TextKey>
 			<Key>StationsValidDirections</Key>
 			<Text>[YELLOW]You can go %s</Text>
+		</TextKey>
+		<TextKey>
+			<Key>LackPermissionForCommand</Key>
+			<Text>[RED]You do not have permission to use that command</Text>
+		</TextKey>
+		<TextKey>
+			<Key>LackPermission</Key>
+			<Text>[RED]You do not have permission to do that.</Text>
+		</TextKey>
+		<TextKey>
+			<Key>LackPermissionForSign</Key>
+			<Text>[RED]You do not have permission to create a %s</Text>
+		</TextKey>
+		<TextKey>
+			<Key>LackPermissionToRemoveSign</Key>
+			<Text>[RED]You do not have permission to remove a %s</Text>
+		</TextKey>
+		<TextKey>
+			<Key>LackPermissionForControlBlock</Key>
+			<Text>[RED]You do not have permission to place a %s</Text>
 		</TextKey>
 	</TextKeys>
 </MinecartManiaConfiguration>

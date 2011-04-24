@@ -127,24 +127,32 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements 
 		 }
 		 if (MinecartManiaCore.Lockette) {
 			if (Lockette.isProtected(getLocation().getBlock())) {
-				return Lockette.getProtectedOwner(getLocation().getBlock()).equals(player.getName());
+				if (player != null) {
+					return Lockette.getProtectedOwner(getLocation().getBlock()).equals(player.getName());
+				}
+				else {
+					return false;
+				}
 			}
 		 }
 		 if (MinecartManiaCore.LWC){
 			 LWC lock = (LWC)MinecartManiaCore.server.getPluginManager().getPlugin("LWC");
-			 return lock.canAccessProtection(player, getLocation().getBlock());
+			 if (player != null) {
+				 return lock.canAccessProtection(player, getLocation().getBlock());
+			 }
+			 else {
+				 return lock.findProtection(getLocation().getBlock()) != null;
+			 }
 		 }
 		 return true;
 	 }
 	 
 	 public boolean canAddItem(ItemStack item, Player player) {
-		 if (player != null) {
-			 if (!canAccess(player)) {
-				 return false;
-			 }
+		 if (!canAccess(player)) {
+			 return false;
 		 }
 		 
-		 return super.canAddItem(item);
+		 return super.canAddItem(item, player);
 	 }
 	 
 	 public boolean canRemoveItem(int type, int amount, short durability, Player player) {

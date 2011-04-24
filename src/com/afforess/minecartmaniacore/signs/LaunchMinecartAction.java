@@ -75,4 +75,14 @@ public class LaunchMinecartAction implements SignAction {
 		return launchSpeed != null || previous;
 	}
 
+	@Override
+	public String getName() {
+		return "launchersign";
+	}
+
+	@Override
+	public String getFriendlyName() {
+		return "Launcher Sign";
+	}
+
 }

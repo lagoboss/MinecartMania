@@ -252,8 +252,8 @@ public class CoreSettingParser implements SettingParser{
 		return true;
 	}
 	
-	public void update(File config) {
-		
+	public boolean update(File config) {
+		return false; /*
 		Document document = null;
 		//write(config);
 		try {
@@ -287,31 +287,7 @@ public class CoreSettingParser implements SettingParser{
 			transformer.transform(source, result);
 			
 		}
-		catch (Exception e) {e.printStackTrace();}
-	}
-	
-	private void updateSetting(Document document, String setting, String defaultVal, Element root) {
-		Node node = getNodeForTag(document, setting);
-		if (node == null) {
-			node = document.createElement(setting);
-			node.appendChild(document.createTextNode(defaultVal));
-			root.appendChild(node);
-		}
-	}
-	
-	private Node getNodeForTag(Document document, String tag) {
-		System.out.println(document.getElementsByTagName(tag));
-		if (document.getElementsByTagName(tag) != null) {
-			System.out.println(document.getElementsByTagName(tag).item(0));
-			if (document.getElementsByTagName(tag).item(0) != null) {
-				System.out.println(document.getElementsByTagName(tag).item(0).getChildNodes());
-				if (document.getElementsByTagName(tag).item(0).getChildNodes() != null) {
-					System.out.println(document.getElementsByTagName(tag).item(0).getChildNodes().item(0));
-					return document.getElementsByTagName(tag).item(0).getChildNodes().item(0);
-				}
-			}
-		}
-		return null;
+		catch (Exception e) {e.printStackTrace();}*/
 	}
 
 	@Override

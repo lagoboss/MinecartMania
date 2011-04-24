@@ -44,6 +44,9 @@ public abstract class MinecartManiaSingleContainer implements MinecartManiaInven
 	}
 	
 	public boolean canAddItem(ItemStack item, Player player) {
+		if (item == null) {
+			return true;
+		}
 		if (item.getTypeId() == Material.AIR.getId()) {
 			return false;
 		}
@@ -65,9 +68,7 @@ public abstract class MinecartManiaSingleContainer implements MinecartManiaInven
 		if (!canAddItem(item, player)) {
 			return false;
 		}
-		if (item == null) {
-			return true;
-		}
+		
 		//Backup contents
 		ItemStack[] backup = getContents().clone();
 		ItemStack backupItem = new ItemStack(item.getTypeId(), item.getAmount(), item.getDurability());

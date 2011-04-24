@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+
 import org.bukkit.ChatColor;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -16,7 +17,7 @@ import com.afforess.minecartmaniacore.MinecartManiaCore;
 import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
 
 public class LocaleParser implements SettingParser{
-	private final double version = 1.0;
+	private final double version = 1.01;
 	private static final ConcurrentHashMap<String, String> textKeys = new ConcurrentHashMap<String, String>();
 
 	@Override
@@ -96,5 +97,6 @@ public class LocaleParser implements SettingParser{
 		if (node == null) return null;
 		return node.getNodeValue();
 	}
+
 
 }

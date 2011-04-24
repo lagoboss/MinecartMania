@@ -1,5 +1,7 @@
 package com.afforess.minecartmaniacore.signs;
 
+import java.util.Collection;
+
 import org.bukkit.Location;
 
 import com.afforess.minecartmaniacore.MinecartManiaMinecart;
@@ -124,6 +126,12 @@ public interface Sign {
 	 * @return true if at least one action was executed.
 	 */
 	public boolean executeActions(MinecartManiaMinecart minecart);
+	
+	/**
+	 * Get's a list of sign actions attached to this sign
+	 * @return the list of sign actions attached to this sign (or an empty list, if none)
+	 */
+	public Collection<SignAction> getSignActions();
 
 	
 	/**

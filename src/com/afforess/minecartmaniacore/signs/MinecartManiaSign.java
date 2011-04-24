@@ -1,5 +1,6 @@
 package com.afforess.minecartmaniacore.signs;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
@@ -194,5 +195,10 @@ public class MinecartManiaSign implements Sign{
 		return success;
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public Collection<SignAction> getSignActions() {
+		return (Collection<SignAction>) actions.clone();
+	}
 
 }

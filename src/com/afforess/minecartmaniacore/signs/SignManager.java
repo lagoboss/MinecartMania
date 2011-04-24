@@ -39,13 +39,12 @@ public class SignManager {
 		return temp;
 	}
 	
-	public static void updateSign(Sign sign) {
-		Sign old = getSignAt(sign.getLocation());
-		if (old == null) {
-			signList.put(sign.getLocation(), sign);
+	public static void updateSign(Location location, Sign sign) {
+		if (sign == null) {
+			signList.remove(location);
 		}
 		else {
-			signList.put(old.getLocation(), sign);
+			signList.put(sign.getLocation(), sign);
 		}
 	}
 
