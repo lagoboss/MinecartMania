@@ -104,7 +104,7 @@ public class MinecartManiaMinecart {
 		return dead;
 	}
 	
-	public Location getLocation() {
+	public final Location getLocation() {
 		return minecart.getLocation();
 	}
 
@@ -203,15 +203,15 @@ public class MinecartManiaMinecart {
 		return getMotionX() != 0D || getMotionY() != 0D || getMotionZ() != 0D;
 	}
 	
-	public int getX(){
+	public final int getX(){
 		return minecart.getLocation().getBlockX();
 	}
 	
-	public int getY(){
+	public final int getY(){
 		return minecart.getLocation().getBlockY();
 	}
 	
-	public int getZ(){
+	public final int getZ(){
 		return minecart.getLocation().getBlockZ();
 	}
 
@@ -219,7 +219,7 @@ public class MinecartManiaMinecart {
 	 ** Returns the value from the loaded data
 	 ** @param the string key the data value is associated with
 	 **/
-	 public Object getDataValue(String key) {
+	 public final Object getDataValue(String key) {
 		 if (data.containsKey(key)) {
 			 return data.get(key);
 		 }
@@ -231,7 +231,7 @@ public class MinecartManiaMinecart {
 	 ** @param the string key the data value is associated with
 	 ** @param the value to store
 	 **/	 
-	 public void setDataValue(String key, Object value) {
+	 public final void setDataValue(String key, Object value) {
 		 if (value == null) {
 			 data.remove(key);
 		 }else {
@@ -477,7 +477,7 @@ public class MinecartManiaMinecart {
 	
 	public void doRealisticFriction() {
 		if (minecart.getPassenger() == null && isOnRails()) {
-			setMotion(getMotionX() * 1.03774, getMotionY(), getMotionZ()* 1.03774);
+			multiplyMotion(1.0385416D);
     	}
 	}
 	

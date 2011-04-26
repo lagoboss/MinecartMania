@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Location;
 
+import com.afforess.minecartmaniacore.MinecartManiaCore;
 import com.afforess.minecartmaniacore.MinecartManiaMinecart;
 import com.afforess.minecartmaniacore.utils.ComparableLocation;
 import com.afforess.minecartmaniacore.utils.DirectionUtils;
@@ -18,6 +19,7 @@ public class MinecartManiaSign implements Sign{
 	protected final Location location;
 	protected volatile String[] lines;
 	protected HashSet<SignAction> actions = new HashSet<SignAction>();
+	protected int updateId = -1;
 	protected ConcurrentHashMap<Object, Object> data = new ConcurrentHashMap<Object, Object>();
 	
 	public MinecartManiaSign(org.bukkit.block.Sign sign) {
@@ -30,29 +32,31 @@ public class MinecartManiaSign implements Sign{
 		lines = getSign().getLines();
 	}
 	
-	protected org.bukkit.block.Sign getSign() {
+	protected final org.bukkit.block.Sign getSign() {
 		return ((org.bukkit.block.Sign)location.getBlock().getState());
 	}
 
 	@Override
-	public String getLine(int line) {
+	public final String getLine(int line) {
 		return lines[line];
 	}
 
 	@Override
-	public void setLine(int line, String text) {
+	public final void setLine(int line, String text) {
 		if (text.length() < 16) 
 			lines[line] = text;
 		else
 			lines[line] = text.substring(0, 15);
 		getSign().setLine(line, lines[line]);
-		getSign().update();
+		update();
 	}
 	
-	public int getNumLines() {
+	@Override
+	public final int getNumLines() {
 		return lines.length;
 	}
 	
+	@Override
 	public void addBrackets() {
 		for (int i = 0; i < getNumLines(); i++) {
 			if (!getLine(i).isEmpty()) {
@@ -62,12 +66,12 @@ public class MinecartManiaSign implements Sign{
 	}
 
 	@Override
-	public String[] getLines() {
+	public final String[] getLines() {
 		return lines;
 	}
 
 	@Override
-	public Location getLocation() {
+	public final Location getLocation() {
 		return location;
 	}
 
@@ -77,12 +81,12 @@ public class MinecartManiaSign implements Sign{
 	}
 
 	@Override
-	public Object getDataValue(Object key) {
+	public final Object getDataValue(Object key) {
 		return data.get(key);
 	}
 
 	@Override
-	public void setDataValue(Object key, Object value) {
+	public final void setDataValue(Object key, Object value) {
 		if (value != null) {
 			data.put(key, value);
 		}
@@ -104,7 +108,7 @@ public class MinecartManiaSign implements Sign{
 			temp.data = this.data;
 			temp.lines = this.lines;
 			temp.actions = this.actions;
-			getSign().update();
+			update();
 		}
 		
 	}
@@ -199,6 +203,16 @@ public class MinecartManiaSign implements Sign{
 	@Override
 	public Collection<SignAction> getSignActions() {
 		return (Collection<SignAction>) actions.clone();
+	}
+	
+	protected final void update() {
+		if (this.updateId == -1) {
+			this.updateId = MinecartManiaCore.server.getScheduler().scheduleSyncDelayedTask(MinecartManiaCore.instance, new SignTextUpdater(this.location), 5);
+		}
+	}
+	
+	public final void updated() {
+		this.updateId = -1;
 	}
 
 }

@@ -21,23 +21,23 @@ public class MinecartManiaPlayer extends MinecartManiaSingleContainer implements
 	 * MinecartManiaPlayer' represent a player in whatever state they are in, online or offline. Because of this, getPlayer will return null when offline.
 	 * @return player
 	 */
-	public Player getPlayer() {
+	public final Player getPlayer() {
 		return MinecartManiaCore.server.getPlayer(name);
 	}
 	
-	public String getName() {
+	public final String getName() {
 		return name;
 	}
 	
-	public boolean isOnline() {
+	public final boolean isOnline() {
 		return getPlayer() != null;
 	}
 	
-	public String getLastStation() {
+	public final String getLastStation() {
 		return lastStation;
 	}
 	
-	public void setLastStation(String s) {
+	public final void setLastStation(String s) {
 		lastStation = s;
 	}
 	
@@ -48,7 +48,7 @@ public class MinecartManiaPlayer extends MinecartManiaSingleContainer implements
 	 ** Returns the value from the loaded data
 	 ** @param the string key the data value is associated with
 	 **/
-	 public Object getDataValue(String key) {
+	 public final Object getDataValue(String key) {
 		 if (data.containsKey(key)) {
 			 return data.get(key);
 		 }
@@ -60,7 +60,7 @@ public class MinecartManiaPlayer extends MinecartManiaSingleContainer implements
 	 ** @param the string key the data value is associated with
 	 ** @param the value to store
 	 **/	 
-	 public void setDataValue(String key, Object value) {
+	 public final void setDataValue(String key, Object value) {
 		 if (value == null) {
 			 data.remove(key);
 		 }else {

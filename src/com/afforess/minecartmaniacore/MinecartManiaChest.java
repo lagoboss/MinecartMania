@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.yi.acru.bukkit.Lockette.Lockette;
-import com.griefcraft.lwc.LWC;
+import com.griefcraft.lwc.LWCPlugin;
 
 public class MinecartManiaChest extends MinecartManiaSingleContainer implements MinecartManiaInventory{
 
@@ -136,12 +136,12 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements 
 			}
 		 }
 		 if (MinecartManiaCore.LWC){
-			 LWC lock = (LWC)MinecartManiaCore.server.getPluginManager().getPlugin("LWC");
+			 LWCPlugin  lock = (LWCPlugin )MinecartManiaCore.server.getPluginManager().getPlugin("LWC");
 			 if (player != null) {
-				 return lock.canAccessProtection(player, getLocation().getBlock());
+				 return lock.getLWC().canAccessProtection(player, getLocation().getBlock());
 			 }
 			 else {
-				 return lock.findProtection(getLocation().getBlock()) != null;
+				 return lock.getLWC().findProtection(getLocation().getBlock()) == null;
 			 }
 		 }
 		 return true;
