@@ -21,7 +21,6 @@ public class SignTextUpdater implements Runnable{
 		if (sign != null && sign instanceof MinecartManiaSign) {
 			((MinecartManiaSign)sign).updated();
 			Packet130UpdateSign update = new Packet130UpdateSign(sign.getLocation().getBlockX(), sign.getLocation().getBlockY(), sign.getLocation().getBlockZ(), sign.getLines());
-			System.out.println("Sign Updating. Line 0: " + sign.getLine(0));
 			for (Player player : MinecartManiaCore.server.getOnlinePlayers()) {
 				((CraftPlayer)player).getHandle().netServerHandler.sendPacket(update);
 			}

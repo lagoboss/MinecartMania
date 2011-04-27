@@ -34,6 +34,7 @@ public class SignManager {
 		temp = new MinecartManiaSign(loc);
 		MinecartManiaSignFoundEvent mmsfe = new MinecartManiaSignFoundEvent(temp);
 		MinecartManiaCore.server.getPluginManager().callEvent(mmsfe);
+		mmsfe.logProcessTime();
 		temp = mmsfe.getSign();
 		signList.put(loc, temp);
 		return temp;

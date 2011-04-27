@@ -13,6 +13,8 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
+import org.bukkit.craftbukkit.CraftServer;
+import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.craftbukkit.entity.CraftLivingEntity;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -67,6 +69,9 @@ public class MinecartManiaCoreListener extends VehicleListener{
 			if (minecart.isDead()) {
 				return;
 			}
+			
+			CraftServer server = (CraftServer)MinecartManiaCore.server;
+			//server.getHandle().server.tracker.
 			minecart.updateCalendar(); 
 			if (minecart.isMoving()) {
 				if (minecart.getDirectionOfMotion() != minecart.getPreviousDirectionOfMotion()) {

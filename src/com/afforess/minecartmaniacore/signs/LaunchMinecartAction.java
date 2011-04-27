@@ -18,6 +18,9 @@ public class LaunchMinecartAction implements SignAction {
 		if (!ControlBlockList.isCatcherBlock(minecart.getItemBeneath())) {
 			return false;
 		}
+		if (minecart.isMoving()) {
+			return false;
+		}
 		Vector launch = calculateLaunchSpeed(false);
 		if (previous) {
 			if (minecart.getPreviousDirectionOfMotion() != null) {

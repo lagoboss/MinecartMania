@@ -746,7 +746,7 @@ public class MinecartManiaMinecart {
 	}
 
 	public void updateChunks() {
-		if (MinecartManiaWorld.isKeepMinecartsLoaded()) {
+		if (MinecartManiaWorld.isKeepMinecartsLoaded() && !isDead()) {
 			Chunk current = minecart.getLocation().getBlock().getChunk();
 			Chunk old = previousLocation.toLocation(minecart.getWorld()).getBlock().getChunk();
 			int range = 3;
