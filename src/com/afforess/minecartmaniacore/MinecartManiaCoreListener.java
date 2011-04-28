@@ -70,7 +70,7 @@ public class MinecartManiaCoreListener extends VehicleListener{
 				return;
 			}
 			
-			CraftServer server = (CraftServer)MinecartManiaCore.server;
+			//CraftServer server = (CraftServer)MinecartManiaCore.server;
 			//server.getHandle().server.tracker.
 			minecart.updateCalendar(); 
 			if (minecart.isMoving()) {

@@ -21,6 +21,7 @@ public class ControlBlockList {
 	}
 	
 	public static ControlBlock getControlBlock(Item item) {
+		if (item == null) return null;
 		for (ControlBlock cb : controlBlocks) {
 			if (cb.getType().equals(item)) {
 				return cb;

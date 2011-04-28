@@ -1,6 +1,9 @@
 package com.afforess.minecartmaniacore.utils;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -99,4 +102,56 @@ public class SignUtils {
 		}
 		return signList;
 	}
+	
+	public static void sortByDistance(final Location location, List<? extends com.afforess.minecartmaniacore.signs.Sign> signs) {
+		Collections.sort(signs, new SignDistanceComparator(location));
+	}
+}
+
+class SignDistanceComparator implements Comparator<com.afforess.minecartmaniacore.signs.Sign>
+{
+	private Location location;
+
+	public SignDistanceComparator(Location location)
+	{
+		this.location = location;
+	}
+
+	protected double getSquaredDistanceFromLocation(com.afforess.minecartmaniacore.signs.Sign sign)
+	{
+		double x = sign.getLocation().getX() - location.getX();
+		double y = sign.getLocation().getY() - location.getY();
+		double z = sign.getLocation().getZ() - location.getZ();
+		return x*x + y*y + z*z;
+	}
+	
+	@Override
+	public int compare(com.afforess.minecartmaniacore.signs.Sign sign1, com.afforess.minecartmaniacore.signs.Sign sign2)
+	{
+		double d1 = getSquaredDistanceFromLocation(sign1);
+		double d2 = getSquaredDistanceFromLocation(sign1);
+		
+		// If the distance differs, threshold it and return.
+		if (d1 != d2)
+			return (int)Math.min(Math.max(d1 - d2,-1), 1);
+		
+		int d;
+		
+		// If the distance of two blocks is the same, sort them by x, then y, then z.
+		// There's no particular reason for this, just that we don't want to claim 
+		// that two different blocks are the same
+		
+		d = (sign1.getLocation().getBlockX() - sign2.getLocation().getBlockX());
+		if (d != 0)
+			return Math.min(Math.max(d, -1), 1);
+		
+		d = (sign1.getLocation().getBlockY() - sign2.getLocation().getBlockY());
+		if (d != 0)
+			return Math.min(Math.max(d, -1), 1);
+
+		d = (sign1.getLocation().getBlockZ() - sign2.getLocation().getBlockZ());
+		
+		return Math.min(Math.max(d, -1), 1);
+	}
+	
 }

@@ -560,19 +560,19 @@ public class MinecartManiaMinecart {
 		return blocks;
 	}
 	
-	public ArrayList<Block> getAdjacentBlocks(int range) {
+	public HashSet<Block> getAdjacentBlocks(int range) {
 		return BlockUtils.getAdjacentBlocks(minecart.getLocation(), range);
 	}
 	
-	public ArrayList<Block> getPreviousLocationAdjacentBlocks(int range) {
+	public HashSet<Block> getPreviousLocationAdjacentBlocks(int range) {
 		return BlockUtils.getAdjacentBlocks(getPreviousLocation().toLocation(minecart.getWorld()), range);
 	}
 	
-	public ArrayList<Block> getBlocksBeneath(int range) {
+	public HashSet<Block> getBlocksBeneath(int range) {
 		return BlockUtils.getBlocksBeneath(minecart.getLocation(), range);
 	}
 	
-	public ArrayList<Block> getPreviousLocationBlocksBeneath(int range) {
+	public HashSet<Block> getPreviousLocationBlocksBeneath(int range) {
 		return BlockUtils.getBlocksBeneath(getPreviousLocation().toLocation(minecart.getWorld()), range);
 	}
 	
@@ -852,23 +852,29 @@ public class MinecartManiaMinecart {
 	}
 	
 	public void updateToPoweredRails() {
-		List<Block> blocks = getAdjacentBlocks(2);
+		HashSet<Block> blocks = getAdjacentBlocks(2);
 		for (Block block : blocks) {
 			ControlBlock cb = ControlBlockList.getControlBlock(Item.getItem(block));
-			if (cb != null && cb.updateToPoweredRail) {
+			if (cb != null && cb.updateToPoweredRail && block.getTypeId() != Item.POWERED_RAIL.getId()) {
 				Block rail = block.getRelative(0, 1, 0);
 				if (MinecartUtils.isTrack(rail) && !MinecartUtils.isCurvedTrack(rail)) {
 					rail.setTypeId(Item.POWERED_RAIL.getId());
+					
 					//analyze for replacement block
 					HashMap<Item, Integer> replacement = new HashMap<Item, Integer>();
 					for (Block loop : BlockUtils.getAdjacentBlocks(block.getLocation(), 1)) {
-						if (replacement.containsKey(Item.getItem(loop))) {
-							replacement.put((Item.getItem(loop)), replacement.get(Item.getItem(loop)) + 1);
-						}
-						else {
-							replacement.put((Item.getItem(loop)), 1);
+						Item temp = Item.getItem(loop);
+						if (temp != null) {
+							if (replacement.containsKey(temp)) {
+								replacement.put(temp, replacement.get(temp) + 1);
+							}
+							else {
+								replacement.put(temp, 1);
+							}
 						}
 					}
+					
+					//find the most common item from adjacent blocks
 					Item best = null;
 					int count = 0;
 					Iterator<Entry<Item, Integer>> i = replacement.entrySet().iterator();

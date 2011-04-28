@@ -197,6 +197,7 @@ public class MinecartUtils {
 		//Set a flag to stop this event from happening twice
 		minecart.setDataValue("MinecartNearEntityEvent", true);
 		Vector location = minecart.minecart.getLocation().toVector();
+		final int range = minecart.getRange() * 2;
 		for (Entity e : entities) {
 			
 			if (e.isDead()) {
@@ -204,12 +205,15 @@ public class MinecartUtils {
 			}
 
 			double distance = e.getLocation().toVector().distanceSquared(location);
-			if (distance < 6) {		
+			if (distance < range) {		
 				if (minecart.isStorageMinecart() && e instanceof org.bukkit.entity.Item
 					&& ((MinecartManiaStorageCart)minecart).addItem(((org.bukkit.entity.Item)e).getItemStack())) {
 					e.remove();
 				}
-				else if (shouldKillEntity(minecart, e)) {
+			}
+			
+			if (!e.isDead() & distance < 6) {
+				if (shouldKillEntity(minecart, e)) {
 					e.remove();
 				}
 				else if (clearedItemFromRails(e, minecart)){

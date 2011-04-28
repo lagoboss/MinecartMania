@@ -8,8 +8,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.afforess.minecartmaniacore.Item;
 
-//A hard coded class meant to show users how to create item aliases in the configuration
-//Basically, I'm a terrible, terrible person
 public class ItemAliasList{
 	public static ConcurrentHashMap<String, List<Item>> aliases = new ConcurrentHashMap<String, List<Item>>();
 	
