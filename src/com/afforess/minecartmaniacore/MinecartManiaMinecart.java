@@ -750,7 +750,9 @@ public class MinecartManiaMinecart {
 	}
 
 	public void updateChunks() {
-		chunkManager.updateChunks(getLocation());
+		if (!hasPlayerPassenger()) {
+			chunkManager.updateChunks(getLocation());
+		}
 	}
 	
 	public boolean isApproaching(Vector v) {
