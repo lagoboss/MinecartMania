@@ -28,7 +28,7 @@ public class ControlBlock {
 	private RedstoneState elevatorState = RedstoneState.Default;
 	public boolean updateToPoweredRail = false; //temporary, remove for MC 1.6
 	
-	public ControlBlock() {
+	public ControlBlock(Item type) {
 	}
 	
 	public Item getType() {
