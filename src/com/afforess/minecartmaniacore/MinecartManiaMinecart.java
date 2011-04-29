@@ -801,9 +801,10 @@ public class MinecartManiaMinecart {
 			//Get where we are
 			Block elevatorBlock = getBlockBeneath();
 			int y = elevatorBlock.getY();
-			//Find the closest elevator block starting 2 blocks (so we do not find ourselves) away and expand from there.
-			for (int yOffset = 2; yOffset < 128; yOffset++) {
-				if (y + yOffset < 128) {
+			//Find the closest elevator block. yOffset of 1 above us is our own track, so we can't look there, so don't.
+			//If we start yOffset = 2, we will miss the possible track directly below us. It won't fit a person, but will fit a storage cart.
+			for (int yOffset = 1; yOffset < 128; yOffset++) {
+				if (y + yOffset < 128 && yOffset > 1) {
 					//See if we have a valid destination
 					if (MinecartUtils.isTrack(elevatorBlock.getRelative(0, yOffset, 0))
 							&& ControlBlockList.isElevatorBlock(Item.getItem(elevatorBlock.getRelative(0, yOffset-1, 0)))) {
