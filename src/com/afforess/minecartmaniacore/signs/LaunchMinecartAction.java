@@ -15,7 +15,7 @@ public class LaunchMinecartAction implements SignAction {
 
 	@Override
 	public boolean execute(MinecartManiaMinecart minecart) {
-		if (!ControlBlockList.isCatcherBlock(minecart.getItemBeneath())) {
+		if (ControlBlockList.getLaunchSpeed(minecart.getItemBeneath()) == 1.0D) {
 			return false;
 		}
 		if (minecart.isMoving()) {

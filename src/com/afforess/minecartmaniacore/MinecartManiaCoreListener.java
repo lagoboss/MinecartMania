@@ -95,9 +95,6 @@ public class MinecartManiaCoreListener extends VehicleListener{
 			minecart.doRealisticFriction();
 			minecart.doLauncherBlock();
 			minecart.undoPoweredRails();
-			if (minecart.isMoving()) {
-				minecart.updateChunks();
-			}
 			
 			//total hack workaround because of the inability to create runnables/threads w/o IllegalAccessError
 			if (minecart.getDataValue("launch") != null) {
@@ -107,6 +104,7 @@ public class MinecartManiaCoreListener extends VehicleListener{
 			
 			if (minecart.hasChangedPosition() || minecart.createdLastTick) {
 				minecart.updateToPoweredRails();
+				minecart.updateChunks();
 				if (minecart.isAtIntersection()) {
 					MinecartIntersectionEvent mie = new MinecartIntersectionEvent(minecart);
 					MinecartManiaCore.server.getPluginManager().callEvent(mie);

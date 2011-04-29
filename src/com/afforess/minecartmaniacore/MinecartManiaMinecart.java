@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
@@ -55,6 +54,7 @@ public class MinecartManiaMinecart {
 	private boolean dead = false;
 	public static final double MAXIMUM_MOMENTUM = 1E150D;
 	public boolean createdLastTick = true;
+	public ChunkManager chunkManager = new ChunkManager();
 	
 	public MinecartManiaMinecart(Minecart cart) {
 		minecart = cart; 
@@ -699,16 +699,18 @@ public class MinecartManiaMinecart {
 				
 				Object owner = getOwner();
 				MinecartManiaInventory inventory = null;
+				Player invOwner = null;
 				if (owner instanceof Player && MinecartManiaWorld.isReturnMinecartToOwner()) {
 					inventory = MinecartManiaWorld.getMinecartManiaPlayer((Player)owner);
 				}
 				else if (owner instanceof MinecartManiaChest && MinecartManiaWorld.isReturnMinecartToOwner()) {
 					inventory = ((MinecartManiaChest)owner);
+					invOwner = ((MinecartManiaChest)owner).getOwner();
 				}
 				
 				if (inventory != null) {
 					for (int i = 0; i < items.size(); i++) {
-						if (!inventory.addItem(items.get(i))) {
+						if (!inventory.addItem(items.get(i), invOwner)) {
 							minecart.getWorld().dropItemNaturally(minecart.getLocation(), items.get(i));
 						}
 					}
@@ -723,6 +725,8 @@ public class MinecartManiaMinecart {
 			//Fire destroyed event
 			MinecartManiaMinecartDestroyedEvent mmmee = new MinecartManiaMinecartDestroyedEvent(this);
 			MinecartManiaCore.server.getPluginManager().callEvent(mmmee);
+			
+			chunkManager.unloadChunks(getLocation());
 			
 			minecart.remove();
 			dead = true;
@@ -746,30 +750,7 @@ public class MinecartManiaMinecart {
 	}
 
 	public void updateChunks() {
-		if (MinecartManiaWorld.isKeepMinecartsLoaded() && !isDead()) {
-			Chunk current = minecart.getLocation().getBlock().getChunk();
-			Chunk old = previousLocation.toLocation(minecart.getWorld()).getBlock().getChunk();
-			int range = 3;
-			HashSet<Chunk> toLoad = new HashSet<Chunk>();
-			for (int dx = -(range); dx <= range; dx++){
-				for (int dz = -(range); dz <= range; dz++){
-					Chunk chunk = current.getWorld().getChunkAt(current.getX() + dx, current.getZ() + dz);
-					toLoad.add(chunk);
-					current.getWorld().loadChunk(chunk);
-				}
-			}
-			//we've just moved chunks, and we must manually unload chunks
-			if (current.getX() != old.getX() || current.getZ() != old.getZ()) {
-				for (int dx = -(range); dx <= range; dx++){
-					for (int dz = -(range); dz <= range; dz++){
-						Chunk chunk = current.getWorld().getChunkAt(old.getX() + dx, old.getZ() + dz);
-						if (!toLoad.contains(chunk)) {
-							old.getWorld().unloadChunkRequest(old.getX() + dx, old.getZ() + dz);
-						}
-					}
-				}
-			}
-		}
+		chunkManager.updateChunks(getLocation());
 	}
 	
 	public boolean isApproaching(Vector v) {

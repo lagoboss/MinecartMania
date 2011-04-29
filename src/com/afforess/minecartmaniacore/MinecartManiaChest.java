@@ -118,6 +118,21 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements 
 		 }
 	 }
 	 
+	 public Player getOwner() {
+		 if (MinecartManiaCore.Lockette) {
+			if (Lockette.isProtected(getLocation().getBlock())) {
+				return MinecartManiaCore.server.getPlayer(Lockette.getProtectedOwner(getLocation().getBlock()));
+			}
+		 }
+		 if (MinecartManiaCore.LWC){
+			 LWCPlugin lock = (LWCPlugin )MinecartManiaCore.server.getPluginManager().getPlugin("LWC");
+			 if (lock.getLWC().findProtection(getLocation().getBlock()) != null) {
+				 return MinecartManiaCore.server.getPlayer(lock.getLWC().findProtection(getLocation().getBlock()).getOwner());
+			 }
+		 }
+		return null;
+	 }
+	 
 	 public boolean canAccess(Player player){
 		 if (MinecartManiaCore.ChestLock) {
 			 //ChestLock lock = (ChestLock)server.getPluginManager().getPlugin("ChestLock");

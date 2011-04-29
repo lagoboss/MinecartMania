@@ -59,7 +59,7 @@ public class MinecartManiaSign implements Sign{
 	@Override
 	public void addBrackets() {
 		for (int i = 0; i < getNumLines(); i++) {
-			if (!getLine(i).isEmpty()) {
+			if (!getLine(i).isEmpty() && getLine(i).length() < 14) {
 				setLine(i, WordUtils.capitalize(StringUtils.addBrackets((getLine(i)))));
 			}
 		}
