@@ -37,7 +37,8 @@ public class StringUtils {
 	public static String removeBrackets(String s) {
 		String str = "";
 		boolean isStation = false;
-		if (s.contains("st-")) { //see if we need to make sure [ ] in the middle do not get removed.
+		if (s.toLowerCase().contains("st-")) { //see if we need to make sure [ ] in the middle do not get removed. 
+			                                   //Also lower case because the same sign and line will come in as "st-" AND "St-"
 			isStation = true;
 		} 
 		for (int i = 0; i < s.length(); i++){
@@ -50,6 +51,7 @@ public class StringUtils {
 			}
 			str += c;
 		}
+
 		return str;
 	}
 	
