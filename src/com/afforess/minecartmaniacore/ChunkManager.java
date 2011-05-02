@@ -51,6 +51,10 @@ public class ChunkManager {
 	
 	private static boolean unloadChunk(Chunk chunk) {
 		CraftWorld world = (CraftWorld)chunk.getWorld();
+		//Spawn must never be unloaded
+		if (chunk.getX() == 0 && chunk.getZ() == 0) {
+			return false;
+		}
 		if (!world.isChunkInUse(chunk.getX(), chunk.getZ())) {
 			world.unloadChunk(chunk.getX(), chunk.getZ());
 			return true;

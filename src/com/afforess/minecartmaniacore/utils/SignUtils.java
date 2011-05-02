@@ -56,6 +56,15 @@ public class SignUtils {
 		}
 		return signList;
 	}
+	
+	public static ArrayList<com.afforess.minecartmaniacore.signs.Sign> getMinecartManiaSignBeneathList(Location location, int range) {
+		ArrayList<Sign> list = getSignBeneathList(location, range);
+		ArrayList<com.afforess.minecartmaniacore.signs.Sign> signList = new ArrayList<com.afforess.minecartmaniacore.signs.Sign>(list.size());
+		for (Sign s : list) {
+			signList.add(SignManager.getSignAt(new Location(s.getWorld(), s.getX(), s.getY(), s.getZ())));
+		}
+		return signList;
+	}
 
 	public static ArrayList<Sign> getParallelSignList(MinecartManiaMinecart minecart) {
 		return getParallelSignList(minecart.minecart.getLocation());

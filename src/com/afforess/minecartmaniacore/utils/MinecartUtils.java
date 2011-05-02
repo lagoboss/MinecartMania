@@ -197,7 +197,7 @@ public class MinecartUtils {
 		//Set a flag to stop this event from happening twice
 		minecart.setDataValue("MinecartNearEntityEvent", true);
 		Vector location = minecart.minecart.getLocation().toVector();
-		final int range = minecart.getRange() * 2;
+		final int range = minecart.getRange() * minecart.getRange();
 		for (Entity e : entities) {
 			
 			if (e.isDead()) {
