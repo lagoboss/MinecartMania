@@ -8,7 +8,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-
 import com.afforess.minecartmaniacore.AbstractItem;
 import com.afforess.minecartmaniacore.Item;
 import com.afforess.minecartmaniacore.utils.ItemUtils;
@@ -23,15 +22,18 @@ public class MinecartManiaConfigurationParser {
 		}
 		File config = new File(directory, filename);
 		if (!config.exists()) {
-			parser.write(config);
+			parser.write(config, null);
 		}
 		config = new File(directory, filename);
 		Document doc = null;
+		Document originalDoc = null;
 		try {
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			doc = dBuilder.parse(config.toURI().getPath());
 			doc.getDocumentElement().normalize();
+			originalDoc = dBuilder.parse(config.toURI().getPath());
+			originalDoc.getDocumentElement().normalize();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -40,16 +42,40 @@ public class MinecartManiaConfigurationParser {
 		//	System.out.println("attempting to update");
 		//	((CoreSettingParser)parser).update(config);
 		//}
+
 		if (!parser.isUpToDate(doc)) {
+			//Could not update the document
 			File old = new File(directory, filename + ".bak");
 			if (old.exists()) {
 				old.delete();
 			}
 			config.renameTo(old);
-			if (!parser.write(config)) {
+			Logger.getLogger("minecraft").info("[Minecart Mania] Attempted update failed - Backup config file - renamed " + filename + " to " + filename + ".bak");
+			if (!parser.write(config, null)) {
 				Logger.getLogger("minecraft").severe("[Minecart Mania] FAILED TO WRITE CONFIGURATION! Directory: " + directory + " File: " + filename);
+			} else {
+				Logger.getLogger("minecraft").info("[Minecart Mania] Created new config file - " + filename);
+			}
+		} else {
+			String versionDoc = doc.getElementsByTagName("version").item(0).getTextContent();
+			String versionOrigDoc = originalDoc.getElementsByTagName("version").item(0).getTextContent();
+
+			if (!versionDoc.equalsIgnoreCase(versionOrigDoc)) {
+				Logger.getLogger("minecraft").info("[Minecart Mania] Updated config file from " + versionOrigDoc + " to " + versionDoc + ".");
+				//doc was successfully updated by isUpToDate function
+				//try to save the changed doc back down to the disk
+				File old = new File(directory, filename + ".bak");
+				if (old.exists()) old.delete();
+				config.renameTo(old);
+				Logger.getLogger("minecraft").info("[Minecart Mania] Backup config file - renamed " + filename + " to " + filename + ".bak");
+				if (!parser.write(config, doc)) {
+					Logger.getLogger("minecraft").severe("[Minecart Mania] FAILED TO WRITE CONFIGURATION! Directory: " + directory + " File: " + filename);
+				} else {
+					Logger.getLogger("minecraft").info("[Minecart Mania] Saved updated config file - " + filename);
+				}
 			}
 		}
+
 		config = new File(directory, filename);
 		try {
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();

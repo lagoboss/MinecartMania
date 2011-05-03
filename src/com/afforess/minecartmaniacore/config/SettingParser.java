@@ -10,6 +10,6 @@ public interface SettingParser {
 	
 	public boolean read(Document document);
 	
-	public boolean write(File config);
+	public boolean write(File config, Document document);
 
 }
