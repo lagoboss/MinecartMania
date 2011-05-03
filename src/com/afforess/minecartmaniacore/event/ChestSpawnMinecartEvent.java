@@ -3,7 +3,7 @@ package com.afforess.minecartmaniacore.event;
 import org.bukkit.Location;
 import org.bukkit.event.Cancellable;
 
-import com.afforess.minecartmaniacore.MinecartManiaChest;
+import com.afforess.minecartmaniacore.inventory.MinecartManiaChest;
 
 public class ChestSpawnMinecartEvent extends MinecartManiaEvent implements Cancellable{
 	private static final long serialVersionUID = 725637829972458807L;

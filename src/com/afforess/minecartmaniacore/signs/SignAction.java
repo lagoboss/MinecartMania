@@ -1,6 +1,6 @@
 package com.afforess.minecartmaniacore.signs;
 
-import com.afforess.minecartmaniacore.MinecartManiaMinecart;
+import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
 
 /**
  * An action specific to a sign

@@ -3,7 +3,8 @@ package com.afforess.minecartmaniacore.utils;
 import java.util.HashSet;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
-import com.afforess.minecartmaniacore.MinecartManiaWorld;
+
+import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
 
 public class BlockUtils {
 	

@@ -1,4 +1,4 @@
-package com.afforess.minecartmaniacore;
+package com.afforess.minecartmaniacore.world;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map.Entry;
@@ -26,8 +26,15 @@ import org.bukkit.material.Lever;
 import org.bukkit.material.MaterialData;
 import org.bukkit.Location;
 
+import com.afforess.minecartmaniacore.MinecartManiaCore;
 import com.afforess.minecartmaniacore.debug.DebugTimer;
 import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
+import com.afforess.minecartmaniacore.entity.MinecartManiaPlayer;
+import com.afforess.minecartmaniacore.inventory.MinecartManiaChest;
+import com.afforess.minecartmaniacore.inventory.MinecartManiaDispenser;
+import com.afforess.minecartmaniacore.inventory.MinecartManiaFurnace;
+import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
+import com.afforess.minecartmaniacore.minecart.MinecartManiaStorageCart;
 
 public class MinecartManiaWorld {
 	private static ConcurrentHashMap<Integer,MinecartManiaMinecart> minecarts = new ConcurrentHashMap<Integer,MinecartManiaMinecart>();

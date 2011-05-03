@@ -1,6 +1,6 @@
 package com.afforess.minecartmaniacore.event;
 
-import com.afforess.minecartmaniacore.MinecartManiaChest;
+import com.afforess.minecartmaniacore.inventory.MinecartManiaChest;
 public class ChestPoweredEvent extends MinecartManiaEvent{
 	private static final long serialVersionUID = 458967445158658060L;
 	private MinecartManiaChest chest;

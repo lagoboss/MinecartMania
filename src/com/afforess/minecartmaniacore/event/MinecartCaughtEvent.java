@@ -1,6 +1,6 @@
 package com.afforess.minecartmaniacore.event;
 
-import com.afforess.minecartmaniacore.MinecartManiaMinecart;
+import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
 
 public class MinecartCaughtEvent extends MinecartManiaEvent implements MinecartEvent {
 	private static final long serialVersionUID = 91568375046621L;

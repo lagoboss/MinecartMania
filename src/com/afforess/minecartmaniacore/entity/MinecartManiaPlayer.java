@@ -1,8 +1,12 @@
-package com.afforess.minecartmaniacore;
+package com.afforess.minecartmaniacore.entity;
 
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.entity.Player;
+
+import com.afforess.minecartmaniacore.MinecartManiaCore;
+import com.afforess.minecartmaniacore.inventory.MinecartManiaInventory;
+import com.afforess.minecartmaniacore.inventory.MinecartManiaSingleContainer;
 
 public class MinecartManiaPlayer extends MinecartManiaSingleContainer implements MinecartManiaInventory{
 	private final String name;

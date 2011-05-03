@@ -1,8 +1,8 @@
 package com.afforess.minecartmaniacore.signs;
 
-import com.afforess.minecartmaniacore.Item;
 import com.afforess.minecartmaniacore.signs.MinecartManiaSign;
 import com.afforess.minecartmaniacore.signs.Sign;
+import com.afforess.minecartmaniacore.world.Item;
 
 public class MinecartTypeSign extends MinecartManiaSign{
 	protected boolean standard = false;

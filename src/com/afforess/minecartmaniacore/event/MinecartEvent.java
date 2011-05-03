@@ -1,6 +1,6 @@
 package com.afforess.minecartmaniacore.event;
 
-import com.afforess.minecartmaniacore.MinecartManiaMinecart;
+import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
 
 public interface MinecartEvent{
 	

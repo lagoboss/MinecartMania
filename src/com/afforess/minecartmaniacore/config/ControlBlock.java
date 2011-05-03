@@ -3,7 +3,7 @@ package com.afforess.minecartmaniacore.config;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.afforess.minecartmaniacore.Item;
+import com.afforess.minecartmaniacore.world.Item;
 
 public class ControlBlock {
 	

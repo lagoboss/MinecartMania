@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.Location;
 
 import com.afforess.minecartmaniacore.MinecartManiaCore;
-import com.afforess.minecartmaniacore.MinecartManiaMinecart;
+import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
 import com.afforess.minecartmaniacore.utils.ComparableLocation;
 import com.afforess.minecartmaniacore.utils.DirectionUtils;
 import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;

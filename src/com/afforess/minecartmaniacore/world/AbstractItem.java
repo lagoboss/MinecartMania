@@ -1,4 +1,4 @@
-package com.afforess.minecartmaniacore;
+package com.afforess.minecartmaniacore.world;
 
 import java.util.ArrayList;
 import java.util.List;

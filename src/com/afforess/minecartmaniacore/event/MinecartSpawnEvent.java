@@ -2,7 +2,7 @@ package com.afforess.minecartmaniacore.event;
 
 import org.bukkit.event.Cancellable;
 
-import com.afforess.minecartmaniacore.MinecartManiaMinecart;
+import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
 
 public class MinecartSpawnEvent extends MinecartManiaEvent implements Cancellable{
 

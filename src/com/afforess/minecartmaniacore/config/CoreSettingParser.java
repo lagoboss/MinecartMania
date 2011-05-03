@@ -24,12 +24,12 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.afforess.minecartmaniacore.Item;
 import com.afforess.minecartmaniacore.MinecartManiaCore;
-import com.afforess.minecartmaniacore.MinecartManiaWorld;
 import com.afforess.minecartmaniacore.debug.DebugMode;
 import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
 import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
+import com.afforess.minecartmaniacore.world.Item;
+import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
 
 public class CoreSettingParser implements SettingParser{
 	private static final double version = 1.51;

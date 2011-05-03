@@ -2,7 +2,7 @@ package com.afforess.minecartmaniacore.event;
 
 import java.util.Calendar;
 
-import com.afforess.minecartmaniacore.MinecartManiaMinecart;
+import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
 
 public class MinecartTimeEvent extends MinecartManiaEvent {
 	private static final long serialVersionUID = 506596934934650992L;

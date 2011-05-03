@@ -8,10 +8,10 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import com.afforess.minecartmaniacore.AbstractItem;
-import com.afforess.minecartmaniacore.Item;
 import com.afforess.minecartmaniacore.utils.ItemUtils;
 import com.afforess.minecartmaniacore.utils.StringUtils;
+import com.afforess.minecartmaniacore.world.AbstractItem;
+import com.afforess.minecartmaniacore.world.Item;
 
 public class MinecartManiaConfigurationParser {
 	

@@ -8,10 +8,15 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.afforess.minecartmaniacore.api.MinecartManiaActionListener;
+import com.afforess.minecartmaniacore.api.MinecartManiaCoreBlockListener;
+import com.afforess.minecartmaniacore.api.MinecartManiaCoreListener;
+import com.afforess.minecartmaniacore.api.MinecartManiaCoreWorldListener;
 import com.afforess.minecartmaniacore.config.CoreSettingParser;
 import com.afforess.minecartmaniacore.config.LocaleParser;
 import com.afforess.minecartmaniacore.config.MinecartManiaConfigurationParser;
 import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
+import com.afforess.minecartmaniacore.world.Item;
 
 public class MinecartManiaCore extends JavaPlugin {
 	

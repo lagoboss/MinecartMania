@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.bukkit.block.Block;
 
-import com.afforess.minecartmaniacore.Item;
-import com.afforess.minecartmaniacore.MinecartManiaMinecart;
+import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
 import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
+import com.afforess.minecartmaniacore.world.Item;
 
 public class ControlBlockList {
 	protected static ArrayList<ControlBlock> controlBlocks = new ArrayList<ControlBlock>();

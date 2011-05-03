@@ -1,4 +1,4 @@
-package com.afforess.minecartmaniacore;
+package com.afforess.minecartmaniacore.inventory;
 
 import java.util.concurrent.ConcurrentHashMap;
 

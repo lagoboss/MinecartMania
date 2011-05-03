@@ -5,8 +5,8 @@ import org.bukkit.event.Event;
 import org.bukkit.event.Listener;
 
 import com.afforess.minecartmaniacore.MinecartManiaCore;
-import com.afforess.minecartmaniacore.MinecartManiaMinecart;
-import com.afforess.minecartmaniacore.MinecartManiaWorld;
+import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
+import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
 import com.wormhole_xtreme.wormhole.event.StargateMinecartTeleportEvent;
 
 

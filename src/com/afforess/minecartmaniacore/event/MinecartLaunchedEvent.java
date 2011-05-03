@@ -2,7 +2,7 @@ package com.afforess.minecartmaniacore.event;
 
 import org.bukkit.util.Vector;
 
-import com.afforess.minecartmaniacore.MinecartManiaMinecart;
+import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
 
 public class MinecartLaunchedEvent extends MinecartManiaEvent implements MinecartEvent {
 	private static final long serialVersionUID = -910085717583704662L;

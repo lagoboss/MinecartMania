@@ -2,8 +2,8 @@ package com.afforess.minecartmaniacore.signs;
 
 import org.bukkit.util.Vector;
 
-import com.afforess.minecartmaniacore.MinecartManiaMinecart;
 import com.afforess.minecartmaniacore.config.ControlBlockList;
+import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
 
 public class LaunchMinecartAction implements SignAction {
 	private volatile Vector launchSpeed = null;

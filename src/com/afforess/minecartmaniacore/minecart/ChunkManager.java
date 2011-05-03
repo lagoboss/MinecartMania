@@ -1,4 +1,4 @@
-package com.afforess.minecartmaniacore;
+package com.afforess.minecartmaniacore.minecart;
 
 import java.util.HashSet;
 import java.util.Iterator;

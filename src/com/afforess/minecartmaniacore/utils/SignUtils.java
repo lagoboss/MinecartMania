@@ -9,9 +9,9 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Sign;
 
-import com.afforess.minecartmaniacore.MinecartManiaMinecart;
-import com.afforess.minecartmaniacore.MinecartManiaWorld;
+import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
 import com.afforess.minecartmaniacore.signs.SignManager;
+import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
 
 public class SignUtils {
 	public static boolean signMatches(Sign s1, Sign s2) {

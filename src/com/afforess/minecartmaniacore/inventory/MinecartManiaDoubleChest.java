@@ -1,4 +1,4 @@
-package com.afforess.minecartmaniacore;
+package com.afforess.minecartmaniacore.inventory;
 
 import net.minecraft.server.InventoryLargeChest;
 
@@ -8,6 +8,8 @@ import org.bukkit.craftbukkit.inventory.CraftInventory;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+
+import com.afforess.minecartmaniacore.world.Item;
 
 /**
  * A temporary object that allows for easy use of accessing and altering the contents of a double chest. 

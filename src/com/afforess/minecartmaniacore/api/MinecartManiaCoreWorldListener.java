@@ -1,9 +1,12 @@
-package com.afforess.minecartmaniacore;
+package com.afforess.minecartmaniacore.api;
 
 import java.util.ArrayList;
 
 import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.event.world.WorldListener;
+
+import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
+import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
 
 public class MinecartManiaCoreWorldListener extends WorldListener{
 	public static final int CHUNK_RANGE = 4;

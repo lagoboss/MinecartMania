@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import org.bukkit.Location;
 
-import com.afforess.minecartmaniacore.MinecartManiaMinecart;
+import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
 import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
 
 /**

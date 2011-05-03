@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.afforess.minecartmaniacore.Item;
+import com.afforess.minecartmaniacore.world.Item;
 
 public class ItemAliasList{
 	public static ConcurrentHashMap<String, List<Item>> aliases = new ConcurrentHashMap<String, List<Item>>();

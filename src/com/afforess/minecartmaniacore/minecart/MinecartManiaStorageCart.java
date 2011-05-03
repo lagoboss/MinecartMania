@@ -1,26 +1,32 @@
-package com.afforess.minecartmaniacore;
+package com.afforess.minecartmaniacore.minecart;
+
+import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Material;
+import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.StorageMinecart;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+
+import com.afforess.minecartmaniacore.inventory.MinecartManiaInventory;
+import com.afforess.minecartmaniacore.world.Item;
+import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
 /**
- * This class represents a single container (unlike double containers, like a double chest) and provides utility methods for dealing with items inside the container
+ * This class represents a Minecart Mania Storage Minecart, that wraps a bukkit minecart (which in turn, wraps a Minecraft EntityMinecart)
  * @author Afforess
  */
-public abstract class MinecartManiaSingleContainer implements MinecartManiaInventory{
-	private Inventory inventory;
-	public MinecartManiaSingleContainer(Inventory i) {
-		inventory = i;
-	}
-	
+public class MinecartManiaStorageCart extends MinecartManiaMinecart implements MinecartManiaInventory{
+	private ConcurrentHashMap<Item, Integer> maximumContents = new ConcurrentHashMap<Item, Integer>();
+	private ConcurrentHashMap<Item, Integer> minimumContents = new ConcurrentHashMap<Item, Integer>();
+
 	/**
-	 * The bukkit inventory that this container represents
-	 * 
-	 * @return the inventory
+	 * Creates a storage minecart from the given bukkit minecart
+	 * @param cart to create from
 	 */
-	public Inventory getInventory() {
-		return inventory;
+	public MinecartManiaStorageCart(Minecart cart) {
+		super(cart);
 	}
 	
 	/**
@@ -33,22 +39,74 @@ public abstract class MinecartManiaSingleContainer implements MinecartManiaInven
 	}
 	
 	/**
-	 * Forces the inventory to update to the new given inventory.
-	 * Needed because Bukkit inventories become garbage when the chunks they are in are unloaded, or the player dies, etc...
-	 * 
-	 * @param inventory for this container to use
-	 * 
+	 * Creates a storage minecart from the given bukkit minecart, with the given owner
+	 * @param cart to create from
+	 * @param owner that created the minecart
 	 */
-	public void updateInventory(Inventory inventory) {
-		this.inventory = inventory;
+	public MinecartManiaStorageCart(Minecart cart, String owner) {
+		super(cart, owner);
+	}
+	
+	public int getItemRange() {
+		if (getDataValue("ItemCollectionRange") != null) {
+			return (Integer)getDataValue("ItemCollectionRange");
+		}
+		return MinecartManiaWorld.getIntValue(MinecartManiaWorld.getConfigurationValue("ItemCollectionRange"));
+	}
+	
+	public void setItemRange(int range) {
+		setDataValue("ItemCollectionRange", range);
+	}
+
+	/**
+	 * Gets the bukkit inventory for this storage minecart
+	 * @return bukkit inventory
+	 */
+	public Inventory getInventory() {
+		return ((StorageMinecart)minecart).getInventory();
+	}
+	
+	public int getMaximumItem(Item item) {
+		if (maximumContents != null && maximumContents.containsKey(item)) {
+			return maximumContents.get(item);
+		}
+		return -1;
+	}
+	
+	public void setMaximumItem(Item item, int amount) {
+		if (maximumContents != null) {
+			maximumContents.put(item, amount);
+		}
+	}
+	
+	public int getMinimumItem(Item item) {
+		if (minimumContents != null && minimumContents.containsKey(item)) {
+			return minimumContents.get(item);
+		}
+		return -1;
+	}
+	
+	public void setMinimumItem(Item item, int amount) {
+		if (minimumContents != null) {
+			minimumContents.put(item, amount);
+		}
 	}
 	
 	public boolean canAddItem(ItemStack item, Player player) {
-		if (item == null) {
-			return true;
-		}
-		if (item.getTypeId() == Material.AIR.getId()) {
+		if (item.getTypeId() == Item.AIR.getId()) {
 			return false;
+		}
+		
+		//Check if this new item will exceed the maximum allowed
+		ArrayList<Item> list = Item.getItem(item.getTypeId());
+		for (Item i : list) {
+			if (!i.hasData() || i.getData() == item.getDurability()) {
+				if (getMaximumItem(i) != -1) {
+					if (amount(i) + item.getAmount() > getMaximumItem(i)) {
+						return false;
+					}
+				}
+			}
 		}
 		return true;
 	}
@@ -56,19 +114,22 @@ public abstract class MinecartManiaSingleContainer implements MinecartManiaInven
 	public boolean canAddItem(ItemStack item) {
 		return canAddItem(item, null);
 	}
-
+	
 	/**
-	 * Attempts to add an itemstack. It adds items in a 'smart' manner, merging with existing itemstacks, until they
-	 * reach the maximum size (64). If it fails, it will not alter the previous contents.
+	 * attempts to add an itemstack to this storage minecart. It adds items in a 'smart' manner, merging with existing itemstacks, until they
+	 * reach the maximum size (64). If it fails, it will not alter the storage minecart's previous contents.
 	 * @param item to add
 	 * @param player who is adding the item
 	 * @return true if the item was successfully added
 	 */
 	public boolean addItem(ItemStack item, Player player) {
-		if (!canAddItem(item, player)) {
+		if (item == null) {
+			return true;
+		}
+		if (!canAddItem(item)) {
 			return false;
 		}
-		
+
 		//Backup contents
 		ItemStack[] backup = getContents().clone();
 		ItemStack backupItem = new ItemStack(item.getTypeId(), item.getAmount(), item.getDurability());
@@ -106,9 +167,10 @@ public abstract class MinecartManiaSingleContainer implements MinecartManiaInven
 	}
 	
 	/**
-	 * Attempts to add an itemstack. It adds items in a 'smart' manner, merging with existing itemstacks, until they
-	 * reach the maximum size (64). If it fails, it will not alter the previous contents.
+	 * attempts to add an itemstack to this storage minecart. It adds items in a 'smart' manner, merging with existing itemstacks, until they
+	 * reach the maximum size (64). If it fails, it will not alter the storage minecart's previous contents.
 	 * @param item to add
+	 * @param player who is adding the item
 	 * @return true if the item was successfully added
 	 */
 	public boolean addItem(ItemStack item) {
@@ -116,25 +178,34 @@ public abstract class MinecartManiaSingleContainer implements MinecartManiaInven
 	}
 	
 	/**
-	 * Attempts to add an itemstack. If it fails, it will not alter the previous contents
-	 * @param type to add
-	 * @param amount to add
-	 * @return true if the item of the given amount was successfully added
-	 */
-	public boolean addItem(int type, int amount) {
-		return addItem(new ItemStack(type, amount));
-	}
-	
-	/**
-	 * Attempts to add a single item. If it fails, it will not alter the previous contents
-	 * @param itemtype to add
-	 * @return true if the item was successfully added
-	 */
+	 ** attempts to add a single item of the given type to this storage minecart. If it fails, it will not alter the storage minecart's previous contents
+	 ** @param type to add
+	 **/
 	public boolean addItem(int type) {
 		return addItem(new ItemStack(type, 1));
 	}
 	
+	/**
+	 ** attempts to add a given amount of a given type to this storage minecart. If it fails, it will not alter the storage minecart's previous contents
+	 ** @param type to add
+	 ** @param amount to add
+	 **/
+	public boolean addItem(int type, int amount) {
+		return addItem(new ItemStack(type, amount));
+	}
+	
 	public boolean canRemoveItem(int type, int amount, short durability, Player player) {
+		//Check if this will fall below the minimum allowed
+		ArrayList<Item> list = Item.getItem(type);
+		for (Item i : list) {
+			if (!i.hasData() || i.getData() == durability) {
+				if (getMinimumItem(i) != -1) {
+					if (amount(i) - amount < getMinimumItem(i)) {
+						return false;
+					}
+				}
+			}
+		}
 		return true;
 	}
 	
@@ -143,18 +214,19 @@ public abstract class MinecartManiaSingleContainer implements MinecartManiaInven
 	}
 	
 	/**
-	 * Attempts to remove the specified amount of an item type. If it fails, it will not alter the previous contents.
-	 * If the durability is -1, it will only match item type id's and ignore durability
+	 * attempts to remove the specified amount of an item type from this storage minecart. If it fails, it will not alter the storage minecart's previous contents.
 	 * @param type to remove
 	 * @param amount to remove
-	 * @param durability of the item to remove
-	 * @param player who is removing the item 
+	 * @param durability of the item to remove (-1 for generic durability)
+	 * @param player who is removing the item
 	 * @return true if the items were successfully removed
 	 */
+	@Override
 	public boolean removeItem(int type, int amount, short durability, Player player) {
 		if (!canRemoveItem(type, amount, durability)) {
 			return false;
 		}
+
 		//Backup contents
 		ItemStack[] backup = getContents().clone();
 		
@@ -170,7 +242,7 @@ public abstract class MinecartManiaSingleContainer implements MinecartManiaInven
 						return true;
 					}
 					else{
-						amount -=  inventory.getItem(i).getAmount();
+						amount -=  getItem(i).getAmount();
 						setItem(i, null);
 					}
 				}
@@ -183,19 +255,20 @@ public abstract class MinecartManiaSingleContainer implements MinecartManiaInven
 	}
 	
 	/**
-	 * Attempts to remove the specified amount of an item type. If it fails, it will not alter the previous contents.
-	 * If the durability is -1, it will only match item type id's and ignore durability
+	 * attempts to remove the specified amount of an item type from this storage minecart. If it fails, it will not alter the storage minecart's previous contents.
 	 * @param type to remove
 	 * @param amount to remove
-	 * @param durability of the item to remove
+	 * @param durability of the item to remove (-1 for generic durability)
 	 * @return true if the items were successfully removed
 	 */
+	@Override
 	public boolean removeItem(int type, int amount, short durability) {
 		return removeItem(type, amount, durability, null);
 	}
 
+
 	/**
-	 * Attempts to remove the specified amount of an item type. If it fails, it will not alter the previous contents.
+	 * attempts to remove the specified amount of an item type from this storage minecart. If it fails, it will not alter the storage minecart's previous contents.
 	 * @param type to remove
 	 * @param amount to remove
 	 * @return true if the items were successfully removed
@@ -205,63 +278,25 @@ public abstract class MinecartManiaSingleContainer implements MinecartManiaInven
 	}
 	
 	/**
-	 * attempts to remove a single item type. If it fails, it will not alter the previous contents.
+	 * attempts to remove a single item type from this storage minecart. If it fails, it will not alter the storage minecart previous contents.
 	 * @param type to remove
 	 * @return true if the item was successfully removed
 	 */
 	public boolean removeItem(int type) {
 		return removeItem(type, 1);
 	}
-
+	
 	/**
-	 * Gets the itemstack at the given slot, or null if empty
-	 * @param slot to get
-	 * @return the itemstack at the given slot
-	 */
-	public ItemStack getItem(int slot) {
-		ItemStack i = getInventory().getItem(slot);
-		//WTF is it with bukkit and returning air instead of null?
-		return i == null ? null : (i.getTypeId() == Material.AIR.getId() ? null : i);
-	}
-
-	/**
-	 * Sets the itemstack at the given slot. If the itemstack is null, it will clear the slot.
-	 * @param slot to set
-	 * @param item to set at given slot
-	 */
-	public void setItem(int slot, ItemStack item) {
-		if (item == null) {
-			getInventory().clear(slot);
-		}
-		else {
-			getInventory().setItem(slot, item);
-		}
-	}
-
-	/**
-	 * Gets the first empty slot in this inventory, or -1 if it is full
-	 * @return the first empty slot
-	 */
-	public int firstEmpty() {
-		for (int i = 0; i < size(); i++) {
-			if (getItem(i) == null) {
-				return i;
-			}
-		}
-		return -1;
-	}
-
-	/**
-	 * Gets the size of this inventory
-	 * @return the size of this inventory
+	 * Gets the size of the inventory of this storage minecart
+	 * @return the size of the inventory
 	 */
 	public int size() {
 		return getInventory().getSize();
 	}
 
 	/**
-	 * Get's an array containing all the contents of this inventory. Empty slots are represented by air.
-	 * @return An array containing the contents of this inventory
+	 * Gets an array of the Itemstack's inside this storage minecart. Empty slots are represented by air stacks
+	 * @return the contents of this inventory
 	 */
 	public ItemStack[] getContents() {
 		return getInventory().getContents();
@@ -274,7 +309,45 @@ public abstract class MinecartManiaSingleContainer implements MinecartManiaInven
 	public void setContents(ItemStack[] contents) {
 		getInventory().setContents(contents);
 	}
+	
+	/**
+	 * Gets the itemstack at the given slot, or null if empty
+	 * @param slot to get
+	 * @return the itemstack at the given slot
+	 */
+	public ItemStack getItem(int slot) {
+		ItemStack i = getInventory().getItem(slot);
+		//WTF is it with bukkit and returning air instead of null?
+		return i == null ? null : (i.getTypeId() == Material.AIR.getId() ? null : i);
+	}
 
+	/**
+	 * Sets the given slot to the given itemstack. If the itemstack is null, the slot's contents will be cleared.
+	 * @param slot to set.
+	 * @param item to set in the slot
+	 */
+	public void setItem(int slot, ItemStack item) {
+		if (item == null) {
+			getInventory().clear(slot);
+		}
+		else {
+			getInventory().setItem(slot, item);
+		}
+	}
+	
+	/**
+	 * Get's the first empty slot in this storage minecart
+	 * @return the first empty slot in this storage minecart
+	 */
+	public int firstEmpty() {
+		for (int i = 0; i < size(); i++) {
+			if (getItem(i) == null) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	
 	/**
 	 * Get's the first slot containing the given material, or -1 if none contain it
 	 * @param material to search for
@@ -318,18 +391,6 @@ public abstract class MinecartManiaSingleContainer implements MinecartManiaInven
 			}
 		}
 		return -1;
-	}
-	
-	public int amount(Item item) {
-		int count = 0;
-		for (int i = 0; i < size(); i++) {
-			if (getItem(i) != null) {
-				if (getItem(i).getTypeId() == item.getId() && (!item.hasData() || getItem(i).getDurability() == item.getData())) {
-					count += getItem(i).getAmount();
-				}
-			}
-		}
-		return count;
 	}
 	
 	/**
@@ -381,5 +442,17 @@ public abstract class MinecartManiaSingleContainer implements MinecartManiaInven
 			}
 		}
 		return true;
+	}
+	
+	public int amount(Item item) {
+		int count = 0;
+		for (ItemStack i : getContents()) {
+			if (i != null && i.getTypeId() == item.getId()){
+				if (!item.hasData() || item.getData() == i.getDurability()) {
+					count += i.getAmount();
+				}
+			}
+		}
+		return count;
 	}
 }
