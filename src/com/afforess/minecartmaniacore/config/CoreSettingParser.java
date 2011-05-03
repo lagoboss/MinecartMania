@@ -3,6 +3,11 @@ package com.afforess.minecartmaniacore.config;
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map.Entry;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -28,11 +33,84 @@ import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
 
 public class CoreSettingParser implements SettingParser{
 	private static final double version = 1.51;
-	
+	private static MinecartManiaLogger log = MinecartManiaLogger.getInstance();
+
+	//This not only will tell true/false if the document is up to date, but will try to update it before it answers.
+	//This will only try to update existing settings and add ones where necessary.
+	//It will not create new blocks or anything. It will try its best to keep settings exactly the same
 	public boolean isUpToDate(Document document) {
 		try {
 			NodeList list = document.getElementsByTagName("version");
 			Double version = MinecartManiaConfigurationParser.toDouble(list.item(0).getChildNodes().item(0).getNodeValue(), 0);
+			log.debug("Core Config read: version: " + list.item(0).getTextContent());
+			if (version == 1.3 || version == 1.4) {
+				//do changes to make this 1.3 or 1.4 into a 1.51 structure.
+				//NOTE: this will not reset it to the new default, only update it while preserving data.
+				list = document.getElementsByTagName("ControlBlock");
+				for (int idx = 0; idx < list.getLength(); idx++) {
+					Node controlBlock = list.item(idx);
+					//Add the Elevator option to each Control block
+					Element newNode = document.createElement("Elevator");
+						controlBlock.appendChild(newNode);
+					//Add the AutoConvertToPoweredRails option to each Control block and set it to false
+					newNode = document.createElement("AutoConvertToPoweredRails");
+						newNode.appendChild(document.createTextNode("false"));
+						controlBlock.appendChild(newNode);
+				}
+				//convert the speedMultiplier node to the new structure
+				list = document.getElementsByTagName("SpeedMultiplier");
+				for (int idx = list.getLength()-1; idx >= 0; idx--) { //go in descending order so our list doesn't disappear from under us when we replace nodes.
+					Node oldNode = list.item(idx);
+					String oldNodeValue = oldNode.getTextContent();
+					Node oldRedstone = oldNode.getAttributes().getNamedItem("redstone");
+					String oldNodeRedstoneValue = (oldRedstone == null ? "default":oldRedstone.getNodeValue());
+					//Add the SpeedMultipliers structure
+					Element speedMultipliers = document.createElement("SpeedMultipliers");
+						if (oldNodeValue != "") {
+							Element speedMultiplier = document.createElement("SpeedMultiplier");
+								Element speedMultiplierNode = document.createElement("Redstone");
+									speedMultiplierNode.appendChild(document.createTextNode(oldNodeRedstoneValue));
+									//Append the child node
+									speedMultiplier.appendChild(speedMultiplierNode);
+								speedMultiplierNode = document.createElement("Multiplier");
+									speedMultiplierNode.appendChild(document.createTextNode(oldNodeValue));
+									//Append the child node
+									speedMultiplier.appendChild(speedMultiplierNode);
+								speedMultiplierNode = document.createElement("Direction");
+									speedMultiplierNode.appendChild(document.createTextNode("Any"));
+									//Append the child node
+									speedMultiplier.appendChild(speedMultiplierNode);
+								speedMultiplierNode = document.createElement("MinecartTypes");
+									Element minecartNode = document.createElement("MinecartType");
+										minecartNode.appendChild(document.createTextNode("Standard"));
+										speedMultiplierNode.appendChild(minecartNode);
+									minecartNode = document.createElement("MinecartType");
+										minecartNode.appendChild(document.createTextNode("Powered"));
+										speedMultiplierNode.appendChild(minecartNode);
+									minecartNode = document.createElement("MinecartType");
+										minecartNode.appendChild(document.createTextNode("Storage"));
+										speedMultiplierNode.appendChild(minecartNode);
+									//Append the child node
+									speedMultiplier.appendChild(speedMultiplierNode);
+								speedMultiplierNode = document.createElement("Passenger");
+									speedMultiplierNode.appendChild(document.createTextNode("default"));
+									//Append the child node
+									speedMultiplier.appendChild(speedMultiplierNode);
+								//Append the child node
+								speedMultipliers.appendChild(speedMultiplier);
+						}
+						//Replace the speedMultiplier node
+						Node parent = oldNode.getParentNode();
+						parent.replaceChild(speedMultipliers, oldNode);
+				}
+				list = document.getElementsByTagName("version");
+				version = 1.51;
+				list.item(0).setTextContent(version.toString());
+			} else if (version == 1.51) {
+				//Place the code to update to the next version here
+				//version = 1.51;	//This needs to be updated to the next version of the document.
+				//list.item(0).setTextContent(version.toString());
+			}
 			return version == CoreSettingParser.version;
 		}
 		catch (Exception e) {
@@ -41,206 +119,64 @@ public class CoreSettingParser implements SettingParser{
 	}
 
 	@Override
+	//This will read the configuration document passed in and set values based on the nodes it finds
 	public boolean read(Document document) {
-		Object value;
+		//Set the default configuration before we try to read anything.
+		setDefaultConfiguration();
+
+		//Object to hold a list of Nodes that we extract from the document
 		NodeList list;
-		String setting;
-
 		try {
-			//Parse Simple Settings First
-			setting = "LoggingMode";
-			list = document.getElementsByTagName(setting);
-			value = list.item(0).getChildNodes().item(0).getNodeValue();
-			DebugMode mode = DebugMode.debugModeFromString((String)value);
-			MinecartManiaLogger.getInstance().switchDebugMode(mode);
-			
-			setting = "MinecartsKillMobs";
-			list = document.getElementsByTagName(setting);
-			value = MinecartManiaConfigurationParser.toBool(list.item(0).getChildNodes().item(0).getNodeValue());
-			MinecartManiaWorld.getConfiguration().put(setting, value);
-			
-			setting = "MinecartsClearRails";
-			list = document.getElementsByTagName(setting);
-			value = MinecartManiaConfigurationParser.toInt(list.item(0).getChildNodes().item(0).getNodeValue(), 1);
-			MinecartManiaWorld.getConfiguration().put(setting, value);
-			
-			setting = "KeepMinecartsLoaded";
-			list = document.getElementsByTagName(setting);
-			value = MinecartManiaConfigurationParser.toBool(list.item(0).getChildNodes().item(0).getNodeValue());
-			MinecartManiaWorld.getConfiguration().put(setting, value);
-			
-			setting = "MinecartsReturnToOwner";
-			list = document.getElementsByTagName(setting);
-			value = MinecartManiaConfigurationParser.toBool(list.item(0).getChildNodes().item(0).getNodeValue());
-			MinecartManiaWorld.getConfiguration().put(setting, value);
-			
-			setting = "MaximumMinecartSpeedPercent";
-			list = document.getElementsByTagName(setting);
-			value = MinecartManiaConfigurationParser.toInt(list.item(0).getChildNodes().item(0).getNodeValue(), 165);
-			MinecartManiaWorld.getConfiguration().put(setting, value);
-			
-			setting = "DefaultMinecartSpeedPercent";
-			list = document.getElementsByTagName(setting);
-			value = MinecartManiaConfigurationParser.toInt(list.item(0).getChildNodes().item(0).getNodeValue(), 100);
-			MinecartManiaWorld.getConfiguration().put(setting, value);
-			
-			setting = "Range";
-			list = document.getElementsByTagName(setting);
-			value = MinecartManiaConfigurationParser.toInt(list.item(0).getChildNodes().item(0).getNodeValue(), 2);
-			MinecartManiaWorld.getConfiguration().put(setting, value);
-			
-			setting = "RangeY";
-			list = document.getElementsByTagName(setting);
-			value = MinecartManiaConfigurationParser.toInt(list.item(0).getChildNodes().item(0).getNodeValue(), 2);
-			MinecartManiaWorld.getConfiguration().put(setting, value);
-			
-			setting = "MaximumRange";
-			list = document.getElementsByTagName(setting);
-			value = MinecartManiaConfigurationParser.toInt(list.item(0).getChildNodes().item(0).getNodeValue(), 25);
-			MinecartManiaWorld.getConfiguration().put(setting, value);
-			
-			setting = "StackAllItems";
-			list = document.getElementsByTagName(setting);
-			value = MinecartManiaConfigurationParser.toBool(list.item(0).getChildNodes().item(0).getNodeValue());
-			MinecartManiaWorld.getConfiguration().put(setting, value);
-			
-			//read arrays
-			ControlBlockList.controlBlocks = new ArrayList<ControlBlock>();
-			list = document.getElementsByTagName("ControlBlock");
-			for (int temp = 0; temp < list.getLength(); temp++) {
-				Node n = list.item(temp);
-				if (n.getNodeType() == Node.ELEMENT_NODE) {
-					Element element = (Element) n;
-					ControlBlock cb = new ControlBlock();
-					
-					NodeList templist = element.getElementsByTagName("BlockType").item(0).getChildNodes();
-					Node tempNode = (Node) templist.item(0);
-					cb.setType(MinecartManiaConfigurationParser.toItem(getNodeValue(tempNode)));
-					
-					templist = element.getElementsByTagName("SpeedMultiplier");
-					ArrayList<SpeedMultiplier> speedMultipliers = new ArrayList<SpeedMultiplier>();
-					if (templist != null) {
-						for (int multiplier = 0; multiplier < templist.getLength(); multiplier++) {
-							Node node = list.item(temp);
-							if (node.getNodeType() == Node.ELEMENT_NODE) {
-								Element elem = (Element)node;
-								SpeedMultiplier speed = new SpeedMultiplier();
-
-								NodeList templist2 = elem.getElementsByTagName("Redstone").item(multiplier).getChildNodes();
-								tempNode = (Node) templist2.item(0);
-								speed.redstone = parseRedstoneState(getNodeValue(tempNode));
-
-								templist2 = elem.getElementsByTagName("Multiplier").item(multiplier).getChildNodes();
-								tempNode = (Node) templist2.item(0);
-								speed.multiplier = MinecartManiaConfigurationParser.toDouble(getNodeValue(tempNode), 1.0);
-
-								templist2 = elem.getElementsByTagName("Direction").item(multiplier).getChildNodes();
-								tempNode = (Node) templist2.item(0);
-								speed.direction = parseDirectionState(getNodeValue(tempNode));
-	
-								//at this point, I am running out of variable names...
-								templist2 = elem.getElementsByTagName("MinecartTypes");
-								templist2 = ((Element)templist2.item(multiplier)).getElementsByTagName("MinecartType");
-								boolean types[] = new boolean[3];
-								for (int i = 0; i < templist2.getLength(); i++) {
-									Node node2 = templist2.item(i).getChildNodes().item(0);
-									String type = getNodeValue(node2);
-									if (type == null) {
-										continue;
-									}
-									if (type.equalsIgnoreCase("standard")) {
-										types[0] = true;
-									}
-									else if (type.equalsIgnoreCase("powered")) {
-										types[1] = true;
-									}
-									else if (type.equalsIgnoreCase("storage")) {
-										types[2] = true;
-									}
-								}
-								speed.types = types;
-
-								templist2 = elem.getElementsByTagName("Passenger").item(multiplier).getChildNodes();
-								tempNode = (Node) templist2.item(0);
-								speed.passenger = parsePassengerState(getNodeValue(tempNode));
-
-								speedMultipliers.add(speed);
-							}
+			list = document.getElementsByTagName("MinecartManiaConfiguration").item(0).getChildNodes();	//get the root nodes of the ConfigurationTree
+			String elementChildName = "";		//holds the name of the node
+			String elementChildValue = "";		//holds the value of the node
+			//loop through each of the child nodes of the document
+			for (int idx = 0; idx < list.getLength(); idx++) {
+				Node elementChild = list.item(idx);	//extract the node
+				elementChildName = "";				//reset the child name
+				elementChildValue = null;			//reset the child value
+				//do we have a valid element node
+				if (elementChild.getNodeType() == Node.ELEMENT_NODE) {
+					elementChildName = elementChild.getNodeName();	//get the node name
+					//does this node have children
+					if (elementChild.getChildNodes() != null) {
+						//get the first child node - this should give us the true/false/value within a single node
+						elementChildValue = getNodeValue(elementChild.getChildNodes().item(0));
+					}
+					if (elementChildValue != null && elementChildValue != "") {
+						//Handle the possible nodes we have at this level.
+						if (elementChildName == "version") {
+							if (elementChildValue != String.valueOf(version)) { /* documentUpgrade(document); */ }
+						} else if (elementChildName == "LoggingMode") {
+							DebugMode mode = DebugMode.debugModeFromString(elementChildValue);
+							MinecartManiaLogger.getInstance().switchDebugMode(mode);
+							log.debug("Core Config read: " + elementChildName + " = " + elementChildValue);
+						} else if (elementChildName == "MinecartsKillMobs"
+								|| elementChildName == "KeepMinecartsLoaded"
+								|| elementChildName == "MinecartsReturnToOwner"
+								|| elementChildName == "StackAllItems"
+								) {
+							MinecartManiaWorld.getConfiguration().put(elementChildName, MinecartManiaConfigurationParser.toBool(elementChildValue));
+							log.debug("Core Config read: " + elementChildName + " = " + (MinecartManiaConfigurationParser.toBool(elementChildValue) ? "true" : "false"));
+						} else if (elementChildName == "MinecartsClearRails"
+								|| elementChildName == "MaximumMinecartSpeedPercent"
+								|| elementChildName == "DefaultMinecartSpeedPercent"
+								|| elementChildName == "Range"
+								|| elementChildName == "RangeY"
+								|| elementChildName == "MaximumRange"
+								) {
+							MinecartManiaWorld.getConfiguration().put(elementChildName, MinecartManiaConfigurationParser.toInt(elementChildValue, getDefaultConfigurationIntegerValue(elementChildName)));
+							log.debug("Core Config read: " + elementChildName + " = " + elementChildValue);
+						} else if (elementChildName == "ControlBlocks") {
+							log.debug("Core Config read: ControlBlocks");
+							readControlBlocks(elementChild.getChildNodes());
+						} else if (elementChildName == "ItemAliases") {
+							log.debug("Core Config read: Item Aliases");
+							readItemAliases(elementChild.getChildNodes());
+						} else {
+							log.info("Core Config read unknown node: " + elementChildName);
 						}
 					}
-					cb.setSpeedMultipliers(speedMultipliers);
-
-					templist = element.getElementsByTagName("Catch").item(0).getChildNodes();
-					tempNode = (Node) templist.item(0);
-					cb.setCatcherState(parseRedstoneState(getAttributeValue(tempNode, "redstone")));
-					cb.setCatcherBlock(MinecartManiaConfigurationParser.toBool(getNodeValue(tempNode)));
-
-					templist = element.getElementsByTagName("LauncherSpeed").item(0).getChildNodes();
-					tempNode = (Node) templist.item(0);
-					cb.setLauncherState(parseRedstoneState(getAttributeValue(tempNode, "redstone")));
-					cb.setLauncherSpeed(MinecartManiaConfigurationParser.toDouble(getNodeValue(tempNode), 0.0));
-
-					templist = element.getElementsByTagName("Eject").item(0).getChildNodes();
-					tempNode = (Node) templist.item(0);
-					cb.setEjectorState(parseRedstoneState(getAttributeValue(tempNode, "redstone")));
-					cb.setEjectorBlock(MinecartManiaConfigurationParser.toBool(getNodeValue(tempNode)));
-
-					templist = element.getElementsByTagName("Platform").item(0).getChildNodes();
-					tempNode = (Node) templist.item(0);
-					cb.setPlatformState(parseRedstoneState(getAttributeValue(tempNode, "redstone")));
-					cb.setPlatformRange(MinecartManiaConfigurationParser.toDouble(getAttributeValue(tempNode, "range"), 4));
-					cb.setPlatformBlock(MinecartManiaConfigurationParser.toBool(getNodeValue(tempNode)));
-
-					templist = element.getElementsByTagName("Station").item(0).getChildNodes();
-					tempNode = (Node) templist.item(0);
-					cb.setStationState(parseRedstoneState(getAttributeValue(tempNode, "redstone")));
-					cb.setStationBlock(MinecartManiaConfigurationParser.toBool(getNodeValue(tempNode)));
-
-					templist = element.getElementsByTagName("SpawnMinecart").item(0).getChildNodes();
-					tempNode = (Node) templist.item(0);
-					cb.setSpawnState(parseRedstoneState(getAttributeValue(tempNode, "redstone")));
-					cb.setSpawnMinecart(MinecartManiaConfigurationParser.toBool(getNodeValue(tempNode)));
-
-					templist = element.getElementsByTagName("KillMinecart").item(0).getChildNodes();
-					tempNode = (Node) templist.item(0);
-					cb.setKillState(parseRedstoneState(getAttributeValue(tempNode, "redstone")));
-					cb.setKillMinecart(MinecartManiaConfigurationParser.toBool(getNodeValue(tempNode)));
-
-					templist = element.getElementsByTagName("Elevator").item(0).getChildNodes();
-					tempNode = (Node) templist.item(0);
-					cb.setElevatorState(parseRedstoneState(getAttributeValue(tempNode, "redstone")));
-					cb.setElevatorBlock(MinecartManiaConfigurationParser.toBool(getNodeValue(tempNode)));
-					
-					//Allow this XML tag to be optional, since it's not permenant
-					try {
-						templist = element.getElementsByTagName("AutoConvertToPoweredRails").item(0).getChildNodes();
-						tempNode = (Node) templist.item(0);
-						cb.updateToPoweredRail = MinecartManiaConfigurationParser.toBool(getNodeValue(tempNode));
-					}
-					catch (Exception eTemp) {}
-
-					ControlBlockList.controlBlocks.add(cb);
-				}
-			 }
-			 
-			list = document.getElementsByTagName("ItemAlias");
-			for (int temp = 0; temp < list.getLength(); temp++) {
-				Node n = list.item(temp);
-				if (n.getNodeType() == Node.ELEMENT_NODE) {
-					Element element = (Element) n;
-					
-					NodeList templist = element.getElementsByTagName("AliasName").item(0).getChildNodes();
-					Node tempNode = (Node) templist.item(0);
-					String key = tempNode != null ? tempNode.getNodeValue() : null;
-					
-					ArrayList<Item> values = new ArrayList<Item>();
-					templist = element.getElementsByTagName("ItemType");
-					for (int i = 0; i < templist.getLength(); i++) {
-						tempNode = (Node) templist.item(i).getChildNodes().item(0);
-						values.add(MinecartManiaConfigurationParser.toItem(tempNode != null ? tempNode.getNodeValue() : null));
-					}
-					
-					ItemAliasList.aliases.put(key, values);
 				}
 			}
 		}
@@ -248,8 +184,364 @@ public class CoreSettingParser implements SettingParser{
 			e.printStackTrace();
 			return false;
 		}
-		
+		debugShowConfigs();
 		return true;
+	}
+	//This will read the Control blocks in the Configuration file
+	private boolean readControlBlocks(NodeList list) {
+		try {
+			ControlBlockList.controlBlocks = new ArrayList<ControlBlock>();	//init where we store the control blocks
+			ControlBlock 	cb; //create a holder for our control blocks that will be injected into the controlBlocks list
+			NodeList 		elementChildren;		//Holder for the children of the ControlBlock we are processing
+			Node     		elementChild;      		//A specific child node being processed
+			Node     		elementChildAttribute;	//The attribute of a node
+			String			elementChildName;		//The name of a child node
+			String			elementChildValue;		//The value of a child node
+			RedstoneState 	attributeRedstone;		//The attributeRedstone of a node
+
+			//Loop through each node in the list looking for a control block
+			for (int temp = 0; temp < list.getLength(); temp++) {
+				Node element = list.item(temp);
+				//Make sure it is a ControlBlock element node
+				if (element.getNodeType() == Node.ELEMENT_NODE && element.getNodeName() == "ControlBlock") {
+					cb = new ControlBlock();					//initialize our new control block object
+					elementChildren = element.getChildNodes();	//get the children of this ControlBlock node
+					//Loop through each of the control block modifiers.
+					for(int idx = 0; idx < elementChildren.getLength(); idx++) {
+						attributeRedstone = null;					//reset the attributeRedstone to a null value
+						elementChildValue = null;					//reset the elementChildVlue to a null value
+						elementChild = elementChildren.item(idx);	//Get the specific control block modifier node
+						//make sure it is an elementNode tag and not a space or comment.
+						if (elementChild.getNodeType() == Node.ELEMENT_NODE) {
+							elementChildName = elementChild.getNodeName(); //get the specific modifier node name.
+							//Get the child node value if this node has children
+							if (elementChild.getChildNodes() != null)
+								elementChildValue = getNodeValue(elementChild.getChildNodes().item(0));
+							//Do special handling of the SpeedMultipliers node
+							if (elementChildName == "SpeedMultipliers") {
+								if (elementChildName != "BlockType") {
+									log.debug("Core Config read:       Modifier: SpeedMultipliers");
+								}
+								readSpeedMultiplierModifiers(cb, elementChild.getChildNodes());
+							} else {
+								if (elementChildName != "BlockType") {
+									log.debug("Core Config read:       Modifier: " + elementChildName + " = " + elementChildValue);
+								}
+								if (elementChildValue != null){
+									//see if this modifier has attributes to it.
+									if(elementChild.getAttributes() != null) {
+										//Loop through each of the attributes of the modifier
+										for(int idxAttrib = 0; idxAttrib < elementChild.getAttributes().getLength(); idxAttrib++) {
+											//process the attribute of the modifier if we recognize it
+											elementChildAttribute = elementChild.getAttributes().item(idxAttrib);
+											if(elementChildAttribute.getNodeName() == "redstone") {
+												attributeRedstone = parseRedstoneState(elementChildAttribute.getNodeValue());
+												if (elementChildName != "BlockType") {
+													log.debug("Core Config read:                 redstone: " + elementChildAttribute.getNodeValue());
+												}
+											}
+										}
+									}
+									if (elementChildName == "BlockType") {
+										log.debug("Core Config read:   ControlBlock: " + elementChildValue);
+										cb.setType(MinecartManiaConfigurationParser.toItem(elementChildValue));
+									} else if (elementChildName == "Catch") {
+										cb.setCatcherState(attributeRedstone);
+										cb.setCatcherBlock(MinecartManiaConfigurationParser.toBool(elementChildValue));
+									} else if (elementChildName == "LauncherSpeed") {
+										cb.setLauncherState(attributeRedstone);
+										cb.setLauncherSpeed(MinecartManiaConfigurationParser.toDouble(elementChildValue, 0.0));
+									} else if (elementChildName == "Eject") {
+										cb.setEjectorState(attributeRedstone);
+										cb.setEjectorBlock(MinecartManiaConfigurationParser.toBool(elementChildValue));
+									} else if (elementChildName == "Platform") {
+										cb.setPlatformState(attributeRedstone);
+										cb.setPlatformBlock(MinecartManiaConfigurationParser.toBool(elementChildValue));
+									} else if (elementChildName == "Station") {
+										cb.setStationState(attributeRedstone);
+										cb.setStationBlock(MinecartManiaConfigurationParser.toBool(elementChildValue));
+									} else if (elementChildName == "SpawnMinecart") {
+										cb.setSpawnState(attributeRedstone);
+										cb.setSpawnMinecart(MinecartManiaConfigurationParser.toBool(elementChildValue));
+									} else if (elementChildName == "KillMinecart") {
+										cb.setKillState(attributeRedstone);
+										cb.setKillMinecart(MinecartManiaConfigurationParser.toBool(elementChildValue));
+									} else if (elementChildName == "Elevator") {
+										cb.setElevatorState(attributeRedstone);
+										cb.setElevatorBlock(MinecartManiaConfigurationParser.toBool(elementChildValue));
+									} else if (elementChildName == "AutoConvertToPoweredRails") {
+										cb.updateToPoweredRail = MinecartManiaConfigurationParser.toBool(elementChildValue);
+									} else {
+										log.info("Core Config read unknown node in ControlBlock: " + elementChildName);
+									}
+								}
+							}
+						}
+					}
+					ControlBlockList.controlBlocks.add(cb);
+				} else if (element.getNodeType() == Node.ELEMENT_NODE) {
+					log.info("Core Config read unknown node in ControlBlocks: " + element.getNodeName());
+				}
+			}
+		}
+		catch (Exception e) {
+			return false;
+		}
+		return true;
+	}
+	//This will read the SpeedMultiplier Modifiers
+	private boolean readSpeedMultiplierModifiers(ControlBlock cb, NodeList list) {
+		ArrayList<SpeedMultiplier> speedMultipliers = new ArrayList<SpeedMultiplier>(); //init where we store the speed multiplier settings
+		NodeList	elementChildren;		//Holder for the children of the SpeedMultiplier node we are processing
+		Node     	elementChild;      		//A specific child node being processed
+		String		elementChildName;		//The name of a child node
+		String		elementChildValue;		//The value of a child node
+
+		try {
+			//Loop through each node in the list looking for a SpeedMultiplier
+			for (int temp = 0; temp < list.getLength(); temp++) {
+				Node element = list.item(temp);			//extract the single node from the list
+				//Make sure it is a ControlBlock element node
+				if (element.getNodeType() == Node.ELEMENT_NODE && element.getNodeName() == "SpeedMultiplier") {
+					elementChildren = element.getChildNodes();		//get the children of this ControlBlock node
+					SpeedMultiplier speed = new SpeedMultiplier();	//Create a new SpeedMultiplier
+						//set default values
+						speed.redstone = RedstoneState.Default;
+						speed.multiplier = 1.0;
+						speed.direction = CompassDirection.NO_DIRECTION;
+						speed.types = new boolean[3];
+						speed.passenger =  PassengerState.Default;
+					//Loop through each of the Speed Multiplier modifiers.
+					for(int idx = 0; idx < elementChildren.getLength(); idx++) {
+						elementChild = elementChildren.item(idx);	//Get the specific SpeedMultiplier modifier node
+						elementChildValue = null;					//reset the elementChildVlue to a null value
+						//make sure it is an elementNode tag and not a space or comment.
+						if (elementChild.getNodeType() == Node.ELEMENT_NODE) {
+							elementChildName = elementChild.getNodeName(); //get the specific modifier node name.
+							//Get the child node value if this node has children
+							if (elementChild.getChildNodes() != null)
+								elementChildValue = getNodeValue(elementChild.getChildNodes().item(0));
+							if (elementChildName == "MinecartTypes") {
+								readSpeedMultiplierModifiersMinecartTypes(speed, elementChild.getChildNodes());
+							} else {
+								if (elementChildValue != null){
+									if        (elementChildName == "Redstone") {
+										log.debug("Core Config read:                     Redstone: " + elementChildValue);
+										speed.redstone = parseRedstoneState(elementChildValue);
+									} else if (elementChildName == "Multiplier") {
+										log.debug("Core Config read:                     Multiplier: " + elementChildValue);
+										speed.multiplier = MinecartManiaConfigurationParser.toDouble(elementChildValue, 1.0);
+									} else if (elementChildName == "Direction") {
+										log.debug("Core Config read:                     Direction: " + elementChildValue);
+										speed.direction = parseDirectionState(elementChildValue);
+									} else if (elementChildName == "Passenger") {
+										log.debug("Core Config read:                     Passenger: " + elementChildValue);
+										speed.passenger = parsePassengerState(elementChildValue);
+									} else {
+										log.info("Core Config read unknown node in ControlBlock SpeedMultiplier modifiers: " + elementChildName);
+									}
+								}
+							}
+						}
+					}
+					//Add the speed multiplier setting to the modifier
+					speedMultipliers.add(speed);
+				} else if (element.getNodeType() == Node.ELEMENT_NODE) {
+					log.info("Core Config read unknown node in ControlBlock SpeedMultiplier: " + element.getNodeName());
+				}
+			}
+			cb.setSpeedMultipliers(speedMultipliers);
+		}
+		catch (Exception e) {
+			return false;
+		}
+		return true;
+	}
+	//This will read the MinecartTypes in the SpeedMultiplier modifier.
+	private boolean readSpeedMultiplierModifiersMinecartTypes(SpeedMultiplier speed, NodeList list) {
+		String elementValue;		//The value of a child node
+
+		try {
+			//Loop through each node in the list looking for a MinecartType node
+			boolean types[] = new boolean[3];  //declare return value for the function
+			log.debug("Core Config read:                     MinecartTypes");
+			for (int temp = 0; temp < list.getLength(); temp++) {
+				Node element = list.item(temp);			//extract the single node from the list
+				//Make sure it is a MinecartType element node
+				if (element.getNodeType() == Node.ELEMENT_NODE && element.getNodeName() == "MinecartType") {
+					elementValue = null;
+					//Get the element value
+					if (element.getChildNodes() != null)
+						elementValue = getNodeValue(element.getChildNodes().item(0));
+					log.debug("Core Config read:                             Type:" + elementValue);
+					//Record the element value in one of the possible types
+					if      (elementValue.equalsIgnoreCase("standard")) {
+						types[0] = true;
+					} else if (elementValue.equalsIgnoreCase("powered")) {
+						types[1] = true;
+					} else if (elementValue.equalsIgnoreCase("storage")) {
+						types[2] = true;
+					} else {
+						log.info("Core Config read unknown value in ControlBlock SpeedMultiplier MinecartTypes: " + elementValue);
+					}
+				} else if (element.getNodeType() == Node.ELEMENT_NODE) {
+					log.info("Core Config read unknown node in ControlBlock SpeedMultiplier MinecartTypes: " + element.getNodeName());
+				}
+			}
+			speed.types = types;
+		} catch (Exception e) {
+			return false;
+		}
+		return true;
+	}
+	//This will read the ItemAliases
+	private boolean readItemAliases(NodeList list) {
+		try {
+			for (int temp = 0; temp < list.getLength(); temp++) {
+				Node n = list.item(temp);
+				if (n.getNodeType() == Node.ELEMENT_NODE) {
+					if (n.getNodeName() == "ItemAlias") {
+						Element element = (Element)n;
+						NodeList elementChildren = element.getChildNodes();
+						String elementChildName = "";
+						String elementChildValue = null;
+						String aliasName = "";
+						ArrayList<Item> aliasValues = new ArrayList<Item>();
+						for(int idx = 0; idx < elementChildren.getLength(); idx++) {
+							Node elementChild = elementChildren.item(idx);
+							if (elementChild.getNodeType() == Node.ELEMENT_NODE) {
+								elementChildName = elementChild.getNodeName();
+								elementChildValue = null;
+								if (elementChild.getChildNodes() != null) {
+									elementChildValue = getNodeValue(elementChild.getChildNodes().item(0));
+								}
+								if (elementChildName == "AliasName") {
+									log.debug("Core Config read:    Item Alias: " + elementChildValue);
+									aliasName = elementChildValue;
+								} else if (elementChildName == "ItemType") {
+									log.debug("Core Config read:         Block: " + elementChildValue);
+									aliasValues.add(MinecartManiaConfigurationParser.toItem(elementChildValue));
+								} else {
+									log.info("Core Config read unknown node in ItemAlias: " + elementChildName);
+								}
+							}
+						}
+						ItemAliasList.aliases.put(aliasName, aliasValues);
+					}
+				}
+			}
+		}
+		catch (Exception e) {
+			return false;
+		}
+		return true;
+	}
+
+	private void debugShowConfigs() {
+		//Display global configuration values
+		for (Enumeration<String> ConfigKeys = MinecartManiaWorld.getConfiguration().keys(); ConfigKeys.hasMoreElements();) {
+			String temp = ConfigKeys.nextElement();
+			String value = MinecartManiaWorld.getConfigurationValue(temp).toString();
+			log.debug("Core Config: " + temp + " = " + value);
+		}
+		//Display the control blocks
+		ListIterator<ControlBlock> li = ControlBlockList.getControlBlockList().listIterator();
+		log.debug("Core Config: ControlBlocks");
+		while(li.hasNext()) {
+			ControlBlock cb = li.next();
+			log.debug("Core Config:   ControlBlock: " + cb.getType().toString());
+			if (cb.isCatcherBlock())    log.debug("Core Config:       Modifier: Catch (redstone = " + cb.getCatcherState().toString() + ")");
+			if (cb.isEjectorBlock())    log.debug("Core Config:       Modifier: Eject (redstone = " + cb.getEjectorState().toString() + ")");
+			if (cb.isPlatformBlock())   log.debug("Core Config:       Modifier: Platform (redstone = " + cb.getPlatformState().toString() + ")");
+			if (cb.isStationBlock())    log.debug("Core Config:       Modifier: Station (redstone = " + cb.getStationState().toString() + ")");
+			if (cb.isSpawnMinecart())   log.debug("Core Config:       Modifier: SpawnMinecart (redstone = " + cb.getSpawnState().toString() + ")");
+			if (cb.isKillMinecart())    log.debug("Core Config:       Modifier: KillMinecart (redstone = " + cb.getKillState().toString() + ")");
+			if (cb.isElevatorBlock())   log.debug("Core Config:       Modifier: Elevator (redstone = " + cb.getElevatorState().toString() + ")");
+			if (cb.updateToPoweredRail) log.debug("Core Config:       Modifier: UpdateToPoweredRail = true");
+			if (cb.getSpeedMultipliers().listIterator().hasNext()) {
+				ListIterator<SpeedMultiplier> smli = cb.getSpeedMultipliers().listIterator();
+				log.debug("Core Config:       Modifier: SpeedMultipliers");
+				while(smli.hasNext()) {
+					SpeedMultiplier sm = smli.next();
+					log.debug("Core Config:                   SpeedMultiplier");
+					if      (sm.redstone == RedstoneState.Default)  log.debug("Core Config:                     Redstone: Default");
+					else if (sm.redstone == RedstoneState.Enables)  log.debug("Core Config:                     Redstone: Enables");
+					else if (sm.redstone == RedstoneState.Disables) log.debug("Core Config:                     Redstone: Disables");
+					log.debug("Core Config:                     Multiplier: " + String.valueOf(sm.multiplier));
+					if      (sm.direction == CompassDirection.NO_DIRECTION)	log.debug("Core Config:                     Direction: Any");
+					else if (sm.direction == CompassDirection.NORTH)		log.debug("Core Config:                     Direction: North");
+					else if (sm.direction == CompassDirection.SOUTH)		log.debug("Core Config:                     Direction: South");
+					else if (sm.direction == CompassDirection.EAST)			log.debug("Core Config:                     Direction: East");
+					else if (sm.direction == CompassDirection.WEST)			log.debug("Core Config:                     Direction: West");
+					if      (sm.passenger == PassengerState.Default)  log.debug("Core Config:                     Passenger: Default");
+					else if (sm.passenger == PassengerState.Enables)  log.debug("Core Config:                     Passenger: Enables");
+					else if (sm.passenger == PassengerState.Disables) log.debug("Core Config:                     Passenger: Disables");
+					log.debug("Core Config:                     MinecartTypes: " + (sm.types[0]?"Standard,":"") + (sm.types[0]?"Powered,":"") + (sm.types[0]?"Storage":""));
+				}
+			}
+		}
+		//Display the aliases
+		log.debug("Core Config: Item Aliases");
+		String CurrentKey= "";
+		Iterator<Entry<String, List<Item>>> i = ItemAliasList.aliases.entrySet().iterator();
+		while(i.hasNext()) {
+			Entry<String, List<Item>> e = i.next();
+			String key = e.getKey();
+			if (!key.equalsIgnoreCase(CurrentKey)) {
+				log.debug("Core Config:   Item Alias: " + key);
+				CurrentKey = key;
+			}
+			List<Item> items = e.getValue();
+
+			ListIterator<Item> ali = items.listIterator();
+			while(ali.hasNext()) {
+				Item ai = ali.next();
+				log.debug("Core Config:     Type: " + ai.toString());
+			}
+		}
+	}
+
+	//This will set the configuration values so the configuration file can override them if defined
+	private void setDefaultConfiguration() {
+		//Create the default Configuration values
+		//MinecartManiaLogger.getInstance().switchDebugMode(DebugMode.NORMAL);
+		MinecartManiaWorld.getConfiguration().put("MinecartsKillMobs",				true);
+		MinecartManiaWorld.getConfiguration().put("MinecartsClearRails",			getDefaultConfigurationIntegerValue("MinecartsClearRails"));
+		MinecartManiaWorld.getConfiguration().put("KeepMinecartsLoaded",			true);
+		MinecartManiaWorld.getConfiguration().put("MinecartsReturnToOwner",			true);
+		MinecartManiaWorld.getConfiguration().put("MaximumMinecartSpeedPercent",	getDefaultConfigurationIntegerValue("MaximumMinecartSpeedPercent"));
+		MinecartManiaWorld.getConfiguration().put("DefaultMinecartSpeedPercent",	getDefaultConfigurationIntegerValue("DefaultMinecartSpeedPercent"));
+		MinecartManiaWorld.getConfiguration().put("Range",							getDefaultConfigurationIntegerValue("Range"));
+		MinecartManiaWorld.getConfiguration().put("RangeY",							getDefaultConfigurationIntegerValue("RangeY"));
+		MinecartManiaWorld.getConfiguration().put("MaximumRange",					getDefaultConfigurationIntegerValue("MaximumRange"));
+		MinecartManiaWorld.getConfiguration().put("StackAllItems",					true);
+		//Create Ores Alias
+		ArrayList<Item> values = new ArrayList<Item>();
+		values.add(MinecartManiaConfigurationParser.toItem("GOLD_ORE"));
+		values.add(MinecartManiaConfigurationParser.toItem("IRON_ORE"));
+		values.add(MinecartManiaConfigurationParser.toItem("COAL_ORE"));
+		values.add(MinecartManiaConfigurationParser.toItem("LAPIS_ORE"));
+		ItemAliasList.aliases.put("Ores", values);
+		//Create Ores Alias
+		values = new ArrayList<Item>();
+		values.add(MinecartManiaConfigurationParser.toItem("260"));
+		values.add(MinecartManiaConfigurationParser.toItem("297"));
+		values.add(MinecartManiaConfigurationParser.toItem("319"));
+		values.add(MinecartManiaConfigurationParser.toItem("320"));
+		values.add(MinecartManiaConfigurationParser.toItem("322"));
+		values.add(MinecartManiaConfigurationParser.toItem("350"));
+		values.add(MinecartManiaConfigurationParser.toItem("354"));
+		ItemAliasList.aliases.put("Food", values);
+	}
+	//This will return the default integer values to be used for configuration
+	private int getDefaultConfigurationIntegerValue(String ConfigName) {
+		if (ConfigName == "MinecartsClearRails") return (1);
+		if (ConfigName == "MaximumMinecartSpeedPercent") return (165);
+		if (ConfigName == "DefaultMinecartSpeedPercent") return (100);
+		if (ConfigName == "Range") return (2);
+		if (ConfigName == "RangeY") return (2);
+		if (ConfigName == "MaximumRange") return (25);
+		return 0;
 	}
 	
 	public boolean update(File config) {
@@ -291,14 +583,17 @@ public class CoreSettingParser implements SettingParser{
 	}
 
 	@Override
-	public boolean write(File configFile) {
+	public boolean write(File configFile, Document document) {
 		try {
-			JarFile jar = new JarFile(MinecartManiaCore.MinecartManiaCore);
-			JarEntry entry = jar.getJarEntry("MinecartManiaConfiguration.xml");
-			InputStream is = jar.getInputStream(entry);
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document document = dBuilder.parse(is);
+			if (document == null) {
+				//we do not have a document to write, so read one from disk.
+				JarFile jar = new JarFile(MinecartManiaCore.MinecartManiaCore);
+				JarEntry entry = jar.getJarEntry("MinecartManiaConfiguration.xml");
+				InputStream is = jar.getInputStream(entry);
+				DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+				DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+				document = dBuilder.parse(is);
+			}
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
 			Transformer transformer = transformerFactory.newTransformer();
 			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
@@ -317,11 +612,6 @@ public class CoreSettingParser implements SettingParser{
 	private String getNodeValue(Node node) {
 		if (node == null) return null;
 		return node.getNodeValue();
-	}
-	
-	private String getAttributeValue(Node node, String attribute) {
-		if (node == null || node.getParentNode() == null || node.getParentNode().getAttributes() == null) return null;
-		return getNodeValue(node.getParentNode().getAttributes().getNamedItem(attribute));
 	}
 	
 	private CompassDirection parseDirectionState(String str) {
