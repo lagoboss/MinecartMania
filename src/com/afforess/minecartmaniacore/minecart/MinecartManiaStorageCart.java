@@ -51,7 +51,7 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 		if (getDataValue("ItemCollectionRange") != null) {
 			return (Integer)getDataValue("ItemCollectionRange");
 		}
-		return MinecartManiaWorld.getIntValue(MinecartManiaWorld.getConfigurationValue("ItemCollectionRange"));
+		return (Integer)MinecartManiaWorld.getConfigurationValue("ItemCollectionRange");
 	}
 	
 	public void setItemRange(int range) {

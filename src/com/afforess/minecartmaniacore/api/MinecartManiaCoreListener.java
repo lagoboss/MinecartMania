@@ -38,6 +38,7 @@ import org.bukkit.inventory.ItemStack;
 
 import com.afforess.minecartmaniacore.MinecartManiaCore;
 import com.afforess.minecartmaniacore.config.ControlBlockList;
+import com.afforess.minecartmaniacore.config.MinecartManiaConfiguration;
 import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
 import com.afforess.minecartmaniacore.event.MinecartActionEvent;
 import com.afforess.minecartmaniacore.event.MinecartClickedEvent;
@@ -192,7 +193,7 @@ public class MinecartManiaCoreListener extends VehicleListener{
 			if (collisioner instanceof LivingEntity) {
 				LivingEntity victim = (LivingEntity)(collisioner);
 				if (!(victim instanceof Player) && !(victim instanceof Wolf)) {
-					if (MinecartManiaWorld.isMinecartsKillMobs()) {
+					if (MinecartManiaConfiguration.isMinecartsKillMobs()) {
 						if (minecart.isMoving()) {
 							victim.remove();
 							event.setCancelled(true);

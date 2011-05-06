@@ -411,7 +411,8 @@ public class MinecartManiaWorld {
 	/**
 	 ** Returns an integer value from the given object, if it exists
 	 ** @param the object containing the value
-	 **/		 
+	 **/
+	 @Deprecated
 	 public static int getIntValue(Object o) {
 		 if (o != null) {
 			if (o instanceof Integer) {
@@ -421,6 +422,7 @@ public class MinecartManiaWorld {
 		return 0;
 	 }
 	 
+	 @Deprecated
 	 public static double getDoubleValue(Object o) {
 		 if (o != null) {
 			if (o instanceof Double) {
@@ -432,19 +434,19 @@ public class MinecartManiaWorld {
 		return 0;
 	 }
 	 
-	
+	 @Deprecated
 	public static int getMaximumMinecartSpeedPercent() {
 		return getIntValue(getConfigurationValue("MaximumMinecartSpeedPercent"));
 	}
-	
+	 @Deprecated
 	public static int getDefaultMinecartSpeedPercent() {
 		return getIntValue(getConfigurationValue("DefaultMinecartSpeedPercent"));
 	}
-	
+	 @Deprecated
 	public static int getMinecartsClearRailsSetting() {
 		return getIntValue(getConfigurationValue("MinecartsClearRails"));
 	}
-	
+	 @Deprecated
 	public static boolean isKeepMinecartsLoaded() {
 		Object o = getConfigurationValue("KeepMinecartsLoaded");
 		if (o != null) {
@@ -453,7 +455,7 @@ public class MinecartManiaWorld {
 		}
 		return false;
 	}
-	
+	 @Deprecated
 	public static boolean isMinecartsKillMobs() {
 		Object o = getConfigurationValue("MinecartsKillMobs");
 		if (o != null) {
@@ -462,7 +464,7 @@ public class MinecartManiaWorld {
 		}
 		return true;
 	}
-
+	 @Deprecated
 	public static boolean isReturnMinecartToOwner() {
 		Object o = getConfigurationValue("MinecartsReturnToOwner");
 		if (o != null) {

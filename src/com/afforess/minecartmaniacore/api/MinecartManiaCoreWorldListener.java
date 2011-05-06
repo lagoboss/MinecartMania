@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.event.world.WorldListener;
 
+import com.afforess.minecartmaniacore.config.MinecartManiaConfiguration;
 import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
 import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
 
@@ -12,7 +13,7 @@ public class MinecartManiaCoreWorldListener extends WorldListener{
 	public static final int CHUNK_RANGE = 4;
     public void onChunkUnload(ChunkUnloadEvent event) {
     	if (!event.isCancelled()) {
-    		if (MinecartManiaWorld.isKeepMinecartsLoaded()) {
+    		if (MinecartManiaConfiguration.isKeepMinecartsLoaded()) {
     			ArrayList<MinecartManiaMinecart> minecarts = MinecartManiaWorld.getMinecartManiaMinecartList();
     			for (MinecartManiaMinecart minecart : minecarts) {
     				if (Math.abs(event.getChunk().getX() - minecart.minecart.getLocation().getBlock().getChunk().getX()) > CHUNK_RANGE) {

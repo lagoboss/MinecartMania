@@ -13,6 +13,7 @@ import org.bukkit.entity.Vehicle;
 import org.bukkit.entity.Wolf;
 import org.bukkit.util.Vector;
 
+import com.afforess.minecartmaniacore.config.MinecartManiaConfiguration;
 import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
 import com.afforess.minecartmaniacore.minecart.MinecartManiaStorageCart;
 import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
@@ -229,7 +230,7 @@ public class MinecartUtils {
 		if (entity instanceof Arrow) {
 			return true; //special case, replaces them with arrow itemstack
 		}
-		if (MinecartManiaWorld.isMinecartsKillMobs()) {
+		if (MinecartManiaConfiguration.isMinecartsKillMobs()) {
 			if (entity instanceof LivingEntity) {
 				if (entity instanceof HumanEntity) {
 					return false;
@@ -249,7 +250,7 @@ public class MinecartUtils {
 	}
 	
 	private static boolean clearedItemFromRails(Entity e, MinecartManiaMinecart minecart) {
-		if (MinecartManiaWorld.getMinecartsClearRailsSetting() != 0) {
+		if (MinecartManiaConfiguration.getMinecartsClearRailsSetting() != 0) {
 			if (e.getEntityId() == minecart.minecart.getEntityId()) {
 				return false;
 			}
@@ -259,10 +260,10 @@ public class MinecartUtils {
 			if (minecart.minecart.getPassenger() != null && minecart.minecart.getPassenger().getEntityId() == e.getEntityId()) {
 				return false;
 			}
-			if (MinecartManiaWorld.getMinecartsClearRailsSetting() == 1 && e instanceof LivingEntity) {
+			if (MinecartManiaConfiguration.getMinecartsClearRailsSetting() == 1 && e instanceof LivingEntity) {
 				return false;
 			}
-			if (MinecartManiaWorld.getMinecartsClearRailsSetting() == 2 && e instanceof Player) {
+			if (MinecartManiaConfiguration.getMinecartsClearRailsSetting() == 2 && e instanceof Player) {
 				return false;
 			}
 			if (e instanceof Player && minecart.isOwner(e)) {

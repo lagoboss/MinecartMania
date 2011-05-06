@@ -23,6 +23,7 @@ import org.bukkit.util.Vector;
 import com.afforess.minecartmaniacore.MinecartManiaCore;
 import com.afforess.minecartmaniacore.config.ControlBlock;
 import com.afforess.minecartmaniacore.config.ControlBlockList;
+import com.afforess.minecartmaniacore.config.MinecartManiaConfiguration;
 import com.afforess.minecartmaniacore.event.MinecartCaughtEvent;
 import com.afforess.minecartmaniacore.event.MinecartElevatorEvent;
 import com.afforess.minecartmaniacore.event.MinecartLaunchedEvent;
@@ -74,14 +75,14 @@ public class MinecartManiaMinecart {
 	}
 	
 	private void initialize() {
-		setRange(MinecartManiaWorld.getIntValue(MinecartManiaWorld.getConfigurationValue("Range")));
-		setRangeY(MinecartManiaWorld.getIntValue(MinecartManiaWorld.getConfigurationValue("RangeY")));
+		setRange(MinecartManiaConfiguration.getMinecartRange());
+		setRangeY(MinecartManiaConfiguration.getMinecartRangeY());
 		cal = Calendar.getInstance();
 		setWasMovingLastTick(isMoving());
 		previousMotion = minecart.getVelocity().clone();
 		previousLocation = minecart.getLocation().toVector().clone();
 		previousLocation.setY(previousLocation.getX() -1); //fool game into thinking we've already moved
-		minecart.setMaxSpeed(MinecartManiaWorld.getDefaultMinecartSpeedPercent() * 0.4D / 100);
+		minecart.setMaxSpeed(MinecartManiaConfiguration.getDefaultMinecartSpeedPercent() * 0.4D / 100);
 		MinecartManiaCore.server.getPluginManager().callEvent(new MinecartManiaMinecartCreatedEvent(this));
 	}
 
@@ -705,10 +706,10 @@ public class MinecartManiaMinecart {
 				Object owner = getOwner();
 				MinecartManiaInventory inventory = null;
 				Player invOwner = null;
-				if (owner instanceof Player && MinecartManiaWorld.isReturnMinecartToOwner()) {
+				if (owner instanceof Player && MinecartManiaConfiguration.isReturnMinecartToOwner()) {
 					inventory = MinecartManiaWorld.getMinecartManiaPlayer((Player)owner);
 				}
-				else if (owner instanceof MinecartManiaChest && MinecartManiaWorld.isReturnMinecartToOwner()) {
+				else if (owner instanceof MinecartManiaChest && MinecartManiaConfiguration.isReturnMinecartToOwner()) {
 					inventory = ((MinecartManiaChest)owner);
 					invOwner = ((MinecartManiaChest)owner).getOwner();
 				}
@@ -755,7 +756,7 @@ public class MinecartManiaMinecart {
 	}
 
 	public void updateChunks() {
-		if (!hasPlayerPassenger() && MinecartManiaWorld.isKeepMinecartsLoaded()) {
+		if (!hasPlayerPassenger() && MinecartManiaConfiguration.isKeepMinecartsLoaded()) {
 			chunkManager.updateChunks(getLocation());
 		}
 	}
