@@ -755,7 +755,7 @@ public class MinecartManiaMinecart {
 	}
 
 	public void updateChunks() {
-		if (!hasPlayerPassenger()) {
+		if (!hasPlayerPassenger() && MinecartManiaWorld.isKeepMinecartsLoaded()) {
 			chunkManager.updateChunks(getLocation());
 		}
 	}

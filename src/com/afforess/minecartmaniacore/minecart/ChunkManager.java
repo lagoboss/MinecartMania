@@ -30,9 +30,15 @@ public class ChunkManager {
 				if (unloadChunk(old)) {
 					i.remove();
 				}
+				else if (spawnChunk(old)) {
+					i.remove();
+				}
 			}
 			else if (old.getZ() > center.getZ()+range || old.getZ() < center.getZ()-range) {
 				if (unloadChunk(old)) {
+					i.remove();
+				}
+				else if (spawnChunk(old)) {
 					i.remove();
 				}
 			}
@@ -49,15 +55,21 @@ public class ChunkManager {
 		}
 	}
 	
+	private static boolean spawnChunk(Chunk chunk) {
+		if (Math.abs(chunk.getX()) < 7 && Math.abs(chunk.getZ()) < 7) {
+			return true;
+		}
+		return false;
+	}
+	
 	private static boolean unloadChunk(Chunk chunk) {
 		CraftWorld world = (CraftWorld)chunk.getWorld();
 		//Spawn must never be unloaded
-		if (chunk.getX() == 0 && chunk.getZ() == 0) {
+		if (spawnChunk(chunk)) {
 			return false;
 		}
 		if (!world.isChunkInUse(chunk.getX(), chunk.getZ())) {
-			world.unloadChunk(chunk.getX(), chunk.getZ());
-			return true;
+			return world.unloadChunk(chunk.getX(), chunk.getZ(), true);
 		}
 		return false;
 	}
