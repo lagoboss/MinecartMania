@@ -122,8 +122,8 @@ public class MinecartManiaCoreListener extends VehicleListener{
 				}
 				
 				minecart.doSpeedMultiplierBlock();
-				minecart.doPlatformBlock();
 				minecart.doCatcherBlock();
+				minecart.doPlatformBlock(); //platform must be after catcher block
 				minecart.doElevatorBlock();
 
 				boolean action = mae.isActionTaken();
@@ -216,7 +216,7 @@ public class MinecartManiaCoreListener extends VehicleListener{
 		if (minecart.minecart.getPassenger() != null) {
 			return;
 		}
-		if (ControlBlockList.isCatcherBlock(minecart.getItemBeneath())) {
+		if (ControlBlockList.getLaunchSpeed(minecart.getItemBeneath()) != 0.0D) {
 			if (!minecart.isMoving()) {
 				ArrayList<Sign> signs = SignUtils.getAdjacentSignList(minecart, 2);
 				for (Sign s : signs) {
