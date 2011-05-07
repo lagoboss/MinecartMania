@@ -36,6 +36,7 @@ public class ChunkManager {
 			}
 			else if (old.getZ() > center.getZ()+range || old.getZ() < center.getZ()-range) {
 				if (unloadChunk(old)) {
+					
 					i.remove();
 				}
 				else if (spawnChunk(old)) {
@@ -56,10 +57,14 @@ public class ChunkManager {
 	}
 	
 	private static boolean spawnChunk(Chunk chunk) {
-		if (Math.abs(chunk.getX()) < 7 && Math.abs(chunk.getZ()) < 7) {
-			return true;
+		//copied from MC Server code
+		int k = chunk.getX() * 16 + 8;
+        int l = chunk.getZ() * 16 + 8;
+        short short1 = 128;
+		if (k < -short1 || k > short1 || l < -short1 || l > short1) {
+			return false;
 		}
-		return false;
+		return true;
 	}
 	
 	private static boolean unloadChunk(Chunk chunk) {
@@ -69,7 +74,10 @@ public class ChunkManager {
 			return false;
 		}
 		if (!world.isChunkInUse(chunk.getX(), chunk.getZ())) {
-			return world.unloadChunk(chunk.getX(), chunk.getZ(), true);
+			if (world.unloadChunk(chunk.getX(), chunk.getZ(), true, false)) {
+				return true;
+			}
+			
 		}
 		return false;
 	}
