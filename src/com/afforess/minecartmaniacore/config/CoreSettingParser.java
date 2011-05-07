@@ -3,6 +3,7 @@ package com.afforess.minecartmaniacore.config;
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -420,7 +421,13 @@ public class CoreSettingParser implements SettingParser{
 									aliasName = elementChildValue;
 								} else if (elementChildName == "ItemType") {
 									log.debug("Core Config read:         Block: " + elementChildValue);
-									aliasValues.add(MinecartManiaConfigurationParser.toItem(elementChildValue));
+									//special case: all items
+									if (elementChildValue != null && elementChildValue.toLowerCase().contains("all item")) {
+										aliasValues.addAll(Arrays.asList(Item.values()));
+									}
+									else {
+										aliasValues.add(MinecartManiaConfigurationParser.toItem(elementChildValue));
+									}
 								} else {
 									log.info("Core Config read unknown node in ItemAlias: " + elementChildName);
 								}
