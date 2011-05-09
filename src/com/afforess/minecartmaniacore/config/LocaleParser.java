@@ -17,7 +17,7 @@ import com.afforess.minecartmaniacore.MinecartManiaCore;
 import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
 
 public class LocaleParser implements SettingParser{
-	private final double version = 1.01;
+	private final double version = 1.02;
 	private static final ConcurrentHashMap<String, String> textKeys = new ConcurrentHashMap<String, String>();
 
 	@Override

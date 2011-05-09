@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <MinecartManiaConfiguration>
-	<version>1.01</version>
+	<version>1.02</version>
 	<!--
 	Keys are mapped to specific locations in MM's code. Do not add or remove keys unless you know what you are doing.
 	The text is the text that is displayed to the user. You are free to change the text to anything to suit your needs.
@@ -173,6 +173,50 @@
 		<TextKey>
 			<Key>LackPermissionForControlBlock</Key>
 			<Text>[RED]You do not have permission to place a %s</Text>
+		</TextKey>
+		<TextKey>
+			<Key>AdminControlsHideMinecarts</Key>
+			<Text>[GREEN]All minecarts successfully hidden</Text>
+		</TextKey>
+		<TextKey>
+			<Key>AdminControlsRedrawMinecarts</Key>
+			<Text>[GREEN]All minecarts successfully redrawn</Text>
+		</TextKey>
+		<TextKey>
+			<Key>AdminControlsMMHeader</Key>
+			<Text>[WHITE]----------------[GREEN]Minecart Mania Information[WHITE]---------------</Text>
+		</TextKey>
+		<TextKey>
+			<Key>AdminControlsInfoTotalMinecarts</Key>
+			<Text>Total Minecarts: [GREEN]%d</Text>
+		</TextKey>
+		<TextKey>
+			<Key>AdminControlsInfoEmptyMinecarts</Key>
+			<Text>Empty Minecarts: [GREEN]%d</Text>
+		</TextKey>
+		<TextKey>
+			<Key>AdminControlsInfoOccupiedMinecarts</Key>
+			<Text>Occupied Minecarts: [GREEN]%d</Text>
+		</TextKey>
+		<TextKey>
+			<Key>AdminControlsInfoPoweredMinecarts</Key>
+			<Text>Powered Minecarts: [GREEN]%d</Text>
+		</TextKey>
+		<TextKey>
+			<Key>AdminControlsInfoStorageMinecarts</Key>
+			<Text>Storage Minecarts: [GREEN]%d</Text>
+		</TextKey>
+		<TextKey>
+			<Key>AdminControlsInfoMovingMinecarts</Key>
+			<Text>Moving Minecarts: [GREEN]%d</Text>
+		</TextKey>
+		<TextKey>
+			<Key>AdminControlsInfoStalledMinecarts</Key>
+			<Text>Stalled Minecarts: [GREEN]%d</Text>
+		</TextKey>
+		<TextKey>
+			<Key>AdminControlsInfoMostOwnedMinecarts</Key>
+			<Text>Owns the most Minecarts: [GREEN]%s [WHITE]([YELLOW]%d[WHITE])</Text>
 		</TextKey>
 	</TextKeys>
 </MinecartManiaConfiguration>

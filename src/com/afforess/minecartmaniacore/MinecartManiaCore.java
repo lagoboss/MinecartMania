@@ -1,6 +1,12 @@
 package com.afforess.minecartmaniacore;
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.PersistenceException;
+
 import org.bukkit.Server;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event;
@@ -16,6 +22,7 @@ import com.afforess.minecartmaniacore.config.CoreSettingParser;
 import com.afforess.minecartmaniacore.config.LocaleParser;
 import com.afforess.minecartmaniacore.config.MinecartManiaConfigurationParser;
 import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
+import com.afforess.minecartmaniacore.minecart.MinecartOwner;
 import com.afforess.minecartmaniacore.world.Item;
 
 public class MinecartManiaCore extends JavaPlugin {
@@ -64,6 +71,24 @@ public class MinecartManiaCore extends JavaPlugin {
 		getServer().getPluginManager().registerEvent(Event.Type.CHUNK_UNLOAD, worldListener, Priority.Normal, this);
 		getServer().getPluginManager().registerEvent(Event.Type.REDSTONE_CHANGE, blockListener, Priority.Monitor, this);
 		getServer().getPluginManager().registerEvent(Event.Type.CUSTOM_EVENT, actionListener, Priority.Normal, this);
+		
+		//database setup
+		File ebeans = new File(new File(this.getDataFolder().getParent()).getParent(), "ebean.properties");
+		if (!ebeans.exists()) {
+			try {
+				ebeans.createNewFile();
+				PrintWriter pw = new PrintWriter(ebeans);
+				pw.append("# General logging level: (none, explicit, all)");
+				pw.append('\n');
+				pw.append("ebean.logging=none");
+				pw.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		setupDatabase();
 
 		log.info( description.getName() + " version " + description.getVersion() + " is enabled!" );
 	}
@@ -104,4 +129,20 @@ public class MinecartManiaCore extends JavaPlugin {
 		}
 		catch (Exception e) {}
 	}
+	
+	protected void setupDatabase() {
+        try {
+            getDatabase().find(MinecartOwner.class).findRowCount();
+        } catch (PersistenceException ex) {
+        	log.info("Installing sensor database for first time usage");
+            installDDL();
+        }
+    }
+	
+    @Override
+    public List<Class<?>> getDatabaseClasses() {
+        List<Class<?>> list = new ArrayList<Class<?>>();
+        list.add(MinecartOwner.class);
+        return list;
+    }
 }

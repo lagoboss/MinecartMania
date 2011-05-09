@@ -9,7 +9,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
-import org.bukkit.block.Chest;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Minecart;
@@ -40,7 +39,6 @@ import com.afforess.minecartmaniacore.utils.DirectionUtils;
 import com.afforess.minecartmaniacore.utils.EntityUtils;
 import com.afforess.minecartmaniacore.utils.MinecartUtils;
 import com.afforess.minecartmaniacore.utils.SignUtils;
-import com.afforess.minecartmaniacore.utils.StringUtils;
 import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
 import com.afforess.minecartmaniacore.world.Item;
 import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
@@ -53,7 +51,7 @@ public class MinecartManiaMinecart {
 	private Calendar cal;
 	private DirectionUtils.CompassDirection previousFacingDir = DirectionUtils.CompassDirection.NO_DIRECTION;
 	private boolean wasMovingLastTick;
-	private String owner = "none";
+	private MinecartOwner owner = null;
 	private ConcurrentHashMap<String, Object> data = new ConcurrentHashMap<String,Object>();
 	private int range = 4;
 	private int rangeY = 4;
@@ -70,7 +68,10 @@ public class MinecartManiaMinecart {
 
 	public MinecartManiaMinecart(Minecart cart, String owner) {
 		minecart = cart; 
-		this.owner = owner;
+		this.owner = new MinecartOwner(owner);
+		this.owner.setId(minecart.getEntityId());
+		this.owner.setWorld(minecart.getWorld().getName());
+		MinecartManiaCore.instance.getDatabase().save(this.owner);
 		initialize();
 	}
 	
@@ -90,6 +91,11 @@ public class MinecartManiaMinecart {
 	 ** Attempts to find the player that spawned this minecart.
 	 */
 	private void findOwner() {
+		MinecartOwner temp = MinecartManiaCore.instance.getDatabase().find(MinecartOwner.class).where().idEq(minecart.getEntityId()).findUnique();
+		if (temp != null) {
+			owner = temp;
+			return;
+		}
 		double closest = Double.MAX_VALUE;
 		Player closestPlayer = null;
 		for (LivingEntity le : minecart.getWorld().getLivingEntities()) {
@@ -102,8 +108,14 @@ public class MinecartManiaMinecart {
 			}
 		}
 		if (closestPlayer != null) {
-			owner = closestPlayer.getName();
+			owner = new MinecartOwner(closestPlayer.getName());
 		}
+		else {
+			owner = new MinecartOwner();
+		}
+		owner.setId(minecart.getEntityId());
+		owner.setWorld(minecart.getWorld().getName());
+		MinecartManiaCore.instance.getDatabase().save(this.owner);
 	}
 	
 	public boolean isDead() {
@@ -648,27 +660,7 @@ public class MinecartManiaMinecart {
 	 * @return Player or Minecart Mania Chest that spawned this minecart.
 	 */
 	public Object getOwner() {
-		if (owner.equals("none")) {
-			return null;
-		}
-		if (owner.contains("[") && owner.contains("]")) {
-			try {
-				int x, y, z;
-				String[] split = owner.split(":");
-				x = Integer.valueOf(StringUtils.getNumber(split[0]));
-				y = Integer.valueOf(StringUtils.getNumber(split[1]));
-				z = Integer.valueOf(StringUtils.getNumber(split[2]));
-				if (MinecartManiaWorld.getBlockAt(minecart.getWorld(), x, y, z).getState() instanceof Chest) {
-					return MinecartManiaWorld.getMinecartManiaChest((Chest)MinecartManiaWorld.getBlockAt(minecart.getWorld(), x, y, z).getState());
-				}
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-				return null;
-			}
-		}
-		
-		return MinecartManiaCore.server.getPlayer(owner);
+		return owner.getRealOwner();
 	}
 	
 	public boolean isOwner(Entity e) {
