@@ -40,6 +40,7 @@ public class CoreSettingParser implements SettingParser{
 	//This will only try to update existing settings and add ones where necessary.
 	//It will not create new blocks or anything. It will try its best to keep settings exactly the same
 	public boolean isUpToDate(Document document) {
+		log = MinecartManiaLogger.getInstance();
 		try {
 			NodeList list = document.getElementsByTagName("version");
 			Double version = MinecartManiaConfigurationParser.toDouble(list.item(0).getChildNodes().item(0).getNodeValue(), 0);
@@ -122,6 +123,7 @@ public class CoreSettingParser implements SettingParser{
 	@Override
 	//This will read the configuration document passed in and set values based on the nodes it finds
 	public boolean read(Document document) {
+		log = MinecartManiaLogger.getInstance();
 		//Set the default configuration before we try to read anything.
 		setDefaultConfiguration();
 
@@ -190,6 +192,7 @@ public class CoreSettingParser implements SettingParser{
 	}
 	//This will read the Control blocks in the Configuration file
 	private boolean readControlBlocks(NodeList list) {
+		log = MinecartManiaLogger.getInstance();
 		try {
 			ControlBlockList.controlBlocks = new ArrayList<ControlBlock>();	//init where we store the control blocks
 			ControlBlock 	cb; //create a holder for our control blocks that will be injected into the controlBlocks list
@@ -199,6 +202,7 @@ public class CoreSettingParser implements SettingParser{
 			String			elementChildName;		//The name of a child node
 			String			elementChildValue;		//The value of a child node
 			RedstoneState 	attributeRedstone;		//The attributeRedstone of a node
+			double 			range;					//The range attribute of a node
 
 			//Loop through each node in the list looking for a control block
 			for (int temp = 0; temp < list.getLength(); temp++) {
@@ -211,6 +215,7 @@ public class CoreSettingParser implements SettingParser{
 					for(int idx = 0; idx < elementChildren.getLength(); idx++) {
 						attributeRedstone = null;					//reset the attributeRedstone to a null value
 						elementChildValue = null;					//reset the elementChildVlue to a null value
+						range = -1;									//reset the range to an invalid value
 						elementChild = elementChildren.item(idx);	//Get the specific control block modifier node
 						//make sure it is an elementNode tag and not a space or comment.
 						if (elementChild.getNodeType() == Node.ELEMENT_NODE) {
@@ -241,6 +246,15 @@ public class CoreSettingParser implements SettingParser{
 													log.debug("Core Config read:                 redstone: " + elementChildAttribute.getNodeValue());
 												}
 											}
+											else if (elementChildAttribute.getNodeName() == "range") {
+												range = MinecartManiaConfigurationParser.toDouble(elementChildAttribute.getNodeValue(), 4);
+												if (elementChildName == "Platform") {
+													log.debug("Core Config read:                 platform range: " + elementChildAttribute.getNodeValue());
+												}
+											}
+											else if (elementChildAttribute.getNodeName() != null ){
+												log.info("Core Config read:                 unknown attribute: " + elementChildAttribute.getNodeValue());
+											}
 										}
 									}
 									if (elementChildName == "BlockType") {
@@ -258,6 +272,9 @@ public class CoreSettingParser implements SettingParser{
 									} else if (elementChildName == "Platform") {
 										cb.setPlatformState(attributeRedstone);
 										cb.setPlatformBlock(MinecartManiaConfigurationParser.toBool(elementChildValue));
+										if (range > 0) {
+											cb.setPlatformRange(range);
+										}
 									} else if (elementChildName == "Station") {
 										cb.setStationState(attributeRedstone);
 										cb.setStationBlock(MinecartManiaConfigurationParser.toBool(elementChildValue));
@@ -292,6 +309,7 @@ public class CoreSettingParser implements SettingParser{
 	}
 	//This will read the SpeedMultiplier Modifiers
 	private boolean readSpeedMultiplierModifiers(ControlBlock cb, NodeList list) {
+		log = MinecartManiaLogger.getInstance();
 		ArrayList<SpeedMultiplier> speedMultipliers = new ArrayList<SpeedMultiplier>(); //init where we store the speed multiplier settings
 		NodeList	elementChildren;		//Holder for the children of the SpeedMultiplier node we are processing
 		Node     	elementChild;      		//A specific child node being processed
@@ -360,6 +378,7 @@ public class CoreSettingParser implements SettingParser{
 	}
 	//This will read the MinecartTypes in the SpeedMultiplier modifier.
 	private boolean readSpeedMultiplierModifiersMinecartTypes(SpeedMultiplier speed, NodeList list) {
+		log = MinecartManiaLogger.getInstance();
 		String elementValue;		//The value of a child node
 
 		try {
@@ -397,6 +416,7 @@ public class CoreSettingParser implements SettingParser{
 	}
 	//This will read the ItemAliases
 	private boolean readItemAliases(NodeList list) {
+		log = MinecartManiaLogger.getInstance();
 		try {
 			for (int temp = 0; temp < list.getLength(); temp++) {
 				Node n = list.item(temp);
@@ -445,6 +465,7 @@ public class CoreSettingParser implements SettingParser{
 	}
 
 	private void debugShowConfigs() {
+		log = MinecartManiaLogger.getInstance();
 		//Display global configuration values
 		for (Enumeration<String> ConfigKeys = MinecartManiaWorld.getConfiguration().keys(); ConfigKeys.hasMoreElements();) {
 			String temp = ConfigKeys.nextElement();
@@ -459,7 +480,7 @@ public class CoreSettingParser implements SettingParser{
 			log.debug("Core Config:   ControlBlock: " + cb.getType().toString());
 			if (cb.isCatcherBlock())    log.debug("Core Config:       Modifier: Catch (redstone = " + cb.getCatcherState().toString() + ")");
 			if (cb.isEjectorBlock())    log.debug("Core Config:       Modifier: Eject (redstone = " + cb.getEjectorState().toString() + ")");
-			if (cb.isPlatformBlock())   log.debug("Core Config:       Modifier: Platform (redstone = " + cb.getPlatformState().toString() + ")");
+			if (cb.isPlatformBlock())   log.debug("Core Config:       Modifier: Platform (redstone = " + cb.getPlatformState().toString() + ", range = " + cb.getPlatformRange() + ")");
 			if (cb.isStationBlock())    log.debug("Core Config:       Modifier: Station (redstone = " + cb.getStationState().toString() + ")");
 			if (cb.isSpawnMinecart())   log.debug("Core Config:       Modifier: SpawnMinecart (redstone = " + cb.getSpawnState().toString() + ")");
 			if (cb.isKillMinecart())    log.debug("Core Config:       Modifier: KillMinecart (redstone = " + cb.getKillState().toString() + ")");
@@ -510,6 +531,7 @@ public class CoreSettingParser implements SettingParser{
 
 	//This will set the configuration values so the configuration file can override them if defined
 	private void setDefaultConfiguration() {
+		
 		//Create the default Configuration values
 		//MinecartManiaLogger.getInstance().switchDebugMode(DebugMode.NORMAL);
 		MinecartManiaWorld.getConfiguration().put("MinecartsKillMobs",				true);
@@ -591,6 +613,7 @@ public class CoreSettingParser implements SettingParser{
 
 	@Override
 	public boolean write(File configFile, Document document) {
+		log = MinecartManiaLogger.getInstance();
 		try {
 			if (document == null) {
 				//we do not have a document to write, so read one from disk.
