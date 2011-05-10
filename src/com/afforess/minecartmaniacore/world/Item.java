@@ -47,6 +47,7 @@ public enum Item {
 	BED_BLOCK(26),
 	POWERED_RAIL(27),
 	DETECTOR_RAIL(28),
+	WEB(30),
 	WOOL(35, 0),
 	ORANGE_WOOL(35, 1),
 	MAGENTA_WOOL(35, 2),

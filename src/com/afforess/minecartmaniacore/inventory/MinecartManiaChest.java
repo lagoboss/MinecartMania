@@ -1,5 +1,6 @@
 package com.afforess.minecartmaniacore.inventory;
 
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Location;
@@ -11,6 +12,9 @@ import org.bukkit.inventory.ItemStack;
 import org.yi.acru.bukkit.Lockette.Lockette;
 
 import com.afforess.minecartmaniacore.MinecartManiaCore;
+import com.afforess.minecartmaniacore.signs.ForceUnlockChestAction;
+import com.afforess.minecartmaniacore.signs.Sign;
+import com.afforess.minecartmaniacore.utils.SignUtils;
 import com.afforess.minecartmaniacore.world.Item;
 import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
 import com.griefcraft.lwc.LWCPlugin;
@@ -137,7 +141,20 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements 
 		return null;
 	 }
 	 
+	 private boolean isIgnoreProtection() {
+		 ArrayList<Sign> signs = SignUtils.getAdjacentMinecartManiaSignList(getLocation(), 1);
+		 for (Sign sign : signs) {
+			 if (sign.executeAction(null, ForceUnlockChestAction.class)) {
+				 return true;
+			 }
+		 }
+		 return false;
+	 }
+	 
 	 public boolean canAccess(Player player){
+		 if (isIgnoreProtection() && player == null) {
+			return true;
+		 }
 		 if (MinecartManiaCore.ChestLock) {
 			 //ChestLock lock = (ChestLock)server.getPluginManager().getPlugin("ChestLock");
 			// Class<?> protection = lock.
@@ -156,11 +173,13 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements 
 		 }
 		 if (MinecartManiaCore.LWC){
 			 LWCPlugin  lock = (LWCPlugin )MinecartManiaCore.server.getPluginManager().getPlugin("LWC");
-			 if (player != null) {
-				 return lock.getLWC().canAccessProtection(player, getLocation().getBlock());
-			 }
-			 else {
-				 return lock.getLWC().findProtection(getLocation().getBlock()) == null;
+			 if (lock.getLWC().findProtection(getLocation().getBlock()) != null) {
+				 if (player != null) {
+					 return lock.getLWC().canAccessProtection(player, getLocation().getBlock());
+				 }
+				 else {
+					 return false;
+				 }
 			 }
 		 }
 		 return true;

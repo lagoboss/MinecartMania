@@ -33,14 +33,13 @@ import com.afforess.minecartmaniacore.world.Item;
 import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
 
 public class CoreSettingParser implements SettingParser{
-	private static final double version = 1.51;
+	private static final double version = 1.52;
 	private static MinecartManiaLogger log = MinecartManiaLogger.getInstance();
 
 	//This not only will tell true/false if the document is up to date, but will try to update it before it answers.
 	//This will only try to update existing settings and add ones where necessary.
 	//It will not create new blocks or anything. It will try its best to keep settings exactly the same
 	public boolean isUpToDate(Document document) {
-		log = MinecartManiaLogger.getInstance();
 		try {
 			NodeList list = document.getElementsByTagName("version");
 			Double version = MinecartManiaConfigurationParser.toDouble(list.item(0).getChildNodes().item(0).getNodeValue(), 0);
@@ -109,9 +108,17 @@ public class CoreSettingParser implements SettingParser{
 				version = 1.51;
 				list.item(0).setTextContent(version.toString());
 			} else if (version == 1.51) {
-				//Place the code to update to the next version here
-				//version = 1.51;	//This needs to be updated to the next version of the document.
-				//list.item(0).setTextContent(version.toString());
+				Node root = document.getElementsByTagName("MinecartManiaConfiguration").item(0);
+				Node last = document.getElementsByTagName("ControlBlocks").item(0);
+				root.insertBefore(document.createComment("Minecarts that are destroyed will not drop an item if they are destroyed") , last);
+				root.insertBefore(document.createTextNode("\n\t"), last);
+				
+				Element removeDeadMinecarts = document.createElement("RemoveDeadMinecarts");
+				removeDeadMinecarts.appendChild(document.createTextNode("false"));
+				root.insertBefore(removeDeadMinecarts, last);
+				
+				version = 1.52;	//This needs to be updated to the next version of the document.
+				list.item(0).setTextContent(version.toString());
 			}
 			return version == CoreSettingParser.version;
 		}
@@ -123,7 +130,6 @@ public class CoreSettingParser implements SettingParser{
 	@Override
 	//This will read the configuration document passed in and set values based on the nodes it finds
 	public boolean read(Document document) {
-		log = MinecartManiaLogger.getInstance();
 		//Set the default configuration before we try to read anything.
 		setDefaultConfiguration();
 
@@ -158,6 +164,7 @@ public class CoreSettingParser implements SettingParser{
 								|| elementChildName == "KeepMinecartsLoaded"
 								|| elementChildName == "MinecartsReturnToOwner"
 								|| elementChildName == "StackAllItems"
+								|| elementChildName == "RemoveDeadMinecarts"
 								) {
 							MinecartManiaWorld.getConfiguration().put(elementChildName, MinecartManiaConfigurationParser.toBool(elementChildValue));
 							log.debug("Core Config read: " + elementChildName + " = " + (MinecartManiaConfigurationParser.toBool(elementChildValue) ? "true" : "false"));
@@ -192,7 +199,6 @@ public class CoreSettingParser implements SettingParser{
 	}
 	//This will read the Control blocks in the Configuration file
 	private boolean readControlBlocks(NodeList list) {
-		log = MinecartManiaLogger.getInstance();
 		try {
 			ControlBlockList.controlBlocks = new ArrayList<ControlBlock>();	//init where we store the control blocks
 			ControlBlock 	cb; //create a holder for our control blocks that will be injected into the controlBlocks list
@@ -309,7 +315,6 @@ public class CoreSettingParser implements SettingParser{
 	}
 	//This will read the SpeedMultiplier Modifiers
 	private boolean readSpeedMultiplierModifiers(ControlBlock cb, NodeList list) {
-		log = MinecartManiaLogger.getInstance();
 		ArrayList<SpeedMultiplier> speedMultipliers = new ArrayList<SpeedMultiplier>(); //init where we store the speed multiplier settings
 		NodeList	elementChildren;		//Holder for the children of the SpeedMultiplier node we are processing
 		Node     	elementChild;      		//A specific child node being processed
@@ -378,7 +383,6 @@ public class CoreSettingParser implements SettingParser{
 	}
 	//This will read the MinecartTypes in the SpeedMultiplier modifier.
 	private boolean readSpeedMultiplierModifiersMinecartTypes(SpeedMultiplier speed, NodeList list) {
-		log = MinecartManiaLogger.getInstance();
 		String elementValue;		//The value of a child node
 
 		try {
@@ -416,7 +420,6 @@ public class CoreSettingParser implements SettingParser{
 	}
 	//This will read the ItemAliases
 	private boolean readItemAliases(NodeList list) {
-		log = MinecartManiaLogger.getInstance();
 		try {
 			for (int temp = 0; temp < list.getLength(); temp++) {
 				Node n = list.item(temp);
@@ -465,11 +468,10 @@ public class CoreSettingParser implements SettingParser{
 	}
 
 	private void debugShowConfigs() {
-		log = MinecartManiaLogger.getInstance();
 		//Display global configuration values
 		for (Enumeration<String> ConfigKeys = MinecartManiaWorld.getConfiguration().keys(); ConfigKeys.hasMoreElements();) {
 			String temp = ConfigKeys.nextElement();
-			String value = MinecartManiaWorld.getConfigurationValue(temp).toString();
+			String value = MinecartManiaWorld.getConfigurationValue(temp) != null ? MinecartManiaWorld.getConfigurationValue(temp).toString() : "null";
 			log.debug("Core Config: " + temp + " = " + value);
 		}
 		//Display the control blocks
@@ -477,7 +479,7 @@ public class CoreSettingParser implements SettingParser{
 		log.debug("Core Config: ControlBlocks");
 		while(li.hasNext()) {
 			ControlBlock cb = li.next();
-			log.debug("Core Config:   ControlBlock: " + cb.getType().toString());
+			log.debug("Core Config:   ControlBlock: " + cb.getType());
 			if (cb.isCatcherBlock())    log.debug("Core Config:       Modifier: Catch (redstone = " + cb.getCatcherState().toString() + ")");
 			if (cb.isEjectorBlock())    log.debug("Core Config:       Modifier: Eject (redstone = " + cb.getEjectorState().toString() + ")");
 			if (cb.isPlatformBlock())   log.debug("Core Config:       Modifier: Platform (redstone = " + cb.getPlatformState().toString() + ", range = " + cb.getPlatformRange() + ")");
@@ -544,6 +546,7 @@ public class CoreSettingParser implements SettingParser{
 		MinecartManiaWorld.getConfiguration().put("RangeY",							getDefaultConfigurationIntegerValue("RangeY"));
 		MinecartManiaWorld.getConfiguration().put("MaximumRange",					getDefaultConfigurationIntegerValue("MaximumRange"));
 		MinecartManiaWorld.getConfiguration().put("StackAllItems",					true);
+		MinecartManiaWorld.getConfiguration().put("RemoveDeadMinecarts",			false);
 		//Create Ores Alias
 		ArrayList<Item> values = new ArrayList<Item>();
 		values.add(MinecartManiaConfigurationParser.toItem("GOLD_ORE"));
@@ -572,48 +575,9 @@ public class CoreSettingParser implements SettingParser{
 		if (ConfigName == "MaximumRange") return (25);
 		return 0;
 	}
-	
-	public boolean update(File config) {
-		return false; /*
-		Document document = null;
-		//write(config);
-		try {
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			document = dBuilder.parse(config.toURI().getPath());
-			document.getDocumentElement().normalize();
-			
-			Element root = (Element) document.getElementsByTagName("MinecartManiaConfiguration").item(0);
-			System.out.println("Root: " + root);
-			
-			//Parse Simple Settings First
-			updateSetting(document, "MinecartsKillMobs", "true", root);
-			updateSetting(document, "MinecartsClearRails", "1", root);
-			updateSetting(document, "KeepMinecartsLoaded", "false", root);
-			updateSetting(document, "MinecartsReturnToOwner", "true", root);
-			updateSetting(document, "MaximumMinecartSpeedPercent", "165", root);
-			updateSetting(document, "DefaultMinecartSpeedPercent", "100", root);
-			updateSetting(document, "Range", "4", root);
-			updateSetting(document, "MaximumRange", "10", root);
-			updateSetting(document, "StackAllItems", "true", root);
-			
-
-			
-			TransformerFactory transformerFactory = TransformerFactory.newInstance();
-			Transformer transformer = transformerFactory.newTransformer();
-			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-			transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
-			DOMSource source = new DOMSource(document);
-			StreamResult result = new StreamResult(config);
-			transformer.transform(source, result);
-			
-		}
-		catch (Exception e) {e.printStackTrace();}*/
-	}
 
 	@Override
 	public boolean write(File configFile, Document document) {
-		log = MinecartManiaLogger.getInstance();
 		try {
 			if (document == null) {
 				//we do not have a document to write, so read one from disk.

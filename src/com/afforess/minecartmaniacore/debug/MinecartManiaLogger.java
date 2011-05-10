@@ -25,7 +25,6 @@ public class MinecartManiaLogger {
 		if (mode == DebugMode.TIMER) {
 			log.info(prefix + s);
 		}
-		queue(s);
 	}
 	
 	public void debug(String s) {
@@ -60,7 +59,7 @@ public class MinecartManiaLogger {
 	
 	private final void queue(String log) {
 		queuedLog.add(log);
-		if (queuedLog.size() > 1000) {
+		if (queuedLog.size() > 100) {
 			LogWriter writer = new LogWriter(queuedLog);
 			queuedLog = new LinkedList<String>();
 			writer.start();

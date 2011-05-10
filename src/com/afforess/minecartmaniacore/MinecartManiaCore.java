@@ -134,7 +134,7 @@ public class MinecartManiaCore extends JavaPlugin {
         try {
             getDatabase().find(MinecartOwner.class).findRowCount();
         } catch (PersistenceException ex) {
-        	log.info("Installing sensor database for first time usage");
+        	log.info("Installing database for first time usage");
             installDDL();
         }
     }

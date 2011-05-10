@@ -711,7 +711,9 @@ public class MinecartManiaMinecart {
 						}
 					}
 				}
-				items.add(new ItemStack(getType().toMaterial(), 1));
+				if (!(Boolean)MinecartManiaWorld.getConfigurationValue("RemoveDeadMinecarts")) {
+					items.add(new ItemStack(getType().toMaterial(), 1));
+				}
 				
 				Object owner = getOwner();
 				MinecartManiaInventory inventory = null;
