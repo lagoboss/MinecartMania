@@ -440,13 +440,19 @@ public class CoreSettingParser implements SettingParser{
 									log.debug("Core Config read:    Item Alias: " + elementChildValue);
 									aliasName = elementChildValue;
 								} else if (elementChildName == "ItemType") {
-									log.debug("Core Config read:         Block: " + elementChildValue);
 									//special case: all items
 									if (elementChildValue != null && elementChildValue.toLowerCase().contains("all item")) {
+	                                    log.debug("Core Config read:         Block: " + elementChildValue);
 										aliasValues.addAll(Arrays.asList(Item.values()));
 									}
 									else {
-										aliasValues.add(MinecartManiaConfigurationParser.toItem(elementChildValue));
+									    Item item = MinecartManiaConfigurationParser.toItem(elementChildValue);
+									    if (item != null) {
+									        log.debug("Core Config read:         Block: " + elementChildValue);
+									        aliasValues.add(item);
+									    } else {
+									        log.debug("Core Config read:         Block Error: '" + elementChildValue + "' invalid name.");
+									    }
 									}
 								} else {
 									log.info("Core Config read unknown node in ItemAlias: " + elementChildName);
