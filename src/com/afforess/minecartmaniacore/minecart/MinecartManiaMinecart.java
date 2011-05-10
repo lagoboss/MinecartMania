@@ -23,6 +23,7 @@ import com.afforess.minecartmaniacore.MinecartManiaCore;
 import com.afforess.minecartmaniacore.config.ControlBlock;
 import com.afforess.minecartmaniacore.config.ControlBlockList;
 import com.afforess.minecartmaniacore.config.MinecartManiaConfiguration;
+import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
 import com.afforess.minecartmaniacore.event.MinecartCaughtEvent;
 import com.afforess.minecartmaniacore.event.MinecartElevatorEvent;
 import com.afforess.minecartmaniacore.event.MinecartLaunchedEvent;
@@ -71,6 +72,12 @@ public class MinecartManiaMinecart {
 		this.owner = new MinecartOwner(owner);
 		this.owner.setId(minecart.getEntityId());
 		this.owner.setWorld(minecart.getWorld().getName());
+		//clear previous owners
+		List<MinecartOwner> list = MinecartManiaCore.instance.getDatabase().find(MinecartOwner.class).where().idEq(minecart.getEntityId()).findList();
+		for (MinecartOwner temp : list) {
+			MinecartManiaCore.instance.getDatabase().delete(temp);
+		}
+		//save new owner
 		MinecartManiaCore.instance.getDatabase().save(this.owner);
 		initialize();
 	}
@@ -91,10 +98,20 @@ public class MinecartManiaMinecart {
 	 ** Attempts to find the player that spawned this minecart.
 	 */
 	private void findOwner() {
-		MinecartOwner temp = MinecartManiaCore.instance.getDatabase().find(MinecartOwner.class).where().idEq(minecart.getEntityId()).findUnique();
-		if (temp != null) {
-			owner = temp;
-			return;
+		try {
+			MinecartOwner temp = MinecartManiaCore.instance.getDatabase().find(MinecartOwner.class).where().idEq(minecart.getEntityId()).findUnique();
+			if (temp != null) {
+				owner = temp;
+				return;
+			}
+		}
+		catch (Exception e) {
+			//clear duplicates
+			MinecartManiaLogger.getInstance().debug("Clearing Duplicate Minecart Id's : " + minecart.getEntityId());
+			List<MinecartOwner> list = MinecartManiaCore.instance.getDatabase().find(MinecartOwner.class).where().idEq(minecart.getEntityId()).findList();
+			for (MinecartOwner temp : list) {
+				MinecartManiaCore.instance.getDatabase().delete(temp);
+			}
 		}
 		double closest = Double.MAX_VALUE;
 		Player closestPlayer = null;
@@ -683,6 +700,7 @@ public class MinecartManiaMinecart {
 	
 	public void kill(boolean returnToOwner) {
 		if (!dead && !minecart.isDead()) {
+			
 			if (returnToOwner) {
 				//give the items back inside too
 				ArrayList<ItemStack> items = new ArrayList<ItemStack>();
@@ -725,6 +743,7 @@ public class MinecartManiaMinecart {
 			MinecartManiaCore.server.getPluginManager().callEvent(mmmee);
 			
 			chunkManager.unloadChunks(getLocation());
+			MinecartManiaCore.instance.getDatabase().delete(this.owner);
 			
 			minecart.remove();
 			dead = true;
