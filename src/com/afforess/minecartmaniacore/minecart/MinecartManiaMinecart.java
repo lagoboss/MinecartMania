@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
@@ -29,6 +31,7 @@ import com.afforess.minecartmaniacore.event.MinecartElevatorEvent;
 import com.afforess.minecartmaniacore.event.MinecartLaunchedEvent;
 import com.afforess.minecartmaniacore.event.MinecartManiaMinecartCreatedEvent;
 import com.afforess.minecartmaniacore.event.MinecartManiaMinecartDestroyedEvent;
+import com.afforess.minecartmaniacore.event.MinecartPassengerEjectEvent;
 import com.afforess.minecartmaniacore.event.MinecartSpeedMultiplierEvent;
 import com.afforess.minecartmaniacore.event.MinecartTimeEvent;
 import com.afforess.minecartmaniacore.inventory.MinecartManiaChest;
@@ -504,7 +507,11 @@ public class MinecartManiaMinecart {
 	public boolean doEjectorBlock() {
 		if (ControlBlockList.isValidEjectorBlock(getBlockBeneath())) {
 			if (minecart.getPassenger() != null) {
-				return minecart.eject();
+				MinecartPassengerEjectEvent mpee = new MinecartPassengerEjectEvent(this, minecart.getPassenger());
+				Bukkit.getServer().getPluginManager().callEvent(mpee);
+				if (!mpee.isCancelled()) {
+					return minecart.eject();
+				}
 			}
 		}
 		return false;

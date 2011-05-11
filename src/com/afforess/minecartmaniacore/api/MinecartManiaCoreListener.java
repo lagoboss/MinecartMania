@@ -125,11 +125,8 @@ public class MinecartManiaCoreListener extends VehicleListener{
 				minecart.doCatcherBlock();
 				minecart.doPlatformBlock(); //platform must be after catcher block
 				minecart.doElevatorBlock();
+				minecart.doEjectorBlock();
 
-				boolean action = mae.isActionTaken();
-				if (!action) {
-					action = minecart.doEjectorBlock();
-				}
 				MinecartUtils.updateNearbyItems(minecart);
 				
 				minecart.updateMotion();

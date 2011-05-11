@@ -117,6 +117,14 @@ public class CoreSettingParser implements SettingParser{
 				removeDeadMinecarts.appendChild(document.createTextNode("false"));
 				root.insertBefore(removeDeadMinecarts, last);
 				
+				root.insertBefore(document.createComment("MM only searchs under or parallel to rails for signs, harshly limiting the search radius. \n\t" +
+						"This will improve performance, but will restrict sign placement.") , last);
+				root.insertBefore(document.createTextNode("\n\t"), last);
+				
+				Element limitedSignRange = document.createElement("LimitedSignRange");
+				limitedSignRange.appendChild(document.createTextNode("false"));
+				root.insertBefore(limitedSignRange, last);
+				
 				version = 1.52;	//This needs to be updated to the next version of the document.
 				list.item(0).setTextContent(version.toString());
 			}
@@ -165,6 +173,7 @@ public class CoreSettingParser implements SettingParser{
 								|| elementChildName == "MinecartsReturnToOwner"
 								|| elementChildName == "StackAllItems"
 								|| elementChildName == "RemoveDeadMinecarts"
+								|| elementChildName == "LimitedSignRange"
 								) {
 							MinecartManiaWorld.getConfiguration().put(elementChildName, MinecartManiaConfigurationParser.toBool(elementChildValue));
 							log.debug("Core Config read: " + elementChildName + " = " + (MinecartManiaConfigurationParser.toBool(elementChildValue) ? "true" : "false"));
@@ -553,6 +562,7 @@ public class CoreSettingParser implements SettingParser{
 		MinecartManiaWorld.getConfiguration().put("MaximumRange",					getDefaultConfigurationIntegerValue("MaximumRange"));
 		MinecartManiaWorld.getConfiguration().put("StackAllItems",					true);
 		MinecartManiaWorld.getConfiguration().put("RemoveDeadMinecarts",			false);
+		MinecartManiaWorld.getConfiguration().put("LimitedSignRange",				false);
 		//Create Ores Alias
 		ArrayList<Item> values = new ArrayList<Item>();
 		values.add(MinecartManiaConfigurationParser.toItem("GOLD_ORE"));

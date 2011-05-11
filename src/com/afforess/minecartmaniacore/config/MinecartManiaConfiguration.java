@@ -43,5 +43,9 @@ public abstract class MinecartManiaConfiguration {
 	public static boolean isStackAllItems() {
 		return (Boolean)MinecartManiaWorld.getConfigurationValue("StackAllItems");
 	}
+	
+	public static boolean isLimitedSignRange() {
+		return (Boolean)MinecartManiaWorld.getConfigurationValue("LimitedSignRange");
+	}
 
 }

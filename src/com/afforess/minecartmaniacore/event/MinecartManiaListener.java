@@ -182,6 +182,19 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
 	}
 	
 	/**
+	 * Called when a minecart meets a specific station condition on a sign
+	 * 
+	 * @param event
+	 */
+	public void onMinecartMeetConditionEvent(MinecartMeetsConditionEvent event) {
+		
+	}
+	
+	public void onMinecartPassengerEjectEvent(MinecartPassengerEjectEvent event) {
+		
+	}
+	
+	/**
 	 * Avoid using.
 	 * 
 	 * @param event
@@ -257,6 +270,12 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
 		}
 		else if (event instanceof MinecartManiaSignFoundEvent) {
 			onMinecartManiaSignFoundEvent((MinecartManiaSignFoundEvent)event);
+		}
+		else if (event instanceof MinecartMeetsConditionEvent) {
+			onMinecartMeetConditionEvent((MinecartMeetsConditionEvent)event);
+		}
+		else if (event instanceof MinecartPassengerEjectEvent) {
+			onMinecartPassengerEjectEvent((MinecartPassengerEjectEvent)event);
 		}
 	}
 

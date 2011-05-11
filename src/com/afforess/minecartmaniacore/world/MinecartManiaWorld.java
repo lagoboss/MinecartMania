@@ -1,5 +1,6 @@
 package com.afforess.minecartmaniacore.world;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -147,10 +148,20 @@ public class MinecartManiaWorld {
 	
 	public static void pruneMinecarts() {
 		Iterator<Entry<Integer, MinecartManiaMinecart>> i = minecarts.entrySet().iterator();
+		HashSet<Integer> idList = new HashSet<Integer>();
 		while (i.hasNext()) {
 			Entry<Integer, MinecartManiaMinecart> e = i.next();
 			if (e.getValue().isDead() || e.getValue().minecart.isDead()) {
 				i.remove();
+			}
+			else {
+				if (idList.contains(e.getValue().minecart.getEntityId())) {
+					MinecartManiaLogger.getInstance().severe("Warning! Duplicate minecart's detected! Deleting duplicate. Minecart ID: " + e.getValue().minecart.getEntityId());
+					i.remove();
+				}
+				else {
+					idList.add(e.getValue().minecart.getEntityId());
+				}
 			}
 		}
 	}
