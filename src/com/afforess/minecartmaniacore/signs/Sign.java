@@ -2,7 +2,7 @@ package com.afforess.minecartmaniacore.signs;
 
 import java.util.Collection;
 
-import org.bukkit.Location;
+import org.bukkit.block.Block;
 
 import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
 import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
@@ -44,12 +44,6 @@ public interface Sign {
 	 * Adds brackets to this sign
 	 */
 	public void addBrackets();
-	
-	/**
-	 * Get's the location of the sign
-	 * @return location of the sign
-	 */
-	public Location getLocation();
 	
 	/**
 	 * Get's the direction that this sign is facing
@@ -141,4 +135,9 @@ public interface Sign {
 	 * @return true if the action was executed
 	 */
 	public boolean executeAction(MinecartManiaMinecart minecart, Class<? extends SignAction> action);
+	
+	public Block getBlock();
+	public int getX();
+	public int getY();
+	public int getZ();
 }

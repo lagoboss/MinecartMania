@@ -6,34 +6,39 @@ import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 
 import com.afforess.minecartmaniacore.MinecartManiaCore;
 import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
-import com.afforess.minecartmaniacore.utils.ComparableLocation;
 import com.afforess.minecartmaniacore.utils.DirectionUtils;
 import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
 import com.afforess.minecartmaniacore.utils.StringUtils;
 import com.afforess.minecartmaniacore.utils.WordUtils;
 
 public class MinecartManiaSign implements Sign{
-	protected final Location location;
+	protected final Block block;
 	protected volatile String[] lines;
 	protected HashSet<SignAction> actions = new HashSet<SignAction>();
 	protected int updateId = -1;
 	protected ConcurrentHashMap<Object, Object> data = new ConcurrentHashMap<Object, Object>();
 	
 	public MinecartManiaSign(org.bukkit.block.Sign sign) {
-		location = new ComparableLocation(sign.getBlock().getLocation());
+		block = sign.getBlock();
+		lines = getSign().getLines();
+	}
+	
+	protected MinecartManiaSign(Block block) {
+		this.block = block;
 		lines = getSign().getLines();
 	}
 	
 	protected MinecartManiaSign(Location loc) {
-		location = loc;
+		block = loc.getBlock();
 		lines = getSign().getLines();
 	}
 	
 	protected final org.bukkit.block.Sign getSign() {
-		return ((org.bukkit.block.Sign)location.getBlock().getState());
+		return ((org.bukkit.block.Sign)getBlock().getState());
 	}
 
 	@Override
@@ -68,11 +73,6 @@ public class MinecartManiaSign implements Sign{
 	@Override
 	public final String[] getLines() {
 		return lines;
-	}
-
-	@Override
-	public final Location getLocation() {
-		return location;
 	}
 
 	@Override
@@ -114,7 +114,7 @@ public class MinecartManiaSign implements Sign{
 	}
 	
 	private int hashCode(String[] lines) {
-		int hash = getLocation().hashCode();
+		int hash = getBlock().hashCode();
 		for (int i = 0; i < lines.length; i++) {
 			if (!lines[i].isEmpty()) {
 				hash += lines[i].hashCode();
@@ -207,12 +207,32 @@ public class MinecartManiaSign implements Sign{
 	
 	protected final void update() {
 		if (this.updateId == -1) {
-			this.updateId = MinecartManiaCore.server.getScheduler().scheduleSyncDelayedTask(MinecartManiaCore.instance, new SignTextUpdater(this.location), 5);
+			this.updateId = MinecartManiaCore.server.getScheduler().scheduleSyncDelayedTask(MinecartManiaCore.instance, new SignTextUpdater(getBlock()), 5);
 		}
 	}
 	
 	public final void updated() {
 		this.updateId = -1;
+	}
+
+	@Override
+	public Block getBlock() {
+		return block;
+	}
+
+	@Override
+	public int getX() {
+		return getBlock().getX();
+	}
+
+	@Override
+	public int getY() {
+		return getBlock().getY();
+	}
+
+	@Override
+	public int getZ() {
+		return getBlock().getZ();
 	}
 
 }

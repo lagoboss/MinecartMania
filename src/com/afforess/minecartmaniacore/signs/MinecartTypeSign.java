@@ -10,7 +10,7 @@ public class MinecartTypeSign extends MinecartManiaSign{
 	protected boolean storage = false;
 	protected boolean calculated = false;
 	public MinecartTypeSign(Sign sign) {
-		super(sign.getLocation());
+		super(sign.getBlock());
 		sign.copy(this);
 	}
 	
