@@ -7,23 +7,38 @@ import java.util.List;
 
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 
 import com.afforess.minecartmaniacore.config.MinecartManiaConfiguration;
 import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
 import com.afforess.minecartmaniacore.signs.SignManager;
-import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
 
 public class SignUtils {
 	public static boolean signMatches(Sign s1, Sign s2) {
 		return s1.getBlock().getLocation().equals(s2.getBlock().getLocation());
 	}
 
+	/**
+	 * We first check if the block at the location is a sign
+	 * before getting the state since getBlockTypeIdAt() is
+	 * like 20 times faster then getState()
+	 * also making pointless calls to MinecartManiaWorld is a
+	 * waste of cpu time.
+	 * @param w World
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @return
+	 */
 	public static Sign getSignAt(World w, int x, int y, int z) {
-		if (MinecartManiaWorld.getBlockAt(w, x, y, z).getState() instanceof Sign) {
-			return (Sign)MinecartManiaWorld.getBlockAt(w, x, y, z).getState();
+		switch(w.getBlockTypeIdAt(x, y, z)) {
+			case 63:
+			case 68:
+				return (Sign)w.getBlockAt(x, y, z).getState();
+			default:
+				return null;
 		}
-		return null;
 	}
 	
 	
@@ -72,7 +87,7 @@ public class SignUtils {
 		ArrayList<Sign> list = getAdjacentSignList(location, range);
 		ArrayList<com.afforess.minecartmaniacore.signs.Sign> signList = new ArrayList<com.afforess.minecartmaniacore.signs.Sign>(list.size());
 		for (Sign s : list) {
-			signList.add(SignManager.getSignAt(new Location(s.getWorld(), s.getX(), s.getY(), s.getZ())));
+			signList.add(SignManager.getSignAt(s.getBlock()));
 		}
 		return signList;
 	}
@@ -81,7 +96,7 @@ public class SignUtils {
 		ArrayList<Sign> list = getAdjacentSignList(location, range, force);
 		ArrayList<com.afforess.minecartmaniacore.signs.Sign> signList = new ArrayList<com.afforess.minecartmaniacore.signs.Sign>(list.size());
 		for (Sign s : list) {
-			signList.add(SignManager.getSignAt(new Location(s.getWorld(), s.getX(), s.getY(), s.getZ())));
+			signList.add(SignManager.getSignAt(s.getBlock()));
 		}
 		return signList;
 	}
@@ -90,7 +105,7 @@ public class SignUtils {
 		ArrayList<Sign> list = getSignBeneathList(location, range);
 		ArrayList<com.afforess.minecartmaniacore.signs.Sign> signList = new ArrayList<com.afforess.minecartmaniacore.signs.Sign>(list.size());
 		for (Sign s : list) {
-			signList.add(SignManager.getSignAt(new Location(s.getWorld(), s.getX(), s.getY(), s.getZ())));
+			signList.add(SignManager.getSignAt(s.getBlock()));
 		}
 		return signList;
 	}
@@ -141,37 +156,39 @@ public class SignUtils {
 		return signList;
 	}
 	
-	public static void sortByDistance(final Location location, List<? extends com.afforess.minecartmaniacore.signs.Sign> signs) {
-		Collections.sort(signs, new SignDistanceComparator(location));
+	public static void sortByDistance(Block block, List<? extends com.afforess.minecartmaniacore.signs.Sign> signs) {
+		Collections.sort(signs, new SignDistanceComparator(block.getX(),block.getY(),block.getZ()));
 	}
 }
 
 class SignDistanceComparator implements Comparator<com.afforess.minecartmaniacore.signs.Sign>
 {
-	private Location location;
+	private int x,y,z;
 
-	public SignDistanceComparator(Location location)
+	public SignDistanceComparator(int x, int y,int z)
 	{
-		this.location = location;
+		this.x = x;
+		this.y = y;
+		this.z = z;
 	}
 
-	protected double getSquaredDistanceFromLocation(com.afforess.minecartmaniacore.signs.Sign sign)
+	protected int getSquaredDistanceFromLocation(com.afforess.minecartmaniacore.signs.Sign sign)
 	{
-		double x = sign.getLocation().getX() - location.getX();
-		double y = sign.getLocation().getY() - location.getY();
-		double z = sign.getLocation().getZ() - location.getZ();
+		int x = sign.getX() - this.x;
+		int y = sign.getY() - this.y;
+		int z = sign.getZ() - this.z;
 		return x*x + y*y + z*z;
 	}
 	
 	@Override
 	public int compare(com.afforess.minecartmaniacore.signs.Sign sign1, com.afforess.minecartmaniacore.signs.Sign sign2)
 	{
-		double d1 = getSquaredDistanceFromLocation(sign1);
-		double d2 = getSquaredDistanceFromLocation(sign1);
+		int i1 = getSquaredDistanceFromLocation(sign1);
+		int i2 = getSquaredDistanceFromLocation(sign1);
 		
 		// If the distance differs, threshold it and return.
-		if (d1 != d2)
-			return (int)Math.min(Math.max(d1 - d2,-1), 1);
+		if (i1 != i2)
+			return (int)Math.min(Math.max(i1 - i2,-1), 1);
 		
 		int d;
 		
@@ -179,15 +196,15 @@ class SignDistanceComparator implements Comparator<com.afforess.minecartmaniacor
 		// There's no particular reason for this, just that we don't want to claim 
 		// that two different blocks are the same
 		
-		d = (sign1.getLocation().getBlockX() - sign2.getLocation().getBlockX());
+		d = (sign1.getX() - sign2.getX());
 		if (d != 0)
 			return Math.min(Math.max(d, -1), 1);
 		
-		d = (sign1.getLocation().getBlockY() - sign2.getLocation().getBlockY());
+		d = (sign1.getY() - sign2.getY());
 		if (d != 0)
 			return Math.min(Math.max(d, -1), 1);
 
-		d = (sign1.getLocation().getBlockZ() - sign2.getLocation().getBlockZ());
+		d = (sign1.getZ() - sign2.getZ());
 		
 		return Math.min(Math.max(d, -1), 1);
 	}

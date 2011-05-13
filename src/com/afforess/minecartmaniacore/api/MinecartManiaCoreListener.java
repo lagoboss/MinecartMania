@@ -217,7 +217,7 @@ public class MinecartManiaCoreListener extends VehicleListener{
 			if (!minecart.isMoving()) {
 				ArrayList<Sign> signs = SignUtils.getAdjacentSignList(minecart, 2);
 				for (Sign s : signs) {
-					com.afforess.minecartmaniacore.signs.Sign sign = SignManager.getSignAt(s.getBlock().getLocation());
+					com.afforess.minecartmaniacore.signs.Sign sign = SignManager.getSignAt(s.getBlock());
 					if (sign.executeAction(minecart, LaunchPlayerAction.class)) {
 						break;
 					}
