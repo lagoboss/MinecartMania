@@ -9,8 +9,11 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.Chest;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Minecart;
@@ -43,6 +46,7 @@ import com.afforess.minecartmaniacore.utils.DirectionUtils;
 import com.afforess.minecartmaniacore.utils.EntityUtils;
 import com.afforess.minecartmaniacore.utils.MinecartUtils;
 import com.afforess.minecartmaniacore.utils.SignUtils;
+import com.afforess.minecartmaniacore.utils.ThreadSafe;
 import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
 import com.afforess.minecartmaniacore.world.Item;
 import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
@@ -50,19 +54,19 @@ import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
 
 public class MinecartManiaMinecart {
 	public final Minecart minecart;
-	private Vector previousLocation;
-	private Vector previousMotion;
+	private volatile Vector previousLocation;
+	private volatile Vector previousMotion;
 	private Calendar cal;
-	private DirectionUtils.CompassDirection previousFacingDir = DirectionUtils.CompassDirection.NO_DIRECTION;
-	private boolean wasMovingLastTick;
+	private volatile CompassDirection previousFacingDir = DirectionUtils.CompassDirection.NO_DIRECTION;
+	private volatile boolean wasMovingLastTick;
 	private MinecartOwner owner = null;
 	private ConcurrentHashMap<String, Object> data = new ConcurrentHashMap<String,Object>();
-	private int range = 4;
-	private int rangeY = 4;
-	private boolean dead = false;
+	private volatile int range = 4;
+	private volatile int rangeY = 4;
+	private volatile boolean dead = false;
 	public static final double MAXIMUM_MOMENTUM = 1E150D;
 	public boolean createdLastTick = true;
-	public ChunkManager chunkManager = new ChunkManager();
+	private ChunkManager chunkManager = new ChunkManager();
 	
 	public MinecartManiaMinecart(Minecart cart) {
 		minecart = cart; 
@@ -138,43 +142,168 @@ public class MinecartManiaMinecart {
 		MinecartManiaCore.instance.getDatabase().save(this.owner);
 	}
 	
-	public boolean isDead() {
+	/**
+	 * Get's the X coordinate of this minecart
+	 * @return X coordinate
+	 */
+	public final int getX(){
+		return getLocation().getBlockX();
+	}
+	
+	/**
+	 * Get's the Y coordinate of this minecart
+	 * @return Y coordinate
+	 */
+	public final int getY(){
+		return getLocation().getBlockY();
+	}
+	
+	/**
+	 * Get's the Z coordinate of this minecart
+	 * @return Z coordinate of this minecart
+	 */
+	public final int getZ(){
+		return getLocation().getBlockZ();
+	}
+	
+	/**
+	 * Is true if the minecart is dead, and has yet to be removed by the garbage collector
+	 * @return is dead
+	 */
+	@ThreadSafe
+	public final boolean isDead() {
+		if (minecart.isDead()) {
+			dead = true;
+		}
 		return dead;
 	}
 	
+	/**
+	 * Get's the location of this minecart in the world
+	 * @return location
+	 */
 	public final Location getLocation() {
 		return minecart.getLocation();
 	}
+	
+	/**
+	 * Get's the block this minecart is current occupying
+	 * @return block
+	 */
+	public final Block getOccupiedBlock() {
+		return getLocation().getBlock();
+	}
 
-	public Vector getPreviousLocation() {
+	/**
+	 * Get's the previous position (from the last tick) of the minecart in the world
+	 * @return previous position
+	 */
+	@Deprecated
+	public final Vector getPreviousLocation() {
 		return previousLocation.clone();
 	}
 	
+	/**
+	 * Get's the previous position (from the last tick) of the minecart in the world
+	 * @return previous position
+	 */
+	@ThreadSafe
+	public final Vector getPreviousPosition() {
+		return previousLocation.clone(); //cloned to avoid others messing with the mutable reference
+	}
+	
+	/**
+	 * Get's the previous location (from the last tick) of the minecart in the world
+	 * @return previous location
+	 */
+	public final Location getPrevLocation() {
+		//using minecart.getWorld is safe for estimating the previous location because teleporting minecarts between worlds does not work
+		return previousLocation.toLocation(minecart.getWorld());
+	}
+	
+	/**
+	 * Get's the world this minecart is in
+	 * @return world
+	 */
+	public final World getWorld() {
+		return minecart.getWorld();
+	}
+	
+	/**
+	 * Teleports this minecart to the given location. Works with locations in other worlds
+	 * @param location
+	 * @return true if the teleport was successful
+	 */
+	public boolean teleport(Location location) {
+		if (!location.getWorld().equals(getWorld())) {
+			Minecart newCart;
+			location.getWorld().loadChunk(location.getBlock().getChunk());
+			if (isStandardMinecart()) {
+				newCart = location.getWorld().spawnMinecart(location);
+			}
+			else if (isPoweredMinecart()) {
+				newCart = location.getWorld().spawnPoweredMinecart(location);
+			}
+			else {
+				newCart = location.getWorld().spawnStorageMinecart(location);
+			}
+			copy(newCart);
+			return true;
+		}
+		return minecart.teleport(location);
+	}
+	
+	/**
+	 * Get's the chunk this minecart is at
+	 * @return chunk
+	 */
+	public final Chunk getChunkAt() {
+		return getLocation().getBlock().getChunk();
+	}
+	
+	/**
+	 * Updates the minecart's previous location
+	 */
 	public void updateLocation() {
 		previousLocation = minecart.getLocation().toVector().clone();
 	}
 	
+	/**
+	 * Get's the previous motion of the minecart from the last tick
+	 * @return previous motion
+	 */
 	public Vector getPreviousMotion() {
 		return previousMotion.clone();
 	}
 	
+	/**
+	 * Updates the minecart's previous motion
+	 */
 	public void updateMotion() {
 		previousMotion = minecart.getVelocity().clone();
 	}
 	
+	/**
+	 * Checks to see if the minecart has moved positions from it's previous position
+	 * @return true if the minecart has moved positions
+	 */
 	public boolean hasChangedPosition() {
-		if (getPreviousLocation().getBlockX() != minecart.getLocation().getBlockX()) {
+		if (getPreviousPosition().getBlockX() != minecart.getLocation().getBlockX()) {
 			return true;
 		}
-		if (getPreviousLocation().getBlockY() != minecart.getLocation().getBlockY()) {
+		if (getPreviousPosition().getBlockY() != minecart.getLocation().getBlockY()) {
 			return true;
 		}
-		if (getPreviousLocation().getBlockZ() != minecart.getLocation().getBlockZ()) {
+		if (getPreviousPosition().getBlockZ() != minecart.getLocation().getBlockZ()) {
 			return true;
 		}
 		return false;
 	}
 
+	/**
+	 * Get's the motion in the X direction
+	 * @return X motion
+	 */
 	public double getMotionX() {
 		return minecart.getVelocity().getX();
 	}
@@ -187,6 +316,10 @@ public class MinecartManiaMinecart {
 		setMotion(motionX, getMotionY(), getMotionZ());
 	}
 	
+	/**
+	 * Get's the motion in the Y direction
+	 * @return Y motion
+	 */
 	public double getMotionY() {
 		return minecart.getVelocity().getY();
 	}
@@ -199,6 +332,10 @@ public class MinecartManiaMinecart {
 		setMotion(getMotionX(), motionY, getMotionZ());
 	}
 	
+	/**
+	 * Get's the motion in the Z direction
+	 * @return Z motion
+	 */
 	public double getMotionZ() {
 		return minecart.getVelocity().getZ();
 	}
@@ -233,30 +370,102 @@ public class MinecartManiaMinecart {
 		minecart.setVelocity(newVelocity);
 	}
 	
+	/**
+	 * Get's the previous direction of motion for this minecart
+	 * @return previous direction
+	 */
+	public CompassDirection getPreviousDirectionOfMotion() {
+		return previousFacingDir;
+	}
+	
+	/**
+	 * Set's the previous direction of motion for this minecart
+	 * @param previous direction
+	 */
+	public void setPreviousDirectionOfMotion(CompassDirection direction) {
+		previousFacingDir = direction;
+	}
+	
+	@Deprecated
+	public void setPreviousFacingDir(DirectionUtils.CompassDirection dir) {
+		previousFacingDir = dir;
+	}
+
+	@Deprecated
+	public DirectionUtils.CompassDirection getPreviousFacingDir() {
+		return previousFacingDir;
+	}
+	
+	/**
+	 * Get's the direction that this minecart is moving, or NO_DIRECTION if it is not moving
+	 * @return direction
+	 */
+	public CompassDirection getDirectionOfMotion() {
+		if (getMotionX() < 0.0D) return CompassDirection.NORTH;
+		if (getMotionZ() < 0.0D) return CompassDirection.EAST;
+		if (getMotionX() > 0.0D) return CompassDirection.SOUTH;
+		if (getMotionZ() > 0.0D) return CompassDirection.WEST;
+		return CompassDirection.NO_DIRECTION;
+	}
+	
+	/**
+	 * Attempts a "best guess" at the direction of the minecart. 
+	 * If the minecart is moving, it will return the correct direction, but if it's stopped, it will use the value stored in memory.
+	 * @return CompassDirection that the minecart is moving towards
+	 */
+	public CompassDirection getDirection() {
+		if (isMoving()) {
+			return getDirectionOfMotion();
+		}
+		return getPreviousDirectionOfMotion();
+	}
+	
+	/**
+	 * Stops this minecart
+	 */
 	public void stopCart() {
 		setMotion(0D, 0D, 0D);
 	}
 	
+	/**
+	 * Returns true if the minecart is moving
+	 * @return true if moving
+	 */
 	public boolean isMoving() {
 		return getMotionX() != 0D || getMotionY() != 0D || getMotionZ() != 0D;
 	}
 	
-	public final int getX(){
-		return minecart.getLocation().getBlockX();
-	}
-	
-	public final int getY(){
-		return minecart.getLocation().getBlockY();
-	}
-	
-	public final int getZ(){
-		return minecart.getLocation().getBlockZ();
-	}
-
 	/**
-	 ** Returns the value from the loaded data
-	 ** @param the string key the data value is associated with
-	 **/
+	 * Returns true if the minecart has a player passenger onboard
+	 * @return true if player onboard
+	 */
+	public boolean hasPlayerPassenger() {
+		return getPlayerPassenger() != null;
+	}
+	
+	/**
+	 * Returns true if the minecart has a passenger on board
+	 * @return
+	 */
+	public boolean hasPassenger() {
+		return minecart.getPassenger() != null;
+	}
+	
+	public Player getPlayerPassenger() {
+		if (minecart.getPassenger() == null) {
+			return null;
+		}
+		if (minecart.getPassenger() instanceof Player) {
+			return (Player)minecart.getPassenger();
+		}
+		return null;
+	}
+	
+	/**
+	 * Returns the value from the loaded data
+	 * @param the string key the data value is associated with
+	 */
+	@ThreadSafe
 	 public final Object getDataValue(String key) {
 		 if (data.containsKey(key)) {
 			 return data.get(key);
@@ -265,10 +474,11 @@ public class MinecartManiaMinecart {
 	 }
 	 
 	/**
-	 ** Creates a new data value if it does not already exists, or resets an existing value
-	 ** @param the string key the data value is associated with
-	 ** @param the value to store
-	 **/	 
+	 * Creates a new data value if it does not already exists, or resets an existing value
+	 * @param the string key the data value is associated with
+	 * @param the value to store
+	 */
+	@ThreadSafe
 	 public final void setDataValue(String key, Object value) {
 		 if (value == null) {
 			 data.remove(key);
@@ -279,7 +489,7 @@ public class MinecartManiaMinecart {
 	
 	 
 	public int getBlockIdBeneath() {
-		return MinecartManiaWorld.getBlockIdAt(minecart.getWorld(), getX(), getY()-1, getZ());
+		return getBlockBeneath().getTypeId();
 	}
 	
 	public Item getItemBeneath() {
@@ -313,7 +523,7 @@ public class MinecartManiaMinecart {
 	}
 	
 	public void undoPoweredRails() {
-		//this server had decided to override the default boost value, so we need to undo notch's changes
+		//this server has decided to override the default boost value, so we need to undo notch's changes
 		if (getLocation().getBlock().getTypeId() == Item.POWERED_RAIL.getId()) {
 			if (ControlBlockList.getSpeedMultiplier(this) != 1.0D && isMoving()) {
 				int data = getLocation().getBlock().getData();
@@ -465,44 +675,7 @@ public class MinecartManiaMinecart {
 			throw new IllegalArgumentException();
 	}
 
-	public CompassDirection getDirectionOfMotion()
-	{
-		if (getMotionX() < 0.0D) return CompassDirection.NORTH;
-		if (getMotionZ() < 0.0D) return CompassDirection.EAST;
-		if (getMotionX() > 0.0D) return CompassDirection.SOUTH;
-		if (getMotionZ() > 0.0D) return CompassDirection.WEST;
-		return CompassDirection.NO_DIRECTION;
-	}
 	
-	public CompassDirection getPreviousDirectionOfMotion() {
-		return previousFacingDir;
-	}
-	
-	public void setPreviousDirectionOfMotion(CompassDirection direction) {
-		previousFacingDir = direction;
-	}
-	
-	@Deprecated
-	public void setPreviousFacingDir(DirectionUtils.CompassDirection dir) {
-		previousFacingDir = dir;
-	}
-
-	@Deprecated
-	public DirectionUtils.CompassDirection getPreviousFacingDir() {
-		return previousFacingDir;
-	}
-	
-	/**
-	 * Attempts a "best guess" at the direction of the minecart. 
-	 * If the minecart is moving, it will return the correct direction, but if it's stopped, it will use the value stored in memory.
-	 * @return CompassDirection that the minecart is moving towards
-	 */
-	public CompassDirection getDirection() {
-		if (isMoving()) {
-			return getDirectionOfMotion();
-		}
-		return getPreviousDirectionOfMotion();
-	}
 
 	public boolean doEjectorBlock() {
 		if (ControlBlockList.isValidEjectorBlock(getBlockBeneath())) {
@@ -523,19 +696,7 @@ public class MinecartManiaMinecart {
     	}
 	}
 	
-	public boolean hasPlayerPassenger() {
-		return getPlayerPassenger() != null;
-	}
 	
-	public Player getPlayerPassenger() {
-		if (minecart.getPassenger() == null) {
-			return null;
-		}
-		if (minecart.getPassenger() instanceof Player) {
-			return (Player)minecart.getPassenger();
-		}
-		return null;
-	}
 	
 	public boolean isOnRails() {
 		return MinecartUtils.isTrack(minecart.getLocation());
@@ -577,69 +738,71 @@ public class MinecartManiaMinecart {
 	}
 	
 	public MinecartManiaMinecart getMinecartAhead() {
-		return getAdjacentMinecartFromDirection(getDirectionOfMotion());
+		return getAdjacentMinecartFromDirection(getDirection());
 	}
 	
 	public MinecartManiaMinecart getMinecartBehind() {
-		return getAdjacentMinecartFromDirection(DirectionUtils.getOppositeDirection(getDirectionOfMotion()));
+		return getAdjacentMinecartFromDirection(DirectionUtils.getOppositeDirection(getDirection()));
 	}
 	
 	public ArrayList<Block> getParallelBlocks() {
 		ArrayList<Block> blocks = new ArrayList<Block>(4);
-		blocks.add(MinecartManiaWorld.getBlockAt(minecart.getWorld(), getX()-1, getY(), getZ()));
-		blocks.add(MinecartManiaWorld.getBlockAt(minecart.getWorld(), getX()+1, getY(), getZ()));
-		blocks.add(MinecartManiaWorld.getBlockAt(minecart.getWorld(), getX(), getY(), getZ()-1));
-		blocks.add(MinecartManiaWorld.getBlockAt(minecart.getWorld(), getX(), getY(), getZ()+1));
+		Block occupied = getOccupiedBlock();
+		blocks.add(occupied.getRelative(-1, 0, 0));
+		blocks.add(occupied.getRelative(1, 0, 0));
+		blocks.add(occupied.getRelative(0, 0, -1));
+		blocks.add(occupied.getRelative(0, 0, 1));
 		return blocks;
 	}
 	
 	public ArrayList<Block> getPreviousLocationParallelBlocks() {
 		ArrayList<Block> blocks = new ArrayList<Block>(4);
-		blocks.add(MinecartManiaWorld.getBlockAt(minecart.getWorld(), previousLocation.getBlockX()-1, previousLocation.getBlockY(), previousLocation.getBlockZ()));
-		blocks.add(MinecartManiaWorld.getBlockAt(minecart.getWorld(), previousLocation.getBlockX()+1, previousLocation.getBlockY(), previousLocation.getBlockZ()));
-		blocks.add(MinecartManiaWorld.getBlockAt(minecart.getWorld(), previousLocation.getBlockX(), previousLocation.getBlockY(), previousLocation.getBlockZ()-1));
-		blocks.add(MinecartManiaWorld.getBlockAt(minecart.getWorld(), previousLocation.getBlockX(), previousLocation.getBlockY(), previousLocation.getBlockZ()+1));
+		Block occupied = getPrevLocation().getBlock();
+		blocks.add(occupied.getRelative(-1, 0, 0));
+		blocks.add(occupied.getRelative(1, 0, 0));
+		blocks.add(occupied.getRelative(0, 0, -1));
+		blocks.add(occupied.getRelative(0, 0, 1));
 		return blocks;
 	}
 	
 	public HashSet<Block> getAdjacentBlocks(int range) {
-		return BlockUtils.getAdjacentBlocks(minecart.getLocation(), range);
+		return BlockUtils.getAdjacentBlocks(getLocation(), range);
 	}
 	
 	public HashSet<Block> getPreviousLocationAdjacentBlocks(int range) {
-		return BlockUtils.getAdjacentBlocks(getPreviousLocation().toLocation(minecart.getWorld()), range);
+		return BlockUtils.getAdjacentBlocks(getPrevLocation(), range);
 	}
 	
 	public HashSet<Block> getBlocksBeneath(int range) {
-		return BlockUtils.getBlocksBeneath(minecart.getLocation(), range);
+		return BlockUtils.getBlocksBeneath(getLocation(), range);
 	}
 	
 	public HashSet<Block> getPreviousLocationBlocksBeneath(int range) {
-		return BlockUtils.getBlocksBeneath(getPreviousLocation().toLocation(minecart.getWorld()), range);
+		return BlockUtils.getBlocksBeneath(getPrevLocation(), range);
 	}
 	
 	public boolean isMovingAway(Location l) {
 		//North of us
 		if (l.getBlockX() - getX() < 0) {
-			if (getDirectionOfMotion().equals(DirectionUtils.CompassDirection.SOUTH)) {
+			if (getDirection().equals(CompassDirection.SOUTH)) {
 				return true;
 			}
 		}
 		//South of us
 		if (l.getBlockX() - getX() > 0) {
-			if (getDirectionOfMotion().equals(DirectionUtils.CompassDirection.NORTH)) {
+			if (getDirection().equals(CompassDirection.NORTH)) {
 				return true;
 			}
 		}
 		//East of us
 		if (l.getBlockZ() - getZ() < 0) {
-			if (getDirectionOfMotion().equals(DirectionUtils.CompassDirection.WEST)) {
+			if (getDirection().equals(CompassDirection.WEST)) {
 				return true;
 			}
 		}
 		//West of us
 		if (l.getBlockZ() + getZ() > 0) {
-			if (getDirectionOfMotion().equals(DirectionUtils.CompassDirection.WEST)) {
+			if (getDirection().equals(CompassDirection.WEST)) {
 				return true;
 			}
 		}
@@ -687,16 +850,33 @@ public class MinecartManiaMinecart {
 		return owner.getRealOwner();
 	}
 	
-	public boolean isOwner(Entity e) {
+	/**
+	 * Attempts to determine if the given object is the owner if this minecart.
+	 * Valid datatypes: Entity, Vector, Location, Chest, MinecartManiaChest
+	 * @param obj to test
+	 * @return true if obj represents the owner
+	 */
+	public boolean isOwner(Object obj) {
 		Object owner = getOwner();
 		if (owner == null) {
 			return false;
 		}
-		if (owner instanceof Player) {
-			return ((Player)owner).getEntityId() == e.getEntityId();
+		if (owner instanceof Player && obj instanceof Entity) {
+			return ((Player)owner).getEntityId() == ((Entity)obj).getEntityId();
 		}
 		if (owner instanceof MinecartManiaChest) {
-			return ((MinecartManiaChest) owner).getLocation().equals(e.getLocation());
+			if (obj instanceof Vector) {
+				return ((MinecartManiaChest) owner).getLocation().equals(((Vector)obj).toLocation(getWorld()));
+			}
+			if (obj instanceof Location) {
+				return ((MinecartManiaChest) owner).getLocation().equals((Location)obj);
+			}
+			if (obj instanceof Chest) {
+				return ((MinecartManiaChest) owner).getLocation().equals(((Chest)obj).getBlock().getLocation());
+			}
+			if (obj instanceof MinecartManiaChest) {
+				return ((MinecartManiaChest) owner).getLocation().equals(((MinecartManiaChest)obj).getLocation());
+			}
 		}
 		return false;
 	}
@@ -706,7 +886,7 @@ public class MinecartManiaMinecart {
 	}
 	
 	public void kill(boolean returnToOwner) {
-		if (!dead && !minecart.isDead()) {
+		if (!isDead()) {
 			
 			if (returnToOwner) {
 				//give the items back inside too

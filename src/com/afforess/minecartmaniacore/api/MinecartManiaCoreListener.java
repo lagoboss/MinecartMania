@@ -73,9 +73,7 @@ public class MinecartManiaCoreListener extends VehicleListener{
 			if (minecart.isDead()) {
 				return;
 			}
-			
-			//CraftServer server = (CraftServer)MinecartManiaCore.server;
-			//server.getHandle().server.tracker.
+
 			minecart.updateCalendar(); 
 			if (minecart.isMoving()) {
 				if (minecart.getDirectionOfMotion() != minecart.getPreviousDirectionOfMotion()) {

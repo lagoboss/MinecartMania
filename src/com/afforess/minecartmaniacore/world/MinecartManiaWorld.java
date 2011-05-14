@@ -4,8 +4,12 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 import net.minecraft.server.EntityMinecart;
 
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
@@ -36,6 +40,7 @@ import com.afforess.minecartmaniacore.inventory.MinecartManiaDispenser;
 import com.afforess.minecartmaniacore.inventory.MinecartManiaFurnace;
 import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
 import com.afforess.minecartmaniacore.minecart.MinecartManiaStorageCart;
+import com.afforess.minecartmaniacore.utils.ThreadSafe;
 
 public class MinecartManiaWorld {
 	private static ConcurrentHashMap<Integer,MinecartManiaMinecart> minecarts = new ConcurrentHashMap<Integer,MinecartManiaMinecart>();
@@ -45,46 +50,55 @@ public class MinecartManiaWorld {
 	private static ConcurrentHashMap<String,MinecartManiaPlayer> players = new ConcurrentHashMap<String,MinecartManiaPlayer>();
 	private static ConcurrentHashMap<String, Object> configuration = new ConcurrentHashMap<String,Object>();
 	private static int counter = 0;
+	private static Lock pruneLock = new ReentrantLock();
 
 	/**
 	 * Returns a new MinecartManiaMinecart from storage if it already exists, or creates and stores a new MinecartManiaMinecart object, and returns it
 	 * @param the minecart to wrap
 	 */
+	@ThreadSafe
 	 public static MinecartManiaMinecart getMinecartManiaMinecart(Minecart minecart) {
 		prune();
-		MinecartManiaMinecart testMinecart = minecarts.get(new Integer(minecart.getEntityId()));
+		final int id = minecart.getEntityId();
+		MinecartManiaMinecart testMinecart = minecarts.get(id);
 		if (testMinecart == null) {
-			//Special handling to create storage and powered minecart correctly until Bukkit fixes their bug
-			CraftMinecart cm = (CraftMinecart)minecart;	
-			EntityMinecart em = (EntityMinecart)cm.getHandle();
-			CraftServer cs = (CraftServer)MinecartManiaCore.server;
-			if (em.type == 1) {
-			  CraftStorageMinecart csm = new CraftStorageMinecart(cs, em); 
-			  minecart = (Minecart)csm;
-			}   
-			else if (em.type== 2) {
-			  CraftPoweredMinecart csm = new CraftPoweredMinecart(cs, em); 
-			  minecart = (Minecart)csm;
+			synchronized(minecart) {
+				//may have been created while waiting for the lock
+				if (minecarts.get(id) != null) {
+					return minecarts.get(id);
+				}
+				//Special handling because bukkit fails at creating the right type of minecart entity
+				CraftMinecart cm = (CraftMinecart)minecart;	
+				EntityMinecart em = (EntityMinecart)cm.getHandle();
+				CraftServer server = (CraftServer)Bukkit.getServer();
+				if (em.type == 1) {
+					CraftStorageMinecart csm = new CraftStorageMinecart(server, em); 
+					minecart = (Minecart)csm;
+				}   
+				else if (em.type == 2) {
+					CraftPoweredMinecart csm = new CraftPoweredMinecart(server, em); 
+					minecart = (Minecart)csm;
+				}
+				//End workaround
+				MinecartManiaMinecart newCart;
+				if (minecart instanceof StorageMinecart) {
+					newCart = new MinecartManiaStorageCart(minecart);
+				}
+				else {
+					newCart = new MinecartManiaMinecart(minecart);
+				}
+				minecarts.put(id, newCart);
+				return newCart;
 			}
-			//End workaround
-			MinecartManiaMinecart newCart;
-			if (minecart instanceof StorageMinecart) {
-				newCart = new MinecartManiaStorageCart(minecart);
-			}
-			else {
-				newCart = new MinecartManiaMinecart(minecart);
-			}
-			minecarts.put(new Integer(minecart.getEntityId()), newCart);
-			return newCart;
-		} else {
-		   return testMinecart;
 		}
+		return testMinecart;
 	}
 	 
 	/**
 	 * Returns true if the Minecart with the given entityID was deleted, false if not.
 	 * @param the id of the minecart to delete
 	 */
+	@ThreadSafe
 	 public static boolean delMinecartManiaMinecart(int entityID) {
 		if (minecarts.containsKey(new Integer(entityID))) {
 			minecarts.remove(new Integer(entityID));
@@ -93,26 +107,33 @@ public class MinecartManiaWorld {
 		return false;
 	}
 	 
-	 
+	@ThreadSafe
 	public static void prune() {
-		counter++;
-		if (counter % 100000 == 0) {
-			counter = 0;
-			DebugTimer time = new DebugTimer("Pruning");
-			int minecart = minecarts.size();
-			int chest = chests.size();
-			int dispenser = dispensers.size();
-			int furnace = furnaces.size();
-			pruneFurnaces();
-			pruneDispensers();
-			pruneChests();
-			pruneMinecarts();
-			minecart -= minecarts.size();
-			chest -= chests.size();
-			dispenser -= dispensers.size();
-			furnace -= furnaces.size();
-			MinecartManiaLogger.getInstance().debug(String.format("Finished Pruning. Removed %d minecarts, %d chests, %d dispensers, and %d furnaces from memory", minecart, chest, dispenser, furnace));
-			time.logProcessTime();
+		if (pruneLock.tryLock()) {
+			try {
+				counter++;
+				if (counter % 100000 == 0) {
+					counter = 0;
+					DebugTimer time = new DebugTimer("Pruning");
+					int minecart = minecarts.size();
+					int chest = chests.size();
+					int dispenser = dispensers.size();
+					int furnace = furnaces.size();
+					pruneFurnaces();
+					pruneDispensers();
+					pruneChests();
+					pruneMinecarts();
+					minecart -= minecarts.size();
+					chest -= chests.size();
+					dispenser -= dispensers.size();
+					furnace -= furnaces.size();
+					MinecartManiaLogger.getInstance().debug(String.format("Finished Pruning. Removed %d minecarts, %d chests, %d dispensers, and %d furnaces from memory", minecart, chest, dispenser, furnace));
+					time.logProcessTime();
+				}
+			}
+			finally {
+				pruneLock.unlock();
+			}
 		}
 	}
 	
@@ -172,6 +193,7 @@ public class MinecartManiaWorld {
 	 ** @param the y - coordinate to check
 	 ** @param the z - coordinate to check
 	 **/
+	@ThreadSafe
 	 public static MinecartManiaMinecart getMinecartManiaMinecartAt(int x, int y, int z) {
 		 Iterator<Entry<Integer, MinecartManiaMinecart>> i = minecarts.entrySet().iterator();
 		 while (i.hasNext()) {
@@ -192,6 +214,7 @@ public class MinecartManiaWorld {
 	  * Returns an arraylist of all the MinecartManiaMinecarts stored by this class
 	  * @return arraylist of all MinecartManiaMinecarts
 	  */
+	@ThreadSafe
 	 public static ArrayList<MinecartManiaMinecart> getMinecartManiaMinecartList() {
 		 Iterator<Entry<Integer, MinecartManiaMinecart>> i = minecarts.entrySet().iterator();
 		 ArrayList<MinecartManiaMinecart> minecartList = new ArrayList<MinecartManiaMinecart>(minecarts.size());
