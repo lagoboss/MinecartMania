@@ -7,6 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.CraftWorld;
 
+@SuppressWarnings("unused")
 public class ChunkManager {
 	protected HashSet<Chunk> loaded = new HashSet<Chunk>();
 	
@@ -18,12 +19,12 @@ public class ChunkManager {
 			for (int dz = -(range); dz <= range; dz++){
 				Chunk chunk = world.getChunkAt(center.getX()+dx, center.getZ()+dz);
 				world.loadChunk(chunk);
-				if (!loaded.contains(chunk)) {
-					loaded.add(chunk);
-				}
+				//if (!loaded.contains(chunk)) {
+					//loaded.add(chunk);
+				//}
 			}
 		}
-		Iterator<Chunk> i = loaded.iterator();
+		/*Iterator<Chunk> i = loaded.iterator();
 		while(i.hasNext()) {
 			Chunk old = i.next();
 			if (old.getX() > center.getX()+range || old.getX() < center.getX()-range) {
@@ -43,17 +44,17 @@ public class ChunkManager {
 					i.remove();
 				}
 			}
-		}
+		}*/
 	}
 	
 	public void unloadChunks(Location location) {
-		Iterator<Chunk> i = loaded.iterator();
+		/*Iterator<Chunk> i = loaded.iterator();
 		while(i.hasNext()) {
 			Chunk old = i.next();
 			if (unloadChunk(old)) {
 				i.remove();
 			}
-		}
+		}*/
 	}
 	
 	private static boolean spawnChunk(Chunk chunk) {
