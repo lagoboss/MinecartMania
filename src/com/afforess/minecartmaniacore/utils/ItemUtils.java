@@ -187,8 +187,10 @@ public class ItemUtils {
 		List<AbstractItem> items = parsePart(split[0]);
 		
 		int amount = Integer.parseInt(split[1]);
-		for(AbstractItem item : items)
-			item.setAmount(amount);
+		if (amount > 0) {
+			for(AbstractItem item : items)
+				item.setAmount(amount);
+		}
 		
 		return items;
 	}
