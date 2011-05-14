@@ -2,6 +2,7 @@ package com.afforess.minecartmaniacore.signs;
 
 import java.util.Collection;
 
+import org.bukkit.Location;
 import org.bukkit.block.Block;
 
 import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
@@ -136,7 +137,17 @@ public interface Sign {
 	 */
 	public boolean executeAction(MinecartManiaMinecart minecart, Class<? extends SignAction> action);
 	
+	/**
+	 * Get's the block occupied by the sign
+	 * @return block
+	 */
 	public Block getBlock();
+	
+	/**
+	 * Get's the location of the sign
+	 * @return location
+	 */
+	public Location getLocation();
 	public int getX();
 	public int getY();
 	public int getZ();

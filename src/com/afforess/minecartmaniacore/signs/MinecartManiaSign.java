@@ -214,6 +214,11 @@ public class MinecartManiaSign implements Sign{
 	public final void updated() {
 		this.updateId = -1;
 	}
+	
+	@Override
+	public Location getLocation() {
+		return block.getLocation();
+	}
 
 	@Override
 	public Block getBlock() {
