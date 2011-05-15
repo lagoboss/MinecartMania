@@ -44,6 +44,10 @@ public class MinecartOwner {
 	public void setOwner(String owner) {
 		this.owner = owner;
 	}
+	
+	public boolean hasOwner() {
+		return !owner.equals("none");
+	}
 
 	public void setWorld(String world) {
 		this.world = world;

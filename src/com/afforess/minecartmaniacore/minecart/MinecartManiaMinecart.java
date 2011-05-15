@@ -1,4 +1,5 @@
 package com.afforess.minecartmaniacore.minecart;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -14,6 +15,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
+import org.bukkit.craftbukkit.entity.CraftMinecart;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Minecart;
@@ -54,18 +56,18 @@ import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
 
 public class MinecartManiaMinecart {
 	public final Minecart minecart;
-	private volatile Vector previousLocation;
-	private volatile Vector previousMotion;
-	private Calendar cal;
-	private volatile CompassDirection previousFacingDir = DirectionUtils.CompassDirection.NO_DIRECTION;
-	private volatile boolean wasMovingLastTick;
-	private MinecartOwner owner = null;
-	private ConcurrentHashMap<String, Object> data = new ConcurrentHashMap<String,Object>();
-	private volatile int range = 4;
-	private volatile int rangeY = 4;
-	private volatile boolean dead = false;
 	public static final double MAXIMUM_MOMENTUM = 1E150D;
 	public boolean createdLastTick = true;
+	protected volatile Vector previousLocation;
+	protected volatile Vector previousMotion;
+	protected Calendar cal;
+	protected volatile CompassDirection previousFacingDir = DirectionUtils.CompassDirection.NO_DIRECTION;
+	protected volatile boolean wasMovingLastTick;
+	protected MinecartOwner owner = null;
+	protected volatile int range = 4;
+	protected volatile int rangeY = 4;
+	protected volatile boolean dead = false;
+	protected ConcurrentHashMap<String, Object> data = new ConcurrentHashMap<String,Object>();
 	private ChunkManager chunkManager = new ChunkManager();
 	
 	public MinecartManiaMinecart(Minecart cart) {
@@ -107,7 +109,7 @@ public class MinecartManiaMinecart {
 	private void findOwner() {
 		try {
 			MinecartOwner temp = MinecartManiaCore.instance.getDatabase().find(MinecartOwner.class).where().idEq(minecart.getEntityId()).findUnique();
-			if (temp != null) {
+			if (temp != null && !temp.hasOwner()) {
 				owner = temp;
 				return;
 			}
@@ -139,7 +141,9 @@ public class MinecartManiaMinecart {
 		}
 		owner.setId(minecart.getEntityId());
 		owner.setWorld(minecart.getWorld().getName());
-		MinecartManiaCore.instance.getDatabase().save(this.owner);
+		if (owner.hasOwner()) {
+			MinecartManiaCore.instance.getDatabase().save(this.owner);
+		}
 	}
 	
 	/**
@@ -236,7 +240,7 @@ public class MinecartManiaMinecart {
 	 */
 	public boolean teleport(Location location) {
 		if (!location.getWorld().equals(getWorld())) {
-			Minecart newCart;
+			final Minecart newCart;
 			location.getWorld().loadChunk(location.getBlock().getChunk());
 			if (isStandardMinecart()) {
 				newCart = location.getWorld().spawnMinecart(location);
@@ -247,7 +251,45 @@ public class MinecartManiaMinecart {
 			else {
 				newCart = location.getWorld().spawnStorageMinecart(location);
 			}
-			copy(newCart);
+			final Entity passenger = minecart.getPassenger();
+			minecart.eject();
+			if (passenger != null) {
+				passenger.teleport(location);
+			}
+			Runnable update = new Runnable() {
+				public void run() {
+					if (passenger != null) {
+						newCart.setPassenger(passenger);
+					}
+					newCart.setVelocity(minecart.getVelocity());
+				}
+			};
+			Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(MinecartManiaCore.instance, update, 5);
+			
+			//Save some values
+			int id = minecart.getEntityId();
+			Minecart oldCart = this.minecart;
+			
+			//Now we do the unthinkable - we RESET the value of a FINAL field.
+			//Yes, reflection allows us to do this. From this point on the "minecart" field will be inlined
+			//to the wrong (old) value, and should not be used at any further point in this function
+			try {
+				Field minecart = MinecartManiaMinecart.class.getDeclaredField("minecart");
+				minecart.setAccessible(true);
+				minecart.set(this, newCart);
+			}
+			catch (Exception e) {
+				newCart.remove();
+				if (passenger != null) {
+					passenger.teleport(getLocation());
+					oldCart.setPassenger(passenger);
+				}
+				return false;
+			}
+		
+			//Now remove our current minecart to replace it
+			oldCart.remove();
+			((CraftMinecart)newCart).getHandle().id = id;
 			return true;
 		}
 		return minecart.teleport(location);
@@ -886,6 +928,10 @@ public class MinecartManiaMinecart {
 	}
 	
 	public void kill(boolean returnToOwner) {
+		kill(returnToOwner, true);
+	}
+	
+	public void kill(boolean returnToOwner, boolean save) {
 		if (!isDead()) {
 			
 			if (returnToOwner) {
@@ -932,7 +978,9 @@ public class MinecartManiaMinecart {
 			MinecartManiaCore.server.getPluginManager().callEvent(mmmee);
 			
 			chunkManager.unloadChunks(getLocation());
-			MinecartManiaCore.instance.getDatabase().delete(this.owner);
+			if (save) {
+				MinecartManiaCore.instance.getDatabase().delete(this.owner);
+			}
 			
 			minecart.remove();
 			dead = true;
