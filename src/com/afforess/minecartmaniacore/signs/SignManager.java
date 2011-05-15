@@ -2,6 +2,7 @@ package com.afforess.minecartmaniacore.signs;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
@@ -14,6 +15,14 @@ public class SignManager {
 	
 	public static Sign getSignAt(Block block) {
 		return getSignAt(block, null);
+	}
+	
+	public static Sign getSignAt(Location location) {
+		return getSignAt(location.getBlock(), null);
+	}
+	
+	public static Sign getSignAt(Location location, Player player) {
+		return getSignAt(location.getBlock(), player);
 	}
 	
 	public static Sign getSignAt(Block block, Player player) {
@@ -44,6 +53,10 @@ public class SignManager {
 		temp = mmsfe.getSign();
 		signList.put(block, temp);
 		return temp;
+	}
+	
+	public static void updateSign(Location location, Sign sign) {
+		updateSign(location.getBlock(), sign);
 	}
 	
 	public static void updateSign(Block block, Sign sign) {
