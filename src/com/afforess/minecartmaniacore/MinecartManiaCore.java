@@ -17,11 +17,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.afforess.minecartmaniacore.api.MinecartManiaActionListener;
 import com.afforess.minecartmaniacore.api.MinecartManiaCoreBlockListener;
 import com.afforess.minecartmaniacore.api.MinecartManiaCoreListener;
+import com.afforess.minecartmaniacore.api.MinecartManiaCorePlayerListener;
 import com.afforess.minecartmaniacore.api.MinecartManiaCoreWorldListener;
 import com.afforess.minecartmaniacore.config.CoreSettingParser;
 import com.afforess.minecartmaniacore.config.LocaleParser;
 import com.afforess.minecartmaniacore.config.MinecartManiaConfigurationParser;
 import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
+import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecartDataTable;
 import com.afforess.minecartmaniacore.minecart.MinecartOwner;
 import com.afforess.minecartmaniacore.world.Item;
 
@@ -31,6 +33,7 @@ public class MinecartManiaCore extends JavaPlugin {
 	public final MinecartManiaCoreBlockListener blockListener = new MinecartManiaCoreBlockListener();
 	public final MinecartManiaCoreWorldListener worldListener = new MinecartManiaCoreWorldListener();
 	public final MinecartManiaActionListener actionListener = new MinecartManiaActionListener();
+	public final MinecartManiaCorePlayerListener playerListener = new MinecartManiaCorePlayerListener();
 	public static MinecartManiaLogger log = MinecartManiaLogger.getInstance();
 	public static Server server;
 	public static Plugin instance;
@@ -43,6 +46,12 @@ public class MinecartManiaCore extends JavaPlugin {
 	public static boolean Lockette = false;
 	public static boolean LWC = false;
 	public static boolean ChestLock = false;
+	public static final int DATABASE_VERSION = 2;
+	public static final String database = "plugins" + File.separator + "MinecartManiaCore";
+	
+	public void onLoad() {
+		setNaggable(false);
+	}
 	
 	public void onEnable(){
 		server = this.getServer();
@@ -71,6 +80,8 @@ public class MinecartManiaCore extends JavaPlugin {
 		getServer().getPluginManager().registerEvent(Event.Type.CHUNK_UNLOAD, worldListener, Priority.Normal, this);
 		getServer().getPluginManager().registerEvent(Event.Type.REDSTONE_CHANGE, blockListener, Priority.Monitor, this);
 		getServer().getPluginManager().registerEvent(Event.Type.CUSTOM_EVENT, actionListener, Priority.Normal, this);
+		getServer().getPluginManager().registerEvent(Event.Type.PLAYER_QUIT, playerListener, Priority.Monitor, this);
+		getServer().getPluginManager().registerEvent(Event.Type.PLAYER_JOIN, playerListener, Priority.Monitor, this);
 		
 		//database setup
 		File ebeans = new File(new File(this.getDataFolder().getParent()).getParent(), "ebean.properties");
@@ -130,19 +141,74 @@ public class MinecartManiaCore extends JavaPlugin {
 		catch (Exception e) {}
 	}
 	
-	protected void setupDatabase() {
-        try {
-            getDatabase().find(MinecartOwner.class).findRowCount();
-        } catch (PersistenceException ex) {
-        	log.info("Installing database for first time usage");
-            installDDL();
-        }
-    }
+	private int getDatabaseVersion() {
+		try {
+			getDatabase().find(MinecartOwner.class).findRowCount();
+		} catch (PersistenceException ex) {
+			return 0;
+		}
+		try {
+			getDatabase().find(MinecartManiaMinecartDataTable.class).findRowCount();
+		} catch (PersistenceException ex) {
+			return 1;
+		}
+		return DATABASE_VERSION;
+	}
 	
-    @Override
-    public List<Class<?>> getDatabaseClasses() {
-        List<Class<?>> list = new ArrayList<Class<?>>();
-        list.add(MinecartOwner.class);
-        return list;
-    }
+	protected void setupInitialDatabase() {
+		try {
+			getDatabase().find(MinecartOwner.class).findRowCount();
+			getDatabase().find(MinecartManiaMinecartDataTable.class).findRowCount();
+		}
+		catch (PersistenceException ex) {
+			log.info("Installing database");
+			installDDL();
+		}
+	}
+	
+	protected void setupDatabase() {
+		int version = getDatabaseVersion();
+		switch(version) {
+			case 0: setupInitialDatabase(); break;
+			case 1: upgradeDatabase(1); break;
+			case 2: /*up to date database*/break;
+		}
+	}
+	
+	private void upgradeDatabase(int current) {
+		log.info(String.format("Upgrading database from version %d to version %d", current, DATABASE_VERSION));
+		if (current == 1) {
+			List<MinecartOwner> ownerList = getDatabase().find(MinecartOwner.class).findList();
+			try {
+				this.removeDDL();
+			}
+			catch (Exception e) {
+				//this will throw an error because not all the tables can be dropped, but ignore it
+			}
+			setupInitialDatabase();
+			log.info("Recoved " + ownerList.size() + " from database");
+			for (MinecartOwner owner : ownerList) {
+				if (owner.hasOwner()) {
+					MinecartOwner newOwner = new MinecartOwner();
+					newOwner.setId(owner.getId());
+					newOwner.setOwner(owner.getOwner());
+					newOwner.setWorld(owner.getWorld());
+					getDatabase().save(newOwner);
+				}
+			}
+		}
+		
+		/*
+		 * Add additional versions here
+		 */
+	}
+
+	
+	@Override
+	public List<Class<?>> getDatabaseClasses() {
+		List<Class<?>> list = new ArrayList<Class<?>>();
+		list.add(MinecartOwner.class);
+		list.add(MinecartManiaMinecartDataTable.class);
+		return list;
+	}
 }
