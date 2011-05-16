@@ -1,5 +1,4 @@
 package com.afforess.minecartmaniacore.minecart;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -15,7 +14,6 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
-import org.bukkit.craftbukkit.entity.CraftMinecart;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Minecart;
@@ -30,7 +28,6 @@ import com.afforess.minecartmaniacore.MinecartManiaCore;
 import com.afforess.minecartmaniacore.config.ControlBlock;
 import com.afforess.minecartmaniacore.config.ControlBlockList;
 import com.afforess.minecartmaniacore.config.MinecartManiaConfiguration;
-import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
 import com.afforess.minecartmaniacore.event.MinecartCaughtEvent;
 import com.afforess.minecartmaniacore.event.MinecartElevatorEvent;
 import com.afforess.minecartmaniacore.event.MinecartLaunchedEvent;
@@ -82,12 +79,12 @@ public class MinecartManiaMinecart {
 		this.owner.setId(minecart.getEntityId());
 		this.owner.setWorld(minecart.getWorld().getName());
 		//clear previous owners
-		List<MinecartOwner> list = MinecartManiaCore.instance.getDatabase().find(MinecartOwner.class).where().idEq(minecart.getEntityId()).findList();
+		/*List<MinecartOwner> list = MinecartManiaCore.instance.getDatabase().find(MinecartOwner.class).where().idEq(minecart.getEntityId()).findList();
 		for (MinecartOwner temp : list) {
 			MinecartManiaCore.instance.getDatabase().delete(temp);
 		}
 		//save new owner
-		MinecartManiaCore.instance.getDatabase().save(this.owner);
+		MinecartManiaCore.instance.getDatabase().save(this.owner);*/
 		initialize();
 	}
 	
@@ -107,9 +104,10 @@ public class MinecartManiaMinecart {
 	 ** Attempts to find the player that spawned this minecart.
 	 */
 	private void findOwner() {
+		/*final EbeanServer db = MinecartManiaCore.instance.getDatabase();
 		try {
-			MinecartOwner temp = MinecartManiaCore.instance.getDatabase().find(MinecartOwner.class).where().idEq(minecart.getEntityId()).findUnique();
-			if (temp != null && !temp.hasOwner()) {
+			MinecartOwner temp = db.find(MinecartOwner.class).where().idEq(minecart.getEntityId()).findUnique();
+			if (temp != null) {
 				owner = temp;
 				return;
 			}
@@ -117,11 +115,16 @@ public class MinecartManiaMinecart {
 		catch (Exception e) {
 			//clear duplicates
 			MinecartManiaLogger.getInstance().debug("Clearing Duplicate Minecart Id's : " + minecart.getEntityId());
-			List<MinecartOwner> list = MinecartManiaCore.instance.getDatabase().find(MinecartOwner.class).where().idEq(minecart.getEntityId()).findList();
-			for (MinecartOwner temp : list) {
-				MinecartManiaCore.instance.getDatabase().delete(temp);
+			try {
+				List<MinecartOwner> list = db.find(MinecartOwner.class).where().idEq(minecart.getEntityId()).findList();
+				for (MinecartOwner temp : list) {
+					db.delete(temp);
+				}
 			}
-		}
+			catch (NullPointerException npe) {
+				MinecartManiaLogger.getInstance().info("Failed to clear duplicate minecart entities!");
+			}
+		}*/
 		double closest = Double.MAX_VALUE;
 		Player closestPlayer = null;
 		for (LivingEntity le : minecart.getWorld().getLivingEntities()) {
@@ -142,7 +145,7 @@ public class MinecartManiaMinecart {
 		owner.setId(minecart.getEntityId());
 		owner.setWorld(minecart.getWorld().getName());
 		if (owner.hasOwner()) {
-			MinecartManiaCore.instance.getDatabase().save(this.owner);
+		//	db.save(this.owner);
 		}
 	}
 	
@@ -236,9 +239,9 @@ public class MinecartManiaMinecart {
 	/**
 	 * Teleports this minecart to the given location. Works with locations in other worlds
 	 * @param location
-	 * @return true if the teleport was successful
+	 * @return the new MinecartManiaMinecart at the end of the teleport, null if the teleport was unsuccessful
 	 */
-	public boolean teleport(Location location) {
+	public MinecartManiaMinecart teleport(Location location) {
 		if (!location.getWorld().equals(getWorld())) {
 			final Minecart newCart;
 			location.getWorld().loadChunk(location.getBlock().getChunk());
@@ -266,33 +269,14 @@ public class MinecartManiaMinecart {
 			};
 			Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(MinecartManiaCore.instance, update, 5);
 			
-			//Save some values
-			int id = minecart.getEntityId();
-			Minecart oldCart = this.minecart;
-			
-			//Now we do the unthinkable - we RESET the value of a FINAL field.
-			//Yes, reflection allows us to do this. From this point on the "minecart" field will be inlined
-			//to the wrong (old) value, and should not be used at any further point in this function
-			try {
-				Field minecart = MinecartManiaMinecart.class.getDeclaredField("minecart");
-				minecart.setAccessible(true);
-				minecart.set(this, newCart);
-			}
-			catch (Exception e) {
-				newCart.remove();
-				if (passenger != null) {
-					passenger.teleport(getLocation());
-					oldCart.setPassenger(passenger);
-				}
-				return false;
-			}
-		
-			//Now remove our current minecart to replace it
-			oldCart.remove();
-			((CraftMinecart)newCart).getHandle().id = id;
-			return true;
+			MinecartManiaMinecart newMinecartManiaMinecart = this.copy(newCart);
+			kill(false);
+			return newMinecartManiaMinecart;
 		}
-		return minecart.teleport(location);
+		if (minecart.teleport(location)) {
+			return this;
+		}
+		return null;
 	}
 	
 	/**
@@ -928,10 +912,6 @@ public class MinecartManiaMinecart {
 	}
 	
 	public void kill(boolean returnToOwner) {
-		kill(returnToOwner, true);
-	}
-	
-	public void kill(boolean returnToOwner, boolean save) {
 		if (!isDead()) {
 			
 			if (returnToOwner) {
@@ -978,9 +958,6 @@ public class MinecartManiaMinecart {
 			MinecartManiaCore.server.getPluginManager().callEvent(mmmee);
 			
 			chunkManager.unloadChunks(getLocation());
-			if (save) {
-				MinecartManiaCore.instance.getDatabase().delete(this.owner);
-			}
 			
 			minecart.remove();
 			dead = true;

@@ -93,7 +93,7 @@ public class MinecartManiaWorld {
 		}
 		return testMinecart;
 	}
-	 
+
 	/**
 	 * Returns true if the Minecart with the given entityID was deleted, false if not.
 	 * @param the id of the minecart to delete

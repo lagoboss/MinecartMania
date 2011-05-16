@@ -47,7 +47,6 @@ public class MinecartManiaCore extends JavaPlugin {
 	public static boolean LWC = false;
 	public static boolean ChestLock = false;
 	public static final int DATABASE_VERSION = 2;
-	public static final String database = "plugins" + File.separator + "MinecartManiaCore";
 	
 	public void onLoad() {
 		setNaggable(false);

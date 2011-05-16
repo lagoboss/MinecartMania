@@ -21,7 +21,7 @@ public class MinecartManiaCorePlayerListener extends PlayerListener{
 				final MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart((Minecart)player.getPlayer().getVehicle());
 				MinecartManiaMinecartDataTable data = new MinecartManiaMinecartDataTable(minecart, player.getName());
 				MinecartManiaMinecartDataTable.save(data);
-				minecart.kill(false, false);
+				minecart.kill(false);
 			}
 		}
 	}
