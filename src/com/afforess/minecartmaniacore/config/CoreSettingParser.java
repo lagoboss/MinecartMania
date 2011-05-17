@@ -107,7 +107,8 @@ public class CoreSettingParser implements SettingParser{
 				list = document.getElementsByTagName("version");
 				version = 1.51;
 				list.item(0).setTextContent(version.toString());
-			} else if (version == 1.51) {
+			} 
+			if (version == 1.51) {
 				Node root = document.getElementsByTagName("MinecartManiaConfiguration").item(0);
 				Node last = document.getElementsByTagName("ControlBlocks").item(0);
 				root.insertBefore(document.createComment("Minecarts that are destroyed will not drop an item if they are destroyed") , last);
@@ -128,7 +129,7 @@ public class CoreSettingParser implements SettingParser{
 				version = 1.52;	//This needs to be updated to the next version of the document.
 				list.item(0).setTextContent(version.toString());
 			}
-			else if (version == 1.52) {
+			if (version == 1.52) {
 				Node root = document.getElementsByTagName("MinecartManiaConfiguration").item(0);
 				Node last = document.getElementsByTagName("ControlBlocks").item(0);
 				root.insertBefore(document.createComment("Minecarts Disappear on disconnect. Players who are inside of a minecart will cause the minecart to \"disconnect\" " +
