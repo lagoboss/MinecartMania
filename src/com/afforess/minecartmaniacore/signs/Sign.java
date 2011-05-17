@@ -30,6 +30,14 @@ public interface Sign {
 	public void setLine(int line, String text);
 	
 	/**
+	 * Set's the text of the given line of the sign
+	 * @param line to get the text of
+	 * @param text to set at the line
+	 * @param update whether to update the physical state of the sign
+	 */
+	public void setLine(int line, String text, boolean update);
+	
+	/**
 	 * Get's all the lines from the sign
 	 * @return lines of the sign
 	 */

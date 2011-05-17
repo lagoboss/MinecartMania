@@ -3,6 +3,7 @@ package com.afforess.minecartmaniacore.inventory;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Chest;
@@ -126,16 +127,16 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements 
 		 }
 	 }
 	 
-	 public Player getOwner() {
+	 public String getOwner() {
 		 if (MinecartManiaCore.Lockette) {
 			if (Lockette.isProtected(getLocation().getBlock())) {
-				return MinecartManiaCore.server.getPlayer(Lockette.getProtectedOwner(getLocation().getBlock()));
+				return Lockette.getProtectedOwner(getLocation().getBlock());
 			}
 		 }
 		 if (MinecartManiaCore.LWC){
 			 LWCPlugin lock = (LWCPlugin )MinecartManiaCore.server.getPluginManager().getPlugin("LWC");
 			 if (lock.getLWC().findProtection(getLocation().getBlock()) != null) {
-				 return MinecartManiaCore.server.getPlayer(lock.getLWC().findProtection(getLocation().getBlock()).getOwner());
+				 return lock.getLWC().findProtection(getLocation().getBlock()).getOwner();
 			 }
 		 }
 		return null;
@@ -151,7 +152,7 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements 
 		 return false;
 	 }
 	 
-	 public boolean canAccess(Player player){
+	 public boolean canAccess(String player){
 		 if (isIgnoreProtection() && player == null) {
 			return true;
 		 }
@@ -164,29 +165,28 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements 
 		 if (MinecartManiaCore.Lockette) {
 			if (Lockette.isProtected(getLocation().getBlock())) {
 				if (player != null) {
-					return Lockette.getProtectedOwner(getLocation().getBlock()).equals(player.getName());
+					return Lockette.getProtectedOwner(getLocation().getBlock()).equals(player);
 				}
-				else {
-					return false;
-				}
+				return false;
 			}
 		 }
 		 if (MinecartManiaCore.LWC){
 			 LWCPlugin  lock = (LWCPlugin )MinecartManiaCore.server.getPluginManager().getPlugin("LWC");
 			 if (lock.getLWC().findProtection(getLocation().getBlock()) != null) {
 				 if (player != null) {
-					 return lock.getLWC().canAccessProtection(player, getLocation().getBlock());
+					 Player ply = Bukkit.getServer().getPlayer(player);
+					 if (ply != null) {
+						 return lock.getLWC().canAccessProtection(ply, getLocation().getBlock());
+					 }
 				 }
-				 else {
-					 return false;
-				 }
+				return false;
 			 }
 		 }
 		 return true;
 	 }
 	 
 	 public boolean canAddItem(ItemStack item, Player player) {
-		 if (!canAccess(player)) {
+		 if (!canAccess(player.getName())) {
 			 return false;
 		 }
 		 
@@ -195,7 +195,7 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements 
 	 
 	 public boolean canRemoveItem(int type, int amount, short durability, Player player) {
 		 if (player != null) {
-			 if (!canAccess(player)) {
+			 if (!canAccess(player.getName())) {
 				 return false;
 			 }
 		 }

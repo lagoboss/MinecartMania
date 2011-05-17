@@ -45,15 +45,22 @@ public class MinecartManiaSign implements Sign{
 	public final String getLine(int line) {
 		return lines[line];
 	}
-
+	
 	@Override
 	public final void setLine(int line, String text) {
+		setLine(line, text, true);
+	}
+
+	@Override
+	public final void setLine(int line, String text, boolean update) {
 		if (text.length() < 16) 
 			lines[line] = text;
 		else
 			lines[line] = text.substring(0, 15);
-		getSign().setLine(line, lines[line]);
-		update();
+		if (update) {
+			getSign().setLine(line, lines[line]);
+			update();
+		}
 	}
 	
 	@Override
