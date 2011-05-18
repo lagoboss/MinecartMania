@@ -936,7 +936,7 @@ public class MinecartManiaMinecart {
 				}
 				else if (owner instanceof MinecartManiaChest && MinecartManiaConfiguration.isReturnMinecartToOwner()) {
 					inventory = ((MinecartManiaChest)owner);
-					invOwner = ((MinecartManiaChest)owner).getOwner();
+					invOwner = Bukkit.getServer().getPlayer(((MinecartManiaChest)owner).getOwner());
 				}
 				
 				if (inventory != null) {
