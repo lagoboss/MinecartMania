@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <MinecartManiaConfiguration>
-	<version>1.51</version>
+	<version>1.53</version>
 	<!--Console Logging Mode. Accepted Values: "None", "Severe", "Normal", "Debug", "Timer"-->
 	<!--None will produce no console logs from MM. Not recommended.-->
 	<!--Severe will produce only console logs from severe errors from MM.-->
@@ -31,6 +31,14 @@
 	<MaximumRange>10</MaximumRange>
 	<!--Stack All Items (Regardless of Notch's stacking limit on certain items)-->
 	<StackAllItems>true</StackAllItems>
+	<!--Minecarts that are destroyed will not drop an item if they are destroyed-->
+	<RemoveDeadMinecarts>false</RemoveDeadMinecarts>
+    <!--MM only searchs under or parallel to rails for signs, harshly limiting the search radius. 
+	This will improve performance, but will restrict sign placement.-->
+	<LimitedSignRange>false</LimitedSignRange>
+    <!--Minecarts Disappear on disconnect. Players who are inside of a minecart will cause the minecart to "disconnect" 
+	as well, and re-join when the player does. Minecarts will re-appear and retain their previous settings and speed on reconnecting.-->
+	<DisappearOnDisconnect>true</DisappearOnDisconnect>
 	<ControlBlocks>
 		<ControlBlock>
 			<!--Item Name or Item Id for this control block-->

@@ -22,32 +22,59 @@ public class MinecartManiaLogger {
 	}
 	
 	public void time(String s) {
+		time(s, true);
+	}
+	public void time(String s, boolean toConsole) {
 		if (mode == DebugMode.TIMER) {
-			log.info(prefix + s);
+			if (toConsole)
+				log.info(prefix + s);
+			else
+				queue(prefix + s);
 		}
 	}
 	
 	public void debug(String s) {
+		debug(s, true);
+	}
+	
+	public void debug(String s, boolean toConsole) {
 		if (mode == DebugMode.DEBUG || mode == DebugMode.TIMER) {
-			log.info(prefix + s);
+			if (toConsole)
+				log.info(prefix + s);
+			else
+				queue(prefix + s);
 		}
 		queue(s);
 	}
 	
 	public void log(String s) {
+		log(s, true);
+	}
+	
+	public void log(String s, boolean toConsole) {
 		if (mode == DebugMode.DEBUG || mode == DebugMode.NORMAL || mode == DebugMode.TIMER) {
-			log.info(prefix + s);
+			if (toConsole)
+				log.info(prefix + s);
+			else
+				queue(prefix + s);
 		}
 		queue(s);
 	}
 	
 	public void info(String s) {
-		log(s);
+		log(s, true);
 	}
 	
 	public void severe(String s) {
+		severe(s, true);
+	}
+	
+	public void severe(String s, boolean toConsole) {
 		if (mode == DebugMode.DEBUG || mode == DebugMode.NORMAL || mode == DebugMode.SEVERE || mode == DebugMode.TIMER) {
-			log.severe(prefix + s);
+			if (toConsole)
+				log.severe(prefix + s);
+			else
+				queue(prefix + s);
 		}
 		queue(s);
 	}

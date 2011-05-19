@@ -186,7 +186,7 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements 
 	 }
 	 
 	 public boolean canAddItem(ItemStack item, Player player) {
-		 if (!canAccess(player.getName())) {
+		 if (!canAccess(player != null ? player.getName() : null)) {
 			 return false;
 		 }
 		 

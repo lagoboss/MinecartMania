@@ -66,7 +66,6 @@ public class MinecartTypeSign extends MinecartManiaSign{
 		}
 		if (sign.getLine(0).toLowerCase().contains("minecart type")) {
 			sign.setLine(0, "[Minecart Type]");
-			sign.addBrackets();
 			return true;
 		}
 		return false;

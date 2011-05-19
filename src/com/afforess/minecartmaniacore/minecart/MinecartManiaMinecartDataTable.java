@@ -13,6 +13,7 @@ import org.bukkit.Location;
 import org.bukkit.util.Vector;
 
 import com.afforess.minecartmaniacore.MinecartManiaCore;
+import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
 import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
 import com.afforess.minecartmaniacore.world.Item;
 import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
@@ -101,19 +102,26 @@ public class MinecartManiaMinecartDataTable {
 		if (cache.containsKey(player)) {
 			return cache.get(player);
 		}
-		MinecartManiaMinecartDataTable data = null;
-		List<MinecartManiaMinecartDataTable> list = MinecartManiaCore.instance.getDatabase().find(MinecartManiaMinecartDataTable.class).where().ieq("player", player).findList();
-		if (list.size() > 0) {
-			data = list.get(0);
-			//handle issues with the db gracefully
-			if (list.size() > 1) {
-				for (int i = 1; i < list.size(); i++) {
-					MinecartManiaCore.instance.getDatabase().delete(list.get(i));
+		try {
+			MinecartManiaMinecartDataTable data = null;
+			List<MinecartManiaMinecartDataTable> list = MinecartManiaCore.instance.getDatabase().find(MinecartManiaMinecartDataTable.class).where().ieq("player", player).findList();
+			if (list.size() > 0) {
+				data = list.get(0);
+				//handle issues with the db gracefully
+				if (list.size() > 1) {
+					for (int i = 1; i < list.size(); i++) {
+						MinecartManiaCore.instance.getDatabase().delete(list.get(i));
+					}
 				}
 			}
+			cache.put(player, data);
+			return data;
 		}
-		cache.put(player, data);
-		return data;
+		catch (Exception e) {
+			MinecartManiaLogger.getInstance().log("Failed to load the minecart from memory when " + player + " reconnected");
+			MinecartManiaLogger.getInstance().log(e.getMessage(), false);
+			return null;
+		}
 	}
 	
 	public static void delete(MinecartManiaMinecartDataTable data) {
