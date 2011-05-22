@@ -149,6 +149,18 @@ public class MinecartManiaCoreListener extends VehicleListener{
 	public void onVehicleDamage(VehicleDamageEvent event) {
 		if (event.getVehicle() instanceof Minecart) {
 			MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart((Minecart)event.getVehicle());
+			//Start workaround for double damage events
+			long lastDamage = -1;
+			if (minecart.getDataValue("Last Damage") != null) {
+				lastDamage = (Long)minecart.getDataValue("Last Damage");
+			}
+			if (lastDamage > -1) {
+				if ((lastDamage + 100) > System.currentTimeMillis()) {
+					return;
+				}
+			}
+			minecart.setDataValue("Last Damage", System.currentTimeMillis());
+			//End Workaround
 			if (!event.isCancelled()) {
 				MinecartManiaLogger.getInstance().debug("Damage: " + event.getDamage() + " Existing: " + minecart.minecart.getDamage());
 				if ((event.getDamage() * 10) + minecart.minecart.getDamage() > 40) {

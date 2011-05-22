@@ -46,7 +46,7 @@ public class MinecartManiaCore extends JavaPlugin {
 	public static boolean Lockette = false;
 	public static boolean LWC = false;
 	public static boolean ChestLock = false;
-	public static final int DATABASE_VERSION = 2;
+	public static final int DATABASE_VERSION = 3;
 	
 	public void onLoad() {
 		setNaggable(false);
@@ -97,7 +97,7 @@ public class MinecartManiaCore extends JavaPlugin {
 				e.printStackTrace();
 			}
 		}
-		
+
 		setupDatabase();
 
 		log.info( description.getName() + " version " + description.getVersion() + " is enabled!" );
@@ -151,6 +151,11 @@ public class MinecartManiaCore extends JavaPlugin {
 		} catch (PersistenceException ex) {
 			return 1;
 		}
+		try {
+			getDatabase().find(MinecartManiaMinecartDataTable.class).findList();
+		} catch (PersistenceException ex) {
+			return 2;
+		}
 		return DATABASE_VERSION;
 	}
 	
@@ -170,33 +175,17 @@ public class MinecartManiaCore extends JavaPlugin {
 		switch(version) {
 			case 0: setupInitialDatabase(); break;
 			case 1: upgradeDatabase(1); break;
-			case 2: /*up to date database*/break;
+			case 2: upgradeDatabase(2); break;
+			case 3: /*up to date database*/break;
 		}
 	}
 	
 	private void upgradeDatabase(int current) {
 		log.info(String.format("Upgrading database from version %d to version %d", current, DATABASE_VERSION));
-		if (current == 1) {
-			List<MinecartOwner> ownerList = getDatabase().find(MinecartOwner.class).findList();
-			try {
-				this.removeDDL();
-			}
-			catch (Exception e) {
-				//this will throw an error because not all the tables can be dropped, but ignore it
-			}
+		if (current == 1 || current == 2) {
+			this.removeDDL();
 			setupInitialDatabase();
-			log.info("Recoved " + ownerList.size() + " from database");
-			for (MinecartOwner owner : ownerList) {
-				if (owner.hasOwner()) {
-					MinecartOwner newOwner = new MinecartOwner();
-					newOwner.setId(owner.getId());
-					newOwner.setOwner(owner.getOwner());
-					newOwner.setWorld(owner.getWorld());
-					getDatabase().save(newOwner);
-				}
-			}
 		}
-		
 		/*
 		 * Add additional versions here
 		 */

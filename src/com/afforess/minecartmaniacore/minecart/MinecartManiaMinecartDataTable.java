@@ -41,7 +41,7 @@ public class MinecartManiaMinecartDataTable {
 	@NotNull
 	protected String owner;
 	@NotNull
-	protected int range;
+	protected int myrange;
 	@NotNull
 	protected int rangeY;
 	@NotNull
@@ -82,7 +82,7 @@ public class MinecartManiaMinecartDataTable {
 		this.previousFacingDir = minecart.previousFacingDir;
 		this.wasMovingLastTick = minecart.wasMovingLastTick;
 		this.owner = minecart.owner.getOwner();
-		this.range = minecart.range;
+		this.myrange = minecart.range;
 		this.rangeY = minecart.rangeY;
 		this.dead = minecart.dead;
 		this.oldId = minecart.minecart.getEntityId();
@@ -140,7 +140,7 @@ public class MinecartManiaMinecartDataTable {
 		minecart.previousLocation = this.getPreviousLocation();
 		minecart.previousMotion = this.getPreviousMotion();
 		minecart.minecart.setVelocity(getMotion());
-		minecart.range = this.range;
+		minecart.range = this.myrange;
 		minecart.rangeY = this.rangeY;
 		minecart.wasMovingLastTick = this.wasMovingLastTick;
 		minecart.dead = this.dead;
@@ -302,14 +302,6 @@ public class MinecartManiaMinecartDataTable {
 		this.owner = owner;
 	}
 
-	public int getRange() {
-		return range;
-	}
-
-	public void setRange(int range) {
-		this.range = range;
-	}
-
 	public int getRangeY() {
 		return rangeY;
 	}
@@ -340,6 +332,14 @@ public class MinecartManiaMinecartDataTable {
 
 	public void setTypeId(int type) {
 		this.typeId = type;
+	}
+
+	public void setMyrange(int myrange) {
+		this.myrange = myrange;
+	}
+
+	public int getMyrange() {
+		return myrange;
 	}
 
 	
