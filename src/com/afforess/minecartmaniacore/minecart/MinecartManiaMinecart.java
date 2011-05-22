@@ -602,15 +602,21 @@ public class MinecartManiaMinecart {
 				List<LivingEntity> list = minecart.getWorld().getLivingEntities();
 				double range = ControlBlockList.getControlBlock(getItemBeneath()).getPlatformRange();
 				range *= range;
+				LivingEntity closest = null;
+				double distance = -1;
 				for (LivingEntity le : list) {
-					if (le.getLocation().toVector().distanceSquared(minecart.getLocation().toVector()) < range) {
-						//Let the world know about this
-						VehicleEnterEvent vee = new VehicleEnterEvent(minecart, le);
-						MinecartManiaCore.server.getPluginManager().callEvent(vee);
-						if (!vee.isCancelled()) {
-							minecart.setPassenger(le);
-							return true;
-						}
+					if (le.getLocation().toVector().distanceSquared(minecart.getLocation().toVector()) < distance || closest == null) {
+						closest = le;
+						distance = le.getLocation().toVector().distanceSquared(minecart.getLocation().toVector());
+					}
+				}
+				if (closest != null && closest.getLocation().toVector().distanceSquared(minecart.getLocation().toVector()) < range) {
+					//Let the world know about this
+					VehicleEnterEvent vee = new VehicleEnterEvent(minecart, closest);
+					MinecartManiaCore.server.getPluginManager().callEvent(vee);
+					if (!vee.isCancelled()) {
+						minecart.setPassenger(closest);
+						return true;
 					}
 				}
 			}
