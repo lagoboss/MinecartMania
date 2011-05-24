@@ -104,13 +104,13 @@ public class MinecartManiaMinecartDataTable {
 		}
 		try {
 			MinecartManiaMinecartDataTable data = null;
-			List<MinecartManiaMinecartDataTable> list = MinecartManiaCore.instance.getDatabase().find(MinecartManiaMinecartDataTable.class).where().ieq("player", player).findList();
+			List<MinecartManiaMinecartDataTable> list = MinecartManiaCore.getInstance().getDatabase().find(MinecartManiaMinecartDataTable.class).where().ieq("player", player).findList();
 			if (list.size() > 0) {
 				data = list.get(0);
 				//handle issues with the db gracefully
 				if (list.size() > 1) {
 					for (int i = 1; i < list.size(); i++) {
-						MinecartManiaCore.instance.getDatabase().delete(list.get(i));
+						MinecartManiaCore.getInstance().getDatabase().delete(list.get(i));
 					}
 				}
 			}
@@ -125,12 +125,12 @@ public class MinecartManiaMinecartDataTable {
 	}
 	
 	public static void delete(MinecartManiaMinecartDataTable data) {
-		MinecartManiaCore.instance.getDatabase().delete(data);
+		MinecartManiaCore.getInstance().getDatabase().delete(data);
 		cache.remove(data.getPlayer());
 	}
 	
 	public static void save(MinecartManiaMinecartDataTable data) {
-		MinecartManiaCore.instance.getDatabase().save(data);
+		MinecartManiaCore.getInstance().getDatabase().save(data);
 		cache.put(data.getPlayer(), data);
 	}
 	

@@ -17,11 +17,11 @@ public class LogWriter extends Thread{
 	@Override
 	public void run() {
 		try {
-			File logger = new File(MinecartManiaCore.dataDirectory + File.separator + "MinecartMania.log");
+			File logger = new File(MinecartManiaCore.getDataDirectoryRelativePath() + File.separator + "MinecartMania.log");
 			if (logger.exists() && logger.length() > 3100000L) {
 				logger.delete(); //clear log if > 3MB
 			}
-			BufferedWriter output = new BufferedWriter(new FileWriter(MinecartManiaCore.dataDirectory + File.separator + "MinecartMania.log", true));
+			BufferedWriter output = new BufferedWriter(new FileWriter(MinecartManiaCore.getDataDirectoryRelativePath() + File.separator + "MinecartMania.log", true));
 			Iterator<String> i = queued.iterator();
 			while(i.hasNext()) {
 				String log = i.next();

@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.persistence.PersistenceException;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event;
@@ -29,24 +30,33 @@ import com.afforess.minecartmaniacore.world.Item;
 
 public class MinecartManiaCore extends JavaPlugin {
 	
-	public final MinecartManiaCoreListener listener = new MinecartManiaCoreListener(this);
-	public final MinecartManiaCoreBlockListener blockListener = new MinecartManiaCoreBlockListener();
-	public final MinecartManiaCoreWorldListener worldListener = new MinecartManiaCoreWorldListener();
-	public final MinecartManiaActionListener actionListener = new MinecartManiaActionListener();
-	public final MinecartManiaCorePlayerListener playerListener = new MinecartManiaCorePlayerListener();
+	public static final MinecartManiaCoreListener listener = new MinecartManiaCoreListener();
+	public static final MinecartManiaCoreBlockListener blockListener = new MinecartManiaCoreBlockListener();
+	public static final MinecartManiaCoreWorldListener worldListener = new MinecartManiaCoreWorldListener();
+	public static final MinecartManiaActionListener actionListener = new MinecartManiaActionListener();
+	public static final MinecartManiaCorePlayerListener playerListener = new MinecartManiaCorePlayerListener();
 	public static MinecartManiaLogger log = MinecartManiaLogger.getInstance();
+	@Deprecated
 	public static Server server;
+	@Deprecated
 	public static Plugin instance;
+	@Deprecated
 	public static PluginDescriptionFile description;
+	@Deprecated
 	public static File data;
+	@Deprecated
 	public static File MinecartManiaCore;
+	@Deprecated
 	public static String dataDirectory = "plugins" + File.separator + "MinecartMania";
+	@Deprecated
 	public static boolean WormholeXTreme = false;
+	@Deprecated
 	public static boolean Nethrar = false;
+	@Deprecated
 	public static boolean Lockette = false;
+	@Deprecated
 	public static boolean LWC = false;
-	public static boolean ChestLock = false;
-	public static final int DATABASE_VERSION = 3;
+	private static final int DATABASE_VERSION = 3;
 	
 	public void onLoad() {
 		setNaggable(false);
@@ -60,11 +70,10 @@ public class MinecartManiaCore extends JavaPlugin {
 		MinecartManiaCore = this.getFile();
 		
 		//manage external plugins
-		WormholeXTreme = server.getPluginManager().getPlugin("WormholeXTreme") != null;
-		Nethrar = server.getPluginManager().getPlugin("Nethrar") != null;
-		Lockette = server.getPluginManager().getPlugin("Lockette") != null;
-		LWC = server.getPluginManager().getPlugin("LWC") != null;
-		ChestLock = server.getPluginManager().getPlugin("ChestLock") != null;
+		WormholeXTreme = getServer().getPluginManager().getPlugin("WormholeXTreme") != null;
+		Nethrar = getServer().getPluginManager().getPlugin("Nethrar") != null;
+		Lockette = getServer().getPluginManager().getPlugin("Lockette") != null;
+		LWC = getServer().getPluginManager().getPlugin("LWC") != null;
 
 		writeItemsFile();
 
@@ -78,7 +87,6 @@ public class MinecartManiaCore extends JavaPlugin {
 		getServer().getPluginManager().registerEvent(Event.Type.VEHICLE_ENTER, listener, Priority.Monitor, this);
 		getServer().getPluginManager().registerEvent(Event.Type.CHUNK_UNLOAD, worldListener, Priority.Normal, this);
 		getServer().getPluginManager().registerEvent(Event.Type.REDSTONE_CHANGE, blockListener, Priority.Monitor, this);
-		getServer().getPluginManager().registerEvent(Event.Type.CUSTOM_EVENT, actionListener, Priority.Normal, this);
 		getServer().getPluginManager().registerEvent(Event.Type.PLAYER_QUIT, playerListener, Priority.Monitor, this);
 		getServer().getPluginManager().registerEvent(Event.Type.PLAYER_JOIN, playerListener, Priority.Monitor, this);
 		
@@ -104,7 +112,7 @@ public class MinecartManiaCore extends JavaPlugin {
 	}
 	
 	public void onDisable(){
-		server.getScheduler().cancelTasks(instance);
+		getServer().getScheduler().cancelTasks(this);
 		log.info( description.getName() + " version " + description.getVersion() + " is disabled!" );
 	}
 	
@@ -198,5 +206,48 @@ public class MinecartManiaCore extends JavaPlugin {
 		list.add(MinecartOwner.class);
 		list.add(MinecartManiaMinecartDataTable.class);
 		return list;
+	}
+	
+	public static MinecartManiaCore getInstance() {
+		return (MinecartManiaCore)instance;
+	}
+	
+	public static PluginDescriptionFile getPluginDescription() {
+		return description;
+	}
+	
+	public static File getPluginDataFolder() {
+		return data;
+	}
+	
+	public static File getMinecartManiaCoreJar() {
+		return MinecartManiaCore;
+	}
+	
+	public static String getDataDirectoryRelativePath() {
+		return dataDirectory;
+	}
+	
+	public static boolean isWormholeXTremeEnabled() {
+		return WormholeXTreme;
+	}
+	
+	public static boolean isNethrarEnabled() {
+		return Nethrar;
+	}
+	
+	public static boolean isLocketteEnabled() {
+		return Lockette;
+	}
+	
+	public static boolean isLWCEnabled() {
+		return LWC;
+	}
+	
+	public static void callEvent(Event event) {
+		//We go first
+		actionListener.onCustomEvent(event);
+		//now everyone else goes
+		Bukkit.getServer().getPluginManager().callEvent(event);
 	}
 }

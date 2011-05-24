@@ -201,7 +201,7 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
 	 */
 	public void onCustomEvent(Event event) {
 		//Special case
-		if (MinecartManiaCore.WormholeXTreme) {
+		if (MinecartManiaCore.isWormholeXTremeEnabled()) {
 			try {
 				if (event instanceof StargateMinecartTeleportEvent) {
 					StargateMinecartTeleportEvent e = (StargateMinecartTeleportEvent)event;
@@ -213,7 +213,7 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
 			}
 			catch (Exception e) {}
 		}
-		if (MinecartManiaCore.Nethrar) {
+		if (MinecartManiaCore.isNethrarEnabled()) {
 			try {
 				if (event instanceof NethrarMinecartTeleportEvent) {
 					NethrarMinecartTeleportEvent e = (NethrarMinecartTeleportEvent)event;

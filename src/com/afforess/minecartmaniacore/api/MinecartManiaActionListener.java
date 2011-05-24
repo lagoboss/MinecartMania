@@ -1,5 +1,6 @@
 package com.afforess.minecartmaniacore.api;
 
+import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
 import com.afforess.minecartmaniacore.event.MinecartManiaListener;
 import com.afforess.minecartmaniacore.event.MinecartManiaSignFoundEvent;
 import com.afforess.minecartmaniacore.signs.LaunchMinecartAction;
@@ -12,6 +13,7 @@ public class MinecartManiaActionListener extends MinecartManiaListener{
 	
 	@Override
 	public void onMinecartManiaSignFoundEvent(MinecartManiaSignFoundEvent event) {
+		MinecartManiaLogger.getInstance().debug("MinecartManiaCore - Minecart Mania Sign Found Event");
 		Sign sign = event.getSign();
 		if (MinecartTypeSign.isMinecartTypeSign(sign)) {
 			event.setSign(new MinecartTypeSign(sign));

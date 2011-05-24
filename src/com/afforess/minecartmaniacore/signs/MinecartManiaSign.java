@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 
@@ -214,7 +215,7 @@ public class MinecartManiaSign implements Sign{
 	
 	protected final void update() {
 		if (this.updateId == -1) {
-			this.updateId = MinecartManiaCore.server.getScheduler().scheduleSyncDelayedTask(MinecartManiaCore.instance, new SignTextUpdater(getBlock()), 5);
+			this.updateId = Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(MinecartManiaCore.getInstance(), new SignTextUpdater(getBlock()), 5);
 		}
 	}
 	

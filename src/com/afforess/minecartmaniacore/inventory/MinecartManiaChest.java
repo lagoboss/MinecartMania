@@ -128,13 +128,13 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements 
 	 }
 	 
 	 public String getOwner() {
-		 if (MinecartManiaCore.Lockette) {
+		 if (MinecartManiaCore.isLocketteEnabled()) {
 			if (Lockette.isProtected(getLocation().getBlock())) {
 				return Lockette.getProtectedOwner(getLocation().getBlock());
 			}
 		 }
-		 if (MinecartManiaCore.LWC){
-			 LWCPlugin lock = (LWCPlugin )MinecartManiaCore.server.getPluginManager().getPlugin("LWC");
+		 if (MinecartManiaCore.isLWCEnabled()){
+			 LWCPlugin lock = (LWCPlugin )Bukkit.getServer().getPluginManager().getPlugin("LWC");
 			 if (lock.getLWC().findProtection(getLocation().getBlock()) != null) {
 				 return lock.getLWC().findProtection(getLocation().getBlock()).getOwner();
 			 }
@@ -156,13 +156,7 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements 
 		 if (isIgnoreProtection() && player == null) {
 			return true;
 		 }
-		 if (MinecartManiaCore.ChestLock) {
-			 //ChestLock lock = (ChestLock)server.getPluginManager().getPlugin("ChestLock");
-			// Class<?> protection = lock.
-			 //for (Safe safe : Safes) {
-			 //TODO waiting on ChestLock public API
-		 }
-		 if (MinecartManiaCore.Lockette) {
+		 if (MinecartManiaCore.isLocketteEnabled()) {
 			if (Lockette.isProtected(getLocation().getBlock())) {
 				if (player != null) {
 					return Lockette.getProtectedOwner(getLocation().getBlock()).equals(player);
@@ -170,8 +164,8 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements 
 				return false;
 			}
 		 }
-		 if (MinecartManiaCore.LWC){
-			 LWCPlugin  lock = (LWCPlugin )MinecartManiaCore.server.getPluginManager().getPlugin("LWC");
+		 if (MinecartManiaCore.isLWCEnabled()){
+			 LWCPlugin  lock = (LWCPlugin )Bukkit.getServer().getPluginManager().getPlugin("LWC");
 			 if (lock.getLWC().findProtection(getLocation().getBlock()) != null) {
 				 if (player != null) {
 					 Player ply = Bukkit.getServer().getPlayer(player);

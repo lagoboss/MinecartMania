@@ -614,7 +614,7 @@ public class CoreSettingParser implements SettingParser{
 		try {
 			if (document == null) {
 				//we do not have a document to write, so read one from disk.
-				JarFile jar = new JarFile(MinecartManiaCore.MinecartManiaCore);
+				JarFile jar = new JarFile(MinecartManiaCore.getMinecartManiaCoreJar());
 				JarEntry entry = jar.getJarEntry("MinecartManiaConfiguration.xml");
 				InputStream is = jar.getInputStream(entry);
 				DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();

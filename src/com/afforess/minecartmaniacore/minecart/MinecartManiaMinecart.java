@@ -97,7 +97,7 @@ public class MinecartManiaMinecart {
 		previousLocation = minecart.getLocation().toVector().clone();
 		previousLocation.setY(previousLocation.getX() -1); //fool game into thinking we've already moved
 		minecart.setMaxSpeed(MinecartManiaConfiguration.getDefaultMinecartSpeedPercent() * 0.4D / 100);
-		MinecartManiaCore.server.getPluginManager().callEvent(new MinecartManiaMinecartCreatedEvent(this));
+		MinecartManiaCore.callEvent(new MinecartManiaMinecartCreatedEvent(this));
 	}
 
 	/**
@@ -267,7 +267,7 @@ public class MinecartManiaMinecart {
 					newCart.setVelocity(minecart.getVelocity());
 				}
 			};
-			Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(MinecartManiaCore.instance, update, 5);
+			Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(MinecartManiaCore.getInstance(), update, 5);
 			
 			MinecartManiaMinecart newMinecartManiaMinecart = this.copy(newCart);
 			kill(false);
@@ -581,7 +581,7 @@ public class MinecartManiaMinecart {
 		double multiplier = ControlBlockList.getSpeedMultiplier(this);
 		if (multiplier != 1.0D) {
 			MinecartSpeedMultiplierEvent msme = new MinecartSpeedMultiplierEvent(this, multiplier);
-			MinecartManiaCore.server.getPluginManager().callEvent(msme);
+			MinecartManiaCore.callEvent(msme);
 			multiplyMotion(msme.getSpeedMultiplier());
 	    	return msme.isCancelled();
     	}
@@ -589,7 +589,7 @@ public class MinecartManiaMinecart {
 		multiplier = ControlBlockList.getSpeedMultiplier(this);
 		if (multiplier != 1.0D) {
 			MinecartSpeedMultiplierEvent msme = new MinecartSpeedMultiplierEvent(this, multiplier);
-			MinecartManiaCore.server.getPluginManager().callEvent(msme);
+			MinecartManiaCore.callEvent(msme);
 			multiplyMotion(msme.getSpeedMultiplier());
 	    	return msme.isCancelled();
 		}
@@ -613,7 +613,7 @@ public class MinecartManiaMinecart {
 				if (closest != null && closest.getLocation().toVector().distanceSquared(minecart.getLocation().toVector()) < range) {
 					//Let the world know about this
 					VehicleEnterEvent vee = new VehicleEnterEvent(minecart, closest);
-					MinecartManiaCore.server.getPluginManager().callEvent(vee);
+					MinecartManiaCore.callEvent(vee);
 					if (!vee.isCancelled()) {
 						minecart.setPassenger(closest);
 						return true;
@@ -638,7 +638,7 @@ public class MinecartManiaMinecart {
 		if (ControlBlockList.isCatcherBlock(getItemBeneath())){
 			if (!isPoweredBeneath()) {
 				MinecartCaughtEvent mce = new MinecartCaughtEvent(this);
-				MinecartManiaCore.server.getPluginManager().callEvent(mce);
+				MinecartManiaCore.callEvent(mce);
 				if (!mce.isActionTaken()) {
 					stopCart();
 					return true;
@@ -685,7 +685,7 @@ public class MinecartManiaMinecart {
 		//Create event, then stop the cart and wait for the results
 		MinecartLaunchedEvent mle = new MinecartLaunchedEvent(this, minecart.getVelocity().clone());
 		stopCart();
-		MinecartManiaCore.server.getPluginManager().callEvent(mle);
+		MinecartManiaCore.callEvent(mle);
 		if (mle.isActionTaken()) {
 			return;
 		}
@@ -713,7 +713,7 @@ public class MinecartManiaMinecart {
 		if (ControlBlockList.isValidEjectorBlock(getBlockBeneath())) {
 			if (minecart.getPassenger() != null) {
 				MinecartPassengerEjectEvent mpee = new MinecartPassengerEjectEvent(this, minecart.getPassenger());
-				Bukkit.getServer().getPluginManager().callEvent(mpee);
+				MinecartManiaCore.callEvent(mpee);
 				if (!mpee.isCancelled()) {
 					return minecart.eject();
 				}
@@ -756,7 +756,7 @@ public class MinecartManiaMinecart {
 		Calendar current = Calendar.getInstance();
 		if (cal.get(Calendar.SECOND) != current.get(Calendar.SECOND)) {
 			MinecartTimeEvent e = new MinecartTimeEvent(this, cal, current);
-			MinecartManiaCore.server.getPluginManager().callEvent(e);
+			MinecartManiaCore.callEvent(e);
 			cal = current;
 		}
 	}
@@ -964,7 +964,7 @@ public class MinecartManiaMinecart {
 			
 			//Fire destroyed event
 			MinecartManiaMinecartDestroyedEvent mmmee = new MinecartManiaMinecartDestroyedEvent(this);
-			MinecartManiaCore.server.getPluginManager().callEvent(mmmee);
+			MinecartManiaCore.callEvent(mmmee);
 			
 			chunkManager.unloadChunks(getLocation());
 			
@@ -1052,7 +1052,7 @@ public class MinecartManiaMinecart {
 							&& ControlBlockList.isElevatorBlock(Item.getItem(elevatorBlock.getRelative(0, yOffset-1, 0)))) {
 						//do the teleport and return
 						MinecartElevatorEvent event = new MinecartElevatorEvent(this, elevatorBlock.getRelative(0, yOffset, 0).getLocation());
-						MinecartManiaCore.server.getPluginManager().callEvent(event);
+						MinecartManiaCore.callEvent(event);
 						if (!event.isCancelled()) {
 							return minecart.teleport(event.getTeleportLocation());
 						}
@@ -1064,7 +1064,7 @@ public class MinecartManiaMinecart {
 							&& ControlBlockList.isElevatorBlock(Item.getItem(elevatorBlock.getRelative(0, -yOffset-1, 0)))) {
 						//do the teleport and return
 						MinecartElevatorEvent event = new MinecartElevatorEvent(this, elevatorBlock.getRelative(0, -yOffset, 0).getLocation());
-						MinecartManiaCore.server.getPluginManager().callEvent(event);
+						MinecartManiaCore.callEvent(event);
 						if (!event.isCancelled()) {
 							return minecart.teleport(event.getTeleportLocation());
 						}

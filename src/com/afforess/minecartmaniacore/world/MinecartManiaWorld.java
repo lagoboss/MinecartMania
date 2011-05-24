@@ -16,12 +16,10 @@ import org.bukkit.block.Chest;
 import org.bukkit.block.Dispenser;
 import org.bukkit.block.Furnace;
 import org.bukkit.craftbukkit.CraftServer;
-import org.bukkit.craftbukkit.entity.CraftEntity;
 import org.bukkit.craftbukkit.entity.CraftMinecart;
 import org.bukkit.craftbukkit.entity.CraftPoweredMinecart;
 import org.bukkit.craftbukkit.entity.CraftStorageMinecart;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.StorageMinecart;
@@ -31,7 +29,6 @@ import org.bukkit.material.Lever;
 import org.bukkit.material.MaterialData;
 import org.bukkit.Location;
 
-import com.afforess.minecartmaniacore.MinecartManiaCore;
 import com.afforess.minecartmaniacore.debug.DebugTimer;
 import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
 import com.afforess.minecartmaniacore.entity.MinecartManiaPlayer;
@@ -680,12 +677,6 @@ public class MinecartManiaWorld {
 		return minecart;
 	}
 	
-	@Deprecated
-	public static boolean isDead(Entity e) {
-		CraftEntity ce = (CraftEntity)e;
-		return ce.getHandle().dead;
-	}
-	
 	public static int getMaxStackSize(ItemStack item) {
 		if (item == null) {
 			return 64;
@@ -695,11 +686,6 @@ public class MinecartManiaWorld {
 			return stack.getMaxStackSize();
 		}
 		return 64;
-	}
-	
-	public static void dropItem(final Location loc, final ItemStack item) {
-		//force this to run on the main thread
-		MinecartManiaCore.server.getScheduler().scheduleSyncDelayedTask(MinecartManiaCore.instance, new Runnable() { public void run() {loc.getWorld().dropItem(loc, item);	}});
 	}
 }
 

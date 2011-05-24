@@ -7,6 +7,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 import com.afforess.minecartmaniacore.MinecartManiaCore;
+import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
 import com.afforess.minecartmaniacore.event.MinecartManiaSignFoundEvent;
 import com.afforess.minecartmaniacore.event.MinecartManiaSignUpdatedEvent;
 
@@ -40,17 +41,19 @@ public class SignManager {
 			if (!temp.equals(sign)) {
 				temp.update(sign);
 				MinecartManiaSignFoundEvent mmsfe = new MinecartManiaSignUpdatedEvent(temp, player);
-				MinecartManiaCore.server.getPluginManager().callEvent(mmsfe);
+				MinecartManiaCore.callEvent(mmsfe);
 				temp = mmsfe.getSign();
+				MinecartManiaLogger.getInstance().debug("Found updated sign: " + temp);
 				signList.put(block, temp);
 			}
 			return temp;
 		}
 		temp = new MinecartManiaSign(block);
 		MinecartManiaSignFoundEvent mmsfe = new MinecartManiaSignFoundEvent(temp, player);
-		MinecartManiaCore.server.getPluginManager().callEvent(mmsfe);
+		MinecartManiaCore.callEvent(mmsfe);
 		mmsfe.logProcessTime();
 		temp = mmsfe.getSign();
+		MinecartManiaLogger.getInstance().debug("Found new sign: " + temp);
 		signList.put(block, temp);
 		return temp;
 	}

@@ -44,12 +44,12 @@ public class MinecartManiaCoreBlockListener extends BlockListener{
 							if (!previouslyPowered && power) {
 								mmc.setRedstonePower(power);
 								ChestPoweredEvent cpe = new ChestPoweredEvent(mmc, power);
-								MinecartManiaCore.server.getPluginManager().callEvent(cpe);
+								MinecartManiaCore.callEvent(cpe);
 							}
 							else if (previouslyPowered && !power) {
 								mmc.setRedstonePower(power);
 								ChestPoweredEvent cpe = new ChestPoweredEvent(mmc, power);
-								MinecartManiaCore.server.getPluginManager().callEvent(cpe);
+								MinecartManiaCore.callEvent(cpe);
 							}
 						}
 					}

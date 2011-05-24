@@ -1,5 +1,6 @@
 package com.afforess.minecartmaniacore.signs;
 
+import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
 import com.afforess.minecartmaniacore.signs.MinecartManiaSign;
 import com.afforess.minecartmaniacore.signs.Sign;
 import com.afforess.minecartmaniacore.world.Item;
@@ -59,6 +60,7 @@ public class MinecartTypeSign extends MinecartManiaSign{
 	}
 	
 	public static boolean isMinecartTypeSign(Sign sign) {
+		MinecartManiaLogger.getInstance().debug("Testing Sign For Minecart Type Sign, Line 0: " + sign.getLine(0));
 		if (sign.getLine(0).contains("[Dispenser]")) {
 			sign.setLine(0, "minecart type");
 			sign.addBrackets();
@@ -66,6 +68,7 @@ public class MinecartTypeSign extends MinecartManiaSign{
 		}
 		if (sign.getLine(0).toLowerCase().contains("minecart type")) {
 			sign.setLine(0, "[Minecart Type]");
+			MinecartManiaLogger.getInstance().debug("Found valid Minecart Type Sign");
 			return true;
 		}
 		return false;

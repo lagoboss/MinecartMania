@@ -18,7 +18,7 @@ public class MinecartManiaCorePlayerListener extends PlayerListener{
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		if (MinecartManiaConfiguration.isDisappearOnDisconnect()) {
 			MinecartManiaPlayer player = MinecartManiaWorld.getMinecartManiaPlayer(event.getPlayer());
-			if (player.getPlayer().getVehicle() instanceof Minecart) {
+			if (event.getPlayer().getVehicle() instanceof Minecart) {
 				final MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart((Minecart)player.getPlayer().getVehicle());
 				try {
 					MinecartManiaMinecartDataTable data = new MinecartManiaMinecartDataTable(minecart, player.getName());

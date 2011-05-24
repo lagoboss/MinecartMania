@@ -60,7 +60,7 @@ public class LocaleParser implements SettingParser{
 	@Override
 	public boolean write(File config, Document document) {
 		try {
-			JarFile jar = new JarFile(MinecartManiaCore.MinecartManiaCore);
+			JarFile jar = new JarFile(MinecartManiaCore.getMinecartManiaCoreJar());
 			JarEntry entry = jar.getJarEntry("MinecartManiaLocale.xml");
 			InputStream is = jar.getInputStream(entry);
 			FileOutputStream os = new FileOutputStream(config);
