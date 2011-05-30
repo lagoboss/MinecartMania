@@ -27,6 +27,7 @@ public class ControlBlock {
 	private boolean elevator = false;
 	private RedstoneState elevatorState = RedstoneState.Default;
 	public boolean updateToPoweredRail = false; //temporary, remove for MC 1.6
+	private double ejectY = 2.5;
 	
 	public ControlBlock() {
 	}
@@ -118,6 +119,14 @@ public class ControlBlock {
 	
 	protected void setPlatformRange(double range) {
 		platformRange = range;
+	}
+	
+	public double getEjectY() {
+		return ejectY;
+	}
+	
+	protected void setEjectY(double ejectY) {
+		this.ejectY = ejectY;
 	}
 	
 	public boolean isStationBlock() {
