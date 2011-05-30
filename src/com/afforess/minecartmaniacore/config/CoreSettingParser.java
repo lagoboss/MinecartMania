@@ -234,6 +234,7 @@ public class CoreSettingParser implements SettingParser{
 			String			elementChildValue;		//The value of a child node
 			RedstoneState 	attributeRedstone;		//The attributeRedstone of a node
 			double 			range;					//The range attribute of a node
+			double			ejectY;					//The Y axis offset to eject at
 
 			//Loop through each node in the list looking for a control block
 			for (int temp = 0; temp < list.getLength(); temp++) {
@@ -247,6 +248,7 @@ public class CoreSettingParser implements SettingParser{
 						attributeRedstone = null;					//reset the attributeRedstone to a null value
 						elementChildValue = null;					//reset the elementChildVlue to a null value
 						range = -1;									//reset the range to an invalid value
+						ejectY = -1;
 						elementChild = elementChildren.item(idx);	//Get the specific control block modifier node
 						//make sure it is an elementNode tag and not a space or comment.
 						if (elementChild.getNodeType() == Node.ELEMENT_NODE) {
@@ -283,6 +285,12 @@ public class CoreSettingParser implements SettingParser{
 													log.debug("Core Config read:                 platform range: " + elementChildAttribute.getNodeValue());
 												}
 											}
+											else if (elementChildAttribute.getNodeName() == "ejecty") {
+												ejectY = MinecartManiaConfigurationParser.toDouble(elementChildAttribute.getNodeValue(), 4);
+												if (elementChildName == "Eject") {
+													log.debug("Core Config read:                 eject Y: " + elementChildAttribute.getNodeValue());
+												}
+											}
 											else if (elementChildAttribute.getNodeName() != null ){
 												log.info("Core Config read:                 unknown attribute: " + elementChildAttribute.getNodeValue());
 											}
@@ -300,6 +308,9 @@ public class CoreSettingParser implements SettingParser{
 									} else if (elementChildName == "Eject") {
 										cb.setEjectorState(attributeRedstone);
 										cb.setEjectorBlock(MinecartManiaConfigurationParser.toBool(elementChildValue));
+										if (ejectY > 0) {
+											cb.setEjectY(ejectY);
+										}
 									} else if (elementChildName == "Platform") {
 										cb.setPlatformState(attributeRedstone);
 										cb.setPlatformBlock(MinecartManiaConfigurationParser.toBool(elementChildValue));
@@ -512,7 +523,7 @@ public class CoreSettingParser implements SettingParser{
 			ControlBlock cb = li.next();
 			log.debug("Core Config:   ControlBlock: " + cb.getType());
 			if (cb.isCatcherBlock())    log.debug("Core Config:       Modifier: Catch (redstone = " + cb.getCatcherState().toString() + ")");
-			if (cb.isEjectorBlock())    log.debug("Core Config:       Modifier: Eject (redstone = " + cb.getEjectorState().toString() + ")");
+			if (cb.isEjectorBlock())    log.debug("Core Config:       Modifier: Eject (redstone = " + cb.getEjectorState().toString() + ", ejecty = " + cb.getEjectY() + ")");
 			if (cb.isPlatformBlock())   log.debug("Core Config:       Modifier: Platform (redstone = " + cb.getPlatformState().toString() + ", range = " + cb.getPlatformRange() + ")");
 			if (cb.isStationBlock())    log.debug("Core Config:       Modifier: Station (redstone = " + cb.getStationState().toString() + ")");
 			if (cb.isSpawnMinecart())   log.debug("Core Config:       Modifier: SpawnMinecart (redstone = " + cb.getSpawnState().toString() + ")");
