@@ -48,6 +48,8 @@ public enum Item {
 	POWERED_RAIL(27),
 	DETECTOR_RAIL(28),
 	WEB(30),
+	LONG_GRASS(31),
+	DEAD_BUSH(32),
 	WOOL(35, 0),
 	ORANGE_WOOL(35, 1),
 	MAGENTA_WOOL(35, 2),
@@ -129,6 +131,7 @@ public enum Item {
 	DIODE_BLOCK_OFF(93),
 	DIODE_BLOCK_ON(94),
 	LOCKED_CHEST(95),
+	TRAP_DOOR(96),
 	// ----- Item Separator -----
 	IRON_SPADE(256),
 	IRON_PICKAXE(257),
@@ -248,6 +251,7 @@ public enum Item {
 	BED(355),
 	DIODE(356),
 	COOKIE(357),
+	MAP(358),
 	GOLD_RECORD(2256),
 	GREEN_RECORD(2257);
 
