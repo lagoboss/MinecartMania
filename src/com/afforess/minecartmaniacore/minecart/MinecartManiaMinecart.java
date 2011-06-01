@@ -712,10 +712,19 @@ public class MinecartManiaMinecart {
 	public boolean doEjectorBlock() {
 		if (ControlBlockList.isValidEjectorBlock(getBlockBeneath())) {
 			if (minecart.getPassenger() != null) {
+				double ejectY = ControlBlockList.getControlBlock(getItemBeneath()).getPlatformRange();
 				MinecartPassengerEjectEvent mpee = new MinecartPassengerEjectEvent(this, minecart.getPassenger());
 				MinecartManiaCore.callEvent(mpee);
 				if (!mpee.isCancelled()) {
-					return minecart.eject();
+					Entity passenger = minecart.getPassenger();
+					boolean ejectResult = minecart.eject();
+					if (ejectResult) {
+						Location dest = passenger.getLocation();
+						dest.setY(dest.getY() + ejectY);
+						passenger.teleport(dest);
+						return true;
+					}
+					return false;
 				}
 			}
 		}
