@@ -4,6 +4,7 @@ import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
@@ -90,6 +91,48 @@ public class MinecartUtils {
 		return true;
 	}
 	
+	/**
+	 * Checks whether a track piece at the given coordinate has another
+	 * track piece logically connect to it in the given direction.
+	 *
+	 * valid:   =7  L=  F=  ==   etc
+	 * invalid: 7=  =L  =F  =|   etc
+	 *
+	 * Valid track data values for the given directions:
+	 * NORTH: 1, 6, 9  (3)
+	 * EAST:  0, 6, 7  (4)
+	 * SOUTH: 1, 7, 8  (2)
+	 * WEST:  0, 8, 9  (5)
+	 *  values in braces are for the slanted up track.
+	 *  -- can add a check for the lower level too, but these will probably cause issues anyway
+	 *  -- so just keep the requirement of having flat track
+	 *  
+	 * @param w
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @param direction
+	 * @return
+	 */
+	public static boolean hasTrackConnectedOn(World w, int x, int y, int z, BlockFace direction) {
+		Block base = MinecartManiaWorld.getBlockAt(w, x, y, z);
+		Block next = base.getFace(direction);
+		if ( isTrack(next) ) {
+			byte nextData = next.getData();
+			switch ( direction ) {
+				case NORTH:
+					return nextData == 1 || nextData == 6 || nextData == 9;
+				case EAST:
+					return nextData == 0 || nextData == 6 || nextData == 7;
+				case SOUTH:
+					return nextData == 1 || nextData == 7 || nextData == 8;
+				case WEST:
+					return nextData == 0 || nextData == 8 || nextData == 9;
+			}
+		}
+		return false;
+	}
+	
 	public static boolean isAtIntersection(Location loc) {
 		return isAtIntersection(loc.getWorld(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
 	}
@@ -99,98 +142,80 @@ public class MinecartUtils {
 
 		int data = MinecartManiaWorld.getBlockData(w, x, y, z);
 		
-		if (data == 0 || data == 1) {
-			if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y, z-1))) {
-				if (MinecartManiaWorld.getBlockData(w, x, y, z-1) == 0) {
-					paths++;
-				}
-			}
-			if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y, z+1))) {
-				if (MinecartManiaWorld.getBlockData(w, x, y, z+1) == 0) {
-					paths++;
-				}
-			}
-			if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x-1, y, z))) {
-				if (MinecartManiaWorld.getBlockData(w, x-1, y, z) == 1) {
-					paths++;
-				}
-			}
-			if (isTrack(MinecartManiaWorld.getBlockAt(w, x+1, y, z).getTypeId())) {
-				if (MinecartManiaWorld.getBlockData(w, x+1, y, z) == 1) {
-					paths++;
-				}
-			}
-		}
-		
-		else if (data == 6) {
-			if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x+1, y, z)) && isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y, z+1))) {
-				if (MinecartManiaWorld.getBlockData(w, x+1, y, z) == 1 && MinecartManiaWorld.getBlockData(w, x, y, z+1) == 0) {
+		switch (data) {
+			case 0: // west-east straight
+				if ( hasTrackConnectedOn(w, x, y, z, BlockFace.EAST) &&
+					 hasTrackConnectedOn(w, x, y, z, BlockFace.WEST) ) {
 					paths = 2;
-					if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x-1, y, z))) {
-						if (MinecartManiaWorld.getBlockData(w, x-1, y, z) == 1) {
-							paths++; 
-						}
+					if ( hasTrackConnectedOn(w, x, y, z, BlockFace.NORTH) ) {
+						paths++;
 					}
-					if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y, z-1))) {
-						if (MinecartManiaWorld.getBlockData(w, x, y, z-1) == 0) {
-							paths++;
-						}
+					if ( hasTrackConnectedOn(w, x, y, z, BlockFace.SOUTH) ) {
+						paths++;
 					}
 				}
-			}
-		}
-		else if (data == 7) {
-			if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x-1, y, z)) && isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y, z+1))) {
-				if (MinecartManiaWorld.getBlockData(w, x-1, y, z) == 1 && MinecartManiaWorld.getBlockData(w, x, y, z+1) == 0) {
+				break;
+			case 1: // north-south straight
+				if ( hasTrackConnectedOn(w, x, y, z, BlockFace.NORTH) &&
+					 hasTrackConnectedOn(w, x, y, z, BlockFace.SOUTH) ) {
 					paths = 2;
-					if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x+1, y, z))) {
-						if (MinecartManiaWorld.getBlockData(w, x+1, y, z) == 1) {
-							paths++;
-						}
+					if ( hasTrackConnectedOn(w, x, y, z, BlockFace.WEST) ) {
+						paths++;
 					}
-					if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y, z-1))) {
-						if (MinecartManiaWorld.getBlockData(w, x, y, z-1) == 0) {
-							paths++;
-						}
+					if ( hasTrackConnectedOn(w, x, y, z, BlockFace.EAST) ) {
+						paths++;
 					}
 				}
-			}
-		}
-		else if (data == 8) {
-			if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x-1, y, z)) && isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y, z-1))) {
-				if (MinecartManiaWorld.getBlockData(w, x-1, y, z) == 1 && MinecartManiaWorld.getBlockData(w, x, y, z-1) == 0) {
+				break;
+			case 6: // west-south corner
+				if ( hasTrackConnectedOn(w, x, y, z, BlockFace.SOUTH) &&
+					 hasTrackConnectedOn(w, x, y, z, BlockFace.WEST) ) {
 					paths = 2;
-					if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x+1, y, z))) {
-						if (MinecartManiaWorld.getBlockData(w, x+1, y, z) == 1) {
-							paths++;
-						}
+					if ( hasTrackConnectedOn(w, x, y, z, BlockFace.NORTH) ) {
+						paths++;
 					}
-					if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y, z+1))) {
-						if (MinecartManiaWorld.getBlockData(w, x, y, z+1) == 0) {
-							paths++;
-						}
+					if ( hasTrackConnectedOn(w, x, y, z, BlockFace.EAST) ) {
+						paths++;
 					}
 				}
-			}
-		}
-		else if (data == 9) {
-			if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x+1, y, z)) && isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y, z-1))) {
-				if (MinecartManiaWorld.getBlockData(w, x+1, y, z) == 1 && MinecartManiaWorld.getBlockData(w, x, y, z-1) == 0) {
+				break;
+			case 7: // west-north corner
+				if ( hasTrackConnectedOn(w, x, y, z, BlockFace.NORTH) &&
+					 hasTrackConnectedOn(w, x, y, z, BlockFace.WEST) ) {
 					paths = 2;
-					if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x-1, y, z))) {
-						if (MinecartManiaWorld.getBlockData(w, x-1, y, z) == 1) {
-							paths++;
-						}
+					if ( hasTrackConnectedOn(w, x, y, z, BlockFace.EAST) ) {
+						paths++;
 					}
-					if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y, z+1))) {
-						if (MinecartManiaWorld.getBlockData(w, x, y, z+1) == 0) {
-							paths++;
-						}
+					if ( hasTrackConnectedOn(w, x, y, z, BlockFace.SOUTH) ) {
+						paths++;
 					}
 				}
-			}
+				break;
+			case 8: // north-east corner
+				if ( hasTrackConnectedOn(w, x, y, z, BlockFace.NORTH) &&
+					 hasTrackConnectedOn(w, x, y, z, BlockFace.EAST) ) {
+					paths = 2;
+					if ( hasTrackConnectedOn(w, x, y, z, BlockFace.SOUTH) ) {
+						paths++;
+					}
+					if ( hasTrackConnectedOn(w, x, y, z, BlockFace.WEST) ) {
+						paths++;
+					}
+				}
+				break;
+			case 9: // east-south corner
+				if ( hasTrackConnectedOn(w, x, y, z, BlockFace.EAST) &&
+					 hasTrackConnectedOn(w, x, y, z, BlockFace.SOUTH) ) {
+					paths = 2;
+					if ( hasTrackConnectedOn(w, x, y, z, BlockFace.NORTH) ) {
+						paths++;
+					}
+					if ( hasTrackConnectedOn(w, x, y, z, BlockFace.WEST) ) {
+						paths++;
+					}
+				}
+				break;
 		}
-		
 		return paths > 2;
 	}
 	
