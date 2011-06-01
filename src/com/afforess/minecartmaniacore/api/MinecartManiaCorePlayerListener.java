@@ -1,5 +1,7 @@
 package com.afforess.minecartmaniacore.api;
 
+import javax.persistence.OptimisticLockException;
+
 import org.bukkit.entity.Minecart;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
@@ -26,7 +28,7 @@ public class MinecartManiaCorePlayerListener extends PlayerListener{
 					minecart.kill(false);
 				}
 				catch (Exception e) {
-					MinecartManiaLogger.getInstance().log("Failed to remove the minecart when " + player.getName() + " disconnected");
+					MinecartManiaLogger.getInstance().severe("Failed to remove the minecart when " + player.getName() + " disconnected");
 					MinecartManiaLogger.getInstance().log(e.getMessage(), false);
 				}
 			}
@@ -37,11 +39,30 @@ public class MinecartManiaCorePlayerListener extends PlayerListener{
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		if (MinecartManiaConfiguration.isDisappearOnDisconnect()) {
 			MinecartManiaPlayer player = MinecartManiaWorld.getMinecartManiaPlayer(event.getPlayer());
-			MinecartManiaMinecartDataTable data = MinecartManiaMinecartDataTable.getDataTable(player.getName());
+			final MinecartManiaMinecartDataTable data = MinecartManiaMinecartDataTable.getDataTable(player.getName());
 			if (data != null) {
 				MinecartManiaMinecart minecart = data.toMinecartManiaMinecart();
 				minecart.minecart.setPassenger(player.getPlayer());
-				MinecartManiaMinecartDataTable.delete(data);
+				try {
+					MinecartManiaMinecartDataTable.delete(data);
+				}
+				//Make every effort to delete the entry
+				catch (OptimisticLockException ole) {
+					final String name = event.getPlayer().getName();
+					Thread deleteEntry = new Thread() {
+						public void run() {
+							try {
+								sleep(5000);
+								MinecartManiaMinecartDataTable.delete(data);
+							}
+							catch (Exception e) {
+								MinecartManiaLogger.getInstance().severe("Failed to remove the minecart data entry when " + name + " connected");
+								MinecartManiaLogger.getInstance().log(e.getMessage(), false);
+							}
+						}
+					};
+					deleteEntry.start();
+				}
 			}
 		}
 	}
