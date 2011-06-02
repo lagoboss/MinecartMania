@@ -77,7 +77,7 @@ public class MinecartManiaCoreListener extends VehicleListener{
 			}
 			
 			if (minecart.hasChangedPosition() || minecart.createdLastTick) {
-				minecart.updateToPoweredRails();
+				//minecart.updateToPoweredRails(); //TODO Remove by MC 1.7
 				minecart.updateChunks();
 				if (minecart.isAtIntersection()) {
 					MinecartIntersectionEvent mie = new MinecartIntersectionEvent(minecart);

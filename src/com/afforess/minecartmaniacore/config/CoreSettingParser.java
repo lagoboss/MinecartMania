@@ -286,7 +286,7 @@ public class CoreSettingParser implements SettingParser{
 												}
 											}
 											else if (elementChildAttribute.getNodeName() == "ejecty") {
-												ejectY = MinecartManiaConfigurationParser.toDouble(elementChildAttribute.getNodeValue(), 4);
+												ejectY = MinecartManiaConfigurationParser.toDouble(elementChildAttribute.getNodeValue(), 0);
 												if (elementChildName == "Eject") {
 													log.debug("Core Config read:                 eject Y: " + elementChildAttribute.getNodeValue());
 												}

@@ -27,7 +27,7 @@ public class ControlBlock {
 	private boolean elevator = false;
 	private RedstoneState elevatorState = RedstoneState.Default;
 	public boolean updateToPoweredRail = false; //temporary, remove for MC 1.6
-	private double ejectY = 2.5;
+	private double ejectY = 0;
 	
 	public ControlBlock() {
 	}

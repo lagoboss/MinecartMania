@@ -20,11 +20,7 @@ public class SignUtils {
 	}
 
 	/**
-	 * We first check if the block at the location is a sign
-	 * before getting the state since getBlockTypeIdAt() is
-	 * like 20 times faster then getState()
-	 * also making pointless calls to MinecartManiaWorld is a
-	 * waste of cpu time.
+	 * Returns the sign at the given world, x, y, z, coordinate, or null if none exits
 	 * @param w World
 	 * @param x
 	 * @param y

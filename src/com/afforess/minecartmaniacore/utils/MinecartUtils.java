@@ -91,52 +91,6 @@ public class MinecartUtils {
 		return true;
 	}
 	
-	/**
-	 * Checks whether a track piece at the given coordinate has another
-	 * track piece logically connect to it in the given direction.
-	 *
-	 * valid:   =7  L=  F=  ==   etc
-	 * invalid: 7=  =L  =F  =|   etc
-	 *
-	 * Valid track data values for the given directions:
-	 * NORTH: 1, 6, 9  (3)
-	 * EAST:  0, 6, 7  (4)
-	 * SOUTH: 1, 7, 8  (2)
-	 * WEST:  0, 8, 9  (5)
-	 *  values in braces are for the slanted up track.
-	 *  -- can add a check for the lower level too, but these will probably cause issues anyway
-	 *  -- so just keep the requirement of having flat track
-	 *  
-	 * @param w
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @param direction
-	 * @return
-	 */
-	public static boolean hasTrackConnectedOn(World w, int x, int y, int z, BlockFace direction) {
-		Block base = MinecartManiaWorld.getBlockAt(w, x, y, z);
-		Block next = base.getFace(direction);
-		if ( isTrack(next) ) {
-			byte nextData = next.getData();
-			switch ( direction ) {
-				case NORTH:
-					return nextData == 1 || nextData == 6 || nextData == 9;
-				case EAST:
-					return nextData == 0 || nextData == 6 || nextData == 7;
-				case SOUTH:
-					return nextData == 1 || nextData == 7 || nextData == 8;
-				case WEST:
-					return nextData == 0 || nextData == 8 || nextData == 9;
-			}
-		}
-		return false;
-	}
-	
-	public static boolean isAtIntersection(Location loc) {
-		return isAtIntersection(loc.getWorld(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-	}
-	
 	public static boolean isAtIntersection(World w, int x, int y, int z) {
 		int paths = 0;
 
@@ -217,6 +171,48 @@ public class MinecartUtils {
 				break;
 		}
 		return paths > 2;
+	}
+	
+	/**
+	 * Checks whether a track piece at the given coordinate has another
+	 * track piece logically connect to it in the given direction.
+	 *
+	 * valid:   =7  L=  F=  ==   etc
+	 * invalid: 7=  =L  =F  =|   etc
+	 *
+	 * Valid track data values for the given directions:
+	 * NORTH: 1, 6, 9  (3)
+	 * EAST:  0, 6, 7  (4)
+	 * SOUTH: 1, 7, 8  (2)
+	 * WEST:  0, 8, 9  (5)
+	 *  values in braces are for the slanted up track.
+	 *  -- can add a check for the lower level too, but these will probably cause issues anyway
+	 *  -- so just keep the requirement of having flat track
+	 *  
+	 * @param w
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @param direction
+	 * @return
+	 */
+	public static boolean hasTrackConnectedOn(World w, int x, int y, int z, BlockFace direction) {
+		Block base = MinecartManiaWorld.getBlockAt(w, x, y, z);
+		Block next = base.getFace(direction);
+		if ( isTrack(next) ) {
+			byte nextData = next.getData();
+			switch ( direction ) {
+				case NORTH:
+					return nextData == 1 || nextData == 6 || nextData == 9;
+				case EAST:
+					return nextData == 0 || nextData == 6 || nextData == 7;
+				case SOUTH:
+					return nextData == 1 || nextData == 7 || nextData == 8;
+				case WEST:
+					return nextData == 0 || nextData == 8 || nextData == 9;
+			}
+		}
+		return false;
 	}
 	
 	public static void doMinecartNearEntityCheck(final MinecartManiaMinecart minecart, List<Entity> entities) {

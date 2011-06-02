@@ -626,7 +626,7 @@ public class MinecartManiaMinecart {
 
 	public void doLauncherBlock() {
 		if (ControlBlockList.getLaunchSpeed(getItemBeneath()) != 0.0D){
-			if (isPoweredBeneath()) {
+			if (ControlBlockList.isValidLauncherBlock(getBlockBeneath())) {
 				if (!isMoving()) {
 					launchCart(ControlBlockList.getLaunchSpeed(getItemBeneath()));
 				}
@@ -636,7 +636,7 @@ public class MinecartManiaMinecart {
 
 	public boolean doCatcherBlock() {
 		if (ControlBlockList.isCatcherBlock(getItemBeneath())){
-			if (!isPoweredBeneath()) {
+			if (ControlBlockList.isValidCatcherBlock(getBlockBeneath())) {
 				MinecartCaughtEvent mce = new MinecartCaughtEvent(this);
 				MinecartManiaCore.callEvent(mce);
 				if (!mce.isActionTaken()) {
@@ -712,13 +712,12 @@ public class MinecartManiaMinecart {
 	public boolean doEjectorBlock() {
 		if (ControlBlockList.isValidEjectorBlock(getBlockBeneath())) {
 			if (minecart.getPassenger() != null) {
-				double ejectY = ControlBlockList.getControlBlock(getItemBeneath()).getPlatformRange();
+				double ejectY = ControlBlockList.getControlBlock(getItemBeneath()).getEjectY();
 				MinecartPassengerEjectEvent mpee = new MinecartPassengerEjectEvent(this, minecart.getPassenger());
 				MinecartManiaCore.callEvent(mpee);
 				if (!mpee.isCancelled()) {
 					Entity passenger = minecart.getPassenger();
-					boolean ejectResult = minecart.eject();
-					if (ejectResult) {
+					if (minecart.eject()) {
 						Location dest = passenger.getLocation();
 						dest.setY(dest.getY() + ejectY);
 						passenger.teleport(dest);
