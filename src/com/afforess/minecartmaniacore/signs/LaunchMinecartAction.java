@@ -4,6 +4,7 @@ import org.bukkit.util.Vector;
 
 import com.afforess.minecartmaniacore.config.ControlBlockList;
 import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
+import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
 
 public class LaunchMinecartAction implements SignAction {
 	private volatile Vector launchSpeed = null;
@@ -23,7 +24,7 @@ public class LaunchMinecartAction implements SignAction {
 		}
 		Vector launch = calculateLaunchSpeed(false);
 		if (previous) {
-			if (minecart.getPreviousDirectionOfMotion() != null) {
+			if (minecart.getPreviousDirectionOfMotion() != null && minecart.getPreviousDirectionOfMotion() != CompassDirection.NO_DIRECTION) {
 				minecart.setMotion(minecart.getPreviousDirectionOfMotion(), 0.6D);
 			}
 		}
