@@ -1,11 +1,8 @@
 package com.afforess.minecartmaniacore.minecart;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
@@ -25,7 +22,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import com.afforess.minecartmaniacore.MinecartManiaCore;
-import com.afforess.minecartmaniacore.config.ControlBlock;
 import com.afforess.minecartmaniacore.config.ControlBlockList;
 import com.afforess.minecartmaniacore.config.MinecartManiaConfiguration;
 import com.afforess.minecartmaniacore.event.MinecartCaughtEvent;
@@ -42,7 +38,6 @@ import com.afforess.minecartmaniacore.signs.LaunchMinecartAction;
 import com.afforess.minecartmaniacore.signs.Sign;
 import com.afforess.minecartmaniacore.utils.BlockUtils;
 import com.afforess.minecartmaniacore.utils.DirectionUtils;
-import com.afforess.minecartmaniacore.utils.EntityUtils;
 import com.afforess.minecartmaniacore.utils.MinecartUtils;
 import com.afforess.minecartmaniacore.utils.SignUtils;
 import com.afforess.minecartmaniacore.utils.ThreadSafe;
@@ -310,6 +305,22 @@ public class MinecartManiaMinecart {
 	}
 	
 	/**
+	 * Returns the motion of the cart
+	 * @return motion
+	 */
+	public Vector getMotion() {
+		return minecart.getVelocity();
+	}
+	
+	/**
+	 * Set's the motion of this minecart
+	 * @param motion to set
+	 */
+	public void setMotion(Vector motion) {
+		minecart.setVelocity(motion);
+	}
+	
+	/**
 	 * Checks to see if the minecart has moved positions from it's previous position
 	 * @return true if the minecart has moved positions
 	 */
@@ -477,6 +488,14 @@ public class MinecartManiaMinecart {
 		return minecart.getPassenger() != null;
 	}
 	
+	public Entity getPassenger() {
+		return minecart.getPassenger();
+	}
+	
+	public void setPassenger(Entity entity) {
+		minecart.setPassenger(entity);
+	}
+	
 	public Player getPlayerPassenger() {
 		if (minecart.getPassenger() == null) {
 			return null;
@@ -485,6 +504,10 @@ public class MinecartManiaMinecart {
 			return (Player)minecart.getPassenger();
 		}
 		return null;
+	}
+	
+	public boolean eject() {
+		return minecart.eject();
 	}
 	
 	/**
@@ -554,20 +577,11 @@ public class MinecartManiaMinecart {
 			if (ControlBlockList.getSpeedMultiplier(this) != 1.0D && isMoving()) {
 				int data = getLocation().getBlock().getData();
 				boolean powered = (data & 8) != 0;
-				final double boost = 0.0078125D; //magic number from MC code
+				final double divisor = 0.06D; //magic number from MC code
+				final double multiplier = Math.sqrt(getMotionX() * getMotionX() * getMotionZ() * getMotionZ()); //magic number from MC code
 				if (powered) {
-					if (data == 2) {
-						changeMotionX(-boost);
-					}
-					else if (data == 3) {
-						changeMotionX(boost);
-					}
-					else if (data == 4) {
-						changeMotionZ(boost);
-					}
-					else if (data == 5) {
-						changeMotionZ(-boost);
-					}
+					multiplyMotion(multiplier);
+					multiplyMotion(divisor);
 				}
 				else {
 					multiplyMotion(2.0D);
@@ -597,7 +611,7 @@ public class MinecartManiaMinecart {
 	}
 	
 	public boolean doPlatformBlock() {
-		if (ControlBlockList.isValidPlatformBlock(getBlockBeneath()) && isStandardMinecart()) {
+		if (ControlBlockList.isValidPlatformBlock(this) && isStandardMinecart()) {
 			if (minecart.getPassenger() == null) {
 				List<LivingEntity> list = minecart.getWorld().getLivingEntities();
 				double range = ControlBlockList.getControlBlock(getItemBeneath()).getPlatformRange();
@@ -626,7 +640,7 @@ public class MinecartManiaMinecart {
 
 	public void doLauncherBlock() {
 		if (ControlBlockList.getLaunchSpeed(getItemBeneath()) != 0.0D){
-			if (ControlBlockList.isValidLauncherBlock(getBlockBeneath())) {
+			if (ControlBlockList.isValidLauncherBlock(this)) {
 				if (!isMoving()) {
 					launchCart(ControlBlockList.getLaunchSpeed(getItemBeneath()));
 				}
@@ -636,7 +650,7 @@ public class MinecartManiaMinecart {
 
 	public boolean doCatcherBlock() {
 		if (ControlBlockList.isCatcherBlock(getItemBeneath())){
-			if (ControlBlockList.isValidCatcherBlock(getBlockBeneath())) {
+			if (ControlBlockList.isValidCatcherBlock(this)) {
 				MinecartCaughtEvent mce = new MinecartCaughtEvent(this);
 				MinecartManiaCore.callEvent(mce);
 				if (!mce.isActionTaken()) {
@@ -649,7 +663,7 @@ public class MinecartManiaMinecart {
 	}
 	
 	public boolean doKillBlock() {
-		if (ControlBlockList.isValidKillMinecartBlock(getBlockBeneath())) {
+		if (ControlBlockList.isValidKillMinecartBlock(this)) {
 			kill(getOwner() instanceof MinecartManiaChest);
 			return true;
 		}
@@ -706,11 +720,10 @@ public class MinecartManiaMinecart {
 		else
 			throw new IllegalArgumentException();
 	}
-
 	
 
 	public boolean doEjectorBlock() {
-		if (ControlBlockList.isValidEjectorBlock(getBlockBeneath())) {
+		if (ControlBlockList.isValidEjectorBlock(this)) {
 			if (minecart.getPassenger() != null) {
 				double ejectY = ControlBlockList.getControlBlock(getItemBeneath()).getEjectY();
 				MinecartPassengerEjectEvent mpee = new MinecartPassengerEjectEvent(this, minecart.getPassenger());
@@ -735,9 +748,7 @@ public class MinecartManiaMinecart {
 			multiplyMotion(1.0385416D);
     	}
 	}
-	
-	
-	
+
 	public boolean isOnRails() {
 		return MinecartUtils.isTrack(minecart.getLocation());
 	}
@@ -1047,7 +1058,7 @@ public class MinecartManiaMinecart {
 	}
 
 	public boolean doElevatorBlock() {
-		if (ControlBlockList.isValidElevatorBlock(getBlockBeneath())) {
+		if (ControlBlockList.isValidElevatorBlock(this)) {
 			//Get where we are
 			Block elevatorBlock = getBlockBeneath();
 			int y = elevatorBlock.getY();
@@ -1081,49 +1092,5 @@ public class MinecartManiaMinecart {
 			}
 		}
 		return false;
-	}
-	
-	public void updateToPoweredRails() {
-		HashSet<Block> blocks = getAdjacentBlocks(2);
-		for (Block block : blocks) {
-			ControlBlock cb = ControlBlockList.getControlBlock(Item.getItem(block));
-			if (cb != null && cb.updateToPoweredRail && block.getTypeId() != Item.POWERED_RAIL.getId()) {
-				Block rail = block.getRelative(0, 1, 0);
-				if (MinecartUtils.isTrack(rail) && !MinecartUtils.isCurvedTrack(rail)) {
-					rail.setTypeId(Item.POWERED_RAIL.getId());
-					
-					//analyze for replacement block
-					HashMap<Item, Integer> replacement = new HashMap<Item, Integer>();
-					for (Block loop : BlockUtils.getAdjacentBlocks(block.getLocation(), 1)) {
-						Item temp = Item.getItem(loop);
-						if (temp != null) {
-							if (replacement.containsKey(temp)) {
-								replacement.put(temp, replacement.get(temp) + 1);
-							}
-							else {
-								replacement.put(temp, 1);
-							}
-						}
-					}
-					
-					//find the most common item from adjacent blocks
-					Item best = null;
-					int count = 0;
-					Iterator<Entry<Item, Integer>> i = replacement.entrySet().iterator();
-					while(i.hasNext()) {
-						Entry<Item, Integer> entry = i.next();
-						if (best == null || entry.getValue() > count) {
-							if (EntityUtils.isSolidMaterial(entry.getKey().toMaterial())) {
-								best = entry.getKey();
-								count = entry.getValue();
-							}
-						}
-					}
-					if (best != null) {
-						block.setTypeId(best.getId());
-					}
-				}
-			}
-		}
 	}
 }

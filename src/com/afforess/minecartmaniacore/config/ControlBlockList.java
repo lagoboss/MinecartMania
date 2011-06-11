@@ -76,8 +76,9 @@ public class ControlBlockList {
 		return false;
 	}
 	
-	public static boolean isValidCatcherBlock(Block block) {
-		return isCatcherBlock(blockToItem(block)) && isCorrectState(block, getControlBlock(blockToItem(block)).getCatcherState());
+	public static boolean isValidCatcherBlock(MinecartManiaMinecart minecart) {
+		Item item = minecart.getItemBeneath();
+		return isCatcherBlock(item) && isCorrectState(minecart.isPoweredBeneath(), getControlBlock(item).getCatcherState());
 	}
 	
 	public static double getLaunchSpeed(Item item) {
@@ -88,8 +89,9 @@ public class ControlBlockList {
 		return 0.0D;
 	}
 	
-	public static boolean isValidLauncherBlock(Block block) {
-		return getLaunchSpeed(blockToItem(block)) != 0.0D && isCorrectState(block, getControlBlock(blockToItem(block)).getLauncherState());
+	public static boolean isValidLauncherBlock(MinecartManiaMinecart minecart) {
+		Item item = minecart.getItemBeneath();
+		return getLaunchSpeed(item) != 0.0D && isCorrectState(minecart.isPoweredBeneath(), getControlBlock(item).getLauncherState());
 	}
 	
 	public static boolean isEjectorBlock(Item item) {
@@ -100,8 +102,9 @@ public class ControlBlockList {
 		return false;
 	}
 	
-	public static boolean isValidEjectorBlock(Block block) {
-		return isEjectorBlock(blockToItem(block)) && isCorrectState(block, getControlBlock(blockToItem(block)).getEjectorState());
+	public static boolean isValidEjectorBlock(MinecartManiaMinecart minecart) {
+		Item item = minecart.getItemBeneath();
+		return isEjectorBlock(item) && isCorrectState(minecart.isPoweredBeneath(), getControlBlock(item).getEjectorState());
 	}
 	
 	public static boolean isPlatformBlock(Item item) {
@@ -112,8 +115,9 @@ public class ControlBlockList {
 		return false;
 	}
 	
-	public static boolean isValidPlatformBlock(Block block) {
-		return isPlatformBlock(blockToItem(block)) && isCorrectState(block, getControlBlock(blockToItem(block)).getPlatformState());
+	public static boolean isValidPlatformBlock(MinecartManiaMinecart minecart) {
+		Item item = minecart.getItemBeneath();
+		return isPlatformBlock(item) && isCorrectState(minecart.isPoweredBeneath(), getControlBlock(item).getPlatformState());
 	}
 	
 	public static boolean isStationBlock(Item item) {
@@ -124,8 +128,9 @@ public class ControlBlockList {
 		return false;
 	}
 	
-	public static boolean isValidStationBlock(Block block) {
-		return isStationBlock(blockToItem(block)) && isCorrectState(block, getControlBlock(blockToItem(block)).getStationState());
+	public static boolean isValidStationBlock(MinecartManiaMinecart minecart) {
+		Item item = minecart.getItemBeneath();
+		return isStationBlock(item) && isCorrectState(minecart.isPoweredBeneath(), getControlBlock(item).getStationState());
 	}
 	
 	public static boolean isKillMinecartBlock(Item item) {
@@ -136,8 +141,9 @@ public class ControlBlockList {
 		return false;
 	}
 	
-	public static boolean isValidKillMinecartBlock(Block block) {
-		return isKillMinecartBlock(blockToItem(block)) && isCorrectState(block, getControlBlock(blockToItem(block)).getKillState());
+	public static boolean isValidKillMinecartBlock(MinecartManiaMinecart minecart) {
+		Item item = minecart.getItemBeneath();
+		return isKillMinecartBlock(item) && isCorrectState(minecart.isPoweredBeneath(), getControlBlock(item).getKillState());
 	}
 	
 	public static boolean isSpawnMinecartBlock(Item item) {
@@ -148,10 +154,6 @@ public class ControlBlockList {
 		return false;
 	}
 	
-	public static boolean isValidSpawnMinecartBlock(Block block) {
-		return isSpawnMinecartBlock(blockToItem(block)) && isCorrectState(block, getControlBlock(blockToItem(block)).getSpawnState());
-	}
-	
 	public static boolean isElevatorBlock(Item item) {
 		ControlBlock block = getControlBlock(item);
 		if (block != null) {
@@ -160,12 +162,18 @@ public class ControlBlockList {
 		return false;
 	}
 
-	public static boolean isValidElevatorBlock(Block block) {
-		return isElevatorBlock(blockToItem(block)) && isCorrectState(block, getControlBlock(blockToItem(block)).getElevatorState());
+	public static boolean isValidElevatorBlock(MinecartManiaMinecart minecart) {
+		Item item = minecart.getItemBeneath();
+		return isElevatorBlock(item) && isCorrectState(minecart.isPoweredBeneath(), getControlBlock(item).getElevatorState());
 	}
 	
-	private static Item blockToItem(Block block) {
-		return Item.getItem(block.getTypeId(), block.getData());
+	private static boolean isCorrectState(boolean power, RedstoneState state) {
+		switch(state) {
+			case Default: return true;
+			case Enables: return power;
+			case Disables: return !power;
+		}
+		return false;
 	}
 	
 	private static boolean isCorrectState(Block block, RedstoneState state) {
