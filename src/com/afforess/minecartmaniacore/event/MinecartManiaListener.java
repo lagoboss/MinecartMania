@@ -7,8 +7,8 @@ import org.bukkit.event.Listener;
 import com.afforess.minecartmaniacore.MinecartManiaCore;
 import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
 import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
-import com.wormhole_xtreme.wormhole.event.StargateMinecartTeleportEvent;
 
+import de.luricos.bukkit.WormholeXTreme.Wormhole.events.StargateMinecartTeleportEvent;
 
 public class MinecartManiaListener extends CustomEventListener implements Listener{
 
