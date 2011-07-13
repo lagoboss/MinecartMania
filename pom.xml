@@ -2,7 +2,7 @@
   Maven build file for Minecart Mania Core
 
   Copyright (c) 2010-2011 Afforess <http://www.afforess.com>
-  Minecart Mania Core is licensed under Creative Commons CC BY-NC-SA 3.0
+  Minecart Mania Core is licensed under Creative Commons Attribution 3.0 Unported (CC BY 3.0)
 -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -19,8 +19,8 @@
     <!-- License -->
     <licenses>
         <license>
-            <name>Creative Commons CC BY-NC-SA 3.0</name>
-            <url>http://creativecommons.org/licenses/by-nc-sa/3.0/</url>
+            <name>Creative Commons Attribution 3.0 Unported (CC BY 3.0)</name>
+            <url>http://creativecommons.org/licenses/by/3.0/</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
