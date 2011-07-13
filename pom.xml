@@ -14,7 +14,7 @@
     <version>dev-SNAPSHOT</version>
     <name>Minecart Mania Core</name>
     <url>http://afforess.com</url>
-    <description>Minecart Mania Core is the original and official Minecart plugin for Bukkit-based Minecraft servers.</description>
+    <description>Minecart Mania Core is the original and official Minecart mod plugin for Bukkit-based Minecraft servers.</description>
 
     <!-- License -->
     <licenses>
