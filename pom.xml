@@ -11,7 +11,7 @@
     <!-- Project information -->
     <groupId>com.afforess</groupId>
     <artifactId>minecartmaniacore</artifactId>
-    <version>dev-SNAPSHOT</version>
+    <version>1.2.9-SNAPSHOT</version>
     <name>Minecart Mania Core</name>
     <url>http://afforess.com</url>
     <description>Minecart Mania Core is the original and official Minecart mod plugin for Bukkit-based Minecraft servers.</description>
@@ -31,9 +31,16 @@
             <id>bukkit-repo</id>
             <url>http://repo.bukkit.org/artifactory/repo</url>
         </repository>
+        <!-- 
         <repository>
             <id>craftfire-repo</id>
             <url>http://repo.craftfire.com/repo</url>
+        </repository>
+        -->
+        <!-- For BigBrother integration -->
+        <repository>
+            <id>nexisonline-repo</id>
+            <url>http://repo.nexisonline.net:8080/nexus/content/groups/public/</url>
         </repository>
     </repositories>
 
@@ -55,7 +62,7 @@
         <!-- Third-party plugins -->
         <dependency>
             <groupId>com.griefcraft</groupId>
-            <artifactId>lwc</artifactId>
+            <artifactId>LWC</artifactId>
             <version>3.30</version>
         </dependency>
         <dependency>
@@ -71,7 +78,13 @@
         <dependency>
             <groupId>de.luricos.bukkit.WormholeXTreme</groupId>
             <artifactId>Wormhole</artifactId>
-            <version>0.907</version>
+            <version>1.011</version>
+        </dependency>
+        <dependency>
+        	<groupId>me.taylorkelly</groupId>
+        	<artifactId>bigbrother</artifactId>
+        	<version>1.10.0-SNAPSHOT</version>
+        	<scope>compile</scope>
         </dependency>
     </dependencies>
 
