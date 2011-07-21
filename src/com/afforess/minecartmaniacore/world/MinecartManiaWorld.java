@@ -23,6 +23,7 @@ import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.StorageMinecart;
+import org.bukkit.entity.PoweredMinecart;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Button;
 import org.bukkit.material.Lever;
@@ -644,15 +645,16 @@ public class MinecartManiaWorld {
 	 ** @param Owner of this minecart (player or chest). Can be null
 	 **/
 	public static MinecartManiaMinecart spawnMinecart(World w, int x, int y, int z, Item type, Object owner) {
+		Location loc = new Location(w, x + 0.5D, y, z + 0.5D);
 		Minecart m;
 		if (type == null || type.getId() == Item.MINECART.getId()) {
-			m = w.spawnMinecart(new Location(w, x + 0.5D, y, z + 0.5D));
+			m = (Minecart)w.spawn(loc, Minecart.class);
 		}
 		else if (type.getId() == Item.POWERED_MINECART.getId()) {
-			m = w.spawnPoweredMinecart(new Location(w, x + 0.5D, y, z + 0.5D));
+			m = (Minecart)w.spawn(loc, PoweredMinecart.class);
 		}
 		else {
-			m = w.spawnStorageMinecart(new Location(w, x + 0.5D, y, z + 0.5D));
+			m = (Minecart)w.spawn(loc, StorageMinecart.class);
 		}
 		MinecartManiaMinecart minecart = null;
 		String ownerName = "none";
@@ -688,11 +690,3 @@ public class MinecartManiaWorld {
 		return 64;
 	}
 }
-
-
-
-
-
-
-
-

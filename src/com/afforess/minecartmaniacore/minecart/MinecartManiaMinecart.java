@@ -241,13 +241,13 @@ public class MinecartManiaMinecart {
 			final Minecart newCart;
 			location.getWorld().loadChunk(location.getBlock().getChunk());
 			if (isStandardMinecart()) {
-				newCart = location.getWorld().spawnMinecart(location);
+				newCart = (Minecart)location.getWorld().spawn(location, Minecart.class);
 			}
 			else if (isPoweredMinecart()) {
-				newCart = location.getWorld().spawnPoweredMinecart(location);
+				newCart = (Minecart)location.getWorld().spawn(location, PoweredMinecart.class);
 			}
 			else {
-				newCart = location.getWorld().spawnStorageMinecart(location);
+				newCart = (Minecart)location.getWorld().spawn(location, StorageMinecart.class);
 			}
 			final Entity passenger = minecart.getPassenger();
 			minecart.eject();
