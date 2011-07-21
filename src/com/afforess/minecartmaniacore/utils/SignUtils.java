@@ -176,7 +176,6 @@ class SignDistanceComparator implements Comparator<com.afforess.minecartmaniacor
 		return x*x + y*y + z*z;
 	}
 	
-	@Override
 	public int compare(com.afforess.minecartmaniacore.signs.Sign sign1, com.afforess.minecartmaniacore.signs.Sign sign2)
 	{
 		int i1 = getSquaredDistanceFromLocation(sign1);

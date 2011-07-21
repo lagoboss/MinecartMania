@@ -14,7 +14,6 @@ public class LaunchMinecartAction implements SignAction {
 		this.sign = sign;
 	}
 
-	@Override
 	public boolean execute(MinecartManiaMinecart minecart) {
 		if (ControlBlockList.getLaunchSpeed(minecart.getItemBeneath()) == 1.0D) {
 			return false;
@@ -68,23 +67,19 @@ public class LaunchMinecartAction implements SignAction {
 		return launchSpeed;
 	}
 
-	@Override
 	public boolean async() {
 		return true;
 	}
 
-	@Override
 	public boolean valid(Sign sign) {
 		calculateLaunchSpeed(true);
 		return launchSpeed != null || previous;
 	}
 
-	@Override
 	public String getName() {
 		return "launchersign";
 	}
 
-	@Override
 	public String getFriendlyName() {
 		return "Launcher Sign";
 	}

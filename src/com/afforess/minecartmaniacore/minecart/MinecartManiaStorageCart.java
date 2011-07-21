@@ -221,7 +221,6 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 	 * @param player who is removing the item
 	 * @return true if the items were successfully removed
 	 */
-	@Override
 	public boolean removeItem(int type, int amount, short durability, Player player) {
 		if (!canRemoveItem(type, amount, durability)) {
 			return false;
@@ -261,7 +260,6 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 	 * @param durability of the item to remove (-1 for generic durability)
 	 * @return true if the items were successfully removed
 	 */
-	@Override
 	public boolean removeItem(int type, int amount, short durability) {
 		return removeItem(type, amount, durability, null);
 	}

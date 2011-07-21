@@ -32,7 +32,7 @@ import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
 import com.afforess.minecartmaniacore.world.Item;
 import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
 
-public class CoreSettingParser implements SettingParser{
+public class CoreSettingParser implements SettingParser {
 	private static final double version = 1.53;
 	private static MinecartManiaLogger log = MinecartManiaLogger.getInstance();
 
@@ -150,7 +150,6 @@ public class CoreSettingParser implements SettingParser{
 		}
 	}
 
-	@Override
 	//This will read the configuration document passed in and set values based on the nodes it finds
 	public boolean read(Document document) {
 		//Set the default configuration before we try to read anything.
@@ -620,7 +619,6 @@ public class CoreSettingParser implements SettingParser{
 		return 0;
 	}
 
-	@Override
 	public boolean write(File configFile, Document document) {
 		try {
 			if (document == null) {

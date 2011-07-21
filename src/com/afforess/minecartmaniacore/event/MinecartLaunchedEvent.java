@@ -27,12 +27,10 @@ public class MinecartLaunchedEvent extends MinecartManiaEvent implements Minecar
 		launchSpeed = speed;
 	}
 
-	@Override
 	public boolean isActionTaken() {
 		return action;
 	}
 
-	@Override
 	public void setActionTaken(boolean Action) {
 		this.action = Action;
 	}
