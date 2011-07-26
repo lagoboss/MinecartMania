@@ -16,6 +16,7 @@ import org.bukkit.block.Chest;
 import org.bukkit.block.Dispenser;
 import org.bukkit.block.Furnace;
 import org.bukkit.craftbukkit.CraftServer;
+import org.bukkit.craftbukkit.entity.CraftItem;
 import org.bukkit.craftbukkit.entity.CraftMinecart;
 import org.bukkit.craftbukkit.entity.CraftPoweredMinecart;
 import org.bukkit.craftbukkit.entity.CraftStorageMinecart;
@@ -689,4 +690,9 @@ public class MinecartManiaWorld {
 		}
 		return 64;
 	}
+
+    public static void spawnDrop(World w, int x, int y, int z, ItemStack stack) {
+        CraftItem cis = w.spawn(new Location(w,x+0.5,y+0.5,z+0.5), CraftItem.class);
+        cis.setItemStack(stack);
+    }
 }
