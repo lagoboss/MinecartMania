@@ -15,8 +15,8 @@ public class EntityUtils {
 
 	public static Location getValidLocation(Block block, int searchRange) {
 		
-		if (!isSolidMaterial(block.getFace(BlockFace.UP).getType())) {
-			if (!isSolidMaterial(block.getFace(BlockFace.UP).getFace(BlockFace.UP).getType())) {
+		if (!isSolidMaterial(block.getRelative(BlockFace.UP).getType())) {
+			if (!isSolidMaterial(block.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getType())) {
 				return new Location(block.getWorld(), block.getX()+ 0.5D, block.getY(), block.getZ() + 0.5D);
 				
 			}
@@ -28,7 +28,7 @@ public class EntityUtils {
 					for (int dz = -(range); dz <= range; dz++){
 						Block b = MinecartManiaWorld.getBlockAt(block.getWorld(), block.getX() + dx, block.getY() + dy, block.getZ() + dz);
 						if (!isSolidMaterial(b.getType())) {
-							if (!isSolidMaterial(b.getFace(BlockFace.UP).getType())) {
+							if (!isSolidMaterial(b.getRelative(BlockFace.UP).getType())) {
 								return new Location(b.getWorld(), b.getX()+ 0.5D, b.getY(), b.getZ() + 0.5D);
 							}
 						}
