@@ -692,7 +692,6 @@ public class MinecartManiaWorld {
 	}
 
     public static void spawnDrop(World w, int x, int y, int z, ItemStack stack) {
-        CraftItem cis = w.spawn(new Location(w,x+0.5,y+0.5,z+0.5), CraftItem.class);
-        cis.setItemStack(stack);
+        w.dropItemNaturally(new Location(w,x+0.5,y+0.5,z+0.5), stack);
     }
 }
