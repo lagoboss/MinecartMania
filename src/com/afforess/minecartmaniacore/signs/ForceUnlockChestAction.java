@@ -15,7 +15,7 @@ public class ForceUnlockChestAction implements SignAction{
 	public boolean valid(Sign sign) {
 		boolean success = false;
 		for (String line : sign.getLines()) {
-			if (line.contains("unlock chest")) {
+			if (line.toLowerCase().contains("unlock chest")) {
 				success = true;
 				break;
 			}
