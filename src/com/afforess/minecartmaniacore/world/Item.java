@@ -132,6 +132,9 @@ public enum Item {
 	DIODE_BLOCK_ON(94),
 	LOCKED_CHEST(95),
 	TRAP_DOOR(96),
+    MELON(103),
+    PUMPKIN_STEM(104),
+    MELON_STEM(105),
 	// ----- Item Separator -----
 	IRON_SPADE(256),
 	IRON_PICKAXE(257),
@@ -251,6 +254,8 @@ public enum Item {
 	BED(355),
 	DIODE(356),
 	COOKIE(357),
+    PUMPKIN_SEED(361),
+    MELON_SEED(362),
 	MAP(358),
 	GOLD_RECORD(2256),
 	GREEN_RECORD(2257);
