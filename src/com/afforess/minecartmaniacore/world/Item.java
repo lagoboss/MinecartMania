@@ -278,6 +278,7 @@ public enum Item {
     COOKIE(357),
     RAW_BEEF(363),
     STEAK(364),
+    MELON_SLICE(360),
     PUMPKIN_SEED(361),
     MELON_SEED(362),
     RAW_CHICKEN(365),
