@@ -228,7 +228,7 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 
 		//Backup contents
 		ItemStack[] backup = getContents().clone();
-		
+		System.out.println("Removing "+amount+" "+type+"...");
 		for (int i = 0; i < size(); i++) {
 			if (getItem(i) != null) {
 				if (getItem(i).getTypeId() == type && (durability == -1 || (getItem(i).getDurability() == durability))) {
