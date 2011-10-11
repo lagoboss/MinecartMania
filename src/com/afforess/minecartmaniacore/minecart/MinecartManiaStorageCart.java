@@ -228,7 +228,6 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 
 		//Backup contents
 		ItemStack[] backup = getContents().clone();
-		System.out.println("Removing "+amount+" "+type+"...");
 		for (int i = 0; i < size(); i++) {
 			if (getItem(i) != null) {
 				if (getItem(i).getTypeId() == type && (durability == -1 || (getItem(i).getDurability() == durability))) {
@@ -241,10 +240,13 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
 						return true;
 					}
 					else{
+		                //System.out.println(getItem(i).getAmount()+" - "+amount+" == 0");
 						amount -=  getItem(i).getAmount();
 						setItem(i, null);
 					}
 				}
+			} else {
+		        System.out.println("Can't find item "+type+";"+durability+"...");
 			}
 		}
 
