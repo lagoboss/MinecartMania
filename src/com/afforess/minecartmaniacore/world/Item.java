@@ -166,7 +166,7 @@ public enum Item {
     BOW(261),
     ARROW(262),
     COAL(263, 0),
-    CHARCOAL(263, 1),
+    CHARCOAL(263, 1), //00:38:58 [INFO] Can't find item 263;1... Are you fucking serious
     DIAMOND(264),
     IRON_INGOT(265),
     GOLD_INGOT(266),

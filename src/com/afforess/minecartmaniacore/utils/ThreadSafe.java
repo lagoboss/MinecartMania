@@ -13,12 +13,14 @@ import java.lang.annotation.RetentionPolicy;
  * @author Afforess
  */
 @Documented
-@Target(value=ElementType.METHOD)
-@Retention(value=RetentionPolicy.RUNTIME)
+@Target(value = ElementType.METHOD)
+@Retention(value = RetentionPolicy.RUNTIME)
 public @interface ThreadSafe {
-	
-	public String author() default "Afforess";
-	public String version() default "1.0";
-	public String shortDescription() default "Indicates that the function is safe to use in parallel threads";
-
+    
+    public String author() default "Afforess";
+    
+    public String version() default "1.0";
+    
+    public String shortDescription() default "Indicates that the function is safe to use in parallel threads";
+    
 }

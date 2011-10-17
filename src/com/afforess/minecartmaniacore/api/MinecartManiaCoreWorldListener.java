@@ -9,23 +9,24 @@ import com.afforess.minecartmaniacore.config.MinecartManiaConfiguration;
 import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
 import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
 
-public class MinecartManiaCoreWorldListener extends WorldListener{
-	public static final int CHUNK_RANGE = 4;
+public class MinecartManiaCoreWorldListener extends WorldListener {
+    public static final int CHUNK_RANGE = 4;
+    
     public void onChunkUnload(ChunkUnloadEvent event) {
-    	if (!event.isCancelled()) {
-    		if (MinecartManiaConfiguration.isKeepMinecartsLoaded()) {
-    			ArrayList<MinecartManiaMinecart> minecarts = MinecartManiaWorld.getMinecartManiaMinecartList();
-    			for (MinecartManiaMinecart minecart : minecarts) {
-    				if (Math.abs(event.getChunk().getX() - minecart.minecart.getLocation().getBlock().getChunk().getX()) > CHUNK_RANGE) {
-    					continue;
-    				}
-    				if (Math.abs(event.getChunk().getZ() - minecart.minecart.getLocation().getBlock().getChunk().getZ()) > CHUNK_RANGE) {
-    					continue;
-    				}
-    				event.setCancelled(true);
-    				return;
-    			}
-    		}
-    	}
+        if (!event.isCancelled()) {
+            if (MinecartManiaConfiguration.isKeepMinecartsLoaded()) {
+                ArrayList<MinecartManiaMinecart> minecarts = MinecartManiaWorld.getMinecartManiaMinecartList();
+                for (MinecartManiaMinecart minecart : minecarts) {
+                    if (Math.abs(event.getChunk().getX() - minecart.minecart.getLocation().getBlock().getChunk().getX()) > CHUNK_RANGE) {
+                        continue;
+                    }
+                    if (Math.abs(event.getChunk().getZ() - minecart.minecart.getLocation().getBlock().getChunk().getZ()) > CHUNK_RANGE) {
+                        continue;
+                    }
+                    event.setCancelled(true);
+                    return;
+                }
+            }
+        }
     }
 }

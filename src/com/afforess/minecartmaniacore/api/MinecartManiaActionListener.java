@@ -9,24 +9,24 @@ import com.afforess.minecartmaniacore.signs.MinecartTypeSign;
 import com.afforess.minecartmaniacore.signs.Sign;
 import com.afforess.minecartmaniacore.signs.SignAction;
 
-public class MinecartManiaActionListener extends MinecartManiaListener{
-	
-	@Override
-	public void onMinecartManiaSignFoundEvent(MinecartManiaSignFoundEvent event) {
-		MinecartManiaLogger.getInstance().debug("MinecartManiaCore - Minecart Mania Sign Found Event");
-		Sign sign = event.getSign();
-		if (MinecartTypeSign.isMinecartTypeSign(sign)) {
-			event.setSign(new MinecartTypeSign(sign));
-			sign = event.getSign();
-		}
-		SignAction action = new LaunchPlayerAction(sign);
-		if (action.valid(sign)) {
-			sign.addSignAction(action);
-		}
-		action = new LaunchMinecartAction(sign);
-		if (action.valid(sign)) {
-			sign.addSignAction(action);
-		}
-	}
-
+public class MinecartManiaActionListener extends MinecartManiaListener {
+    
+    @Override
+    public void onMinecartManiaSignFoundEvent(MinecartManiaSignFoundEvent event) {
+        MinecartManiaLogger.getInstance().debug("MinecartManiaCore - Minecart Mania Sign Found Event");
+        Sign sign = event.getSign();
+        if (MinecartTypeSign.isMinecartTypeSign(sign)) {
+            event.setSign(new MinecartTypeSign(sign));
+            sign = event.getSign();
+        }
+        SignAction action = new LaunchPlayerAction(sign);
+        if (action.valid(sign)) {
+            sign.addSignAction(action);
+        }
+        action = new LaunchMinecartAction(sign);
+        if (action.valid(sign)) {
+            sign.addSignAction(action);
+        }
+    }
+    
 }
