@@ -289,7 +289,7 @@ public enum Item {
     GHAST_TEAR(370),
     GOLD_NUGGET(371),
     NETHER_WART(372),
-    //POTION(373,),
+    POTION(373,-1),
     GLASS_BOTTLE(374),
     SPIDER_EYE(375),
     FERMENTED_SPIDER_EYE(376),
@@ -305,6 +305,7 @@ public enum Item {
     private final int id;
     private final short data;
     private boolean hasData;
+	private boolean wildcardData=false;
     private static final Map<ArrayList<Integer>, Item> lookupId = new HashMap<ArrayList<Integer>, Item>();
     private static final Map<String, Item> lookupName = new HashMap<String, Item>();
     
@@ -315,7 +316,12 @@ public enum Item {
     
     Item(final int id, final int data) {
         this.id = id;
-        this.data = (short) data;
+        if(data>0) {
+        	this.data = (short) data;
+        } else {
+        	this.data=0;
+        	this.wildcardData=data<0;
+        }
         hasData = true;
     }
     
@@ -372,7 +378,7 @@ public enum Item {
     }
     
     public boolean equals(Item i) {
-        return i != null && i.getId() == id && data == i.getData();
+        return i != null && i.getId() == id && (wildcardData || data == i.getData());
     }
     
     public boolean equals(Material m) {
@@ -380,7 +386,7 @@ public enum Item {
     }
     
     public boolean equals(int id, short data) {
-        return id == this.id && data == this.data;
+        return id == this.id && (wildcardData || data == this.data);
     }
     
     public boolean equals(int id) {
@@ -404,7 +410,14 @@ public enum Item {
         ArrayList<Integer> a = new ArrayList<Integer>(2);
         a.add(id);
         a.add(data);
-        return lookupId.get(a);
+        Item i = lookupId.get(a);
+        if(i==null) {
+        	a = new ArrayList<Integer>(2);
+            a.add(id);
+            a.add(-1);
+            i = lookupId.get(a);
+        }
+        return i;
     }
     
     /**
@@ -416,7 +429,7 @@ public enum Item {
      */
     public static ArrayList<Item> getItem(final int id) {
         ArrayList<Item> list = new ArrayList<Item>();
-        for (int i = 0; i < 16; i++) {
+        for (int i = -1; i < 16; i++) {
             Item temp = getItem(id, i);
             if (temp != null) {
                 list.add(temp);
@@ -478,16 +491,27 @@ public enum Item {
         ArrayList<Integer> a = new ArrayList<Integer>(2);
         a.add(m.getId());
         a.add(0);
-        return lookupId.get(a);
+        Item i = lookupId.get(a);
+        if(i==null) {
+        	a = new ArrayList<Integer>(2);
+            a.add(m.getId());
+            a.add(-1);
+            i = lookupId.get(a);
+        }
+        return i;
     }
     
     static {
         for (Item i : values()) {
             ArrayList<Integer> a = new ArrayList<Integer>(2);
             a.add(i.getId());
-            a.add(i.getData());
+            a.add((i.isWildcard() ? -1 : i.getData()));
             lookupId.put(a, i);
             lookupName.put(i.name(), i);
         }
     }
+
+	private boolean isWildcard() {
+		return wildcardData;
+	}
 }
