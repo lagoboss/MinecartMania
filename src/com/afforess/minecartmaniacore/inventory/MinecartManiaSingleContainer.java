@@ -89,7 +89,7 @@ public abstract class MinecartManiaSingleContainer implements
         for (int i = 0; i < size(); i++) {
             if (getItem(i) != null) {
                 if (item.getTypeId() == 373 && getItem(i).getTypeId() == item.getTypeId()) {
-                    MinecartManiaLogger.getInstance().info("[addItem] 373:%d => 373:%d", item.getDurability(), getItem(i).getDurability());
+                    System.out.println(String.format("[addItem] 373:%d => 373:%d", item.getDurability(), getItem(i).getDurability()));
                 }
                 if (getItem(i).getTypeId() == item.getTypeId() && getItem(i).getDurability() == item.getDurability()) {
                     if (getItem(i).getAmount() + item.getAmount() <= max) {

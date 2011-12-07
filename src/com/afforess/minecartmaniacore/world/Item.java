@@ -461,12 +461,15 @@ public enum Item {
      * @return Item if found
      */
     public static Item getItem(ItemStack item) {
-        Item i;
+        Item i=null;
         ArrayList<Item> list = getItem(item.getTypeId());
         if (list.size() == 1) {
             i = list.get(0);
         } else {
             i = getItem(item.getTypeId(), item.getDurability());
+        }
+        if (i==null) {
+            i = getItem(item.getTypeId(), -1);
         }
         return i;
     }
