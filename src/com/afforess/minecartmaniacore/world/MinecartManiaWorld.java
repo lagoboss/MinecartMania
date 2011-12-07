@@ -11,30 +11,31 @@ import java.util.concurrent.locks.ReentrantLock;
 import net.minecraft.server.EntityMinecart;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BrewingStand;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Dispenser;
 import org.bukkit.block.Furnace;
 import org.bukkit.craftbukkit.CraftServer;
-import org.bukkit.craftbukkit.entity.CraftItem;
 import org.bukkit.craftbukkit.entity.CraftMinecart;
 import org.bukkit.craftbukkit.entity.CraftPoweredMinecart;
 import org.bukkit.craftbukkit.entity.CraftStorageMinecart;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.StorageMinecart;
 import org.bukkit.entity.PoweredMinecart;
+import org.bukkit.entity.StorageMinecart;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Button;
 import org.bukkit.material.Lever;
 import org.bukkit.material.MaterialData;
-import org.bukkit.Location;
 
 import com.afforess.minecartmaniacore.debug.DebugTimer;
 import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
 import com.afforess.minecartmaniacore.entity.MinecartManiaPlayer;
+import com.afforess.minecartmaniacore.inventory.MinecartManiaBrewingStand;
 import com.afforess.minecartmaniacore.inventory.MinecartManiaChest;
 import com.afforess.minecartmaniacore.inventory.MinecartManiaDispenser;
 import com.afforess.minecartmaniacore.inventory.MinecartManiaFurnace;
@@ -47,6 +48,7 @@ public class MinecartManiaWorld {
     private static ConcurrentHashMap<Location, MinecartManiaChest> chests = new ConcurrentHashMap<Location, MinecartManiaChest>();
     private static ConcurrentHashMap<Location, MinecartManiaDispenser> dispensers = new ConcurrentHashMap<Location, MinecartManiaDispenser>();
     private static ConcurrentHashMap<Location, MinecartManiaFurnace> furnaces = new ConcurrentHashMap<Location, MinecartManiaFurnace>();
+    private static ConcurrentHashMap<Location, MinecartManiaBrewingStand> brewingStands = new ConcurrentHashMap<Location, MinecartManiaBrewingStand>();
     private static ConcurrentHashMap<String, MinecartManiaPlayer> players = new ConcurrentHashMap<String, MinecartManiaPlayer>();
     private static ConcurrentHashMap<String, Object> configuration = new ConcurrentHashMap<String, Object>();
     private static int counter = 0;
@@ -122,15 +124,18 @@ public class MinecartManiaWorld {
                     int chest = chests.size();
                     int dispenser = dispensers.size();
                     int furnace = furnaces.size();
+                    int brewingStand = brewingStands.size();
                     pruneFurnaces();
                     pruneDispensers();
                     pruneChests();
                     pruneMinecarts();
+                    pruneBrewingStands();
                     minecart -= minecarts.size();
                     chest -= chests.size();
                     dispenser -= dispensers.size();
                     furnace -= furnaces.size();
-                    MinecartManiaLogger.getInstance().debug(String.format("Finished Pruning. Removed %d minecarts, %d chests, %d dispensers, and %d furnaces from memory", minecart, chest, dispenser, furnace));
+                    brewingStand -= brewingStands.size();
+                    MinecartManiaLogger.getInstance().debug(String.format("Finished Pruning. Removed %d minecarts, %d chests, %d dispensers, %d brewing stands, and %d furnaces from memory", minecart, chest, dispenser, brewingStand, furnace));
                     time.logProcessTime();
                 }
             } finally {
@@ -144,6 +149,16 @@ public class MinecartManiaWorld {
         while (i.hasNext()) {
             Entry<Location, MinecartManiaFurnace> e = i.next();
             if (e.getKey().getBlock().getTypeId() != Item.FURNACE.getId() && e.getKey().getBlock().getTypeId() != Item.BURNING_FURNACE.getId()) {
+                i.remove();
+            }
+        }
+    }
+    
+    public static void pruneBrewingStands() {
+        Iterator<Entry<Location, MinecartManiaBrewingStand>> i = brewingStands.entrySet().iterator();
+        while (i.hasNext()) {
+            Entry<Location, MinecartManiaBrewingStand> e = i.next();
+            if (e.getKey().getBlock().getTypeId() != Item.BREWING_STAND_BLOCK.getId()) {
                 i.remove();
             }
         }
@@ -360,6 +375,30 @@ public class MinecartManiaWorld {
     }
     
     /**
+     ** Returns a new MinecartManiaBrewingStand from storage if it already exists, or creates and stores a new MinecartManiaFurnace object, and returns it
+     ** 
+     * @param the
+     *            furnace to wrap
+     **/
+    public static MinecartManiaBrewingStand getMinecartManiaBrewingStand(BrewingStand brewingStand) {
+        MinecartManiaBrewingStand testStand = brewingStands.get(new Location(brewingStand.getWorld(), brewingStand.getX(), brewingStand.getY(), brewingStand.getZ()));
+        if (testStand == null) {
+            MinecartManiaBrewingStand newStand = new MinecartManiaBrewingStand(brewingStand);
+            brewingStands.put(new Location(brewingStand.getWorld(), brewingStand.getX(), brewingStand.getY(), brewingStand.getZ()), newStand);
+            return newStand;
+        } else {
+            //Verify that this block is still a furnace (could have been changed)
+            if (MinecartManiaWorld.getBlockIdAt(testStand.getWorld(), testStand.getX(), testStand.getY(), testStand.getZ()) == Item.BREWING_STAND_BLOCK.getId()) {
+                testStand.updateInventory(testStand.getInventory());
+                return testStand;
+            } else {
+                brewingStands.remove(new Location(brewingStand.getWorld(), brewingStand.getX(), brewingStand.getY(), brewingStand.getZ()));
+                return null;
+            }
+        }
+    }
+    
+    /**
      ** Returns true if the furnaces with the given location was deleted, false if not.
      ** 
      * @param the
@@ -374,6 +413,20 @@ public class MinecartManiaWorld {
     }
     
     /**
+     ** Returns true if the furnaces with the given location was deleted, false if not.
+     ** 
+     * @param the
+     *            location of the furnaces to delete
+     **/
+    public static boolean delMinecartManiaBrewingStand(Location v) {
+        if (brewingStands.containsKey(v)) {
+            brewingStands.remove(v);
+            return true;
+        }
+        return false;
+    }
+    
+    /**
      * Returns an arraylist of all the MinecartManiaFurnaces stored by this class
      * 
      * @return arraylist of all MinecartManiaFurnaces
@@ -381,6 +434,20 @@ public class MinecartManiaWorld {
     public static ArrayList<MinecartManiaFurnace> getMinecartManiaFurnaceList() {
         Iterator<Entry<Location, MinecartManiaFurnace>> i = furnaces.entrySet().iterator();
         ArrayList<MinecartManiaFurnace> furnaceList = new ArrayList<MinecartManiaFurnace>(furnaces.size());
+        while (i.hasNext()) {
+            furnaceList.add(i.next().getValue());
+        }
+        return furnaceList;
+    }
+    
+    /**
+     * Returns an arraylist of all the MinecartManiaBrewingStands stored by this class
+     * 
+     * @return arraylist of all MinecartManiaBrewingStands
+     */
+    public static ArrayList<MinecartManiaBrewingStand> getMinecartManiaBrewingStandList() {
+        Iterator<Entry<Location, MinecartManiaBrewingStand>> i = brewingStands.entrySet().iterator();
+        ArrayList<MinecartManiaBrewingStand> furnaceList = new ArrayList<MinecartManiaBrewingStand>(brewingStands.size());
         while (i.hasNext()) {
             furnaceList.add(i.next().getValue());
         }
