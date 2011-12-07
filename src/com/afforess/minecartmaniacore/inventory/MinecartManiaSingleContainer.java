@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
 import com.afforess.minecartmaniacore.world.Item;
 import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
 
@@ -87,6 +88,9 @@ public abstract class MinecartManiaSingleContainer implements
         //First attempt to merge the itemstack with existing item stacks that aren't full (< 64)
         for (int i = 0; i < size(); i++) {
             if (getItem(i) != null) {
+                if (item.getTypeId() == 373 && getItem(i).getTypeId() == item.getTypeId()) {
+                    MinecartManiaLogger.getInstance().info("[addItem] 373:%d => 373:%d", item.getDurability(), getItem(i).getDurability());
+                }
                 if (getItem(i).getTypeId() == item.getTypeId() && getItem(i).getDurability() == item.getDurability()) {
                     if (getItem(i).getAmount() + item.getAmount() <= max) {
                         setItem(i, new ItemStack(item.getTypeId(), getItem(i).getAmount() + item.getAmount(), item.getDurability()));
