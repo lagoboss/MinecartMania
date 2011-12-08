@@ -379,6 +379,7 @@ public enum Item {
     private final short data;
     private boolean hasData;
     private static final Map<ArrayList<Integer>, Item> lookupId = new HashMap<ArrayList<Integer>, Item>();
+    private static final Map<Integer, ArrayList<Integer>> validData = new HashMap<Integer, ArrayList<Integer>>();
     private static final Map<String, Item> lookupName = new HashMap<String, Item>();
     
     Item(final int id) {
@@ -494,8 +495,8 @@ public enum Item {
      */
     public static ArrayList<Item> getItem(final int id) {
         ArrayList<Item> list = new ArrayList<Item>();
-        for (int i = 0; i < 25000; i++) {
-            Item temp = getItem(id, i);
+        for (Integer data : validData.get(Integer.valueOf(id))) {
+            Item temp = getItem(id, data);
             if (temp != null) {
                 list.add(temp);
             }
@@ -566,6 +567,10 @@ public enum Item {
             a.add(i.getId());
             a.add(i.getData());
             lookupId.put(a, i);
+            if(!validData.containsKey(Integer.valueOf(i.getId()))) {
+                validData.put(Integer.valueOf(i.getId()),new ArrayList<Integer>());
+            }
+            validData.get(Integer.valueOf(i.getId())).add(Integer.valueOf(i.getData()));
             lookupName.put(i.name(), i);
         }
     }
