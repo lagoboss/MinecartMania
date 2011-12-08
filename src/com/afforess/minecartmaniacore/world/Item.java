@@ -378,7 +378,6 @@ public enum Item {
     private final int id;
     private final short data;
     private boolean hasData;
-	private boolean wildcardData=false;
     private static final Map<ArrayList<Integer>, Item> lookupId = new HashMap<ArrayList<Integer>, Item>();
     private static final Map<String, Item> lookupName = new HashMap<String, Item>();
     
@@ -393,7 +392,6 @@ public enum Item {
         	this.data = (short) data;
         } else {
         	this.data=0;
-        	this.wildcardData=data<0;
         }
         hasData = true;
     }
@@ -484,12 +482,6 @@ public enum Item {
         a.add(id);
         a.add(data);
         Item i = lookupId.get(a);
-        if(i==null) {
-        	a = new ArrayList<Integer>(2);
-            a.add(id);
-            a.add(-1);
-            i = lookupId.get(a);
-        }
         return i;
     }
     
@@ -502,7 +494,7 @@ public enum Item {
      */
     public static ArrayList<Item> getItem(final int id) {
         ArrayList<Item> list = new ArrayList<Item>();
-        for (int i = -1; i < 16; i++) {
+        for (int i = 0; i < 25000; i++) {
             Item temp = getItem(id, i);
             if (temp != null) {
                 list.add(temp);
@@ -541,9 +533,6 @@ public enum Item {
         } else {
             i = getItem(item.getTypeId(), item.getDurability());
         }
-        if (i==null) {
-            i = getItem(item.getTypeId(), -1);
-        }
         return i;
     }
     
@@ -568,12 +557,6 @@ public enum Item {
         a.add(m.getId());
         a.add(0);
         Item i = lookupId.get(a);
-        if(i==null) {
-        	a = new ArrayList<Integer>(2);
-            a.add(m.getId());
-            a.add(-1);
-            i = lookupId.get(a);
-        }
         return i;
     }
     
@@ -581,13 +564,9 @@ public enum Item {
         for (Item i : values()) {
             ArrayList<Integer> a = new ArrayList<Integer>(2);
             a.add(i.getId());
-            a.add((i.isWildcard() ? -1 : i.getData()));
+            a.add(i.getData());
             lookupId.put(a, i);
             lookupName.put(i.name(), i);
         }
     }
-
-	public boolean isWildcard() {
-		return wildcardData;
-	}
 }
