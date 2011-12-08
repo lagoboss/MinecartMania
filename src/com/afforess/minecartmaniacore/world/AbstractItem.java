@@ -46,6 +46,10 @@ public class AbstractItem {
         return amount == -1;
     }
     
+    public boolean isWildcard() {
+        return item.isWildcard();
+    }
+    
     public int getAmount() {
         return amount;
     }

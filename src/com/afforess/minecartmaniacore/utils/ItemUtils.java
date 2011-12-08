@@ -245,7 +245,7 @@ public class ItemUtils {
         List<AbstractItem> items = parsePart(split[0]);
         int data = Integer.parseInt(split[1]);
         for (AbstractItem item : items)
-            if (item.getData() == data)
+            if (item.getData() == data || item.isWildcard())
                 return item;
         
         return null;
