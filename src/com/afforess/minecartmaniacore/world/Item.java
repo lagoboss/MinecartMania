@@ -378,7 +378,7 @@ public enum Item {
     }
     
     public boolean equals(Item i) {
-        return i != null && i.getId() == id && (isWildcard() || i.isWildcard() || data == i.getData());
+        return i != null && i.getId() == id && (/*isWildcard() || i.isWildcard() || */data == i.getData());
     }
     
     public boolean equals(Material m) {
@@ -386,7 +386,7 @@ public enum Item {
     }
     
     public boolean equals(int id, short data) {
-        return id == this.id && (wildcardData || data == -1 || data == this.data);
+        return id == this.id && (/*wildcardData || data == -1 || */data == this.data);
     }
     
     public boolean equals(int id) {
