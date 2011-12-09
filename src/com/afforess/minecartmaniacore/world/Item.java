@@ -289,7 +289,7 @@ public enum Item {
     GHAST_TEAR(370),
     GOLD_NUGGET(371),
     NETHER_WART(372),
-    POTION(373,-1), // WILDCARD BECAUSE FUCK POTIONS
+    POTION(373, -1), // WILDCARD BECAUSE FUCK POTIONS
     GLASS_BOTTLE(374),
     SPIDER_EYE(375),
     FERMENTED_SPIDER_EYE(376),
@@ -301,8 +301,7 @@ public enum Item {
     GLISTERING_MELON(382),
     MAP(358),
     GOLD_RECORD(2256),
-    GREEN_RECORD(2257)
-    ;
+    GREEN_RECORD(2257);
     
     private final int id;
     private short data;
@@ -320,13 +319,15 @@ public enum Item {
     
     Item(final int id, final int data) {
         this.id = id;
-        if(data>0) {
-        	this.data = (short) data;
+        if (data > 0) {
+            this.data = (short) data;
         } else {
-            if(data<0) {
-                isWildcard=true;
+            if (data < 0) {
+                isWildcard = true;
+                this.data = -1;
+            } else {
+                this.data = 0;
             }
-        	this.data=0;
         }
         hasData = true;
     }
@@ -418,7 +419,7 @@ public enum Item {
         a.add(id);
         a.add((wc) ? 0 : data);
         Item i = lookupId.get(a);
-        if(wc) {
+        if (wc) {
             i.setData(data);
         }
         return i;
@@ -465,7 +466,7 @@ public enum Item {
      * @return Item if found
      */
     public static Item getItem(ItemStack item) {
-        Item i=null;
+        Item i = null;
         ArrayList<Item> list = getItem(item.getTypeId());
         if (list.size() == 1) {
             i = list.get(0);
@@ -501,22 +502,22 @@ public enum Item {
     
     static {
         for (Item i : values()) {
-            if(i.isWildcard) {
+            if (i.isWildcard) {
                 wildcards.add(i.id);
             }
             ArrayList<Integer> a = new ArrayList<Integer>(2);
             a.add(i.getId());
             a.add(i.getData());
             lookupId.put(a, i);
-            if(!validData.containsKey(Integer.valueOf(i.getId()))) {
-                validData.put(Integer.valueOf(i.getId()),new ArrayList<Integer>());
+            if (!validData.containsKey(Integer.valueOf(i.getId()))) {
+                validData.put(Integer.valueOf(i.getId()), new ArrayList<Integer>());
             }
             validData.get(Integer.valueOf(i.getId())).add(Integer.valueOf(i.getData()));
             lookupName.put(i.name(), i);
         }
     }
-
+    
     public void setData(int data) {
-        this.data=(short)data;
+        this.data = (short) data;
     }
 }
