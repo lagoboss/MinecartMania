@@ -104,4 +104,13 @@ public class AbstractItem {
     public String toString() {
         return type().toString();
     }
+
+    public boolean isWildcard() {
+        // TODO Auto-generated method stub
+        return item.isWildcard;
+    }
+
+    public void setData(int data) {
+        item.setData(data);
+    }
 }

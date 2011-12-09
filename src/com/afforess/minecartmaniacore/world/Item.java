@@ -289,80 +289,7 @@ public enum Item {
     GHAST_TEAR(370),
     GOLD_NUGGET(371),
     NETHER_WART(372),
-    WATER_BOTTLE(373,0),
-    POTION_AWKWARD(373,16),
-    POTION_REGENERATION(373,17),
-    POTION_SWIFTNESS(373,18),
-    POTION_FIRE_RESISTANCE(373,19),
-    POTION_POISON(373,20),
-    POTION_HEALING(373,21),
-    POTION_WEAKNESS(373,24),
-    POTION_STRENGTH(373,25),
-    POTION_SLOWNESS(373,26),
-    POTION_HARMING(373,28),
-    POTION_REGENERATION_BOOSTED(373,49),
-    POTION_SWIFTNESS_BOOSTED(373,50),
-    POTION_FIRE_RESISTANCE_BOOSTED(373,51),
-    POTION_POISON_BOOSTED(373,52),
-    POTION_HEALING_BOOSTED(373,53),
-    POTION_WEAKNESS_BOOSTED(373,56),
-    POTION_STRENGTH_BOOSTED(373,57),
-    POTION_SLOWNESS_BOOSTED(373,58),
-    POTION_HARMING_BOOSTED(373,60),
-    POTION_REGENERATION_EXTENDED(373,81),
-    POTION_SWIFTNESS_EXTENDED(373,82),
-    POTION_FIRE_RESISTANCE_EXTENDED(373,83),
-    POTION_POISON_EXTENDED(373,84),
-    POTION_HEALING_EXTENDED(373,85),
-    POTION_WEAKNESS_EXTENDED(373,88),
-    POTION_STRENGTH_EXTENDED(373,89),
-    POTION_SLOWNESS_EXTENDED(373,90),
-    POTION_HARMING_EXTENDED(373,92),
-    POTION_REGENERATION_BOOSTED_EXTENDED(373,113),
-    POTION_SWIFTNESS_BOOSTED_EXTENDED(373,114),
-    POTION_FIRE_RESISTANCE_BOOSTED_EXTENDED(373,115),
-    POTION_POISON_BOOSTED_EXTENDED(373,116),
-    POTION_HEALING_BOOSTED_EXTENDED(373,117),
-    POTION_WEAKNESS_BOOSTED_EXTENDED(373,120),
-    POTION_STRENGTH_BOOSTED_EXTENDED(373,121),
-    POTION_SLOWNESS_BOOSTED_EXTENDED(373,122),
-    POTION_HARMING_BOOSTED_EXTENDED(373,124),
-    POTION_REGENERATION_SPLASH(373,16401),
-    POTION_SWIFTNESS_SPLASH(373,16402),
-    POTION_FIRE_RESISTANCE_SPLASH(373,16403),
-    POTION_POISON_SPLASH(373,16404),
-    POTION_HEALING_SPLASH(373,16405),
-    POTION_WEAKNESS_SPLASH(373,16408),
-    POTION_STRENGTH_SPLASH(373,16409),
-    POTION_SLOWNESS_SPLASH(373,16410),
-    POTION_HARMING_SPLASH(373,16412),
-    POTION_REGENERATION_SPLASH_BOOSTED(373,16433),
-    POTION_SWIFTNESS_SPLASH_BOOSTED(373,16434),
-    POTION_FIRE_RESISTANCE_SPLASH_BOOSTED(373,16435),
-    POTION_POISON_SPLASH_BOOSTED(373,16436),
-    POTION_HEALING_SPLASH_BOOSTED(373,16437),
-    POTION_WEAKNESS_SPLASH_BOOSTED(373,16440),
-    POTION_STRENGTH_SPLASH_BOOSTED(373,16441),
-    POTION_SLOWNESS_SPLASH_BOOSTED(373,16442),
-    POTION_HARMING_SPLASH_BOOSTED(373,16444),
-    POTION_REGENERATION_SPLASH_EXTENDED(373,16465),
-    POTION_SWIFTNESS_SPLASH_EXTENDED(373,16466),
-    POTION_FIRE_RESISTANCE_SPLASH_EXTENDED(373,16467),
-    POTION_POISON_SPLASH_EXTENDED(373,16468),
-    POTION_HEALING_SPLASH_EXTENDED(373,16469),
-    POTION_WEAKNESS_SPLASH_EXTENDED(373,16472),
-    POTION_STRENGTH_SPLASH_EXTENDED(373,16473),
-    POTION_SLOWNESS_SPLASH_EXTENDED(373,16474),
-    POTION_HARMING_SPLASH_EXTENDED(373,16476),
-    POTION_REGENERATION_SPLASH_BOOSTED_EXTENDED(373,16497),
-    POTION_SWIFTNESS_SPLASH_BOOSTED_EXTENDED(373,16498),
-    POTION_FIRE_RESISTANCE_SPLASH_BOOSTED_EXTENDED(373,16499),
-    POTION_POISON_SPLASH_BOOSTED_EXTENDED(373,16500),
-    POTION_HEALING_SPLASH_BOOSTED_EXTENDED(373,16501),
-    POTION_WEAKNESS_SPLASH_BOOSTED_EXTENDED(373,16504),
-    POTION_STRENGTH_SPLASH_BOOSTED_EXTENDED(373,16505),
-    POTION_SLOWNESS_SPLASH_BOOSTED_EXTENDED(373,16506),
-    POTION_HARMING_SPLASH_BOOSTED_EXTENDED(373,16508),
+    POTION(373,-1), // WILDCARD BECAUSE FUCK POTIONS
     GLASS_BOTTLE(374),
     SPIDER_EYE(375),
     FERMENTED_SPIDER_EYE(376),
@@ -374,11 +301,14 @@ public enum Item {
     GLISTERING_MELON(382),
     MAP(358),
     GOLD_RECORD(2256),
-    GREEN_RECORD(2257);
+    GREEN_RECORD(2257)
+    ;
     
     private final int id;
-    private final short data;
+    private short data;
     private boolean hasData;
+    public boolean isWildcard;
+    private static ArrayList<Integer> wildcards = new ArrayList<Integer>();
     private static final Map<ArrayList<Integer>, Item> lookupId = new HashMap<ArrayList<Integer>, Item>();
     private static final Map<Integer, ArrayList<Integer>> validData = new HashMap<Integer, ArrayList<Integer>>();
     private static final Map<String, Item> lookupName = new HashMap<String, Item>();
@@ -393,6 +323,9 @@ public enum Item {
         if(data>0) {
         	this.data = (short) data;
         } else {
+            if(data<0) {
+                isWildcard=true;
+            }
         	this.data=0;
         }
         hasData = true;
@@ -451,7 +384,7 @@ public enum Item {
     }
     
     public boolean equals(Item i) {
-        return i != null && i.getId() == id && (/*isWildcard() || i.isWildcard() || */data == i.getData());
+        return i != null && i.getId() == id && (data == i.getData());
     }
     
     public boolean equals(Material m) {
@@ -459,7 +392,7 @@ public enum Item {
     }
     
     public boolean equals(int id, short data) {
-        return id == this.id && (/*wildcardData || data == -1 || */data == this.data);
+        return id == this.id && (data == this.data);
     }
     
     public boolean equals(int id) {
@@ -480,10 +413,14 @@ public enum Item {
      * @return Item if found, or null
      */
     public static Item getItem(final int id, int data) {
+        boolean wc = wildcards.contains(id);
         ArrayList<Integer> a = new ArrayList<Integer>(2);
         a.add(id);
-        a.add(data);
+        a.add((wc) ? 0 : data);
         Item i = lookupId.get(a);
+        if(wc) {
+            i.setData(data);
+        }
         return i;
     }
     
@@ -564,6 +501,9 @@ public enum Item {
     
     static {
         for (Item i : values()) {
+            if(i.isWildcard) {
+                wildcards.add(i.id);
+            }
             ArrayList<Integer> a = new ArrayList<Integer>(2);
             a.add(i.getId());
             a.add(i.getData());
@@ -574,5 +514,9 @@ public enum Item {
             validData.get(Integer.valueOf(i.getId())).add(Integer.valueOf(i.getData()));
             lookupName.put(i.name(), i);
         }
+    }
+
+    public void setData(int data) {
+        this.data=(short)data;
     }
 }

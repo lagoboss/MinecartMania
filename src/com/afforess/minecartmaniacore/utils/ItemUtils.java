@@ -244,10 +244,14 @@ public class ItemUtils {
         String[] split = part.split(TYPE.DATA.getTag());
         List<AbstractItem> items = parsePart(split[0]);
         int data = Integer.parseInt(split[1]);
-        for (AbstractItem item : items)
-            if (item.getData() == data)
+        for (AbstractItem item : items) {
+            if (item.isWildcard()) {
+                item.setData(data); // Make sure it matches.
+            }
+            if (item.getData() == data) {
                 return item;
-        
+            }
+        }
         return null;
     }
     
