@@ -86,9 +86,13 @@ public class AbstractItem {
         }
         return aList;
     }
-    
+
     public boolean equals(Item item) {
-        return this.item.equals(item);
+        return equals(item,false);
+    }
+    
+    public boolean equals(Item item, boolean allowWildcards) {
+        return this.item.equals(item,allowWildcards);
     }
     
     public boolean equals(Object o) {

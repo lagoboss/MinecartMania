@@ -107,16 +107,17 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements
         }
         
         //Check if this new item will exceed the maximum allowed
-        ArrayList<Item> list = Item.getItem(item.getTypeId());
-        for (Item i : list) {
-            if (!i.hasData() || i.getData() == item.getDurability()) {
-                if (getMaximumItem(i) != -1) {
-                    if (amount(i) + item.getAmount() > getMaximumItem(i)) {
-                        return false;
-                    }
+        //        ArrayList<Item> list = Item.getItem(item.getTypeId());
+        //        for (Item i : list) {
+        Item i = Item.getItem(item);
+        if (!i.hasData() || i.getData() == item.getDurability()) {
+            if (getMaximumItem(i) != -1) {
+                if (amount(i) + item.getAmount() > getMaximumItem(i)) {
+                    return false;
                 }
             }
         }
+        // }
         return true;
     }
     
@@ -214,16 +215,18 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements
     public boolean canRemoveItem(int type, int amount, short durability,
             Player player) {
         //Check if this will fall below the minimum allowed
-        ArrayList<Item> list = Item.getItem(type);
-        for (Item i : list) {
-            if (!i.hasData() || i.getData() == durability) {
-                if (getMinimumItem(i) != -1) {
-                    if (amount(i) - amount < getMinimumItem(i)) {
-                        return false;
-                    }
+        //        ArrayList<Item> list = Item.getItem(type);
+        //        for (Item i : list) {
+        
+        Item i = Item.getItem(type,durability);
+        if (!i.hasData() || i.getData() == durability) {
+            if (getMinimumItem(i) != -1) {
+                if (amount(i) - amount < getMinimumItem(i)) {
+                    return false;
                 }
             }
         }
+        //        }
         return true;
     }
     

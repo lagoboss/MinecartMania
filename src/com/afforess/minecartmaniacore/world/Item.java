@@ -324,10 +324,8 @@ public enum Item {
         } else {
             if (data < 0) {
                 isWildcard = true;
-                this.data = -1;
-            } else {
-                this.data = 0;
             }
+            this.data = 0;
         }
         hasData = true;
     }
@@ -384,7 +382,7 @@ public enum Item {
         return item;
     }
     
-    public boolean equals(Item i) {
+    public boolean equals(Item i, boolean allowWildcards) {
         return i != null && i.getId() == id && (data == i.getData());
     }
     
