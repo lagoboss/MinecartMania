@@ -219,7 +219,10 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements
         //        for (Item i : list) {
         
         Item i = Item.getItem(type,durability);
-        if(i==null) return false;
+        if(i==null) {
+            System.out.println(String.format("[MMCORE] canRemoveItem cannot find %d:%d",type,durability));
+            return false;
+        }
         if (!i.hasData() || i.getData() == durability) {
             if (getMinimumItem(i) != -1) {
                 if (amount(i) - amount < getMinimumItem(i)) {
