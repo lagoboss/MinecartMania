@@ -262,12 +262,12 @@ public class ItemUtils {
             int bestLength = -1;
             for (Material e : Material.values()) {
                 if (e != null) {
-                    String item = e.toString().toLowerCase();
+                    String item = e.name().toLowerCase();
                     if (item.contains(part)) {
                         //If two items have the same partial string in them (e.g diamond and diamond shovel) the shorter name wins
                         if (best == -1 || item.length() < bestLength) {
                             best = e.getId();
-                            bestLength = e.toString().length();
+                            bestLength = e.name().length();
                         }
                     }
                 }
