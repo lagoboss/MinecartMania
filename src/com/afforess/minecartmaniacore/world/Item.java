@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
 /**
  * An enum of all items accepted by the official server + client
  */
+@Deprecated
 public enum Item {
     AIR(0),
     STONE(1),

@@ -1,18 +1,21 @@
 package com.afforess.minecartmaniacore.utils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
+
 import com.afforess.minecartmaniacore.config.ItemAliasList;
-import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
+import com.afforess.minecartmaniacore.matching.MatchConstant;
+import com.afforess.minecartmaniacore.matching.MatchField;
+import com.afforess.minecartmaniacore.matching.MatchOR;
 import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
-import com.afforess.minecartmaniacore.world.AbstractItem;
-import com.afforess.minecartmaniacore.world.Item;
+import com.afforess.minecartmaniacore.world.SpecificMaterial;
 
 /**
- * Authors: Afforess, Meaglin
+ * Authors: Afforess, Meaglin, N3X15
  */
 public class ItemUtils {
     
@@ -21,9 +24,9 @@ public class ItemUtils {
      * 
      * @return material found, or null
      */
-    public static AbstractItem getFirstItemStringToMaterial(String str) {
+    public static SpecificMaterial getFirstItemStringToMaterial(String str) {
         String[] list = { str };
-        AbstractItem items[] = getItemStringListToMaterial(list);
+        SpecificMaterial items[] = getItemStringListToMaterial(list);
         return items.length == 0 ? null : items[0];
     }
     
@@ -32,12 +35,12 @@ public class ItemUtils {
      * 
      * @return materials found, or an empty array
      */
-    public static AbstractItem[] getItemStringToMaterial(String str) {
+    public static SpecificMaterial[] getItemStringToMaterial(String str) {
         String[] list = { str };
         return getItemStringListToMaterial(list);
     }
     
-    public static AbstractItem[] getItemStringListToMaterial(String[] list) {
+    public static SpecificMaterial[] getItemStringListToMaterial(String[] list) {
         return getItemStringListToMaterial(list, null);
     }
     
@@ -63,9 +66,9 @@ public class ItemUtils {
      * 
      * @return materials found, or an empty array
      */
-    public static AbstractItem[] getItemStringListToMaterial(String[] list,
+    public static SpecificMaterial[] getItemStringListToMaterial(String[] list,
             CompassDirection facing) {
-        ArrayList<AbstractItem> items = new ArrayList<AbstractItem>();
+        ArrayList<SpecificMaterial> items = new ArrayList<SpecificMaterial>();
         for (int line = 0; line < list.length; line++) {
             String str = StringUtils.removeBrackets(list[line].toLowerCase());
             str = str.trim();
@@ -84,9 +87,9 @@ public class ItemUtils {
             
             //short circuit if it's everything
             if (str.contains("all items")) {
-                for (Item m : Item.values()) {
+                for (Material m : Material.values()) {
                     if (!items.contains(m)) {
-                        items.add(new AbstractItem(m));
+                        items.add(new SpecificMaterial(m.getId(),(short) 0));
                     }
                 }
             }
@@ -94,39 +97,29 @@ public class ItemUtils {
             String[] keys = str.split(":");
             for (int i = 0; i < keys.length; i++) {
                 String part = keys[i].trim();
-                List<AbstractItem> parsedset = parsePart(part);
+                ItemMatcher matcher = parsePart(part);
                 
-                if (parsedset == null || parsedset.size() < 1)
+                if (matcher == null)
                     continue;
                 
-                for (AbstractItem item : parsedset) {
-                    if (item == null)
-                        continue;
-                    if (item.getAmount() == -2)
-                        items.remove(item);
-                    else if (item.getAmount() != -1) {
-                        if (items.contains(item))
-                            items.remove(item);
-                        
-                        items.add(item);
-                    } else
-                        items.add(item);
+                for(Material mat : Material.values()) {
+                    if(matcher.match(new ItemStack(mat)))
+                        items.add(new SpecificMaterial(mat.getId(),(short) 0));
                 }
-                
             }
-            
         }
         
+        
         //Remove Air from the list
-        Iterator<AbstractItem> i = items.iterator();
+        Iterator<SpecificMaterial> i = items.iterator();
         while (i.hasNext()) {
-            AbstractItem type = i.next();
-            if (type == null || type.type() == null || type.equals(Item.AIR)) {
+            SpecificMaterial type = i.next();
+            if (type == null || type.equals(Material.AIR)) {
                 i.remove();
             }
         }
         
-        AbstractItem itemList[] = new AbstractItem[items.size()];
+        SpecificMaterial itemList[] = new SpecificMaterial[items.size()];
         return items.toArray(itemList);
     }
     
@@ -161,20 +154,13 @@ public class ItemUtils {
             return (part.lastIndexOf(DATA.getTag()) > part.lastIndexOf(AMOUNT.getTag()) ? DATA : (part.contains(AMOUNT.getTag()) ? AMOUNT : NONE));
         }
     }
-    
-    /**
-     * Please don't change this order as it might screw up certain priorities!
-     * 
-     * @param part
-     * @return
-     */
-    private static List<AbstractItem> parsePart(String part) {
+    private static ItemMatcher parsePart(String part) {
         try {
             switch (TYPE.getType(part)) {
                 case RANGE:
                     return parseRange(part);
                 case DATA:
-                    return Arrays.asList(parseData(part));
+                    return parseData(part);
                 case REMOVE:
                     return parseNegative(part);
                 case AMOUNT:
@@ -187,95 +173,112 @@ public class ItemUtils {
         }
     }
     
-    private static List<AbstractItem> parseAmount(String part) {
+    private static ItemMatcher parseAmount(String part) {
         String[] split = part.split(TYPE.AMOUNT.getTag());
-        List<AbstractItem> items = parsePart(split[0]);
+        ItemMatcher matcher = parsePart(split[0]);
         
         int amount = Integer.parseInt(split[1]);
         if (amount > 0) {
-            for (AbstractItem item : items)
-                item.setAmount(amount);
+            matcher.setAmount(amount);
         }
         
-        return items;
+        return matcher;
     }
     
-    private static List<AbstractItem> parseNegative(String part) {
+    private static ItemMatcher parseNegative(String part) {
         part = part.replace(TYPE.REMOVE.getTag(), "");
-        List<AbstractItem> items = parsePart(part);
-        for (AbstractItem item : items) {
-            item.setAmount(-2);
-            MinecartManiaLogger.getInstance().debug("Removing Item: " + item.type());
+        ItemMatcher items = parsePart(part);
+        items.setAmount(-2);
+        //MinecartManiaLogger.getInstance().debug("Removing Item: " + item.type());
+        return items;
+    }
+    
+    /**
+     * Get list of item matchers, given a range.
+     * @param part
+     * @return
+     */
+    private static ItemMatcher parseRange(String part) {
+        // Split into components
+        String[] split = part.split(TYPE.RANGE.getTag());
+        ItemMatcher matcher = new ItemMatcher();
+        ItemMatcher start = parsePart(split[0]);
+        ItemMatcher end = parsePart(split[1]);
+        ItemStack startitem = start.toItemStack();
+        if(startitem==null) return null;
+        ItemStack enditem = end.toItemStack();
+        if(enditem==null) return null;
+        
+        // If the ID is the same on both...
+        if(startitem.getTypeId()==enditem.getTypeId()) {
+            // Add a constant matcher.
+            matcher.addConstant(MatchField.TYPE_ID, startitem.getTypeId());
+        } else {
+            // Add a range matcher.
+            matcher.addRange(MatchField.TYPE_ID, startitem.getTypeId(), enditem.getTypeId());
         }
         
-        return items;
-    }
-    
-    private static List<AbstractItem> parseRange(String part) {
-        String[] split = part.split(TYPE.RANGE.getTag());
-        List<AbstractItem> start = parsePart(split[0]);
-        List<AbstractItem> end = parsePart(split[1]);
-        List<AbstractItem> items = new ArrayList<AbstractItem>();
-        AbstractItem startitem = start.get(0);
-        AbstractItem enditem = end.get(end.size() - 1);
-        for (int item = startitem.getId(); item <= enditem.getId(); item++) {
-            for (AbstractItem i : AbstractItem.getItem(item)) {
-                if (i.getId() == startitem.getId()) {
-                    if (!startitem.hasData() || i.getData() >= startitem.getData())
-                        items.add(i);
-                } else if (i.getId() == enditem.getId()) {
-                    if (!enditem.hasData() || i.getData() <= enditem.getData())
-                        items.add(i);
-                } else
-                    items.add(i);
-            }
+        // If the DATA value is the same on both...
+        if(startitem.getDurability()==enditem.getDurability()) {
+            // Add a constant matcher.
+            matcher.addConstant(MatchField.DURABILITY, startitem.getDurability());
+        } else {
+            // Add a range matcher.
+            matcher.addRange(MatchField.DURABILITY, startitem.getDurability(), enditem.getDurability());
         }
+        
         if (startitem.getAmount() != -1) {
-            for (AbstractItem i : items)
-                i.setAmount(startitem.getAmount());
+            matcher.setAmount(startitem.getAmount());
         } else if (enditem.getAmount() != -1) {
-            for (AbstractItem i : items)
-                i.setAmount(enditem.getAmount());
+            matcher.setAmount(enditem.getAmount());
         }
-        return items;
+        return matcher;
     }
     
-    private static AbstractItem parseData(String part) {
+    private static ItemMatcher parseData(String part) {
         String[] split = part.split(TYPE.DATA.getTag());
-        List<AbstractItem> items = parsePart(split[0]);
+        ItemMatcher item = parsePart(split[0]);
         int data = Integer.parseInt(split[1]);
-        for (AbstractItem item : items) {
-            if (item.isWildcard()) {
-                item.setData(data); // Make sure it matches.
-            }
-            if (item.getData() == data) {
-                return item;
-            }
-        }
-        return null;
+        item.addConstant(MatchField.DURABILITY, data);
+        return item;
     }
     
-    private static List<AbstractItem> parseNormal(String part) {
+    private static ItemMatcher parseNormal(String part) {
+        ItemMatcher matcher = new ItemMatcher();
         try {
-            return AbstractItem.getItem(Integer.parseInt(part));
+            matcher.addConstant(MatchField.TYPE_ID,Integer.parseInt(part));
+            return matcher;
         } catch (NumberFormatException exception) {
-            List<Item> alias = ItemAliasList.getItemsForAlias(part);
+            List<SpecificMaterial> alias = ItemAliasList.getItemsForAlias(part);
             if (alias.size() > 0)
-                return AbstractItem.itemListToAbstractItemList(alias);
+                return materialListToItemMatcher(alias);
             
-            Item best = null;
-            for (Item e : Item.values()) {
+            int best = -1;
+            int bestLength = -1;
+            for (Material e : Material.values()) {
                 if (e != null) {
                     String item = e.toString().toLowerCase();
                     if (item.contains(part)) {
                         //If two items have the same partial string in them (e.g diamond and diamond shovel) the shorter name wins
-                        if (best == null || item.length() < best.toString().length()) {
-                            best = e;
+                        if (best == -1 || item.length() < bestLength) {
+                            best = e.getId();
+                            bestLength=e.toString().length();
                         }
                     }
                 }
             }
-            return Arrays.asList(new AbstractItem[] { new AbstractItem(best) });
+            matcher.addConstant(MatchField.TYPE_ID, best);
+            return matcher;
         }
+    }
+
+    private static ItemMatcher materialListToItemMatcher(List<SpecificMaterial> materials) {
+        MatchOR or = new MatchOR();
+        for(SpecificMaterial m : materials) {
+            or.addExpression(new MatchConstant(MatchField.TYPE_ID,m.id));
+        }
+        ItemMatcher match = new ItemMatcher();
+        match.addExpression(or);
+        return match;
     }
 }

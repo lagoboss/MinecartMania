@@ -10,12 +10,12 @@ import javax.persistence.Table;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.util.Vector;
 
 import com.afforess.minecartmaniacore.MinecartManiaCore;
 import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
 import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
-import com.afforess.minecartmaniacore.world.Item;
 import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
 import com.avaje.ebean.validation.NotNull;
 
@@ -136,7 +136,7 @@ public class MinecartManiaMinecartDataTable {
     }
     
     public MinecartManiaMinecart toMinecartManiaMinecart() {
-        MinecartManiaMinecart minecart = MinecartManiaWorld.spawnMinecart(getLocation(), Item.getItem(typeId).get(0), owner);
+        MinecartManiaMinecart minecart = MinecartManiaWorld.spawnMinecart(getLocation(), Material.getMaterial(typeId), owner);
         minecart.previousFacingDir = this.previousFacingDir;
         minecart.previousLocation = this.getPreviousLocation();
         minecart.previousMotion = this.getPreviousMotion();

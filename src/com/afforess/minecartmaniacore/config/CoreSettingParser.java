@@ -20,6 +20,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.bukkit.Material;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -29,8 +30,8 @@ import com.afforess.minecartmaniacore.MinecartManiaCore;
 import com.afforess.minecartmaniacore.debug.DebugMode;
 import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
 import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
-import com.afforess.minecartmaniacore.world.Item;
 import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
+import com.afforess.minecartmaniacore.world.SpecificMaterial;
 
 public class CoreSettingParser implements SettingParser {
     private static final double version = 1.53;
@@ -279,7 +280,7 @@ public class CoreSettingParser implements SettingParser {
                                     }
                                     if (elementChildName == "BlockType") {
                                         log.debug("Core Config read:   ControlBlock: " + elementChildValue);
-                                        cb.setType(MinecartManiaConfigurationParser.toItem(elementChildValue));
+                                        cb.setType(MinecartManiaConfigurationParser.toSpecificMaterial(elementChildValue));
                                     } else if (elementChildName == "Catch") {
                                         cb.setCatcherState(attributeRedstone);
                                         cb.setCatcherBlock(MinecartManiaConfigurationParser.toBool(elementChildValue));
@@ -449,7 +450,7 @@ public class CoreSettingParser implements SettingParser {
                         String elementChildName = "";
                         String elementChildValue = null;
                         String aliasName = "";
-                        ArrayList<Item> aliasValues = new ArrayList<Item>();
+                        ArrayList<SpecificMaterial> aliasValues = new ArrayList<SpecificMaterial>();
                         for (int idx = 0; idx < elementChildren.getLength(); idx++) {
                             Node elementChild = elementChildren.item(idx);
                             if (elementChild.getNodeType() == Node.ELEMENT_NODE) {
@@ -465,9 +466,9 @@ public class CoreSettingParser implements SettingParser {
                                     //special case: all items
                                     if (elementChildValue != null && elementChildValue.toLowerCase().contains("all item")) {
                                         log.debug("Core Config read:         Block: " + elementChildValue);
-                                        aliasValues.addAll(Arrays.asList(Item.values()));
+                                        aliasValues.addAll(SpecificMaterial.convertToSpecific(Arrays.asList(Material.values())));
                                     } else {
-                                        Item item = MinecartManiaConfigurationParser.toItem(elementChildValue);
+                                        SpecificMaterial item = MinecartManiaConfigurationParser.toSpecificMaterial(elementChildValue);
                                         if (item != null) {
                                             log.debug("Core Config read:         Block: " + elementChildValue);
                                             aliasValues.add(item);
@@ -555,19 +556,19 @@ public class CoreSettingParser implements SettingParser {
         //Display the aliases
         log.debug("Core Config: Item Aliases");
         String CurrentKey = "";
-        Iterator<Entry<String, List<Item>>> i = ItemAliasList.aliases.entrySet().iterator();
+        Iterator<Entry<String, List<SpecificMaterial>>> i = ItemAliasList.aliases.entrySet().iterator();
         while (i.hasNext()) {
-            Entry<String, List<Item>> e = i.next();
+            Entry<String, List<SpecificMaterial>> e = i.next();
             String key = e.getKey();
             if (!key.equalsIgnoreCase(CurrentKey)) {
                 log.debug("Core Config:   Item Alias: " + key);
                 CurrentKey = key;
             }
-            List<Item> items = e.getValue();
+            List<SpecificMaterial> items = e.getValue();
             
-            ListIterator<Item> ali = items.listIterator();
+            ListIterator<SpecificMaterial> ali = items.listIterator();
             while (ali.hasNext()) {
-                Item ai = ali.next();
+                SpecificMaterial ai = ali.next();
                 log.debug("Core Config:     Type: " + ai.toString());
             }
         }
@@ -592,21 +593,21 @@ public class CoreSettingParser implements SettingParser {
         MinecartManiaWorld.getConfiguration().put("LimitedSignRange", false);
         MinecartManiaWorld.getConfiguration().put("DisappearOnDisconnect", true);
         //Create Ores Alias
-        ArrayList<Item> values = new ArrayList<Item>();
-        values.add(MinecartManiaConfigurationParser.toItem("GOLD_ORE"));
-        values.add(MinecartManiaConfigurationParser.toItem("IRON_ORE"));
-        values.add(MinecartManiaConfigurationParser.toItem("COAL_ORE"));
-        values.add(MinecartManiaConfigurationParser.toItem("LAPIS_ORE"));
+        ArrayList<SpecificMaterial> values = new ArrayList<SpecificMaterial>();
+        values.add(MinecartManiaConfigurationParser.toSpecificMaterial("GOLD_ORE"));
+        values.add(MinecartManiaConfigurationParser.toSpecificMaterial("IRON_ORE"));
+        values.add(MinecartManiaConfigurationParser.toSpecificMaterial("COAL_ORE"));
+        values.add(MinecartManiaConfigurationParser.toSpecificMaterial("LAPIS_ORE"));
         ItemAliasList.aliases.put("Ores", values);
-        //Create Ores Alias
-        values = new ArrayList<Item>();
-        values.add(MinecartManiaConfigurationParser.toItem("260"));
-        values.add(MinecartManiaConfigurationParser.toItem("297"));
-        values.add(MinecartManiaConfigurationParser.toItem("319"));
-        values.add(MinecartManiaConfigurationParser.toItem("320"));
-        values.add(MinecartManiaConfigurationParser.toItem("322"));
-        values.add(MinecartManiaConfigurationParser.toItem("350"));
-        values.add(MinecartManiaConfigurationParser.toItem("354"));
+        //Create Food Alias
+        values = new ArrayList<SpecificMaterial>();
+        values.add(MinecartManiaConfigurationParser.toSpecificMaterial("260"));
+        values.add(MinecartManiaConfigurationParser.toSpecificMaterial("297"));
+        values.add(MinecartManiaConfigurationParser.toSpecificMaterial("319"));
+        values.add(MinecartManiaConfigurationParser.toSpecificMaterial("320"));
+        values.add(MinecartManiaConfigurationParser.toSpecificMaterial("322"));
+        values.add(MinecartManiaConfigurationParser.toSpecificMaterial("350"));
+        values.add(MinecartManiaConfigurationParser.toSpecificMaterial("354"));
         ItemAliasList.aliases.put("Food", values);
     }
     

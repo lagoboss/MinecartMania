@@ -76,7 +76,6 @@ public class MinecartManiaCoreListener extends VehicleListener {
             }
             
             if (minecart.hasChangedPosition() || minecart.createdLastTick) {
-                //minecart.updateToPoweredRails(); //TODO Remove by MC 1.7
                 minecart.updateChunks();
                 if (minecart.isAtIntersection()) {
                     MinecartIntersectionEvent mie = new MinecartIntersectionEvent(minecart);
@@ -194,7 +193,7 @@ public class MinecartManiaCoreListener extends VehicleListener {
         if (minecart.minecart.getPassenger() != null) {
             return;
         }
-        if (ControlBlockList.getLaunchSpeed(minecart.getItemBeneath()) != 0.0D) {
+        if (ControlBlockList.getLaunchSpeed(minecart.getSpecificMaterialBeneath()) != 0.0D) {
             if (!minecart.isMoving()) {
                 ArrayList<Sign> signs = SignUtils.getAdjacentSignList(minecart, 2);
                 for (Sign s : signs) {

@@ -1,5 +1,7 @@
 package com.afforess.minecartmaniacore.signs;
 
+import org.bukkit.Material;
+
 import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
 import com.afforess.minecartmaniacore.signs.MinecartManiaSign;
 import com.afforess.minecartmaniacore.signs.Sign;
@@ -16,7 +18,7 @@ public class MinecartTypeSign extends MinecartManiaSign {
         sign.copy(this);
     }
     
-    public boolean canDispenseMinecartType(Item item) {
+    public boolean canDispenseMinecartType(Material item) {
         if (!calculated) {
             for (String line : lines) {
                 if (line.toLowerCase().contains("empty") || line.toLowerCase().contains("standard")) {
@@ -29,13 +31,13 @@ public class MinecartTypeSign extends MinecartManiaSign {
             }
             calculated = true;
         }
-        if (item == Item.MINECART) {
+        if (item == Material.MINECART) {
             return standard;
         }
-        if (item == Item.POWERED_MINECART) {
+        if (item == Material.POWERED_MINECART) {
             return powered;
         }
-        if (item == Item.STORAGE_MINECART) {
+        if (item == Material.STORAGE_MINECART) {
             return storage;
         }
         return false;

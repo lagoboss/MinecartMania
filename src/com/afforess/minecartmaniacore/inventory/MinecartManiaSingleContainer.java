@@ -367,11 +367,11 @@ public abstract class MinecartManiaSingleContainer implements
         return -1;
     }
     
-    public int amount(Item item) {
+    public int amount(int type, short durability) {
         int count = 0;
         for (int i = 0; i < size(); i++) {
             if (getItem(i) != null) {
-                if (getItem(i).getTypeId() == item.getId() && (!item.hasData() || getItem(i).getDurability() == item.getData())) {
+                if (getItem(i).getTypeId() == type && (durability==-1 || getItem(i).getDurability() == durability)) {
                     count += getItem(i).getAmount();
                 }
             }

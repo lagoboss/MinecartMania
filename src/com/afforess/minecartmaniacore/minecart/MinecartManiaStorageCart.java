@@ -13,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import com.afforess.minecartmaniacore.inventory.MinecartManiaInventory;
 import com.afforess.minecartmaniacore.world.Item;
 import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
+import com.afforess.minecartmaniacore.world.SpecificMaterial;
 
 /**
  * This class represents a Minecart Mania Storage Minecart, that wraps a bukkit minecart (which in turn, wraps a Minecraft EntityMinecart)
@@ -21,8 +22,8 @@ import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
  */
 public class MinecartManiaStorageCart extends MinecartManiaMinecart implements
         MinecartManiaInventory {
-    private ConcurrentHashMap<Item, Integer> maximumContents = new ConcurrentHashMap<Item, Integer>();
-    private ConcurrentHashMap<Item, Integer> minimumContents = new ConcurrentHashMap<Item, Integer>();
+    private ConcurrentHashMap<SpecificMaterial, Integer> maximumContents = new ConcurrentHashMap<SpecificMaterial, Integer>();
+    private ConcurrentHashMap<SpecificMaterial, Integer> minimumContents = new ConcurrentHashMap<SpecificMaterial, Integer>();
     
     /**
      * Creates a storage minecart from the given bukkit minecart
@@ -76,6 +77,14 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements
     }
     
     public int getMaximumItem(Item item) {
+        return getMaximumItem(item.getId(),(short)item.getData());
+    }
+    
+    public int getMaximumItem(Material item, short data) {
+        return getMaximumItem(item.getId(),data);
+    }
+    public int getMaximumItem(int id, short data) {
+        SpecificMaterial item = new SpecificMaterial(id,data);
         if (maximumContents != null && maximumContents.containsKey(item)) {
             return maximumContents.get(item);
         }
@@ -83,44 +92,51 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements
     }
     
     public void setMaximumItem(Item item, int amount) {
+        setMaximumItem(item.getId(),(short) item.getData(),amount);
+    }
+    
+    public void setMaximumItem(Material item, int amount) {
+        setMaximumItem(item.getId(),(short) -1,amount);
+    }
+    public void setMaximumItem(int item, short durability, int amount) {
         if (maximumContents != null) {
-            maximumContents.put(item, amount);
+            maximumContents.put(new SpecificMaterial(item,durability), amount);
         }
     }
     
-    public int getMinimumItem(Item item) {
+    public int getMinimumItem(Material item) {
+        return getMinimumItem(item.getId(),(short) -1);
+    }
+    public int getMinimumItem(int id, short data) {
+        SpecificMaterial item = new SpecificMaterial(id,data);
         if (minimumContents != null && minimumContents.containsKey(item)) {
             return minimumContents.get(item);
         }
         return -1;
     }
     
-    public void setMinimumItem(Item item, int amount) {
+    public void setMinimumItem(Material item, int amount) {
+        setMinimumItem(item.getId(),(short) -1,amount);
+    }
+    public void setMinimumItem(int id, short data, int amount) {
         if (minimumContents != null) {
-            minimumContents.put(item, amount);
+            minimumContents.put(new SpecificMaterial(id,data), amount);
         }
     }
     
     public boolean canAddItem(ItemStack item, Player player) {
-        if (item.getTypeId() == Item.AIR.getId()) {
+        if (item.getTypeId() == Material.AIR.getId()) {
             return false;
         }
         
-        //Check if this new item will exceed the maximum allowed
-        //        ArrayList<Item> list = Item.getItem(item.getTypeId());
-        //        for (Item i : list) {
-        Item i = Item.getItem(item);
-        if (!i.hasData() || i.getData() == item.getDurability()) {
-            if (getMaximumItem(i) != -1) {
-                if (amount(i) + item.getAmount() > getMaximumItem(i)) {
-                    return false;
-                }
+        if (getMaximumItem(item.getTypeId(),item.getDurability()) != -1) {
+            if (amount(item.getTypeId(),item.getDurability()) + item.getAmount() > getMaximumItem(item.getTypeId(),item.getDurability())) {
+                return false;
             }
         }
-        // }
         return true;
     }
-    
+
     public boolean canAddItem(ItemStack item) {
         return canAddItem(item, null);
     }
@@ -214,23 +230,11 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements
     
     public boolean canRemoveItem(int type, int amount, short durability,
             Player player) {
-        //Check if this will fall below the minimum allowed
-        //        ArrayList<Item> list = Item.getItem(type);
-        //        for (Item i : list) {
-        
-        Item i = Item.getItem(type,durability);
-        if(i==null) {
-            System.out.println(String.format("[MMCORE] canRemoveItem cannot find %d:%d",type,durability));
-            return false;
-        }
-        if (!i.hasData() || i.getData() == durability) {
-            if (getMinimumItem(i) != -1) {
-                if (amount(i) - amount < getMinimumItem(i)) {
-                    return false;
-                }
+        if (getMinimumItem(type,durability) != -1) {
+            if (amount(type,durability) - amount < getMinimumItem(type,durability)) {
+                return false;
             }
         }
-        //        }
         return true;
     }
     
@@ -508,11 +512,11 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements
         return true;
     }
     
-    public int amount(Item item) {
+    public int amount(int item, short durability) {
         int count = 0;
         for (ItemStack i : getContents()) {
-            if (i != null && i.getTypeId() == item.getId()) {
-                if (!item.hasData() || item.getData() == i.getDurability()) {
+            if (i != null && i.getTypeId() == item) {
+                if (durability==-1||durability == i.getDurability()) {
                     count += i.getAmount();
                 }
             }

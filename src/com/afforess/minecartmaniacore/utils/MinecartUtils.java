@@ -2,6 +2,7 @@ package com.afforess.minecartmaniacore.utils;
 
 import java.util.List;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -27,12 +28,12 @@ public class MinecartUtils {
         return isTrack(block.getTypeId());
     }
     
-    public static boolean isTrack(Item item) {
+    public static boolean isTrack(Material item) {
         return isTrack(item.getId());
     }
     
     public static boolean isTrack(int id) {
-        return id == Item.RAILS.getId() || id == Item.POWERED_RAIL.getId() || id == Item.DETECTOR_RAIL.getId();
+        return id == Material.RAILS.getId() || id == Material.POWERED_RAIL.getId() || id == Material.DETECTOR_RAIL.getId();
     }
     
     public static boolean isTrack(Location location) {

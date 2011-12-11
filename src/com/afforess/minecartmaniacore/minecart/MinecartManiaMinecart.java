@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
@@ -45,7 +46,9 @@ import com.afforess.minecartmaniacore.utils.ThreadSafe;
 import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
 import com.afforess.minecartmaniacore.world.Item;
 import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
+import com.afforess.minecartmaniacore.world.SpecificMaterial;
 
+@SuppressWarnings("deprecation")
 public class MinecartManiaMinecart {
     public final Minecart minecart;
     public static final double MAXIMUM_MOMENTUM = 1E150D;
@@ -547,17 +550,21 @@ public class MinecartManiaMinecart {
             data.put(key, value);
         }
     }
-    
+
     public int getBlockIdBeneath() {
         return getBlockBeneath().getTypeId();
     }
+    public Material getMaterialBeneath() {
+        return getBlockBeneath().getType();
+    }
     
+    @Deprecated
     public Item getItemBeneath() {
         return Item.getItem(getBlockBeneath());
     }
     
     public Block getBlockBeneath() {
-        if (ControlBlockList.getControlBlock(Item.getItem(getLocation().getBlock())) != null) {
+        if (ControlBlockList.getControlBlock(new SpecificMaterial(getLocation().getBlock().getTypeId(),getLocation().getBlock().getData())) != null) {
             return getLocation().getBlock();
         } else {
             Location temp = getLocation();
@@ -581,7 +588,7 @@ public class MinecartManiaMinecart {
     
     public void undoPoweredRails() {
         //this server has decided to override the default boost value, so we need to undo notch's changes
-        if (getLocation().getBlock().getTypeId() == Item.POWERED_RAIL.getId()) {
+        if (getLocation().getBlock().getTypeId() == Material.POWERED_RAIL.getId()) {
             if (ControlBlockList.getSpeedMultiplier(this) != 1.0D && isMoving()) {
                 int data = getLocation().getBlock().getData();
                 boolean powered = (data & 8) != 0;
@@ -621,7 +628,7 @@ public class MinecartManiaMinecart {
         if (ControlBlockList.isValidPlatformBlock(this) && isStandardMinecart()) {
             if (minecart.getPassenger() == null) {
                 List<LivingEntity> list = minecart.getWorld().getLivingEntities();
-                double range = ControlBlockList.getControlBlock(getItemBeneath()).getPlatformRange();
+                double range = ControlBlockList.getControlBlock(getSpecificMaterialBeneath()).getPlatformRange();
                 range *= range;
                 LivingEntity closest = null;
                 double distance = -1;
@@ -646,17 +653,17 @@ public class MinecartManiaMinecart {
     }
     
     public void doLauncherBlock() {
-        if (ControlBlockList.getLaunchSpeed(getItemBeneath()) != 0.0D) {
+        if (ControlBlockList.getLaunchSpeed(getSpecificMaterialBeneath()) != 0.0D) {
             if (ControlBlockList.isValidLauncherBlock(this)) {
                 if (!isMoving()) {
-                    launchCart(ControlBlockList.getLaunchSpeed(getItemBeneath()));
+                    launchCart(ControlBlockList.getLaunchSpeed(getSpecificMaterialBeneath()));
                 }
             }
         }
     }
     
     public boolean doCatcherBlock() {
-        if (ControlBlockList.isCatcherBlock(getItemBeneath())) {
+        if (ControlBlockList.isCatcherBlock(getSpecificMaterialBeneath())) {
             if (ControlBlockList.isValidCatcherBlock(this)) {
                 MinecartCaughtEvent mce = new MinecartCaughtEvent(this);
                 MinecartManiaCore.callEvent(mce);
@@ -727,7 +734,7 @@ public class MinecartManiaMinecart {
     public boolean doEjectorBlock() {
         if (ControlBlockList.isValidEjectorBlock(this)) {
             if (minecart.getPassenger() != null) {
-                double ejectY = ControlBlockList.getControlBlock(getItemBeneath()).getEjectY();
+                double ejectY = ControlBlockList.getControlBlock(getSpecificMaterialBeneath()).getEjectY();
                 MinecartPassengerEjectEvent mpee = new MinecartPassengerEjectEvent(this, minecart.getPassenger());
                 MinecartManiaCore.callEvent(mpee);
                 if (!mpee.isCancelled()) {
@@ -888,15 +895,15 @@ public class MinecartManiaMinecart {
         return !isPoweredMinecart() && !isStorageMinecart();
     }
     
-    public Item getType() {
+    public Material getType() {
         if (isPoweredMinecart()) {
-            return Item.POWERED_MINECART;
+            return Material.POWERED_MINECART;
         }
         if (isStorageMinecart()) {
-            return Item.STORAGE_MINECART;
+            return Material.STORAGE_MINECART;
         }
         
-        return Item.MINECART;
+        return Material.MINECART;
     }
     
     /**
@@ -958,7 +965,7 @@ public class MinecartManiaMinecart {
                     }
                 }
                 if (!(Boolean) MinecartManiaWorld.getConfigurationValue("RemoveDeadMinecarts")) {
-                    items.add(new ItemStack(getType().toMaterial(), 1));
+                    items.add(new ItemStack(getType(), 1));
                 }
                 
                 Object owner = getOwner();
@@ -1073,7 +1080,7 @@ public class MinecartManiaMinecart {
             for (int yOffset = 1; yOffset < 128; yOffset++) {
                 if (y + yOffset < 128 && yOffset > 1) {
                     //See if we have a valid destination
-                    if (MinecartUtils.isTrack(elevatorBlock.getRelative(0, yOffset, 0)) && ControlBlockList.isElevatorBlock(Item.getItem(elevatorBlock.getRelative(0, yOffset - 1, 0)))) {
+                    if (MinecartUtils.isTrack(elevatorBlock.getRelative(0, yOffset, 0)) && ControlBlockList.isElevatorBlock(blockToSpecificMaterial(elevatorBlock.getRelative(0, yOffset - 1, 0)))) {
                         //do the teleport and return
                         MinecartElevatorEvent event = new MinecartElevatorEvent(this, elevatorBlock.getRelative(0, yOffset, 0).getLocation());
                         MinecartManiaCore.callEvent(event);
@@ -1084,7 +1091,7 @@ public class MinecartManiaMinecart {
                 }
                 if (y - yOffset > 0) {
                     //See if we have a valid destination
-                    if (MinecartUtils.isTrack(elevatorBlock.getRelative(0, -yOffset, 0)) && ControlBlockList.isElevatorBlock(Item.getItem(elevatorBlock.getRelative(0, -yOffset - 1, 0)))) {
+                    if (MinecartUtils.isTrack(elevatorBlock.getRelative(0, -yOffset, 0)) && ControlBlockList.isElevatorBlock(blockToSpecificMaterial(elevatorBlock.getRelative(0, -yOffset - 1, 0)))) {
                         //do the teleport and return
                         MinecartElevatorEvent event = new MinecartElevatorEvent(this, elevatorBlock.getRelative(0, -yOffset, 0).getLocation());
                         MinecartManiaCore.callEvent(event);
@@ -1096,5 +1103,15 @@ public class MinecartManiaMinecart {
             }
         }
         return false;
+    }
+
+    private SpecificMaterial blockToSpecificMaterial(Block block) {
+        int type = block.getTypeId();
+        short data = block.getData();
+        return new SpecificMaterial(type,data);
+    }
+
+    public SpecificMaterial getSpecificMaterialBeneath() {
+        return blockToSpecificMaterial(getBlockBeneath());
     }
 }

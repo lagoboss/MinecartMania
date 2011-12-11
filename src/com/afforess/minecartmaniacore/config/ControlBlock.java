@@ -3,11 +3,11 @@ package com.afforess.minecartmaniacore.config;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.afforess.minecartmaniacore.world.Item;
+import com.afforess.minecartmaniacore.world.SpecificMaterial;
 
 public class ControlBlock {
     
-    private Item type = null;
+    private SpecificMaterial type = null;
     private List<SpeedMultiplier> multipliers = new ArrayList<SpeedMultiplier>();
     private boolean catcher = false;
     private RedstoneState catcherState = RedstoneState.Default;
@@ -28,15 +28,14 @@ public class ControlBlock {
     private RedstoneState elevatorState = RedstoneState.Default;
     public boolean updateToPoweredRail = false; //temporary, remove for MC 1.6
     private double ejectY = 0;
-    
     public ControlBlock() {
     }
     
-    public Item getType() {
+    public SpecificMaterial getType() {
         return type;
     }
     
-    protected void setType(Item type) {
+    protected void setType(SpecificMaterial type) {
         this.type = type;
     }
     

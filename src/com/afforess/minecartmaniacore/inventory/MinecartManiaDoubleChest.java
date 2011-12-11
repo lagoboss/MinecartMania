@@ -364,8 +364,8 @@ public class MinecartManiaDoubleChest implements MinecartManiaInventory {
         return chest1.contains(type, durability) || chest2.contains(type, durability);
     }
     
-    public int amount(Item item) {
-        return chest1.amount(item) + chest2.amount(item);
+    public int amount(int type, short durability) {
+        return chest1.amount(type,durability) + chest2.amount(type,durability);
     }
     
 }

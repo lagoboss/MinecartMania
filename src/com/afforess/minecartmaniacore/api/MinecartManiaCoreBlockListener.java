@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.event.block.BlockListener;
@@ -21,6 +22,7 @@ import com.afforess.minecartmaniacore.utils.MinecartUtils;
 import com.afforess.minecartmaniacore.utils.SignUtils;
 import com.afforess.minecartmaniacore.world.Item;
 import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
+import com.afforess.minecartmaniacore.world.SpecificMaterial;
 
 public class MinecartManiaCoreBlockListener extends BlockListener {
     private HashMap<Location, Long> lastSpawn = new HashMap<Location, Long>();
@@ -53,13 +55,10 @@ public class MinecartManiaCoreBlockListener extends BlockListener {
                             }
                         }
                     }
-                    Item type = Item.getItem(b.getTypeId(), b.getData());
-                    if (Item.getItem(b.getTypeId()).size() == 1) {
-                        type = Item.getItem(b.getTypeId()).get(0);
-                    }
-                    if (ControlBlockList.isSpawnMinecartBlock(type)) {
-                        if (ControlBlockList.getControlBlock(type).getSpawnState() != RedstoneState.Enables || power) {
-                            if (ControlBlockList.getControlBlock(type).getSpawnState() != RedstoneState.Disables || !power) {
+                    SpecificMaterial material = new SpecificMaterial(b.getTypeId(), b.getData());
+                    if (ControlBlockList.isSpawnMinecartBlock(material)) {
+                        if (ControlBlockList.getControlBlock(material).getSpawnState() != RedstoneState.Enables || power) {
+                            if (ControlBlockList.getControlBlock(material).getSpawnState() != RedstoneState.Disables || !power) {
                                 if (MinecartUtils.isTrack(b.getRelative(0, 1, 0).getTypeId())) {
                                     Long lastSpawn = this.lastSpawn.get(b.getLocation());
                                     if (lastSpawn == null || (Math.abs(System.currentTimeMillis() - lastSpawn) > 1000)) {
@@ -67,8 +66,8 @@ public class MinecartManiaCoreBlockListener extends BlockListener {
                                         spawn.setY(spawn.getY() + 1);
                                         MinecartManiaMinecart minecart = MinecartManiaWorld.spawnMinecart(spawn, getMinecartType(b.getLocation()), null);
                                         this.lastSpawn.put(b.getLocation(), System.currentTimeMillis());
-                                        if (ControlBlockList.getLaunchSpeed(Item.materialToItem(b.getType())) != 0.0) {
-                                            minecart.launchCart(ControlBlockList.getLaunchSpeed(Item.materialToItem(b.getType())));
+                                        if (ControlBlockList.getLaunchSpeed(SpecificMaterial.convertBlock(b)) != 0.0) {
+                                            minecart.launchCart(ControlBlockList.getLaunchSpeed(SpecificMaterial.convertBlock(b)));
                                         }
                                     }
                                 }
@@ -80,24 +79,24 @@ public class MinecartManiaCoreBlockListener extends BlockListener {
         }
     }
     
-    private static Item getMinecartType(Location loc) {
+    private static Material getMinecartType(Location loc) {
         ArrayList<Sign> signList = SignUtils.getAdjacentMinecartManiaSignList(loc, 2);
         for (Sign sign : signList) {
             if (sign instanceof MinecartTypeSign) {
                 MinecartTypeSign type = (MinecartTypeSign) sign;
-                if (type.canDispenseMinecartType(Item.MINECART)) {
-                    return Item.MINECART;
+                if (type.canDispenseMinecartType(Material.MINECART)) {
+                    return Material.MINECART;
                 }
-                if (type.canDispenseMinecartType(Item.POWERED_MINECART)) {
-                    return Item.POWERED_MINECART;
+                if (type.canDispenseMinecartType(Material.POWERED_MINECART)) {
+                    return Material.POWERED_MINECART;
                 }
-                if (type.canDispenseMinecartType(Item.STORAGE_MINECART)) {
-                    return Item.STORAGE_MINECART;
+                if (type.canDispenseMinecartType(Material.STORAGE_MINECART)) {
+                    return Material.STORAGE_MINECART;
                 }
             }
         }
         
         //Returns standard minecart by default
-        return Item.MINECART;
+        return Material.MINECART;
     }
 }

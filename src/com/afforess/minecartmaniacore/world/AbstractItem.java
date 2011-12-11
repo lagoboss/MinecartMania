@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 /**
  * An abstract representation of an item in MC.
  */
+@Deprecated
 public class AbstractItem {
     final private Item item;
     private int amount = -1;

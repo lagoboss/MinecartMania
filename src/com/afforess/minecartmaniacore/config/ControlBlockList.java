@@ -3,11 +3,12 @@ package com.afforess.minecartmaniacore.config;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 
 import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
 import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
-import com.afforess.minecartmaniacore.world.Item;
+import com.afforess.minecartmaniacore.world.SpecificMaterial;
 
 public class ControlBlockList {
     protected static ArrayList<ControlBlock> controlBlocks = new ArrayList<ControlBlock>();
@@ -16,11 +17,11 @@ public class ControlBlockList {
         return controlBlocks;
     }
     
-    public static boolean isControlBlock(Item item) {
-        return getControlBlock(item) != null;
+    public static boolean isControlBlock(SpecificMaterial mat) {
+        return getControlBlock(mat) != null;
     }
     
-    public static ControlBlock getControlBlock(Item item) {
+    public static ControlBlock getControlBlock(SpecificMaterial item) {
         if (item == null)
             return null;
         for (ControlBlock cb : controlBlocks) {
@@ -31,7 +32,7 @@ public class ControlBlockList {
         return null;
     }
     
-    public static boolean hasSpeedMultiplier(Item item) {
+    public static boolean hasSpeedMultiplier(SpecificMaterial item) {
         ControlBlock block = getControlBlock(item);
         if (block != null) {
             return block.getSpeedMultipliers().size() > 0;
@@ -40,7 +41,7 @@ public class ControlBlockList {
     }
     
     public static double getSpeedMultiplier(MinecartManiaMinecart minecart) {
-        ControlBlock block = getControlBlock(minecart.getItemBeneath());
+        ControlBlock block = getControlBlock(minecart.getSpecificMaterialBeneath());
         if (block != null) {
             List<SpeedMultiplier> multipliers = block.getSpeedMultipliers();
             for (SpeedMultiplier speed : multipliers) {
@@ -71,7 +72,7 @@ public class ControlBlockList {
         return 1.0D;
     }
     
-    public static boolean isCatcherBlock(Item item) {
+    public static boolean isCatcherBlock(SpecificMaterial item) {
         ControlBlock block = getControlBlock(item);
         if (block != null) {
             return block.isCatcherBlock();
@@ -80,11 +81,11 @@ public class ControlBlockList {
     }
     
     public static boolean isValidCatcherBlock(MinecartManiaMinecart minecart) {
-        Item item = minecart.getItemBeneath();
+        SpecificMaterial item = minecart.getSpecificMaterialBeneath();
         return isCatcherBlock(item) && isCorrectState(minecart.isPoweredBeneath(), getControlBlock(item).getCatcherState());
     }
     
-    public static double getLaunchSpeed(Item item) {
+    public static double getLaunchSpeed(SpecificMaterial item) {
         ControlBlock block = getControlBlock(item);
         if (block != null) {
             return block.getLauncherSpeed();
@@ -93,11 +94,11 @@ public class ControlBlockList {
     }
     
     public static boolean isValidLauncherBlock(MinecartManiaMinecart minecart) {
-        Item item = minecart.getItemBeneath();
+        SpecificMaterial item = minecart.getSpecificMaterialBeneath();
         return getLaunchSpeed(item) != 0.0D && isCorrectState(minecart.isPoweredBeneath(), getControlBlock(item).getLauncherState());
     }
     
-    public static boolean isEjectorBlock(Item item) {
+    public static boolean isEjectorBlock(SpecificMaterial item) {
         ControlBlock block = getControlBlock(item);
         if (block != null) {
             return block.isEjectorBlock();
@@ -106,11 +107,11 @@ public class ControlBlockList {
     }
     
     public static boolean isValidEjectorBlock(MinecartManiaMinecart minecart) {
-        Item item = minecart.getItemBeneath();
+        SpecificMaterial item = minecart.getSpecificMaterialBeneath();
         return isEjectorBlock(item) && isCorrectState(minecart.isPoweredBeneath(), getControlBlock(item).getEjectorState());
     }
     
-    public static boolean isPlatformBlock(Item item) {
+    public static boolean isPlatformBlock(SpecificMaterial item) {
         ControlBlock block = getControlBlock(item);
         if (block != null) {
             return block.isPlatformBlock();
@@ -119,11 +120,11 @@ public class ControlBlockList {
     }
     
     public static boolean isValidPlatformBlock(MinecartManiaMinecart minecart) {
-        Item item = minecart.getItemBeneath();
+        SpecificMaterial item = minecart.getSpecificMaterialBeneath();
         return isPlatformBlock(item) && isCorrectState(minecart.isPoweredBeneath(), getControlBlock(item).getPlatformState());
     }
     
-    public static boolean isStationBlock(Item item) {
+    public static boolean isStationBlock(SpecificMaterial item) {
         ControlBlock block = getControlBlock(item);
         if (block != null) {
             return block.isStationBlock();
@@ -132,11 +133,11 @@ public class ControlBlockList {
     }
     
     public static boolean isValidStationBlock(MinecartManiaMinecart minecart) {
-        Item item = minecart.getItemBeneath();
+        SpecificMaterial item = minecart.getSpecificMaterialBeneath();
         return isStationBlock(item) && isCorrectState(minecart.isPoweredBeneath(), getControlBlock(item).getStationState());
     }
     
-    public static boolean isKillMinecartBlock(Item item) {
+    public static boolean isKillMinecartBlock(SpecificMaterial item) {
         ControlBlock block = getControlBlock(item);
         if (block != null) {
             return block.isKillMinecart();
@@ -146,19 +147,19 @@ public class ControlBlockList {
     
     public static boolean isValidKillMinecartBlock(
             MinecartManiaMinecart minecart) {
-        Item item = minecart.getItemBeneath();
+        SpecificMaterial item = minecart.getSpecificMaterialBeneath();
         return isKillMinecartBlock(item) && isCorrectState(minecart.isPoweredBeneath(), getControlBlock(item).getKillState());
     }
     
-    public static boolean isSpawnMinecartBlock(Item item) {
-        ControlBlock block = getControlBlock(item);
+    public static boolean isSpawnMinecartBlock(SpecificMaterial material) {
+        ControlBlock block = getControlBlock(material);
         if (block != null) {
             return block.isSpawnMinecart();
         }
         return false;
     }
     
-    public static boolean isElevatorBlock(Item item) {
+    public static boolean isElevatorBlock(SpecificMaterial item) {
         ControlBlock block = getControlBlock(item);
         if (block != null) {
             return block.isElevatorBlock();
@@ -167,7 +168,7 @@ public class ControlBlockList {
     }
     
     public static boolean isValidElevatorBlock(MinecartManiaMinecart minecart) {
-        Item item = minecart.getItemBeneath();
+        SpecificMaterial item = minecart.getSpecificMaterialBeneath();
         return isElevatorBlock(item) && isCorrectState(minecart.isPoweredBeneath(), getControlBlock(item).getElevatorState());
     }
     
@@ -185,7 +186,7 @@ public class ControlBlockList {
     
     private static boolean isCorrectState(Block block, RedstoneState state) {
         boolean power = block.isBlockIndirectlyPowered() || block.getRelative(0, -1, 0).isBlockIndirectlyPowered();
-        if (block.getTypeId() == Item.POWERED_RAIL.getId()) {
+        if (block.getTypeId() == Material.POWERED_RAIL.getId()) {
             power = (block.getData() & 0x8) != 0;
         }
         switch (state) {

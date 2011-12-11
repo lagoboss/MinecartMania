@@ -3,6 +3,8 @@ package com.afforess.minecartmaniacore.config;
 import java.io.File;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.bukkit.Material;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -12,6 +14,7 @@ import com.afforess.minecartmaniacore.utils.ItemUtils;
 import com.afforess.minecartmaniacore.utils.StringUtils;
 import com.afforess.minecartmaniacore.world.AbstractItem;
 import com.afforess.minecartmaniacore.world.Item;
+import com.afforess.minecartmaniacore.world.SpecificMaterial;
 
 public class MinecartManiaConfigurationParser {
     private static MinecartManiaLogger log = MinecartManiaLogger.getInstance();
@@ -120,12 +123,12 @@ public class MinecartManiaConfigurationParser {
         return def;
     }
     
-    public static Item toItem(String str) {
+    public static SpecificMaterial toSpecificMaterial(String str) {
         if (str == null)
             return null;
-        AbstractItem[] list = ItemUtils.getItemStringToMaterial(str);
+        SpecificMaterial[] list = ItemUtils.getItemStringToMaterial(str);
         if (list != null && list.length > 0) {
-            return list[0].type();
+            return list[0];
         }
         return null;
     }

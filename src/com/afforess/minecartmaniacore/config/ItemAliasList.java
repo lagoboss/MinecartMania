@@ -6,15 +6,15 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.afforess.minecartmaniacore.world.Item;
+import com.afforess.minecartmaniacore.world.SpecificMaterial;
 
 public class ItemAliasList {
-    public static ConcurrentHashMap<String, List<Item>> aliases = new ConcurrentHashMap<String, List<Item>>();
+    public static ConcurrentHashMap<String, List<SpecificMaterial>> aliases = new ConcurrentHashMap<String, List<SpecificMaterial>>();
     
     public static boolean isAlias(String alias) {
-        Iterator<Entry<String, List<Item>>> i = aliases.entrySet().iterator();
+        Iterator<Entry<String, List<SpecificMaterial>>> i = aliases.entrySet().iterator();
         while (i.hasNext()) {
-            Entry<String, List<Item>> e = i.next();
+            Entry<String, List<com.afforess.minecartmaniacore.world.SpecificMaterial>> e = i.next();
             String key = e.getKey();
             if (key.equalsIgnoreCase(alias)) {
                 return true;
@@ -23,15 +23,15 @@ public class ItemAliasList {
         return false;
     }
     
-    public static List<Item> getItemsForAlias(String alias) {
-        Iterator<Entry<String, List<Item>>> i = aliases.entrySet().iterator();
+    public static List<SpecificMaterial> getItemsForAlias(String alias) {
+        Iterator<Entry<String, List<SpecificMaterial>>> i = aliases.entrySet().iterator();
         while (i.hasNext()) {
-            Entry<String, List<Item>> e = i.next();
+            Entry<String, List<SpecificMaterial>> e = i.next();
             String key = e.getKey();
             if (key.equalsIgnoreCase(alias)) {
                 return e.getValue();
             }
         }
-        return new ArrayList<Item>();
+        return new ArrayList<SpecificMaterial>();
     }
 }

@@ -13,13 +13,13 @@ public interface MinecartManiaInventory {
     
     public boolean contains(Material m);
     
-    public boolean contains(Item i);
+//    public boolean contains(Item i);
     
     public boolean contains(int type);
     
     public boolean contains(int type, short durability);
     
-    public int amount(Item item);
+    public int amount(int type, short durability);
     
     public boolean canAddItem(ItemStack item);
     
@@ -57,7 +57,7 @@ public interface MinecartManiaInventory {
     
     public int first(Material m);
     
-    public int first(Item i);
+    public int first(int type, short durability);
     
     public int first(int type);
     
