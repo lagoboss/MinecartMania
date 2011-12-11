@@ -13,6 +13,7 @@ import com.afforess.minecartmaniacore.matching.MatchConstant;
 import com.afforess.minecartmaniacore.matching.MatchField;
 import com.afforess.minecartmaniacore.matching.MatchOR;
 import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
+import com.afforess.minecartmaniacore.world.AbstractItem;
 import com.afforess.minecartmaniacore.world.SpecificMaterial;
 
 /**
@@ -313,7 +314,7 @@ public class ItemUtils {
         return new ItemMatcher[] { parsePart(line) };
     }
     
-    public static ItemMatcher[] getItemStringToMatchers(String[] lines,
+    public static ItemMatcher[] getItemStringListToMatchers(String[] lines,
             CompassDirection facing) {
         ArrayList<ItemMatcher> matchers = new ArrayList<ItemMatcher>();
         for (String line : lines) {
@@ -321,5 +322,9 @@ public class ItemUtils {
                 matchers.add(matcher);
         }
         return (ItemMatcher[])matchers.toArray();
+    }
+
+    public static ItemMatcher[] getItemStringListToMatchers(String[] lines) {
+        return getItemStringListToMatchers(lines,CompassDirection.NO_DIRECTION);
     }
 }
