@@ -56,6 +56,7 @@ public class ItemMatcher {
      * @return
      */
     public boolean match(ItemStack item) {
+        if(item==null) return false;
         for(MatchToken matcher : matchTokens) {
             if(!matcher.match(item)) return false;
         }
