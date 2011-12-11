@@ -43,10 +43,10 @@ public class LocaleParser implements SettingParser {
                 tempNode = (Node) templist.item(0);
                 String text = getNodeValue(tempNode);
                 if (key != null && text != null) {
-                    MinecartManiaLogger.getInstance().debug("Added Text Key Key: " + key + " Text: " + text);
+                    MinecartManiaLogger.getInstance().debug("Added Text Key Key: %s Text: %s", key, text);
                     textKeys.put(key, text);
                 } else {
-                    MinecartManiaLogger.getInstance().severe("Invalid Text Key! Key: " + key + " Text: " + text);
+                    MinecartManiaLogger.getInstance().severe("Invalid Text Key! Key: %s Text: %s", key, text);
                 }
             }
         }
