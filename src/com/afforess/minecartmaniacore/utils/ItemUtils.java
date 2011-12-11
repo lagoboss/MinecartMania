@@ -321,7 +321,10 @@ public class ItemUtils {
             for (ItemMatcher matcher : getItemStringToMatchers(line, facing))
                 matchers.add(matcher);
         }
-        return (ItemMatcher[])matchers.toArray();
+        
+        ItemMatcher[] ret = new ItemMatcher[matchers.size()];
+        matchers.toArray(ret);
+        return ret;
     }
 
     public static ItemMatcher[] getItemStringListToMatchers(String[] lines) {
