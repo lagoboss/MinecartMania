@@ -43,4 +43,14 @@ public class SpecificMaterial {
     public static SpecificMaterial convertBlock(Block b) {
         return new SpecificMaterial(b.getTypeId(),b.getData());
     }
+
+    public int getId() {
+        // TODO Auto-generated method stub
+        return id;
+    }
+
+    public short getData() {
+        // TODO Auto-generated method stub
+        return durability;
+    }
 }

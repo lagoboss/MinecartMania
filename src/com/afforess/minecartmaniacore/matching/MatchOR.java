@@ -12,13 +12,17 @@ public class MatchOR implements MatchToken {
         tokens.add(token);
     }
     
+    /**
+     * Same deal as MatchItems.match, except OR
+     */
     public boolean match(ItemStack item) {
-        // TODO Auto-generated method stub
+        for(MatchToken match : tokens) {
+            if(match.match(item)) return true;
+        }
         return false;
     }
     
     public boolean isComplex() {
-        // TODO Auto-generated method stub
         return true;
     }
     

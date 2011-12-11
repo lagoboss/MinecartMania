@@ -95,4 +95,8 @@ public class ItemMatcher {
     public void setAmount(int amount) {
         this.amount=amount;
     }
+
+    public int getAmount() {
+        return amount;
+    }
 }

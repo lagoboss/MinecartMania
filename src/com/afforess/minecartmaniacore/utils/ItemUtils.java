@@ -8,6 +8,7 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import com.afforess.minecartmaniacore.config.ItemAliasList;
+import com.afforess.minecartmaniacore.matching.MatchAll;
 import com.afforess.minecartmaniacore.matching.MatchConstant;
 import com.afforess.minecartmaniacore.matching.MatchField;
 import com.afforess.minecartmaniacore.matching.MatchOR;
@@ -89,7 +90,7 @@ public class ItemUtils {
             if (str.contains("all items")) {
                 for (Material m : Material.values()) {
                     if (!items.contains(m)) {
-                        items.add(new SpecificMaterial(m.getId(),(short) 0));
+                        items.add(new SpecificMaterial(m.getId(), (short) 0));
                     }
                 }
             }
@@ -102,13 +103,12 @@ public class ItemUtils {
                 if (matcher == null)
                     continue;
                 
-                for(Material mat : Material.values()) {
-                    if(matcher.match(new ItemStack(mat)))
-                        items.add(new SpecificMaterial(mat.getId(),(short) 0));
+                for (Material mat : Material.values()) {
+                    if (matcher.match(new ItemStack(mat)))
+                        items.add(new SpecificMaterial(mat.getId(), (short) 0));
                 }
             }
         }
-        
         
         //Remove Air from the list
         Iterator<SpecificMaterial> i = items.iterator();
@@ -154,6 +154,7 @@ public class ItemUtils {
             return (part.lastIndexOf(DATA.getTag()) > part.lastIndexOf(AMOUNT.getTag()) ? DATA : (part.contains(AMOUNT.getTag()) ? AMOUNT : NONE));
         }
     }
+    
     private static ItemMatcher parsePart(String part) {
         try {
             switch (TYPE.getType(part)) {
@@ -195,6 +196,7 @@ public class ItemUtils {
     
     /**
      * Get list of item matchers, given a range.
+     * 
      * @param part
      * @return
      */
@@ -205,12 +207,14 @@ public class ItemUtils {
         ItemMatcher start = parsePart(split[0]);
         ItemMatcher end = parsePart(split[1]);
         ItemStack startitem = start.toItemStack();
-        if(startitem==null) return null;
+        if (startitem == null)
+            return null;
         ItemStack enditem = end.toItemStack();
-        if(enditem==null) return null;
+        if (enditem == null)
+            return null;
         
         // If the ID is the same on both...
-        if(startitem.getTypeId()==enditem.getTypeId()) {
+        if (startitem.getTypeId() == enditem.getTypeId()) {
             // Add a constant matcher.
             matcher.addConstant(MatchField.TYPE_ID, startitem.getTypeId());
         } else {
@@ -219,7 +223,7 @@ public class ItemUtils {
         }
         
         // If the DATA value is the same on both...
-        if(startitem.getDurability()==enditem.getDurability()) {
+        if (startitem.getDurability() == enditem.getDurability()) {
             // Add a constant matcher.
             matcher.addConstant(MatchField.DURABILITY, startitem.getDurability());
         } else {
@@ -246,7 +250,7 @@ public class ItemUtils {
     private static ItemMatcher parseNormal(String part) {
         ItemMatcher matcher = new ItemMatcher();
         try {
-            matcher.addConstant(MatchField.TYPE_ID,Integer.parseInt(part));
+            matcher.addConstant(MatchField.TYPE_ID, Integer.parseInt(part));
             return matcher;
         } catch (NumberFormatException exception) {
             List<SpecificMaterial> alias = ItemAliasList.getItemsForAlias(part);
@@ -262,7 +266,7 @@ public class ItemUtils {
                         //If two items have the same partial string in them (e.g diamond and diamond shovel) the shorter name wins
                         if (best == -1 || item.length() < bestLength) {
                             best = e.getId();
-                            bestLength=e.toString().length();
+                            bestLength = e.toString().length();
                         }
                     }
                 }
@@ -271,14 +275,51 @@ public class ItemUtils {
             return matcher;
         }
     }
-
-    private static ItemMatcher materialListToItemMatcher(List<SpecificMaterial> materials) {
+    
+    private static ItemMatcher materialListToItemMatcher(
+            List<SpecificMaterial> materials) {
         MatchOR or = new MatchOR();
-        for(SpecificMaterial m : materials) {
-            or.addExpression(new MatchConstant(MatchField.TYPE_ID,m.id));
+        for (SpecificMaterial m : materials) {
+            or.addExpression(new MatchConstant(MatchField.TYPE_ID, m.id));
         }
         ItemMatcher match = new ItemMatcher();
         match.addExpression(or);
         return match;
+    }
+    
+    public static ItemMatcher[] getItemStringToMatchers(String line,
+            CompassDirection facing) {
+        
+        String str = StringUtils.removeBrackets(line).toLowerCase();
+        str = str.trim();
+        if (str.isEmpty()) {
+            return new ItemMatcher[0];
+        }
+        
+        //Check the given direction and intended direction from the sign
+        CompassDirection direction = getLineItemDirection(str);
+        if (direction != CompassDirection.NO_DIRECTION) {
+            str = str.substring(2, str.length()); // remove the direction for further parsing.
+        }
+        if (facing != null && direction != facing && direction != CompassDirection.NO_DIRECTION) {
+            return new ItemMatcher[0];
+        }
+        ItemMatcher matcher = new ItemMatcher();
+        if (str == "all items") {
+            matcher.addExpression(new MatchAll());
+            return new ItemMatcher[] { matcher };
+        }
+        
+        return new ItemMatcher[] { parsePart(line) };
+    }
+    
+    public static ItemMatcher[] getItemStringToMatchers(String[] lines,
+            CompassDirection facing) {
+        ArrayList<ItemMatcher> matchers = new ArrayList<ItemMatcher>();
+        for (String line : lines) {
+            for (ItemMatcher matcher : getItemStringToMatchers(line, facing))
+                matchers.add(matcher);
+        }
+        return (ItemMatcher[])matchers.toArray();
     }
 }
