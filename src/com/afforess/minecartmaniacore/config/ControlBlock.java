@@ -187,10 +187,10 @@ public class ControlBlock {
     public RedstoneState getElevatorState() {
         return elevatorState;
     }
-    /*
+    
     public String toString() {
-        return "[" + getType() + ":" + isCatcherBlock() + ":" + getLauncherSpeed() + ":" + isEjectorBlock() + ":" + isPlatformBlock() + ":" + isStationBlock() + "]";
-    }*/
+        return "[" + matchers[0].toItemStack().toString() + ":" + isCatcherBlock() + ":" + getLauncherSpeed() + ":" + isEjectorBlock() + ":" + isPlatformBlock() + ":" + isStationBlock() + "]";
+    }
 
     public void setMatchers(ItemMatcher[] matchers) {
         this.matchers=matchers;
