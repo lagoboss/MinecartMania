@@ -3,11 +3,12 @@ package com.afforess.minecartmaniacore.config;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.afforess.minecartmaniacore.utils.ItemMatcher;
 import com.afforess.minecartmaniacore.world.SpecificMaterial;
 
 public class ControlBlock {
     
-    private SpecificMaterial type = null;
+    private ItemMatcher[] matchers = null;
     private List<SpeedMultiplier> multipliers = new ArrayList<SpeedMultiplier>();
     private boolean catcher = false;
     private RedstoneState catcherState = RedstoneState.Default;
@@ -31,12 +32,8 @@ public class ControlBlock {
     public ControlBlock() {
     }
     
-    public SpecificMaterial getType() {
-        return type;
-    }
-    
-    protected void setType(SpecificMaterial type) {
-        this.type = type;
+    public ItemMatcher[] getMatchers() {
+        return matchers;
     }
     
     public List<SpeedMultiplier> getSpeedMultipliers() {
@@ -190,8 +187,12 @@ public class ControlBlock {
     public RedstoneState getElevatorState() {
         return elevatorState;
     }
-    
+    /*
     public String toString() {
         return "[" + getType() + ":" + isCatcherBlock() + ":" + getLauncherSpeed() + ":" + isEjectorBlock() + ":" + isPlatformBlock() + ":" + isStationBlock() + "]";
+    }*/
+
+    public void setMatchers(ItemMatcher[] matchers) {
+        this.matchers=matchers;
     }
 }

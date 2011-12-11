@@ -30,6 +30,7 @@ import com.afforess.minecartmaniacore.MinecartManiaCore;
 import com.afforess.minecartmaniacore.debug.DebugMode;
 import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
 import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
+import com.afforess.minecartmaniacore.utils.ItemUtils;
 import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
 import com.afforess.minecartmaniacore.world.SpecificMaterial;
 
@@ -280,7 +281,7 @@ public class CoreSettingParser implements SettingParser {
                                     }
                                     if (elementChildName == "BlockType") {
                                         log.debug("Core Config read:   ControlBlock: " + elementChildValue);
-                                        cb.setType(MinecartManiaConfigurationParser.toSpecificMaterial(elementChildValue));
+                                        cb.setMatchers(ItemUtils.getItemStringToMatchers(elementChildValue,CompassDirection.NO_DIRECTION));
                                     } else if (elementChildName == "Catch") {
                                         cb.setCatcherState(attributeRedstone);
                                         cb.setCatcherBlock(MinecartManiaConfigurationParser.toBool(elementChildValue));
@@ -503,7 +504,7 @@ public class CoreSettingParser implements SettingParser {
         log.debug("Core Config: ControlBlocks");
         while (li.hasNext()) {
             ControlBlock cb = li.next();
-            log.debug("Core Config:   ControlBlock: " + cb.getType());
+            //log.debug("Core Config:   ControlBlock: " + cb.getType());
             if (cb.isCatcherBlock())
                 log.debug("Core Config:       Modifier: Catch (redstone = " + cb.getCatcherState().toString() + ")");
             if (cb.isEjectorBlock())

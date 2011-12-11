@@ -5,9 +5,11 @@ import java.util.List;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.inventory.ItemStack;
 
 import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
 import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
+import com.afforess.minecartmaniacore.utils.ItemMatcher;
 import com.afforess.minecartmaniacore.world.SpecificMaterial;
 
 public class ControlBlockList {
@@ -25,7 +27,9 @@ public class ControlBlockList {
         if (item == null)
             return null;
         for (ControlBlock cb : controlBlocks) {
-            if (cb.getType().equals(item)) {
+            if(cb==null) return null;
+            for(ItemMatcher match : cb.getMatchers())
+            if (match.match(new ItemStack(item.id,1,item.durability))) {
                 return cb;
             }
         }
