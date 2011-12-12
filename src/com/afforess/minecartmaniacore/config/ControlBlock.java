@@ -3,6 +3,8 @@ package com.afforess.minecartmaniacore.config;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.inventory.ItemStack;
+
 import com.afforess.minecartmaniacore.utils.ItemMatcher;
 import com.afforess.minecartmaniacore.world.SpecificMaterial;
 
@@ -194,5 +196,15 @@ public class ControlBlock {
 
     public void setMatchers(ItemMatcher[] matchers) {
         this.matchers=matchers;
+    }
+    
+    public boolean match(SpecificMaterial mat) {
+        ItemStack is = new ItemStack(mat.id,1,mat.durability);
+        for(ItemMatcher matcher : matchers) {
+            if(!matcher.match(is)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

@@ -282,6 +282,7 @@ public class CoreSettingParser implements SettingParser {
                                     if (elementChildName == "BlockType") {
                                         log.debug("Core Config read:   ControlBlock: " + elementChildValue);
                                         cb.setMatchers(ItemUtils.getItemStringToMatchers(elementChildValue,CompassDirection.NO_DIRECTION));
+                                        log.debug("Core Config read:   ControlBlock matchers: "+cb.getMatchers()[0].toString());
                                     } else if (elementChildName == "Catch") {
                                         cb.setCatcherState(attributeRedstone);
                                         cb.setCatcherBlock(MinecartManiaConfigurationParser.toBool(elementChildValue));

@@ -29,11 +29,8 @@ public class ControlBlockList {
         for (ControlBlock cb : controlBlocks) {
             if (cb == null)
                 return null;
-            for (ItemMatcher match : cb.getMatchers()) {
-                if (match.match(new ItemStack(item.id, 1, item.durability))) {
-                    return cb;
-                }
-            }
+            if (cb.match(item))
+                return cb;
         }
         return null;
     }
