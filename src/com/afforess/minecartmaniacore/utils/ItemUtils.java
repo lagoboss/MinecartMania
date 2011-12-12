@@ -157,6 +157,9 @@ public class ItemUtils {
     }
     
     private static ItemMatcher parsePart(String part) {
+        if(part.contains("[")){
+            part=StringUtils.removeBrackets(part);
+        }
         try {
             switch (TYPE.getType(part)) {
                 case RANGE:
@@ -171,7 +174,7 @@ public class ItemUtils {
                     return parseNormal(part);
             }
         } catch (Exception e) {
-            MinecartManiaLogger.getInstance().severe("Error when generating ItemMatcher for \"%s\":\n"+e.toString(), true, part);
+            MinecartManiaLogger.getInstance().severe("Error when generating ItemMatcher for \"%s\":\n" + e.toString(), true, part);
             return null;
         }
     }
@@ -259,23 +262,10 @@ public class ItemUtils {
             if (alias.size() > 0)
                 return materialListToItemMatcher(alias);
             /*
-            int best = -1;
-            int bestLength = -1;
-            for (Material e : Material.values()) {
-                if (e != null) {
-                    String item = e.name().toLowerCase();
-                    if (item.contains(part)) {
-                        //If two items have the same partial string in them (e.g diamond and diamond shovel) the shorter name wins
-                        if (best == -1 || item.length() < bestLength) {
-                            best = e.getId();
-                            bestLength = e.name().length();
-                        }
-                    }
-                }
-            }
-            */
+             * int best = -1; int bestLength = -1; for (Material e : Material.values()) { if (e != null) { String item = e.name().toLowerCase(); if (item.contains(part)) { //If two items have the same partial string in them (e.g diamond and diamond shovel) the shorter name wins if (best == -1 || item.length() < bestLength) { best = e.getId(); bestLength = e.name().length(); } } } }
+             */
             Material mat = Material.matchMaterial(part);
-            if(mat==null) // Can't find the material
+            if (mat == null) // Can't find the material
                 matcher.addConstant(MatchField.TYPE_ID, -1); // Force the match to fail every time.
             else
                 matcher.addConstant(MatchField.TYPE_ID, mat.getId());
@@ -318,7 +308,8 @@ public class ItemUtils {
         }
         
         matcher = parsePart(line);
-        if(matcher==null) return new ItemMatcher[0];
+        if (matcher == null)
+            return new ItemMatcher[0];
         return new ItemMatcher[] { matcher };
     }
     
@@ -327,16 +318,16 @@ public class ItemUtils {
         ArrayList<ItemMatcher> matchers = new ArrayList<ItemMatcher>();
         for (String line : lines) {
             for (ItemMatcher matcher : getItemStringToMatchers(line, facing))
-                if(matcher!=null)
-                matchers.add(matcher);
+                if (matcher != null)
+                    matchers.add(matcher);
         }
         
         ItemMatcher[] ret = new ItemMatcher[matchers.size()];
         matchers.toArray(ret);
         return ret;
     }
-
+    
     public static ItemMatcher[] getItemStringListToMatchers(String[] lines) {
-        return getItemStringListToMatchers(lines,CompassDirection.NO_DIRECTION);
+        return getItemStringListToMatchers(lines, CompassDirection.NO_DIRECTION);
     }
 }
