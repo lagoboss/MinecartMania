@@ -103,7 +103,7 @@ public class ItemMatcher {
     
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("MATCH (AND):\n{");
+        sb.append("MATCH (AND):\n{\n");
         for(MatchToken mt : matchTokens) {
             sb.append(mt.toString(1));
         }

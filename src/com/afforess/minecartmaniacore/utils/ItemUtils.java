@@ -13,7 +13,6 @@ import com.afforess.minecartmaniacore.matching.MatchConstant;
 import com.afforess.minecartmaniacore.matching.MatchField;
 import com.afforess.minecartmaniacore.matching.MatchOR;
 import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
-import com.afforess.minecartmaniacore.world.AbstractItem;
 import com.afforess.minecartmaniacore.world.SpecificMaterial;
 
 /**
@@ -257,7 +256,7 @@ public class ItemUtils {
             List<SpecificMaterial> alias = ItemAliasList.getItemsForAlias(part);
             if (alias.size() > 0)
                 return materialListToItemMatcher(alias);
-            
+            /*
             int best = -1;
             int bestLength = -1;
             for (Material e : Material.values()) {
@@ -272,7 +271,12 @@ public class ItemUtils {
                     }
                 }
             }
-            matcher.addConstant(MatchField.TYPE_ID, best);
+            */
+            Material mat = Material.matchMaterial(part);
+            if(mat==null) // Can't find the material
+                matcher.addConstant(MatchField.TYPE_ID, -1); // Force the match to fail every time.
+            else
+                matcher.addConstant(MatchField.TYPE_ID, mat.getId());
             return matcher;
         }
     }
