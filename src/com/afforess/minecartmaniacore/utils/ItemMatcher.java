@@ -102,8 +102,8 @@ public class ItemMatcher {
         this.amount = amount;
     }
     
-    public int getAmount() {
-        return amount;
+    public int getAmount(int ifdefault) {
+        return amountIsSet() ? amount : ifdefault;
     }
     
     public String toString() {
@@ -116,9 +116,8 @@ public class ItemMatcher {
         sb.append("}");
         return sb.toString();
     }
-    
-    public int getAmountForTransfer() {
-        // TODO Auto-generated method stub
-        return amount == -1 ? 64 : amount;
+
+    public boolean amountIsSet() {
+        return amount>-1;
     }
 }
