@@ -204,7 +204,11 @@ public class ItemUtils {
             PrintWriter out = new PrintWriter(items);
             // Create file 
             for (Entry<String, ItemMatcher> matcher : preparsed.entrySet()) {
-                out.write(String.format("\n\n%s:\n%s", matcher.getKey(), matcher.getValue().toString()));
+                if (matcher.getValue() == null) {
+                    out.write(String.format("\n\n%s:\n(null)", matcher.getKey()));
+                } else {
+                    out.write(String.format("\n\n%s:\n%s", matcher.getKey(), matcher.getValue().toString()));
+                }
             }
             //Close the output stream
             out.close();
