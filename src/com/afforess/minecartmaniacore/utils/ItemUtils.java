@@ -1,12 +1,16 @@
 package com.afforess.minecartmaniacore.utils;
 
+import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
+import com.afforess.minecartmaniacore.MinecartManiaCore;
 import com.afforess.minecartmaniacore.config.ItemAliasList;
 import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
 import com.afforess.minecartmaniacore.matching.MatchAll;
@@ -20,6 +24,8 @@ import com.afforess.minecartmaniacore.world.SpecificMaterial;
  * Authors: Afforess, Meaglin, N3X15
  */
 public class ItemUtils {
+    
+    private static HashMap<String, ItemMatcher> preparsed = new HashMap<String, ItemMatcher>();
     
     /**
      * Returns the first item name or id found in the given string, or null if there was no item name or id. If the item name is a partial name, it will match the name with the shortest number of letter. Ex ("reds" will match "redstone" (the wire item) and not redstone ore.
@@ -157,25 +163,54 @@ public class ItemUtils {
     }
     
     private static ItemMatcher parsePart(String part) {
-        if(part.contains("[")){
-            part=StringUtils.removeBrackets(part);
+        if (part.contains("[")) {
+            part = StringUtils.removeBrackets(part);
+        }
+        // Cache parsed strings
+        if (preparsed.containsKey(part.toLowerCase())) {
+            return preparsed.get(part.toLowerCase());
         }
         try {
+            ItemMatcher itemMatcher = null;
             switch (TYPE.getType(part)) {
                 case RANGE:
-                    return parseRange(part);
+                    itemMatcher = parseRange(part);
+                    break;
                 case DATA:
-                    return parseData(part);
+                    itemMatcher = parseData(part);
+                    break;
                 case REMOVE:
-                    return parseNegative(part);
+                    itemMatcher = parseNegative(part);
+                    break;
                 case AMOUNT:
-                    return parseAmount(part);
+                    itemMatcher = parseAmount(part);
+                    break;
                 default:
-                    return parseNormal(part);
+                    itemMatcher = parseNormal(part);
+                    break;
             }
+            preparsed.put(part.toLowerCase(), itemMatcher);
+            saveDebugMap();
+            return itemMatcher;
         } catch (Exception e) {
             MinecartManiaLogger.getInstance().severe("Error when generating ItemMatcher for \"%s\":\n" + e.toString(), true, part);
             return null;
+        }
+    }
+    
+    private static void saveDebugMap() {
+        File parseTable = new File(MinecartManiaCore.getPluginDataFolder(), "ItemMatchingTable.txt");
+        try {
+            // Create file 
+            FileWriter fstream = new FileWriter(parseTable);
+            BufferedWriter out = new BufferedWriter(fstream);
+            for(Entry<String, ItemMatcher> matcher : preparsed.entrySet()) {
+                out.write(String.format("\n\n%s:\n%s",matcher.getKey(),matcher.getValue().toString()));
+            }
+            //Close the output stream
+            out.close();
+        } catch (Exception e) {//Catch exception if any
+            System.err.println("Error: " + e.getMessage());
         }
     }
     
