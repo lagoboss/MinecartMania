@@ -319,6 +319,7 @@ public class ItemUtils {
         ArrayList<ItemMatcher> matchers = new ArrayList<ItemMatcher>();
         for (String line : lines) {
             for (ItemMatcher matcher : getItemStringToMatchers(line, facing))
+                if(matcher!=null)
                 matchers.add(matcher);
         }
         
