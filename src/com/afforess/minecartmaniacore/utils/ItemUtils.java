@@ -101,7 +101,6 @@ public class ItemUtils {
                     }
                 }
             }
-            
             String[] keys = str.split(":");
             for (int i = 0; i < keys.length; i++) {
                 String part = keys[i].trim();
@@ -163,9 +162,9 @@ public class ItemUtils {
     }
     
     private static ItemMatcher parsePart(String part) {
-        if (part.contains("[")) {
-            part = StringUtils.removeBrackets(part);
-        }
+        
+        part = StringUtils.removeBrackets(part);
+        
         // Cache parsed strings
         if (preparsed.containsKey(part.toLowerCase())) {
             return preparsed.get(part.toLowerCase());
@@ -194,18 +193,23 @@ public class ItemUtils {
             return itemMatcher;
         } catch (Exception e) {
             MinecartManiaLogger.getInstance().severe("Error when generating ItemMatcher for \"%s\":\n" + e.toString(), true, part);
+            e.printStackTrace();
             return null;
         }
     }
     
     private static void saveDebugMap() {
-        File parseTable = new File(MinecartManiaCore.getPluginDataFolder(), "ItemMatchingTable.txt");
+        File dir = new File(MinecartManiaCore.getDataDirectoryRelativePath());
+        if (!dir.exists()) {
+            dir.mkdir();
+        }
+        File parseTable = new File(dir, "ItemMatchingTable.txt");
         try {
             // Create file 
             FileWriter fstream = new FileWriter(parseTable);
             BufferedWriter out = new BufferedWriter(fstream);
-            for(Entry<String, ItemMatcher> matcher : preparsed.entrySet()) {
-                out.write(String.format("\n\n%s:\n%s",matcher.getKey(),matcher.getValue().toString()));
+            for (Entry<String, ItemMatcher> matcher : preparsed.entrySet()) {
+                out.write(String.format("\n\n%s:\n%s", matcher.getKey(), matcher.getValue().toString()));
             }
             //Close the output stream
             out.close();
