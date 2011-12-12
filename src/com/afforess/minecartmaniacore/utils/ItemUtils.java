@@ -346,10 +346,17 @@ public class ItemUtils {
             return new ItemMatcher[] { matcher };
         }
         
-        matcher = parsePart(line);
-        if (matcher == null)
-            return new ItemMatcher[0];
-        return new ItemMatcher[] { matcher };
+        String[] lines = str.split(":");
+        ArrayList<ItemMatcher> matchers = new ArrayList<ItemMatcher>();
+        for (String part : lines) {
+            matcher = parsePart(part);
+            if (matcher == null)
+                matchers.add(matcher);
+        }
+        
+        ItemMatcher[] ret = new ItemMatcher[matchers.size()];
+        matchers.toArray(ret);
+        return ret;
     }
     
     public static ItemMatcher[] getItemStringListToMatchers(String[] lines,
