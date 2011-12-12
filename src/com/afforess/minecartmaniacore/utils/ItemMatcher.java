@@ -106,8 +106,9 @@ public class ItemMatcher {
         sb.append("MATCH (AND):\n{\n");
         for(MatchToken mt : matchTokens) {
             sb.append(mt.toString(1));
+            sb.append("\n");
         }
-        sb.append("\n}");
+        sb.append("}");
         return sb.toString();
     }
 }
