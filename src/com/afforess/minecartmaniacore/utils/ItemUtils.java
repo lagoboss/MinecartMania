@@ -102,12 +102,22 @@ public class ItemUtils {
                 }
             }
             String[] keys = str.split(":");
+            
             for (int i = 0; i < keys.length; i++) {
                 String part = keys[i].trim();
-                ItemMatcher matcher = parsePart(part);
+                ItemMatcher matcher = null;
+                // Cache parsed strings
+                if (preparsed.containsKey(part.toLowerCase())) {
+                    matcher = preparsed.get(part.toLowerCase());
+                }
+                if (matcher == null)
+                    matcher = parsePart(part);
                 
                 if (matcher == null)
                     continue;
+                
+                preparsed.put(part.toLowerCase(), matcher);
+                saveDebugMap();
                 
                 for (Material mat : Material.values()) {
                     if (matcher.match(new ItemStack(mat)))
@@ -164,11 +174,6 @@ public class ItemUtils {
     private static ItemMatcher parsePart(String part) {
         
         part = StringUtils.removeBrackets(part);
-        
-        // Cache parsed strings
-        if (preparsed.containsKey(part.toLowerCase())) {
-            return preparsed.get(part.toLowerCase());
-        }
         try {
             ItemMatcher itemMatcher = null;
             switch (TYPE.getType(part)) {
@@ -188,8 +193,6 @@ public class ItemUtils {
                     itemMatcher = parseNormal(part);
                     break;
             }
-            preparsed.put(part.toLowerCase(), itemMatcher);
-            saveDebugMap();
             return itemMatcher;
         } catch (Exception e) {
             MinecartManiaLogger.getInstance().severe("Error when generating ItemMatcher for \"%s\":\n" + e.toString(), true, part);
@@ -348,9 +351,16 @@ public class ItemUtils {
         String[] lines = str.split(":");
         ArrayList<ItemMatcher> matchers = new ArrayList<ItemMatcher>();
         for (String part : lines) {
-            matcher = parsePart(part);
-            if (matcher != null)
+            
+            if (preparsed.containsKey(part.trim().toLowerCase())) {
+                matchers.add(preparsed.get(part.trim().toLowerCase()));
+            }
+            matcher = parsePart(part.trim());
+            if (matcher != null) {
+                preparsed.put(part.trim().toLowerCase(), matcher);
+                saveDebugMap();
                 matchers.add(matcher);
+            }
         }
         
         ItemMatcher[] ret = new ItemMatcher[matchers.size()];
