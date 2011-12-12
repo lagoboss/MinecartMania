@@ -8,6 +8,7 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import com.afforess.minecartmaniacore.config.ItemAliasList;
+import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
 import com.afforess.minecartmaniacore.matching.MatchAll;
 import com.afforess.minecartmaniacore.matching.MatchConstant;
 import com.afforess.minecartmaniacore.matching.MatchField;
@@ -170,6 +171,7 @@ public class ItemUtils {
                     return parseNormal(part);
             }
         } catch (Exception e) {
+            MinecartManiaLogger.getInstance().severe("Error when generating ItemMatcher for \"%s\":\n"+e.toString(), true, part);
             return null;
         }
     }
@@ -315,7 +317,9 @@ public class ItemUtils {
             return new ItemMatcher[] { matcher };
         }
         
-        return new ItemMatcher[] { parsePart(line) };
+        matcher = parsePart(line);
+        if(matcher==null) return new ItemMatcher[0];
+        return new ItemMatcher[] { matcher };
     }
     
     public static ItemMatcher[] getItemStringListToMatchers(String[] lines,
