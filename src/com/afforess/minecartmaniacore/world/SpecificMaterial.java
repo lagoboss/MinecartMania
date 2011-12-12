@@ -7,7 +7,6 @@ import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 
-
 /**
  * A "struct" for storing Type and Data together, more or less.
  * 
@@ -30,27 +29,29 @@ public class SpecificMaterial {
         hash = hash * 15 + durability;
         return hash;
     }
-
+    
     public static Collection<? extends SpecificMaterial> convertToSpecific(
             List<Material> asList) {
         ArrayList<SpecificMaterial> mats = new ArrayList<SpecificMaterial>();
-        for(Material mat : asList) {
-            mats.add(new SpecificMaterial(mat.getId(),(short) 0));
+        for (Material mat : asList) {
+            mats.add(new SpecificMaterial(mat.getId(), (short) 0));
         }
         return mats;
     }
-
+    
     public static SpecificMaterial convertBlock(Block b) {
-        return new SpecificMaterial(b.getTypeId(),b.getData());
+        return new SpecificMaterial(b.getTypeId(), b.getData());
     }
-
+    
     public int getId() {
-        // TODO Auto-generated method stub
         return id;
     }
-
+    
     public short getData() {
-        // TODO Auto-generated method stub
         return durability;
+    }
+    
+    public String toString() {
+        return String.format("%d:%d", id, durability);
     }
 }
