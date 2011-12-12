@@ -22,7 +22,7 @@ public class MinecartManiaLogger {
     }
     
     public void time(String s, Object... args) {
-        time(s, true);
+        time(s, true, args);
     }
     
     public void time(String s, boolean toConsole, Object... args) {
@@ -36,7 +36,7 @@ public class MinecartManiaLogger {
     }
     
     public void debug(String s, Object... args) {
-        debug(s, true);
+        debug(s, true, args);
     }
     
     public void debug(String s, boolean toConsole, Object... args) {
