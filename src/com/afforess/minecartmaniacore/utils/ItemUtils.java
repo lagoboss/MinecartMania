@@ -349,7 +349,7 @@ public class ItemUtils {
         ArrayList<ItemMatcher> matchers = new ArrayList<ItemMatcher>();
         for (String part : lines) {
             matcher = parsePart(part);
-            if (matcher == null)
+            if (matcher != null)
                 matchers.add(matcher);
         }
         
