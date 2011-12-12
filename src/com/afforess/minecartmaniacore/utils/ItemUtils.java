@@ -199,15 +199,10 @@ public class ItemUtils {
     }
     
     private static void saveDebugMap() {
-        File dir = new File(MinecartManiaCore.getDataDirectoryRelativePath());
-        if (!dir.exists()) {
-            dir.mkdir();
-        }
-        File parseTable = new File(dir, "ItemMatchingTable.txt");
         try {
+            File items = new File(MinecartManiaCore.dataDirectory + File.separator + "items.txt");
+            PrintWriter out = new PrintWriter(items);
             // Create file 
-            FileWriter fstream = new FileWriter(parseTable);
-            BufferedWriter out = new BufferedWriter(fstream);
             for (Entry<String, ItemMatcher> matcher : preparsed.entrySet()) {
                 out.write(String.format("\n\n%s:\n%s", matcher.getKey(), matcher.getValue().toString()));
             }
