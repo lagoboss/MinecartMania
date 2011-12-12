@@ -203,9 +203,10 @@ public class ItemUtils {
     
     private static void saveDebugMap() {
         try {
-            File items = new File(MinecartManiaCore.dataDirectory + File.separator + "items.txt");
+            File items = new File(MinecartManiaCore.dataDirectory + File.separator + "ItemMatchingTable.txt");
             PrintWriter out = new PrintWriter(items);
             // Create file 
+            out.write("This simply craps out the structure of Minecart Mania's internal Item Matching criteria.  It's not read by MM, and it's going to be overwritten as minecarts find new stuff.");
             for (Entry<String, ItemMatcher> matcher : preparsed.entrySet()) {
                 if (matcher.getValue() == null) {
                     out.write(String.format("\n\n%s:\n(null)", matcher.getKey()));

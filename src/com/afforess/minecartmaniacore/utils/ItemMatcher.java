@@ -29,7 +29,7 @@ public class ItemMatcher {
     protected List<MatchToken> matchTokens = new ArrayList<MatchToken>();
     
     // Number of things requested (-1 = N/A)
-    protected int amount=-1;
+    protected int amount=64;
     
     public ItemMatcher() {}
 
