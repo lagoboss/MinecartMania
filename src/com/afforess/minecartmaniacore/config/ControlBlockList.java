@@ -27,10 +27,12 @@ public class ControlBlockList {
         if (item == null)
             return null;
         for (ControlBlock cb : controlBlocks) {
-            if(cb==null) return null;
-            for(ItemMatcher match : cb.getMatchers())
-            if (match.match(new ItemStack(item.id,1,item.durability))) {
-                return cb;
+            if (cb == null)
+                return null;
+            for (ItemMatcher match : cb.getMatchers()) {
+                if (match.match(new ItemStack(item.id, 1, item.durability))) {
+                    return cb;
+                }
             }
         }
         return null;

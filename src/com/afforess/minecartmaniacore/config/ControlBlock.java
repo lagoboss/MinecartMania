@@ -189,7 +189,7 @@ public class ControlBlock {
     }
     
     public String toString() {
-        return "[" + matchers[0].toItemStack().toString() + ":" + isCatcherBlock() + ":" + getLauncherSpeed() + ":" + isEjectorBlock() + ":" + isPlatformBlock() + ":" + isStationBlock() + "]";
+        return "[" + matchers[0].toString() + ":" + isCatcherBlock() + ":" + getLauncherSpeed() + ":" + isEjectorBlock() + ":" + isPlatformBlock() + ":" + isStationBlock() + "]";
     }
 
     public void setMatchers(ItemMatcher[] matchers) {

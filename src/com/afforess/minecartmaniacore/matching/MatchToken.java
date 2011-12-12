@@ -14,4 +14,5 @@ import org.bukkit.inventory.ItemStack;
 public interface MatchToken {
     boolean match(ItemStack item);
     boolean isComplex();
+    String toString(int i);
 }

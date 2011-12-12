@@ -59,6 +59,14 @@ public class StringUtils {
         return "[" + removeBrackets(s) + "]";
     }
     
+    public static String indent(String s, int times) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < times; i++)
+            sb.append("\t");
+        sb.append(s);
+        return sb.toString();
+    }
+    
     /**
      * Join an array command into a String
      * 

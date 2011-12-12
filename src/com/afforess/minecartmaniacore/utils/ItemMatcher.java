@@ -100,4 +100,14 @@ public class ItemMatcher {
     public int getAmount() {
         return amount;
     }
+    
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("MATCH (AND):\n{");
+        for(MatchToken mt : matchTokens) {
+            sb.append(mt.toString(1));
+        }
+        sb.append("\n}");
+        return sb.toString();
+    }
 }
