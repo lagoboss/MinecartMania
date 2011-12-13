@@ -1,6 +1,7 @@
 package com.afforess.minecartmaniacore.utils;
 
-import java.io.*;
+import java.io.File;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -11,13 +12,15 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import com.afforess.minecartmaniacore.MinecartManiaCore;
-import com.afforess.minecartmaniacore.config.ItemAliasList;
+import com.afforess.minecartmaniacore.config.CoreSettingParser;
 import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
+import com.afforess.minecartmaniacore.matching.MatchAND;
 import com.afforess.minecartmaniacore.matching.MatchAll;
 import com.afforess.minecartmaniacore.matching.MatchConstant;
 import com.afforess.minecartmaniacore.matching.MatchField;
 import com.afforess.minecartmaniacore.matching.MatchOR;
 import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
+import com.afforess.minecartmaniacore.world.Item;
 import com.afforess.minecartmaniacore.world.SpecificMaterial;
 
 /**
@@ -300,17 +303,12 @@ public class ItemUtils {
             matcher.addConstant(MatchField.TYPE_ID, Integer.parseInt(part));
             return matcher;
         } catch (NumberFormatException exception) {
-            List<SpecificMaterial> alias = ItemAliasList.getItemsForAlias(part);
-            if (alias.size() > 0)
-                return materialListToItemMatcher(alias);
-            /*
-             * int best = -1; int bestLength = -1; for (Material e : Material.values()) { if (e != null) { String item = e.name().toLowerCase(); if (item.contains(part)) { //If two items have the same partial string in them (e.g diamond and diamond shovel) the shorter name wins if (best == -1 || item.length() < bestLength) { best = e.getId(); bestLength = e.name().length(); } } } }
-             */
             Material mat = Material.matchMaterial(part);
             if (mat == null) // Can't find the material
                 matcher.addConstant(MatchField.TYPE_ID, -1); // Force the match to fail every time.
-            else
+            else {
                 matcher.addConstant(MatchField.TYPE_ID, mat.getId());
+            }
             return matcher;
         }
     }
@@ -385,5 +383,46 @@ public class ItemUtils {
     
     public static ItemMatcher[] getItemStringListToMatchers(String[] lines) {
         return getItemStringListToMatchers(lines, CompassDirection.NO_DIRECTION);
+    }
+    
+    public static void prefillAliases(CoreSettingParser csp) {
+        for (Item item : Item.values()) {
+            if (item.hasData()) {
+                ItemMatcher matcher = new ItemMatcher();
+                matcher.addConstant(MatchField.TYPE_ID, item.getId());
+                matcher.addConstant(MatchField.DURABILITY, item.getData());
+                preparsed.put(item.name().toLowerCase(), matcher);
+                ArrayList<SpecificMaterial> mats = new ArrayList<SpecificMaterial>();
+                mats.add(new SpecificMaterial(item.getId(), (short) item.getData()));
+                csp.aliases.put(item.name(), mats);
+            }
+        }
+    }
+    
+    public static void addParserAlias(String aliasName, ItemMatcher matcher) {
+        preparsed.put(aliasName.toLowerCase(), matcher);
+    }
+    
+    public static void addParserAlias(String aliasName,
+            ArrayList<SpecificMaterial> values) {
+        // Create a new ItemMatcher
+        ItemMatcher matcher = new ItemMatcher();
+        // Make a new OR statement
+        MatchOR or = new MatchOR();
+        for (SpecificMaterial mat : values) {
+            MatchConstant type = new MatchConstant(MatchField.TYPE_ID, mat.id);
+            if (mat.durability != -1) {
+                // Create a new constant token and add it to an AND
+                // This basically becomes "... || (typeID=={whatever} && data=={whatever}
+                MatchAND and = new MatchAND();
+                and.addExpression(type);
+                and.addExpression(new MatchConstant(MatchField.DURABILITY, mat.durability));
+                or.addExpression(and);
+            } else {
+                or.addExpression(type);
+            }
+        }
+        matcher.addExpression(or);
+        ItemUtils.addParserAlias(aliasName,matcher);
     }
 }

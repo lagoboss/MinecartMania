@@ -3,12 +3,12 @@ package com.afforess.minecartmaniacore.config;
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -20,7 +20,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.bukkit.Material;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -29,7 +28,13 @@ import org.w3c.dom.NodeList;
 import com.afforess.minecartmaniacore.MinecartManiaCore;
 import com.afforess.minecartmaniacore.debug.DebugMode;
 import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
+import com.afforess.minecartmaniacore.matching.MatchAND;
+import com.afforess.minecartmaniacore.matching.MatchAll;
+import com.afforess.minecartmaniacore.matching.MatchConstant;
+import com.afforess.minecartmaniacore.matching.MatchField;
+import com.afforess.minecartmaniacore.matching.MatchOR;
 import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
+import com.afforess.minecartmaniacore.utils.ItemMatcher;
 import com.afforess.minecartmaniacore.utils.ItemUtils;
 import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
 import com.afforess.minecartmaniacore.world.SpecificMaterial;
@@ -37,6 +42,10 @@ import com.afforess.minecartmaniacore.world.SpecificMaterial;
 public class CoreSettingParser implements SettingParser {
     private static final double version = 1.53;
     private static MinecartManiaLogger log = MinecartManiaLogger.getInstance();
+    /**
+     * USED ONLY FOR CONFIGURATION.  USE ItemUtils.preparsed FOR ACTUAL ALIASES
+     */
+    public ConcurrentHashMap<String, ArrayList<SpecificMaterial>> aliases = new ConcurrentHashMap<String, ArrayList<SpecificMaterial>>();
     
     //This not only will tell true/false if the document is up to date, but will try to update it before it answers.
     //This will only try to update existing settings and add ones where necessary.
@@ -440,27 +449,46 @@ public class CoreSettingParser implements SettingParser {
         return true;
     }
     
-    //This will read the ItemAliases
+    /**
+     * Pre-fills ItemUtils.preparsed with item aliases.
+     * @param list
+     * @return
+     */
     private boolean readItemAliases(NodeList list) {
         try {
             for (int temp = 0; temp < list.getLength(); temp++) {
                 Node n = list.item(temp);
                 if (n.getNodeType() == Node.ELEMENT_NODE) {
                     if (n.getNodeName() == "ItemAlias") {
+                        // Create a new ItemMatcher
+                        ItemMatcher matcher = new ItemMatcher();
+                        
+                        // Get the current element
                         Element element = (Element) n;
+                        
+                        // And its children
                         NodeList elementChildren = element.getChildNodes();
+                        
                         String elementChildName = "";
                         String elementChildValue = null;
                         String aliasName = "";
-                        ArrayList<SpecificMaterial> aliasValues = new ArrayList<SpecificMaterial>();
+                        ArrayList<String> aliasMaterials=new ArrayList<String>();
+                        
+                        // Make a new OR statement
+                        MatchOR or = new MatchOR();
+                        
+                        // For each child,
                         for (int idx = 0; idx < elementChildren.getLength(); idx++) {
                             Node elementChild = elementChildren.item(idx);
+                            // Check if it's an element
                             if (elementChild.getNodeType() == Node.ELEMENT_NODE) {
+                                
                                 elementChildName = elementChild.getNodeName();
                                 elementChildValue = null;
                                 if (elementChild.getChildNodes() != null) {
                                     elementChildValue = getNodeValue(elementChild.getChildNodes().item(0));
                                 }
+                                // If it's an AliasName element
                                 if (elementChildName == "AliasName") {
                                     log.debug("Core Config read:    Item Alias: " + elementChildValue);
                                     aliasName = elementChildValue;
@@ -468,12 +496,23 @@ public class CoreSettingParser implements SettingParser {
                                     //special case: all items
                                     if (elementChildValue != null && elementChildValue.toLowerCase().contains("all item")) {
                                         log.debug("Core Config read:         Block: " + elementChildValue);
-                                        aliasValues.addAll(SpecificMaterial.convertToSpecific(Arrays.asList(Material.values())));
+                                        or.addExpression(new MatchAll());
                                     } else {
                                         SpecificMaterial item = MinecartManiaConfigurationParser.toSpecificMaterial(elementChildValue);
                                         if (item != null) {
                                             log.debug("Core Config read:         Block: " + elementChildValue);
-                                            aliasValues.add(item);
+                                            MatchConstant type = new MatchConstant(MatchField.TYPE_ID,item.id);
+                                            if(elementChildValue.contains(";")) {
+                                                // Create a new constant token and add it to an AND
+                                                // This basically becomes "... || (typeID=={whatever} && data=={whatever}
+                                                MatchAND and = new MatchAND();
+                                                and.addExpression(type);
+                                                and.addExpression(new MatchConstant(MatchField.DURABILITY,item.durability));
+                                                or.addExpression(and);
+                                            } else {
+                                                or.addExpression(type);
+                                            }
+                                            aliasMaterials.add(elementChildValue);
                                         } else {
                                             log.debug("Core Config read:         Block Error: '" + elementChildValue + "' invalid name.");
                                         }
@@ -483,7 +522,9 @@ public class CoreSettingParser implements SettingParser {
                                 }
                             }
                         }
-                        ItemAliasList.aliases.put(aliasName, aliasValues);
+                        matcher.addExpression(or);
+                        log.debug("Core Config read:         Alias %s:\n%s",aliasName,matcher);
+                        ItemUtils.addParserAlias(aliasName,matcher);
                     }
                 }
             }
@@ -555,25 +596,6 @@ public class CoreSettingParser implements SettingParser {
                 }
             }
         }
-        //Display the aliases
-        log.debug("Core Config: Item Aliases");
-        String CurrentKey = "";
-        Iterator<Entry<String, List<SpecificMaterial>>> i = ItemAliasList.aliases.entrySet().iterator();
-        while (i.hasNext()) {
-            Entry<String, List<SpecificMaterial>> e = i.next();
-            String key = e.getKey();
-            if (!key.equalsIgnoreCase(CurrentKey)) {
-                log.debug("Core Config:   Item Alias: " + key);
-                CurrentKey = key;
-            }
-            List<SpecificMaterial> items = e.getValue();
-            
-            ListIterator<SpecificMaterial> ali = items.listIterator();
-            while (ali.hasNext()) {
-                SpecificMaterial ai = ali.next();
-                log.debug("Core Config:     Type: " + ai.toString());
-            }
-        }
     }
     
     //This will set the configuration values so the configuration file can override them if defined
@@ -594,13 +616,18 @@ public class CoreSettingParser implements SettingParser {
         MinecartManiaWorld.getConfiguration().put("RemoveDeadMinecarts", false);
         MinecartManiaWorld.getConfiguration().put("LimitedSignRange", false);
         MinecartManiaWorld.getConfiguration().put("DisappearOnDisconnect", true);
+        
+
+        ItemUtils.prefillAliases(this);
+        
         //Create Ores Alias
         ArrayList<SpecificMaterial> values = new ArrayList<SpecificMaterial>();
         values.add(MinecartManiaConfigurationParser.toSpecificMaterial("GOLD_ORE"));
         values.add(MinecartManiaConfigurationParser.toSpecificMaterial("IRON_ORE"));
         values.add(MinecartManiaConfigurationParser.toSpecificMaterial("COAL_ORE"));
         values.add(MinecartManiaConfigurationParser.toSpecificMaterial("LAPIS_ORE"));
-        ItemAliasList.aliases.put("Ores", values);
+        ItemUtils.addParserAlias("Ores", values);
+        aliases.put("Ores", values);
         //Create Food Alias
         values = new ArrayList<SpecificMaterial>();
         values.add(MinecartManiaConfigurationParser.toSpecificMaterial("260"));
@@ -610,7 +637,8 @@ public class CoreSettingParser implements SettingParser {
         values.add(MinecartManiaConfigurationParser.toSpecificMaterial("322"));
         values.add(MinecartManiaConfigurationParser.toSpecificMaterial("350"));
         values.add(MinecartManiaConfigurationParser.toSpecificMaterial("354"));
-        ItemAliasList.aliases.put("Food", values);
+        ItemUtils.addParserAlias("Food", values);
+        aliases.put("Food", values);
     }
     
     //This will return the default integer values to be used for configuration

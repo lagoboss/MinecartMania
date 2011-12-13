@@ -3,9 +3,6 @@ package com.afforess.minecartmaniacore.signs;
 import org.bukkit.Material;
 
 import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
-import com.afforess.minecartmaniacore.signs.MinecartManiaSign;
-import com.afforess.minecartmaniacore.signs.Sign;
-import com.afforess.minecartmaniacore.world.Item;
 
 public class MinecartTypeSign extends MinecartManiaSign {
     protected boolean standard = false;

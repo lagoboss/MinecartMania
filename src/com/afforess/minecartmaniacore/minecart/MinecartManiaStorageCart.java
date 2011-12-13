@@ -1,6 +1,5 @@
 package com.afforess.minecartmaniacore.minecart;
 
-import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Material;

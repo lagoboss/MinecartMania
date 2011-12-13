@@ -5,8 +5,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import com.afforess.minecartmaniacore.world.Item;
-
 public interface MinecartManiaInventory {
     
     public Inventory getBukkitInventory();

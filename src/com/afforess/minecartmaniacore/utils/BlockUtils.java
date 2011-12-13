@@ -1,6 +1,7 @@
 package com.afforess.minecartmaniacore.utils;
 
 import java.util.HashSet;
+
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 
