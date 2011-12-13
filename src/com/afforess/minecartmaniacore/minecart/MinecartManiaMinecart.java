@@ -983,8 +983,13 @@ public class MinecartManiaMinecart {
                 
                 if (inventory != null) {
                     for (int i = 0; i < items.size(); i++) {
-                        if (!inventory.addItem(items.get(i), invOwner)) {
-                            minecart.getWorld().dropItemNaturally(minecart.getLocation(), items.get(i));
+                        try {
+                            if (!inventory.addItem(items.get(i), invOwner)) {
+                                minecart.getWorld().dropItemNaturally(minecart.getLocation(), items.get(i));
+                            }
+                        } catch (Exception e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
                         }
                     }
                 } else {

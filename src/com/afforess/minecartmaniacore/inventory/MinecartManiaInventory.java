@@ -25,7 +25,7 @@ public interface MinecartManiaInventory {
     
     public boolean canAddItem(ItemStack item, Player player);
     
-    public boolean addItem(ItemStack item, Player player);
+    public boolean addItem(ItemStack item, Player player) throws Exception;
     
     public boolean addItem(ItemStack item);
     

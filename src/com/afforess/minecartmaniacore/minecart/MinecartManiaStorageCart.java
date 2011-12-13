@@ -149,13 +149,17 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements
      * @param player
      *            who is adding the item
      * @return true if the item was successfully added
+     * @throws Exception 
      */
-    public boolean addItem(ItemStack item, Player player) {
+    public boolean addItem(ItemStack item, Player player) throws Exception {
         if (item == null) {
             return true;
         }
         if (!canAddItem(item)) {
             return false;
+        }
+        if(item.getAmount()==-1) {
+            throw new Exception("Cannot set a minecart slot to -1!");
         }
         
         //Backup contents
@@ -203,7 +207,13 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements
      * @return true if the item was successfully added
      */
     public boolean addItem(ItemStack item) {
-        return addItem(item, null);
+        try {
+            return addItem(item, null);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return false;
     }
     
     /**
