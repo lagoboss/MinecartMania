@@ -1,6 +1,7 @@
 package com.afforess.minecartmaniacore.utils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.bukkit.inventory.ItemStack;
@@ -119,5 +120,9 @@ public class ItemMatcher {
 
     public boolean amountIsSet() {
         return amount>-1;
+    }
+
+    public List<MatchToken> getTokens() {
+        return matchTokens;
     }
 }

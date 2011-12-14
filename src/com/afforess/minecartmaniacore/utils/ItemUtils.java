@@ -18,6 +18,7 @@ import com.afforess.minecartmaniacore.matching.MatchAND;
 import com.afforess.minecartmaniacore.matching.MatchAll;
 import com.afforess.minecartmaniacore.matching.MatchConstant;
 import com.afforess.minecartmaniacore.matching.MatchField;
+import com.afforess.minecartmaniacore.matching.MatchNOT;
 import com.afforess.minecartmaniacore.matching.MatchOR;
 import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
 import com.afforess.minecartmaniacore.world.Item;
@@ -239,7 +240,7 @@ public class ItemUtils {
     private static ItemMatcher parseNegative(String part) {
         part = part.replace(TYPE.REMOVE.getTag(), "");
         ItemMatcher items = parsePart(part);
-        items.setAmount(-2);
+        items.addExpression(new MatchNOT(items.getTokens()));
         //MinecartManiaLogger.getInstance().debug("Removing Item: " + item.type());
         return items;
     }
