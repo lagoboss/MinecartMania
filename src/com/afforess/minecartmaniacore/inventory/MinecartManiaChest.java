@@ -166,7 +166,7 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements
     }
     
     public boolean canAccess(String player) {
-        if (isIgnoreProtection() && player == null) {
+        if (isIgnoreProtection() || player == null) {
             return true;
         }
         if (MinecartManiaCore.isLocketteEnabled()) {

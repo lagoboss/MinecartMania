@@ -20,6 +20,7 @@ import com.afforess.minecartmaniacore.matching.MatchConstant;
 import com.afforess.minecartmaniacore.matching.MatchField;
 import com.afforess.minecartmaniacore.matching.MatchNOT;
 import com.afforess.minecartmaniacore.matching.MatchOR;
+import com.afforess.minecartmaniacore.matching.MatchToken;
 import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
 import com.afforess.minecartmaniacore.world.Item;
 import com.afforess.minecartmaniacore.world.SpecificMaterial;
@@ -187,6 +188,14 @@ public class ItemUtils {
                 case DATA:
                     itemMatcher = parseData(part);
                     break;
+                    /*
+                case DATA_BITON:
+                    itemMatcher = parseBit(part,true);
+                    break;
+                case DATA_BITOFF:
+                    itemMatcher = parseBit(part,false);
+                    break;
+                    */
                 case REMOVE:
                     itemMatcher = parseNegative(part);
                     break;
@@ -345,11 +354,11 @@ public class ItemUtils {
         ItemMatcher matcher = new ItemMatcher();
         if (str == "all items") {
             matcher.addExpression(new MatchAll());
-            return new ItemMatcher[] { matcher };
         }
         
         String[] lines = str.split(":");
         ArrayList<ItemMatcher> matchers = new ArrayList<ItemMatcher>();
+        ArrayList<MatchNOT> not = new ArrayList<MatchNOT>();
         for (String part : lines) {
             
             if (preparsed.containsKey(part.trim().toLowerCase())) {
@@ -363,6 +372,33 @@ public class ItemUtils {
             }
         }
         
+        for (ItemMatcher m : matchers) {
+            for (MatchToken mt : m.getTokens()) {
+                if (mt instanceof MatchNOT) {
+                    not.add((MatchNOT) mt);
+                }
+            }
+        }
+        Iterator<ItemMatcher> it = matchers.iterator();
+        while (it.hasNext()) {
+            ItemMatcher m = it.next();
+            boolean isNot = false;
+            
+            for (MatchToken mt : m.getTokens()) {
+                if (mt instanceof MatchNOT) {
+                    isNot = true;
+                    break;
+                }
+            }
+            if (isNot) {
+                it.remove();
+                continue;
+            }
+            
+            for (MatchNOT mn : not) {
+                m.addExpression(mn);
+            }
+        }
         ItemMatcher[] ret = new ItemMatcher[matchers.size()];
         matchers.toArray(ret);
         return ret;
@@ -424,6 +460,6 @@ public class ItemUtils {
             }
         }
         matcher.addExpression(or);
-        ItemUtils.addParserAlias(aliasName,matcher);
+        ItemUtils.addParserAlias(aliasName, matcher);
     }
 }
