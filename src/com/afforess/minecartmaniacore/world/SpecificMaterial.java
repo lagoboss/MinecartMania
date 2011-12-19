@@ -14,19 +14,19 @@ import org.bukkit.block.Block;
  * 
  */
 public class SpecificMaterial {
-    public SpecificMaterial(int id, short data) {
+    public SpecificMaterial(int id, int data) {
         this.id = id;
         this.durability = data;
     }
     
     public int id = 0;
-    public short durability = 0;
+    public int durability = 0;
     
     @Override
     public int hashCode() {
         int hash = 1;
         hash = hash * 31 + id;
-        hash = hash * 15 + durability;
+        hash = hash * 31 + durability;
         return hash;
     }
     
@@ -47,7 +47,7 @@ public class SpecificMaterial {
         return id;
     }
     
-    public short getData() {
+    public int getData() {
         return durability;
     }
     

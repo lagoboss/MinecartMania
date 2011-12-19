@@ -352,7 +352,7 @@ public class ItemUtils {
             return new ItemMatcher[0];
         }
         ItemMatcher matcher = new ItemMatcher();
-        if (str == "all items") {
+        if (str.contains("all items")) {
             matcher.addExpression(new MatchAll());
         }
         

@@ -199,7 +199,7 @@ public class ControlBlock {
     }
     
     public boolean match(SpecificMaterial mat) {
-        ItemStack is = new ItemStack(mat.id,1,mat.durability);
+        ItemStack is = new ItemStack(mat.id,1,(short)mat.durability);
         for(ItemMatcher matcher : matchers) {
             if(!matcher.match(is)) {
                 return false;

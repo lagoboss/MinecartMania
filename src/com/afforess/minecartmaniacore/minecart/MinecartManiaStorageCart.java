@@ -1,5 +1,6 @@
 package com.afforess.minecartmaniacore.minecart;
 
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Material;
@@ -10,6 +11,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import com.afforess.minecartmaniacore.inventory.MinecartManiaInventory;
+import com.afforess.minecartmaniacore.matching.MatchField;
+import com.afforess.minecartmaniacore.utils.ItemMatcher;
 import com.afforess.minecartmaniacore.world.Item;
 import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
 import com.afforess.minecartmaniacore.world.SpecificMaterial;
@@ -21,8 +24,8 @@ import com.afforess.minecartmaniacore.world.SpecificMaterial;
  */
 public class MinecartManiaStorageCart extends MinecartManiaMinecart implements
         MinecartManiaInventory {
-    private ConcurrentHashMap<SpecificMaterial, Integer> maximumContents = new ConcurrentHashMap<SpecificMaterial, Integer>();
-    private ConcurrentHashMap<SpecificMaterial, Integer> minimumContents = new ConcurrentHashMap<SpecificMaterial, Integer>();
+    private ArrayList<ItemMatcher> maximumContents = new ArrayList<ItemMatcher>();
+    private ArrayList<ItemMatcher> minimumContents = new ArrayList<ItemMatcher>();
     
     /**
      * Creates a storage minecart from the given bukkit minecart
@@ -75,51 +78,99 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements
         return ((StorageMinecart) minecart).getInventory();
     }
     
-    public int getMaximumItem(Item item) {
-        return getMaximumItem(item.getId(),(short)item.getData());
-    }
+    /*
+     * public int getMaximumItem(Item item) { return getMaximumItem(item.getId(),(short)item.getData()); }
+     */
     
     public int getMaximumItem(Material item, short data) {
-        return getMaximumItem(item.getId(),data);
+        return getMaximumItem(item.getId(), data);
     }
+    
     public int getMaximumItem(int id, short data) {
-        SpecificMaterial item = new SpecificMaterial(id,data);
-        if (maximumContents != null && maximumContents.containsKey(item)) {
-            return maximumContents.get(item);
+        ItemStack item = new ItemStack(id, 1, data);
+        if (maximumContents != null) {
+            for (ItemMatcher match : maximumContents) {
+                if (match.match(item)) {
+                    return match.getAmount(-1);
+                }
+            }
         }
         return -1;
     }
     
-    public void setMaximumItem(Item item, int amount) {
-        setMaximumItem(item.getId(),(short) item.getData(),amount);
+    private ItemMatcher getMatchingMaxRule(int id, short data) {
+        ItemStack item = new ItemStack(id, 1, data);
+        if (maximumContents != null) {
+            for (ItemMatcher match : maximumContents) {
+                if (match.match(item)) {
+                    return match;
+                }
+            }
+        }
+        return null;
     }
     
-    public void setMaximumItem(Material item, int amount) {
-        setMaximumItem(item.getId(),(short) -1,amount);
+    private ItemMatcher getMatchingMinRule(int id, short data) {
+        ItemStack item = new ItemStack(id, 1, data);
+        if (minimumContents != null) {
+            for (ItemMatcher match : minimumContents) {
+                if (match.match(item)) {
+                    return match;
+                }
+            }
+        }
+        return null;
     }
-    public void setMaximumItem(int item, short durability, int amount) {
+    
+    /*
+     * public void setMaximumItem(Item item, int amount) { setMaximumItem(item.getId(),(short) item.getData(),amount); }
+     */
+    
+    public void setMaximumItem(Material item, int amount) {
+        setMaximumItem(item.getId(), -1, amount);
+    }
+    
+    public void setMaximumItem(int item, int durability, int amount) {
         if (maximumContents != null) {
-            maximumContents.put(new SpecificMaterial(item,durability), amount);
+            ItemMatcher matcher = new ItemMatcher();
+            matcher.addConstant(MatchField.TYPE_ID, item);
+            if (durability != -1) {
+                matcher.addConstant(MatchField.DURABILITY, durability);
+            }
+            matcher.setAmount(amount);
+            maximumContents.add(matcher);
         }
     }
     
     public int getMinimumItem(Material item) {
-        return getMinimumItem(item.getId(),(short) -1);
+        return getMinimumItem(item.getId(), (short) -1);
     }
+    
     public int getMinimumItem(int id, short data) {
-        SpecificMaterial item = new SpecificMaterial(id,data);
-        if (minimumContents != null && minimumContents.containsKey(item)) {
-            return minimumContents.get(item);
+        ItemStack item = new ItemStack(id, 1, data);
+        if (minimumContents != null) {
+            for (ItemMatcher match : minimumContents) {
+                if (match.match(item)) {
+                    return match.getAmount(-1);
+                }
+            }
         }
         return -1;
     }
     
     public void setMinimumItem(Material item, int amount) {
-        setMinimumItem(item.getId(),(short) -1,amount);
+        setMinimumItem(item.getId(), (short) -1, amount);
     }
+    
     public void setMinimumItem(int id, short data, int amount) {
         if (minimumContents != null) {
-            minimumContents.put(new SpecificMaterial(id,data), amount);
+            ItemMatcher matcher = new ItemMatcher();
+            matcher.addConstant(MatchField.TYPE_ID, id);
+            if (data != -1) {
+                matcher.addConstant(MatchField.DURABILITY, data);
+            }
+            matcher.setAmount(amount);
+            minimumContents.add(matcher);
         }
     }
     
@@ -128,14 +179,27 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements
             return false;
         }
         
-        if (getMaximumItem(item.getTypeId(),item.getDurability()) != -1) {
-            if (amount(item.getTypeId(),item.getDurability()) + item.getAmount() > getMaximumItem(item.getTypeId(),item.getDurability())) {
+        ItemMatcher matcher = getMatchingMaxRule(item.getTypeId(), item.getDurability());
+        if (matcher != null) {
+            if (amount(matcher) + item.getAmount() > matcher.getAmount(-1)) {
                 return false;
             }
         }
         return true;
     }
-
+    
+    private int amount(ItemMatcher matcher) {
+        int count = 0;
+        for (ItemStack i : getContents()) {
+            if (i != null) {
+                if (matcher.match(i)) {
+                    count += i.getAmount();
+                }
+            }
+        }
+        return count;
+    }
+    
     public boolean canAddItem(ItemStack item) {
         return canAddItem(item, null);
     }
@@ -148,7 +212,7 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements
      * @param player
      *            who is adding the item
      * @return true if the item was successfully added
-     * @throws Exception 
+     * @throws Exception
      */
     public boolean addItem(ItemStack item, Player player) throws Exception {
         if (item == null) {
@@ -157,7 +221,7 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements
         if (!canAddItem(item)) {
             return false;
         }
-        if(item.getAmount()==-1) {
+        if (item.getAmount() == -1) {
             throw new Exception("Cannot set a minecart slot to -1!");
         }
         
@@ -239,8 +303,11 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements
     
     public boolean canRemoveItem(int type, int amount, short durability,
             Player player) {
-        if (getMinimumItem(type,durability) != -1) {
-            if (amount(type,durability) - amount < getMinimumItem(type,durability)) {
+        
+        ItemStack item = new ItemStack(type, amount, durability);
+        ItemMatcher matcher = getMatchingMaxRule(item.getTypeId(), item.getDurability());
+        if (matcher != null) {
+            if (amount(matcher) - item.getAmount() < matcher.getAmount(-1)) {
                 return false;
             }
         }
@@ -525,11 +592,16 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements
         int count = 0;
         for (ItemStack i : getContents()) {
             if (i != null && i.getTypeId() == item) {
-                if (durability==-1||durability == i.getDurability()) {
+                if (durability == -1 || durability == i.getDurability()) {
                     count += i.getAmount();
                 }
             }
         }
         return count;
+    }
+    
+    public void setMaximumItem(ItemMatcher matcher) {
+        // TODO Auto-generated method stub
+        
     }
 }
