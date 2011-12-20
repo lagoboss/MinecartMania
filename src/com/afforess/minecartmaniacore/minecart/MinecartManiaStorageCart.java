@@ -9,6 +9,7 @@ import org.bukkit.entity.StorageMinecart;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
 import com.afforess.minecartmaniacore.inventory.MinecartManiaInventory;
 import com.afforess.minecartmaniacore.matching.MatchField;
 import com.afforess.minecartmaniacore.utils.ItemMatcher;
@@ -158,7 +159,9 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
         
         final ItemMatcher matcher = getMatchingMaxRule(item.getTypeId(), item.getDurability());
         if (matcher != null) {
-            if ((amount(matcher) + item.getAmount()) > matcher.getAmount(-1))
+            final int found = amount(matcher);
+            MinecartManiaLogger.getInstance().info("canAddItem: max %s = %d, %d found", item, matcher.getAmount(-1), found);
+            if ((found + item.getAmount()) > matcher.getAmount(-1))
                 return false;
         }
         return true;
@@ -272,7 +275,9 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
         final ItemStack item = new ItemStack(type, amount, durability);
         final ItemMatcher matcher = getMatchingMaxRule(item.getTypeId(), item.getDurability());
         if (matcher != null) {
-            if ((amount(matcher) - item.getAmount()) < matcher.getAmount(-1))
+            final int found = amount(matcher);
+            MinecartManiaLogger.getInstance().info("canAddItem: max %s = %d, %d found", item, matcher.getAmount(-1), found);
+            if ((found - item.getAmount()) < matcher.getAmount(-1))
                 return false;
         }
         return true;
