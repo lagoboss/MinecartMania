@@ -24,8 +24,8 @@ import com.afforess.minecartmaniacore.world.SpecificMaterial;
  */
 public class MinecartManiaStorageCart extends MinecartManiaMinecart implements
         MinecartManiaInventory {
-    private ArrayList<ItemMatcher> maximumContents = new ArrayList<ItemMatcher>();
-    private ArrayList<ItemMatcher> minimumContents = new ArrayList<ItemMatcher>();
+    private ConcurrentHashMap<String, ItemMatcher> maximumContents = new ConcurrentHashMap<String, ItemMatcher>();
+    private ConcurrentHashMap<String, ItemMatcher> minimumContents = new ConcurrentHashMap<String, ItemMatcher>();
     
     /**
      * Creates a storage minecart from the given bukkit minecart
@@ -89,7 +89,7 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements
     public int getMaximumItem(int id, short data) {
         ItemStack item = new ItemStack(id, 1, data);
         if (maximumContents != null) {
-            for (ItemMatcher match : maximumContents) {
+            for (ItemMatcher match : maximumContents.values()) {
                 if (match.match(item)) {
                     return match.getAmount(-1);
                 }
@@ -101,7 +101,7 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements
     private ItemMatcher getMatchingMaxRule(int id, short data) {
         ItemStack item = new ItemStack(id, 1, data);
         if (maximumContents != null) {
-            for (ItemMatcher match : maximumContents) {
+            for (ItemMatcher match : maximumContents.values()) {
                 if (match.match(item)) {
                     return match;
                 }
@@ -113,7 +113,7 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements
     private ItemMatcher getMatchingMinRule(int id, short data) {
         ItemStack item = new ItemStack(id, 1, data);
         if (minimumContents != null) {
-            for (ItemMatcher match : minimumContents) {
+            for (ItemMatcher match : minimumContents.values()) {
                 if (match.match(item)) {
                     return match;
                 }
@@ -138,7 +138,7 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements
                 matcher.addConstant(MatchField.DURABILITY, durability);
             }
             matcher.setAmount(amount);
-            maximumContents.add(matcher);
+            maximumContents.put(matcher.toString(),matcher);
         }
     }
     
@@ -149,7 +149,7 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements
     public int getMinimumItem(int id, short data) {
         ItemStack item = new ItemStack(id, 1, data);
         if (minimumContents != null) {
-            for (ItemMatcher match : minimumContents) {
+            for (ItemMatcher match : minimumContents.values()) {
                 if (match.match(item)) {
                     return match.getAmount(-1);
                 }
@@ -170,7 +170,7 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements
                 matcher.addConstant(MatchField.DURABILITY, data);
             }
             matcher.setAmount(amount);
-            minimumContents.add(matcher);
+            minimumContents.put(matcher.toString(),matcher);
         }
     }
     
@@ -601,7 +601,10 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements
     }
     
     public void setMaximumItem(ItemMatcher matcher) {
-        // TODO Auto-generated method stub
-        
+        maximumContents.put(matcher.toString(),matcher);
+    }
+
+    public void setMinimumItem(ItemMatcher matcher) {
+        minimumContents.put(matcher.toString(),matcher);
     }
 }
