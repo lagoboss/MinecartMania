@@ -17,9 +17,8 @@ import com.afforess.minecartmaniacore.world.SpecificMaterial;
 public class MinecartManiaConfigurationParser {
     private static MinecartManiaLogger log = MinecartManiaLogger.getInstance();
     
-    public static void read(String filename, String directory,
-            SettingParser parser) {
-        File dir = new File(directory);
+    public static void read(final String filename, final String directory, final SettingParser parser) {
+        final File dir = new File(directory);
         if (!dir.exists()) {
             dir.mkdir();
         }
@@ -31,13 +30,13 @@ public class MinecartManiaConfigurationParser {
         Document doc = null;
         Document originalDoc = null;
         try {
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            final DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            final DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             doc = dBuilder.parse(config.toURI().getPath());
             doc.getDocumentElement().normalize();
             originalDoc = dBuilder.parse(config.toURI().getPath());
             originalDoc.getDocumentElement().normalize();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
         //if (parser instanceof CoreSettingParser) {
@@ -47,7 +46,7 @@ public class MinecartManiaConfigurationParser {
         
         if (!parser.isUpToDate(doc)) {
             //Could not update the document
-            File old = new File(directory, filename + ".bak");
+            final File old = new File(directory, filename + ".bak");
             if (old.exists()) {
                 old.delete();
             }
@@ -59,16 +58,17 @@ public class MinecartManiaConfigurationParser {
                 log.info("Created new config file - " + filename);
             }
         } else {
-            String versionDoc = doc.getElementsByTagName("version").item(0).getTextContent();
-            String versionOrigDoc = originalDoc.getElementsByTagName("version").item(0).getTextContent();
+            final String versionDoc = doc.getElementsByTagName("version").item(0).getTextContent();
+            final String versionOrigDoc = originalDoc.getElementsByTagName("version").item(0).getTextContent();
             
             if (!versionDoc.equalsIgnoreCase(versionOrigDoc)) {
                 log.info("Updated config file from " + versionOrigDoc + " to " + versionDoc + ".");
                 //doc was successfully updated by isUpToDate function
                 //try to save the changed doc back down to the disk
-                File old = new File(directory, filename + ".bak");
-                if (old.exists())
+                final File old = new File(directory, filename + ".bak");
+                if (old.exists()) {
                     old.delete();
+                }
                 config.renameTo(old);
                 log.info("Backup config file - renamed " + filename + " to " + filename + ".bak");
                 if (!parser.write(config, doc)) {
@@ -81,11 +81,11 @@ public class MinecartManiaConfigurationParser {
         
         config = new File(directory, filename);
         try {
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            final DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            final DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             doc = dBuilder.parse(config.toURI().getPath());
             doc.getDocumentElement().normalize();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
         
@@ -94,45 +94,42 @@ public class MinecartManiaConfigurationParser {
         }
     }
     
-    public static boolean toBool(String str) {
-        if (str == null) {
+    public static boolean toBool(final String str) {
+        if (str == null)
             return false;
-        }
         return str.equalsIgnoreCase("true");
     }
     
-    public static int toInt(String str, int def) {
+    public static int toInt(final String str, final int def) {
         if (str == null)
             return def;
         try {
             return Integer.parseInt(StringUtils.getNumber(str));
-        } catch (Exception e) {
+        } catch (final Exception e) {
         }
         return def;
     }
     
-    public static double toDouble(String str, double def) {
+    public static double toDouble(final String str, final double def) {
         if (str == null)
             return def;
         try {
             return Double.parseDouble(StringUtils.getNumber(str));
-        } catch (Exception e) {
+        } catch (final Exception e) {
         }
         return def;
     }
     
-    public static SpecificMaterial toSpecificMaterial(String str) {
+    public static SpecificMaterial toSpecificMaterial(final String str) {
         if (str == null)
             return null;
-        SpecificMaterial[] list = ItemUtils.getItemStringToMaterial(str);
-        if (list != null && list.length > 0) {
+        final SpecificMaterial[] list = ItemUtils.getItemStringToMaterial(str);
+        if ((list != null) && (list.length > 0))
             return list[0];
-        }
         return null;
     }
     
-    public static void updateSetting(Document document, String setting,
-            String defaultVal, Element root) {
+    public static void updateSetting(final Document document, final String setting, final String defaultVal, final Element root) {
         Node node = getNodeForTag(document, setting);
         if (node == null) {
             node = document.createElement(setting);
@@ -141,12 +138,11 @@ public class MinecartManiaConfigurationParser {
         }
     }
     
-    public static Node getNodeForTag(Document document, String tag) {
+    public static Node getNodeForTag(final Document document, final String tag) {
         if (document.getElementsByTagName(tag) != null) {
             if (document.getElementsByTagName(tag).item(0) != null) {
-                if (document.getElementsByTagName(tag).item(0).getChildNodes() != null) {
+                if (document.getElementsByTagName(tag).item(0).getChildNodes() != null)
                     return document.getElementsByTagName(tag).item(0).getChildNodes().item(0);
-                }
             }
         }
         return null;

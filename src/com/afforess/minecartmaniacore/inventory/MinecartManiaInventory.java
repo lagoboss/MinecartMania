@@ -11,7 +11,7 @@ public interface MinecartManiaInventory {
     
     public boolean contains(Material m);
     
-//    public boolean contains(Item i);
+    //    public boolean contains(Item i);
     
     public boolean contains(int type);
     
@@ -33,11 +33,9 @@ public interface MinecartManiaInventory {
     
     public boolean canRemoveItem(int type, int amount, short durability);
     
-    public boolean canRemoveItem(int type, int amount, short durability,
-            Player player);
+    public boolean canRemoveItem(int type, int amount, short durability, Player player);
     
-    public boolean removeItem(int type, int amount, short durability,
-            Player player);
+    public boolean removeItem(int type, int amount, short durability, Player player);
     
     public boolean removeItem(int type, int amount, short durability);
     

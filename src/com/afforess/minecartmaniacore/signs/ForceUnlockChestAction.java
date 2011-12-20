@@ -5,10 +5,10 @@ import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
 public class ForceUnlockChestAction implements SignAction {
     protected boolean valid = false;
     
-    public ForceUnlockChestAction(Sign sign) {
+    public ForceUnlockChestAction(final Sign sign) {
     }
     
-    public boolean execute(MinecartManiaMinecart minecart) {
+    public boolean execute(final MinecartManiaMinecart minecart) {
         return valid;
     }
     
@@ -16,9 +16,9 @@ public class ForceUnlockChestAction implements SignAction {
         return false;
     }
     
-    public boolean valid(Sign sign) {
+    public boolean valid(final Sign sign) {
         boolean success = false;
-        for (String line : sign.getLines()) {
+        for (final String line : sign.getLines()) {
             if (line.toLowerCase().contains("unlock chest")) {
                 success = true;
                 break;

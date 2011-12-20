@@ -7,9 +7,9 @@ import com.afforess.minecartmaniacore.signs.Sign;
 public class MinecartManiaSignFoundEvent extends MinecartManiaEvent {
     private static final long serialVersionUID = -7633052520716796470L;
     private Sign sign;
-    private Player player;
+    private final Player player;
     
-    public MinecartManiaSignFoundEvent(Sign sign, Player player) {
+    public MinecartManiaSignFoundEvent(final Sign sign, final Player player) {
         super("MinecartManiaSignFoundEvent");
         this.sign = sign;
         this.player = player;
@@ -19,7 +19,7 @@ public class MinecartManiaSignFoundEvent extends MinecartManiaEvent {
         return sign;
     }
     
-    public void setSign(Sign sign) {
+    public void setSign(final Sign sign) {
         this.sign = sign;
     }
     

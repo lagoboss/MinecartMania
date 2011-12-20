@@ -7,11 +7,10 @@ public enum DebugMode {
     SEVERE,
     NONE;
     
-    public static DebugMode debugModeFromString(String s) {
-        for (DebugMode m : DebugMode.values()) {
-            if (m.name().equalsIgnoreCase(s)) {
+    public static DebugMode debugModeFromString(final String s) {
+        for (final DebugMode m : DebugMode.values()) {
+            if (m.name().equalsIgnoreCase(s))
                 return m;
-            }
         }
         return null;
     }

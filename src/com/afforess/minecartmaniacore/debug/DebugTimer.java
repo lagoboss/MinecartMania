@@ -9,7 +9,7 @@ public class DebugTimer {
     public DebugTimer() {
     }
     
-    public DebugTimer(String name) {
+    public DebugTimer(final String name) {
         this.name = name;
     }
     

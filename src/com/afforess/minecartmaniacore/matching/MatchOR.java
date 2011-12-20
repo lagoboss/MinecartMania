@@ -9,15 +9,15 @@ import com.afforess.minecartmaniacore.utils.StringUtils;
 public class MatchOR implements MatchToken {
     ArrayList<MatchToken> tokens = new ArrayList<MatchToken>();
     
-    public void addExpression(MatchToken token) {
+    public void addExpression(final MatchToken token) {
         tokens.add(token);
     }
     
     /**
      * Same deal as MatchItems.match, except OR
      */
-    public boolean match(ItemStack item) {
-        for (MatchToken match : tokens) {
+    public boolean match(final ItemStack item) {
+        for (final MatchToken match : tokens) {
             if (match.match(item))
                 return true;
         }
@@ -28,10 +28,10 @@ public class MatchOR implements MatchToken {
         return true;
     }
     
-    public String toString(int i) {
-        StringBuilder sb = new StringBuilder();
+    public String toString(final int i) {
+        final StringBuilder sb = new StringBuilder();
         sb.append(StringUtils.indent("OR:\n{\n", i));
-        for (MatchToken mt : tokens) {
+        for (final MatchToken mt : tokens) {
             sb.append(mt.toString(i + 1));
             sb.append("\n");
         }

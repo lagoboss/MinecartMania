@@ -65,13 +65,12 @@ public class WordUtils {
      * WordUtils.capitalize("i am FINE") = "I Am FINE"
      * </pre>
      * 
-     * @param str
-     *            the String to capitalize, may be null
+     * @param str the String to capitalize, may be null
      * @return capitalized String, <code>null</code> if null String input
      * @see #uncapitalize(String)
      * @see #capitalizeFully(String)
      */
-    public static String capitalize(String str) {
+    public static String capitalize(final String str) {
         return capitalize(str, null);
     }
     
@@ -96,25 +95,22 @@ public class WordUtils {
      * WordUtils.capitalize("i aM.fine", {'.'}) = "I aM.Fine"
      * </pre>
      * 
-     * @param str
-     *            the String to capitalize, may be null
-     * @param delimiters
-     *            set of characters to determine capitalization, null means whitespace
+     * @param str the String to capitalize, may be null
+     * @param delimiters set of characters to determine capitalization, null means whitespace
      * @return capitalized String, <code>null</code> if null String input
      * @see #uncapitalize(String)
      * @see #capitalizeFully(String)
      * @since 2.1
      */
-    public static String capitalize(String str, char[] delimiters) {
-        int delimLen = (delimiters == null ? -1 : delimiters.length);
-        if (str == null || str.length() == 0 || delimLen == 0) {
+    public static String capitalize(final String str, final char[] delimiters) {
+        final int delimLen = (delimiters == null ? -1 : delimiters.length);
+        if ((str == null) || (str.length() == 0) || (delimLen == 0))
             return str;
-        }
-        int strLen = str.length();
-        StringBuffer buffer = new StringBuffer(strLen);
+        final int strLen = str.length();
+        final StringBuffer buffer = new StringBuffer(strLen);
         boolean capitalizeNext = true;
         for (int i = 0; i < strLen; i++) {
-            char ch = str.charAt(i);
+            final char ch = str.charAt(i);
             
             if (isDelimiter(ch, delimiters)) {
                 buffer.append(ch);
@@ -145,11 +141,10 @@ public class WordUtils {
      * WordUtils.capitalizeFully("i am FINE") = "I Am Fine"
      * </pre>
      * 
-     * @param str
-     *            the String to capitalize, may be null
+     * @param str the String to capitalize, may be null
      * @return capitalized String, <code>null</code> if null String input
      */
-    public static String capitalizeFully(String str) {
+    public static String capitalizeFully(final String str) {
         return capitalizeFully(str, null);
     }
     
@@ -174,18 +169,15 @@ public class WordUtils {
      * WordUtils.capitalizeFully("i aM.fine", {'.'}) = "I am.Fine"
      * </pre>
      * 
-     * @param str
-     *            the String to capitalize, may be null
-     * @param delimiters
-     *            set of characters to determine capitalization, null means whitespace
+     * @param str the String to capitalize, may be null
+     * @param delimiters set of characters to determine capitalization, null means whitespace
      * @return capitalized String, <code>null</code> if null String input
      * @since 2.1
      */
-    public static String capitalizeFully(String str, char[] delimiters) {
-        int delimLen = (delimiters == null ? -1 : delimiters.length);
-        if (str == null || str.length() == 0 || delimLen == 0) {
+    public static String capitalizeFully(String str, final char[] delimiters) {
+        final int delimLen = (delimiters == null ? -1 : delimiters.length);
+        if ((str == null) || (str.length() == 0) || (delimLen == 0))
             return str;
-        }
         str = str.toLowerCase();
         return capitalize(str, delimiters);
     }
@@ -206,12 +198,11 @@ public class WordUtils {
      * WordUtils.uncapitalize("I Am FINE") = "i am fINE"
      * </pre>
      * 
-     * @param str
-     *            the String to uncapitalize, may be null
+     * @param str the String to uncapitalize, may be null
      * @return uncapitalized String, <code>null</code> if null String input
      * @see #capitalize(String)
      */
-    public static String uncapitalize(String str) {
+    public static String uncapitalize(final String str) {
         return uncapitalize(str, null);
     }
     
@@ -236,24 +227,21 @@ public class WordUtils {
      * WordUtils.uncapitalize("I AM.FINE", {'.'}) = "i AM.fINE"
      * </pre>
      * 
-     * @param str
-     *            the String to uncapitalize, may be null
-     * @param delimiters
-     *            set of characters to determine uncapitalization, null means whitespace
+     * @param str the String to uncapitalize, may be null
+     * @param delimiters set of characters to determine uncapitalization, null means whitespace
      * @return uncapitalized String, <code>null</code> if null String input
      * @see #capitalize(String)
      * @since 2.1
      */
-    public static String uncapitalize(String str, char[] delimiters) {
-        int delimLen = (delimiters == null ? -1 : delimiters.length);
-        if (str == null || str.length() == 0 || delimLen == 0) {
+    public static String uncapitalize(final String str, final char[] delimiters) {
+        final int delimLen = (delimiters == null ? -1 : delimiters.length);
+        if ((str == null) || (str.length() == 0) || (delimLen == 0))
             return str;
-        }
-        int strLen = str.length();
-        StringBuffer buffer = new StringBuffer(strLen);
+        final int strLen = str.length();
+        final StringBuffer buffer = new StringBuffer(strLen);
         boolean uncapitalizeNext = true;
         for (int i = 0; i < strLen; i++) {
-            char ch = str.charAt(i);
+            final char ch = str.charAt(i);
             
             if (isDelimiter(ch, delimiters)) {
                 buffer.append(ch);
@@ -291,16 +279,14 @@ public class WordUtils {
      * StringUtils.swapCase("The dog has a BONE") = "tHE DOG HAS A bone"
      * </pre>
      * 
-     * @param str
-     *            the String to swap case, may be null
+     * @param str the String to swap case, may be null
      * @return the changed String, <code>null</code> if null String input
      */
-    public static String swapCase(String str) {
+    public static String swapCase(final String str) {
         int strLen;
-        if (str == null || (strLen = str.length()) == 0) {
+        if ((str == null) || ((strLen = str.length()) == 0))
             return str;
-        }
-        StringBuffer buffer = new StringBuffer(strLen);
+        final StringBuffer buffer = new StringBuffer(strLen);
         
         boolean whitespace = true;
         char ch = 0;
@@ -348,13 +334,12 @@ public class WordUtils {
      * WordUtils.initials("Ben J.Lee")      = "BJ"
      * </pre>
      * 
-     * @param str
-     *            the String to get initials from, may be null
+     * @param str the String to get initials from, may be null
      * @return String of initial letters, <code>null</code> if null String input
      * @see #initials(String,char[])
      * @since 2.2
      */
-    public static String initials(String str) {
+    public static String initials(final String str) {
         return initials(str, null);
     }
     
@@ -380,27 +365,23 @@ public class WordUtils {
      * WordUtils.initials(*, new char[0])         = ""
      * </pre>
      * 
-     * @param str
-     *            the String to get initials from, may be null
-     * @param delimiters
-     *            set of characters to determine words, null means whitespace
+     * @param str the String to get initials from, may be null
+     * @param delimiters set of characters to determine words, null means whitespace
      * @return String of initial letters, <code>null</code> if null String input
      * @see #initials(String)
      * @since 2.2
      */
-    public static String initials(String str, char[] delimiters) {
-        if (str == null || str.length() == 0) {
+    public static String initials(final String str, final char[] delimiters) {
+        if ((str == null) || (str.length() == 0))
             return str;
-        }
-        if (delimiters != null && delimiters.length == 0) {
+        if ((delimiters != null) && (delimiters.length == 0))
             return "";
-        }
-        int strLen = str.length();
-        char[] buf = new char[strLen / 2 + 1];
+        final int strLen = str.length();
+        final char[] buf = new char[(strLen / 2) + 1];
         int count = 0;
         boolean lastWasGap = true;
         for (int i = 0; i < strLen; i++) {
-            char ch = str.charAt(i);
+            final char ch = str.charAt(i);
             
             if (isDelimiter(ch, delimiters)) {
                 lastWasGap = true;
@@ -418,20 +399,16 @@ public class WordUtils {
     /**
      * Is the character a delimiter.
      * 
-     * @param ch
-     *            the character to check
-     * @param delimiters
-     *            the delimiters
+     * @param ch the character to check
+     * @param delimiters the delimiters
      * @return true if it is a delimiter
      */
-    private static boolean isDelimiter(char ch, char[] delimiters) {
-        if (delimiters == null) {
+    private static boolean isDelimiter(final char ch, final char[] delimiters) {
+        if (delimiters == null)
             return Character.isWhitespace(ch);
-        }
-        for (int i = 0, isize = delimiters.length; i < isize; i++) {
-            if (ch == delimiters[i]) {
+        for (final char delimiter : delimiters) {
+            if (ch == delimiter)
                 return true;
-            }
         }
         return false;
     }

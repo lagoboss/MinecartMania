@@ -23,10 +23,10 @@ public class MinecartOwner {
     private String world;
     
     public MinecartOwner() {
-        this.owner = "none";
+        owner = "none";
     }
     
-    public void setId(int id) {
+    public void setId(final int id) {
         this.id = id;
     }
     
@@ -34,7 +34,7 @@ public class MinecartOwner {
         return id;
     }
     
-    public MinecartOwner(String owner) {
+    public MinecartOwner(final String owner) {
         this.owner = owner;
     }
     
@@ -42,7 +42,7 @@ public class MinecartOwner {
         return owner;
     }
     
-    public void setOwner(String owner) {
+    public void setOwner(final String owner) {
         this.owner = owner;
     }
     
@@ -50,7 +50,7 @@ public class MinecartOwner {
         return !owner.equals("none");
     }
     
-    public void setWorld(String world) {
+    public void setWorld(final String world) {
         this.world = world;
     }
     
@@ -63,20 +63,18 @@ public class MinecartOwner {
     }
     
     public Object getRealOwner() {
-        if (owner.equals("none")) {
+        if (owner.equals("none"))
             return null;
-        }
         if (owner.contains("[") && owner.contains("]")) {
             try {
                 int x, y, z;
-                String[] split = owner.split(":");
+                final String[] split = owner.split(":");
                 x = Integer.valueOf(StringUtils.getNumber(split[0]));
                 y = Integer.valueOf(StringUtils.getNumber(split[1]));
                 z = Integer.valueOf(StringUtils.getNumber(split[2]));
-                if (MinecartManiaWorld.getBlockAt(getBukkitWorld(), x, y, z).getState() instanceof Chest) {
+                if (MinecartManiaWorld.getBlockAt(getBukkitWorld(), x, y, z).getState() instanceof Chest)
                     return MinecartManiaWorld.getMinecartManiaChest((Chest) MinecartManiaWorld.getBlockAt(getBukkitWorld(), x, y, z).getState());
-                }
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 e.printStackTrace();
                 return null;
             }

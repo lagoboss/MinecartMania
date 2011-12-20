@@ -12,7 +12,7 @@ import com.afforess.minecartmaniacore.signs.SignAction;
 public class MinecartManiaActionListener extends MinecartManiaListener {
     
     @Override
-    public void onMinecartManiaSignFoundEvent(MinecartManiaSignFoundEvent event) {
+    public void onMinecartManiaSignFoundEvent(final MinecartManiaSignFoundEvent event) {
         MinecartManiaLogger.getInstance().debug("MinecartManiaCore - Minecart Mania Sign Found Event");
         Sign sign = event.getSign();
         if (MinecartTypeSign.isMinecartTypeSign(sign)) {

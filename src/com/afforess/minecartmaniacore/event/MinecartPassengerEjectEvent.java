@@ -5,15 +5,13 @@ import org.bukkit.event.Cancellable;
 
 import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
 
-public class MinecartPassengerEjectEvent extends MinecartManiaEvent implements
-        Cancellable {
+public class MinecartPassengerEjectEvent extends MinecartManiaEvent implements Cancellable {
     private static final long serialVersionUID = 7082195004734423157L;
-    private MinecartManiaMinecart minecart;
-    private Entity passenger;
+    private final MinecartManiaMinecart minecart;
+    private final Entity passenger;
     private boolean cancelled = false;
     
-    public MinecartPassengerEjectEvent(MinecartManiaMinecart minecart,
-            Entity passenger) {
+    public MinecartPassengerEjectEvent(final MinecartManiaMinecart minecart, final Entity passenger) {
         super("MinecartPassengerEjectEvent");
         this.minecart = minecart;
         this.passenger = passenger;
@@ -23,8 +21,8 @@ public class MinecartPassengerEjectEvent extends MinecartManiaEvent implements
         return cancelled;
     }
     
-    public void setCancelled(boolean cancel) {
-        this.cancelled = cancel;
+    public void setCancelled(final boolean cancel) {
+        cancelled = cancel;
     }
     
     public MinecartManiaMinecart getMinecart() {

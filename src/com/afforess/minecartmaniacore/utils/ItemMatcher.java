@@ -1,7 +1,6 @@
 package com.afforess.minecartmaniacore.utils;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.bukkit.inventory.ItemStack;
@@ -31,22 +30,22 @@ public class ItemMatcher {
     public ItemMatcher() {
     }
     
-    public ItemMatcher(int typeId, short durability) {
+    public ItemMatcher(final int typeId, final short durability) {
         addConstant(MatchField.TYPE_ID, typeId);
         if (durability != -1) {
             addConstant(MatchField.DURABILITY, durability);
         }
     }
     
-    public void addRange(MatchField field, int start, int end) {
+    public void addRange(final MatchField field, final int start, final int end) {
         matchTokens.add(new MatchInRange(field, start, end));
     }
     
-    public void addConstant(MatchField field, int value) {
+    public void addConstant(final MatchField field, final int value) {
         matchTokens.add(new MatchConstant(field, value));
     }
     
-    public void addExpression(MatchToken token) {
+    public void addExpression(final MatchToken token) {
         matchTokens.add(token);
     }
     
@@ -56,10 +55,10 @@ public class ItemMatcher {
      * @param item
      * @return
      */
-    public boolean match(ItemStack item) {
+    public boolean match(final ItemStack item) {
         if (item == null)
             return false;
-        for (MatchToken matcher : matchTokens) {
+        for (final MatchToken matcher : matchTokens) {
             if (!matcher.match(item))
                 return false;
         }
@@ -72,14 +71,14 @@ public class ItemMatcher {
      * @return
      */
     public ItemStack toItemStack() {
-        ItemStack item = new ItemStack(0, 1, (short) -1);
-        boolean foundID = false;
-        for (MatchToken matcher : matchTokens) {
+        final ItemStack item = new ItemStack(0, 1, (short) -1);
+        final boolean foundID = false;
+        for (final MatchToken matcher : matchTokens) {
             if (matcher.isComplex())
                 return null;
             if (matcher instanceof MatchConstant) {
-                MatchConstant constant = (MatchConstant) matcher;
-                int v = constant.getValue();
+                final MatchConstant constant = (MatchConstant) matcher;
+                final int v = constant.getValue();
                 switch (constant.getField()) {
                     case TYPE_ID:
                         item.setTypeId(v);
@@ -99,29 +98,30 @@ public class ItemMatcher {
         return item;
     }
     
-    public void setAmount(int amount) {
+    public void setAmount(final int amount) {
         this.amount = amount;
     }
     
-    public int getAmount(int ifdefault) {
+    public int getAmount(final int ifdefault) {
         return amountIsSet() ? amount : ifdefault;
     }
     
+    @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append("MATCH (AND):\n{\n");
-        for (MatchToken mt : matchTokens) {
+        for (final MatchToken mt : matchTokens) {
             sb.append(mt.toString(1));
             sb.append("\n");
         }
         sb.append("}");
         return sb.toString();
     }
-
+    
     public boolean amountIsSet() {
-        return amount>-1;
+        return amount > -1;
     }
-
+    
     public List<MatchToken> getTokens() {
         return matchTokens;
     }

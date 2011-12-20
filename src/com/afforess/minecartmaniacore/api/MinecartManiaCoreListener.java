@@ -38,14 +38,13 @@ public class MinecartManiaCoreListener extends VehicleListener {
     }
     
     @Override
-    public void onVehicleUpdate(VehicleUpdateEvent event) {
+    public void onVehicleUpdate(final VehicleUpdateEvent event) {
         if (event.getVehicle() instanceof Minecart) {
-            Minecart cart = (Minecart) event.getVehicle();
-            MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart(cart);
+            final Minecart cart = (Minecart) event.getVehicle();
+            final MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart(cart);
             
-            if (minecart.isDead()) {
+            if (minecart.isDead())
                 return;
-            }
             
             minecart.updateCalendar();
             if (minecart.isMoving()) {
@@ -57,11 +56,11 @@ public class MinecartManiaCoreListener extends VehicleListener {
             
             //Fire new events
             if (minecart.wasMovingLastTick() && !minecart.isMoving()) {
-                MinecartMotionStopEvent mmse = new MinecartMotionStopEvent(minecart);
+                final MinecartMotionStopEvent mmse = new MinecartMotionStopEvent(minecart);
                 MinecartManiaCore.callEvent(mmse);
                 mmse.logProcessTime();
             } else if (!minecart.wasMovingLastTick() && minecart.isMoving()) {
-                MinecartMotionStartEvent mmse = new MinecartMotionStartEvent(minecart);
+                final MinecartMotionStartEvent mmse = new MinecartMotionStartEvent(minecart);
                 MinecartManiaCore.callEvent(mmse);
                 mmse.logProcessTime();
             }
@@ -79,12 +78,12 @@ public class MinecartManiaCoreListener extends VehicleListener {
             if (minecart.hasChangedPosition() || minecart.createdLastTick) {
                 minecart.updateChunks();
                 if (minecart.isAtIntersection()) {
-                    MinecartIntersectionEvent mie = new MinecartIntersectionEvent(minecart);
+                    final MinecartIntersectionEvent mie = new MinecartIntersectionEvent(minecart);
                     MinecartManiaCore.callEvent(mie);
                     mie.logProcessTime();
                 }
                 
-                MinecartActionEvent mae = new MinecartActionEvent(minecart);
+                final MinecartActionEvent mae = new MinecartActionEvent(minecart);
                 if (!minecart.createdLastTick) {
                     MinecartManiaCore.callEvent(mae);
                     mae.logProcessTime();
@@ -109,40 +108,39 @@ public class MinecartManiaCoreListener extends VehicleListener {
     }
     
     @Override
-    public void onVehicleDestroy(VehicleDestroyEvent event) {
-        if (event.getVehicle() instanceof Minecart && !event.isCancelled()) {
-            MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart((Minecart) event.getVehicle());
+    public void onVehicleDestroy(final VehicleDestroyEvent event) {
+        if ((event.getVehicle() instanceof Minecart) && !event.isCancelled()) {
+            final MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart((Minecart) event.getVehicle());
             minecart.kill(false);
         }
     }
     
     @Override
-    public void onVehicleDamage(VehicleDamageEvent event) {
+    public void onVehicleDamage(final VehicleDamageEvent event) {
         if (event.getVehicle() instanceof Minecart) {
-            MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart((Minecart) event.getVehicle());
+            final MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart((Minecart) event.getVehicle());
             //Start workaround for double damage events
             long lastDamage = -1;
             if (minecart.getDataValue("Last Damage") != null) {
                 lastDamage = (Long) minecart.getDataValue("Last Damage");
             }
             if (lastDamage > -1) {
-                if ((lastDamage + 100) > System.currentTimeMillis()) {
+                if ((lastDamage + 100) > System.currentTimeMillis())
                     return;
-                }
             }
             minecart.setDataValue("Last Damage", System.currentTimeMillis());
             //End Workaround
             if (!event.isCancelled()) {
                 MinecartManiaLogger.getInstance().debug("Damage: " + event.getDamage() + " Existing: " + minecart.minecart.getDamage());
-                if ((event.getDamage() * 10) + minecart.minecart.getDamage() > 40) {
+                if (((event.getDamage() * 10) + minecart.minecart.getDamage()) > 40) {
                     minecart.kill();
                     event.setCancelled(true);
                     event.setDamage(0);
                 }
                 if (minecart.minecart.getPassenger() != null) {
                     if (minecart.isOnRails()) {
-                        if (event.getAttacker() != null && event.getAttacker().getEntityId() == minecart.minecart.getPassenger().getEntityId()) {
-                            MinecartClickedEvent mce = new MinecartClickedEvent(minecart);
+                        if ((event.getAttacker() != null) && (event.getAttacker().getEntityId() == minecart.minecart.getPassenger().getEntityId())) {
+                            final MinecartClickedEvent mce = new MinecartClickedEvent(minecart);
                             MinecartManiaCore.callEvent(mce);
                             if (mce.isActionTaken()) {
                                 event.setDamage(0);
@@ -156,11 +154,11 @@ public class MinecartManiaCoreListener extends VehicleListener {
     }
     
     @Override
-    public void onVehicleEntityCollision(VehicleEntityCollisionEvent event) {
+    public void onVehicleEntityCollision(final VehicleEntityCollisionEvent event) {
         if (event.getVehicle() instanceof Minecart) {
-            Minecart cart = (Minecart) event.getVehicle();
-            MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart(cart);
-            Entity collisioner = event.getEntity();
+            final Minecart cart = (Minecart) event.getVehicle();
+            final MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart(cart);
+            final Entity collisioner = event.getEntity();
             
             if (minecart.doCatcherBlock()) {
                 event.setCancelled(true);
@@ -169,7 +167,7 @@ public class MinecartManiaCoreListener extends VehicleListener {
                 return;
             }
             if (collisioner instanceof LivingEntity) {
-                LivingEntity victim = (LivingEntity) (collisioner);
+                final LivingEntity victim = (LivingEntity) (collisioner);
                 if (!(victim instanceof Player) && !(victim instanceof Wolf)) {
                     if (MinecartManiaConfiguration.isMinecartsKillMobs()) {
                         if (minecart.isMoving()) {
@@ -185,20 +183,18 @@ public class MinecartManiaCoreListener extends VehicleListener {
     }
     
     @Override
-    public void onVehicleEnter(VehicleEnterEvent event) {
-        if (event.isCancelled() || !(event.getVehicle() instanceof Minecart)) {
+    public void onVehicleEnter(final VehicleEnterEvent event) {
+        if (event.isCancelled() || !(event.getVehicle() instanceof Minecart))
             return;
-        }
         
         final MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart((Minecart) event.getVehicle());
-        if (minecart.minecart.getPassenger() != null) {
+        if (minecart.minecart.getPassenger() != null)
             return;
-        }
         if (ControlBlockList.getLaunchSpeed(minecart.getSpecificMaterialBeneath()) != 0.0D) {
             if (!minecart.isMoving()) {
-                ArrayList<Sign> signs = SignUtils.getAdjacentSignList(minecart, 2);
-                for (Sign s : signs) {
-                    com.afforess.minecartmaniacore.signs.Sign sign = SignManager.getSignAt(s.getBlock());
+                final ArrayList<Sign> signs = SignUtils.getAdjacentSignList(minecart, 2);
+                for (final Sign s : signs) {
+                    final com.afforess.minecartmaniacore.signs.Sign sign = SignManager.getSignAt(s.getBlock());
                     if (sign.executeAction(minecart, LaunchPlayerAction.class)) {
                         break;
                     }

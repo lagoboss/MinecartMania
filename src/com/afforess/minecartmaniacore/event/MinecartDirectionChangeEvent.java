@@ -5,12 +5,11 @@ import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
 
 public class MinecartDirectionChangeEvent extends MinecartManiaEvent {
     private static final long serialVersionUID = -3750213642051820863L;
-    private MinecartManiaMinecart minecart;
-    private CompassDirection previous;
-    private CompassDirection current;
+    private final MinecartManiaMinecart minecart;
+    private final CompassDirection previous;
+    private final CompassDirection current;
     
-    public MinecartDirectionChangeEvent(MinecartManiaMinecart minecart,
-            CompassDirection previous, CompassDirection current) {
+    public MinecartDirectionChangeEvent(final MinecartManiaMinecart minecart, final CompassDirection previous, final CompassDirection current) {
         super("MinecartDirectionChangeEvent");
         this.minecart = minecart;
         this.previous = previous;

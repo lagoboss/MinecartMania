@@ -73,40 +73,38 @@ public class MinecartManiaMinecartDataTable {
         
     }
     
-    public MinecartManiaMinecartDataTable(MinecartManiaMinecart minecart,
-            String player) {
-        this.previousX = minecart.previousLocation.getX();
-        this.previousY = minecart.previousLocation.getY();
-        this.previousZ = minecart.previousLocation.getZ();
-        this.previousMotionX = minecart.previousMotion.getX();
-        this.previousMotionY = minecart.previousMotion.getY();
-        this.previousMotionZ = minecart.previousMotion.getZ();
-        this.previousFacingDir = minecart.previousFacingDir;
-        this.wasMovingLastTick = minecart.wasMovingLastTick;
-        this.owner = minecart.owner.getOwner();
-        this.myrange = minecart.range;
-        this.rangeY = minecart.rangeY;
-        this.dead = minecart.dead;
-        this.oldId = minecart.minecart.getEntityId();
-        this.data = minecart.data;
-        this.X = minecart.getLocation().getX();
-        this.Y = minecart.getLocation().getY();
-        this.Z = minecart.getLocation().getZ();
-        this.motionX = minecart.getMotionX();
-        this.motionY = minecart.getMotionY();
-        this.motionZ = minecart.getMotionZ();
+    public MinecartManiaMinecartDataTable(final MinecartManiaMinecart minecart, final String player) {
+        previousX = minecart.previousLocation.getX();
+        previousY = minecart.previousLocation.getY();
+        previousZ = minecart.previousLocation.getZ();
+        previousMotionX = minecart.previousMotion.getX();
+        previousMotionY = minecart.previousMotion.getY();
+        previousMotionZ = minecart.previousMotion.getZ();
+        previousFacingDir = minecart.previousFacingDir;
+        wasMovingLastTick = minecart.wasMovingLastTick;
+        owner = minecart.owner.getOwner();
+        myrange = minecart.range;
+        rangeY = minecart.rangeY;
+        dead = minecart.dead;
+        oldId = minecart.minecart.getEntityId();
+        data = minecart.data;
+        X = minecart.getLocation().getX();
+        Y = minecart.getLocation().getY();
+        Z = minecart.getLocation().getZ();
+        motionX = minecart.getMotionX();
+        motionY = minecart.getMotionY();
+        motionZ = minecart.getMotionZ();
         this.player = player;
-        this.typeId = minecart.getType().getId();
-        this.world = minecart.getWorld().getName();
+        typeId = minecart.getType().getId();
+        world = minecart.getWorld().getName();
     }
     
-    public static MinecartManiaMinecartDataTable getDataTable(String player) {
-        if (cache.containsKey(player)) {
+    public static MinecartManiaMinecartDataTable getDataTable(final String player) {
+        if (cache.containsKey(player))
             return cache.get(player);
-        }
         try {
             MinecartManiaMinecartDataTable data = null;
-            List<MinecartManiaMinecartDataTable> list = MinecartManiaCore.getInstance().getDatabase().find(MinecartManiaMinecartDataTable.class).where().ieq("player", player).findList();
+            final List<MinecartManiaMinecartDataTable> list = MinecartManiaCore.getInstance().getDatabase().find(MinecartManiaMinecartDataTable.class).where().ieq("player", player).findList();
             if (list.size() > 0) {
                 data = list.get(0);
                 //handle issues with the db gracefully
@@ -118,35 +116,35 @@ public class MinecartManiaMinecartDataTable {
             }
             cache.put(player, data);
             return data;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             MinecartManiaLogger.getInstance().log("Failed to load the minecart from memory when " + player + " reconnected");
             MinecartManiaLogger.getInstance().log(e.getMessage(), false);
             return null;
         }
     }
     
-    public static void delete(MinecartManiaMinecartDataTable data) {
+    public static void delete(final MinecartManiaMinecartDataTable data) {
         MinecartManiaCore.getInstance().getDatabase().delete(data);
         cache.remove(data.getPlayer());
     }
     
-    public static void save(MinecartManiaMinecartDataTable data) {
+    public static void save(final MinecartManiaMinecartDataTable data) {
         MinecartManiaCore.getInstance().getDatabase().save(data);
         cache.put(data.getPlayer(), data);
     }
     
     public MinecartManiaMinecart toMinecartManiaMinecart() {
-        MinecartManiaMinecart minecart = MinecartManiaWorld.spawnMinecart(getLocation(), Material.getMaterial(typeId), owner);
-        minecart.previousFacingDir = this.previousFacingDir;
-        minecart.previousLocation = this.getPreviousLocation();
-        minecart.previousMotion = this.getPreviousMotion();
+        final MinecartManiaMinecart minecart = MinecartManiaWorld.spawnMinecart(getLocation(), Material.getMaterial(typeId), owner);
+        minecart.previousFacingDir = previousFacingDir;
+        minecart.previousLocation = getPreviousLocation();
+        minecart.previousMotion = getPreviousMotion();
         minecart.minecart.setVelocity(getMotion());
-        minecart.range = this.myrange;
-        minecart.rangeY = this.rangeY;
-        minecart.wasMovingLastTick = this.wasMovingLastTick;
-        minecart.dead = this.dead;
-        if (this.data != null) {
-            minecart.data = this.data;
+        minecart.range = myrange;
+        minecart.rangeY = rangeY;
+        minecart.wasMovingLastTick = wasMovingLastTick;
+        minecart.dead = dead;
+        if (data != null) {
+            minecart.data = data;
         }
         return minecart;
     }
@@ -155,7 +153,7 @@ public class MinecartManiaMinecartDataTable {
         return previousX;
     }
     
-    public void setPreviousX(double previousX) {
+    public void setPreviousX(final double previousX) {
         this.previousX = previousX;
     }
     
@@ -163,7 +161,7 @@ public class MinecartManiaMinecartDataTable {
         return previousY;
     }
     
-    public void setPreviousY(double previousY) {
+    public void setPreviousY(final double previousY) {
         this.previousY = previousY;
     }
     
@@ -171,7 +169,7 @@ public class MinecartManiaMinecartDataTable {
         return previousZ;
     }
     
-    public void setPreviousZ(double previousZ) {
+    public void setPreviousZ(final double previousZ) {
         this.previousZ = previousZ;
     }
     
@@ -179,7 +177,7 @@ public class MinecartManiaMinecartDataTable {
         return previousMotionX;
     }
     
-    public void setPreviousMotionX(double previousMotionX) {
+    public void setPreviousMotionX(final double previousMotionX) {
         this.previousMotionX = previousMotionX;
     }
     
@@ -187,7 +185,7 @@ public class MinecartManiaMinecartDataTable {
         return previousMotionY;
     }
     
-    public void setPreviousMotionY(double previousMotionY) {
+    public void setPreviousMotionY(final double previousMotionY) {
         this.previousMotionY = previousMotionY;
     }
     
@@ -195,7 +193,7 @@ public class MinecartManiaMinecartDataTable {
         return previousMotionZ;
     }
     
-    public void setPreviousMotionZ(double previousMotionZ) {
+    public void setPreviousMotionZ(final double previousMotionZ) {
         this.previousMotionZ = previousMotionZ;
     }
     
@@ -203,7 +201,7 @@ public class MinecartManiaMinecartDataTable {
         return X;
     }
     
-    public void setX(double x) {
+    public void setX(final double x) {
         X = x;
     }
     
@@ -211,7 +209,7 @@ public class MinecartManiaMinecartDataTable {
         return Y;
     }
     
-    public void setY(double y) {
+    public void setY(final double y) {
         Y = y;
     }
     
@@ -219,7 +217,7 @@ public class MinecartManiaMinecartDataTable {
         return Z;
     }
     
-    public void setZ(double z) {
+    public void setZ(final double z) {
         Z = z;
     }
     
@@ -227,7 +225,7 @@ public class MinecartManiaMinecartDataTable {
         return motionX;
     }
     
-    public void setMotionX(double motionX) {
+    public void setMotionX(final double motionX) {
         this.motionX = motionX;
     }
     
@@ -235,7 +233,7 @@ public class MinecartManiaMinecartDataTable {
         return motionY;
     }
     
-    public void setMotionY(double motionY) {
+    public void setMotionY(final double motionY) {
         this.motionY = motionY;
     }
     
@@ -243,7 +241,7 @@ public class MinecartManiaMinecartDataTable {
         return motionZ;
     }
     
-    public void setMotionZ(double motionZ) {
+    public void setMotionZ(final double motionZ) {
         this.motionZ = motionZ;
     }
     
@@ -251,7 +249,7 @@ public class MinecartManiaMinecartDataTable {
         return world;
     }
     
-    public void setWorld(String world) {
+    public void setWorld(final String world) {
         this.world = world;
     }
     
@@ -259,7 +257,7 @@ public class MinecartManiaMinecartDataTable {
         return player;
     }
     
-    public void setPlayer(String player) {
+    public void setPlayer(final String player) {
         this.player = player;
     }
     
@@ -283,7 +281,7 @@ public class MinecartManiaMinecartDataTable {
         return previousFacingDir;
     }
     
-    public void setPreviousFacingDir(CompassDirection previousFacingDir) {
+    public void setPreviousFacingDir(final CompassDirection previousFacingDir) {
         this.previousFacingDir = previousFacingDir;
     }
     
@@ -291,7 +289,7 @@ public class MinecartManiaMinecartDataTable {
         return wasMovingLastTick;
     }
     
-    public void setWasMovingLastTick(boolean wasMovingLastTick) {
+    public void setWasMovingLastTick(final boolean wasMovingLastTick) {
         this.wasMovingLastTick = wasMovingLastTick;
     }
     
@@ -299,7 +297,7 @@ public class MinecartManiaMinecartDataTable {
         return owner;
     }
     
-    public void setOwner(String owner) {
+    public void setOwner(final String owner) {
         this.owner = owner;
     }
     
@@ -307,7 +305,7 @@ public class MinecartManiaMinecartDataTable {
         return rangeY;
     }
     
-    public void setRangeY(int rangeY) {
+    public void setRangeY(final int rangeY) {
         this.rangeY = rangeY;
     }
     
@@ -315,7 +313,7 @@ public class MinecartManiaMinecartDataTable {
         return dead;
     }
     
-    public void setDead(boolean dead) {
+    public void setDead(final boolean dead) {
         this.dead = dead;
     }
     
@@ -323,7 +321,7 @@ public class MinecartManiaMinecartDataTable {
         return oldId;
     }
     
-    public void setOldId(int oldId) {
+    public void setOldId(final int oldId) {
         this.oldId = oldId;
     }
     
@@ -331,11 +329,11 @@ public class MinecartManiaMinecartDataTable {
         return typeId;
     }
     
-    public void setTypeId(int type) {
-        this.typeId = type;
+    public void setTypeId(final int type) {
+        typeId = type;
     }
     
-    public void setMyrange(int myrange) {
+    public void setMyrange(final int myrange) {
         this.myrange = myrange;
     }
     

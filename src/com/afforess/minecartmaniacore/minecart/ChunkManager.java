@@ -11,13 +11,13 @@ import org.bukkit.craftbukkit.CraftWorld;
 public class ChunkManager {
     protected HashSet<Chunk> loaded = new HashSet<Chunk>();
     
-    public void updateChunks(Location location) {
-        Chunk center = location.getBlock().getChunk();
-        World world = center.getWorld();
-        int range = 4;
+    public void updateChunks(final Location location) {
+        final Chunk center = location.getBlock().getChunk();
+        final World world = center.getWorld();
+        final int range = 4;
         for (int dx = -(range); dx <= range; dx++) {
             for (int dz = -(range); dz <= range; dz++) {
-                Chunk chunk = world.getChunkAt(center.getX() + dx, center.getZ() + dz);
+                final Chunk chunk = world.getChunkAt(center.getX() + dx, center.getZ() + dz);
                 world.loadChunk(chunk);
                 //if (!loaded.contains(chunk)) {
                 //loaded.add(chunk);
@@ -31,33 +31,30 @@ public class ChunkManager {
          */
     }
     
-    public void unloadChunks(Location location) {
+    public void unloadChunks(final Location location) {
         /*
          * Iterator<Chunk> i = loaded.iterator(); while(i.hasNext()) { Chunk old = i.next(); if (unloadChunk(old)) { i.remove(); } }
          */
     }
     
-    private static boolean spawnChunk(Chunk chunk) {
+    private static boolean spawnChunk(final Chunk chunk) {
         //copied from MC Server code
-        int k = chunk.getX() * 16 + 8;
-        int l = chunk.getZ() * 16 + 8;
-        short short1 = 128;
-        if (k < -short1 || k > short1 || l < -short1 || l > short1) {
+        final int k = (chunk.getX() * 16) + 8;
+        final int l = (chunk.getZ() * 16) + 8;
+        final short short1 = 128;
+        if ((k < -short1) || (k > short1) || (l < -short1) || (l > short1))
             return false;
-        }
         return true;
     }
     
-    private static boolean unloadChunk(Chunk chunk) {
-        CraftWorld world = (CraftWorld) chunk.getWorld();
+    private static boolean unloadChunk(final Chunk chunk) {
+        final CraftWorld world = (CraftWorld) chunk.getWorld();
         //Spawn must never be unloaded
-        if (spawnChunk(chunk)) {
+        if (spawnChunk(chunk))
             return false;
-        }
         if (!world.isChunkInUse(chunk.getX(), chunk.getZ())) {
-            if (world.unloadChunk(chunk.getX(), chunk.getZ(), true, false)) {
+            if (world.unloadChunk(chunk.getX(), chunk.getZ(), true, false))
                 return true;
-            }
             
         }
         return false;

@@ -23,17 +23,17 @@ public class MinecartManiaSign implements Sign {
     protected int updateId = -1;
     protected ConcurrentHashMap<Object, Object> data = new ConcurrentHashMap<Object, Object>();
     
-    public MinecartManiaSign(org.bukkit.block.Sign sign) {
+    public MinecartManiaSign(final org.bukkit.block.Sign sign) {
         block = sign.getBlock();
         lines = getSign().getLines();
     }
     
-    protected MinecartManiaSign(Block block) {
+    protected MinecartManiaSign(final Block block) {
         this.block = block;
         lines = getSign().getLines();
     }
     
-    protected MinecartManiaSign(Location loc) {
+    protected MinecartManiaSign(final Location loc) {
         block = loc.getBlock();
         lines = getSign().getLines();
     }
@@ -42,19 +42,20 @@ public class MinecartManiaSign implements Sign {
         return ((org.bukkit.block.Sign) getBlock().getState());
     }
     
-    public final String getLine(int line) {
+    public final String getLine(final int line) {
         return lines[line];
     }
     
-    public final void setLine(int line, String text) {
+    public final void setLine(final int line, final String text) {
         setLine(line, text, true);
     }
     
-    public final void setLine(int line, String text, boolean update) {
-        if (text.length() < 16)
+    public final void setLine(final int line, final String text, final boolean update) {
+        if (text.length() < 16) {
             lines[line] = text;
-        else
+        } else {
             lines[line] = text.substring(0, 15);
+        }
         if (update) {
             getSign().setLine(line, lines[line]);
             update();
@@ -67,7 +68,7 @@ public class MinecartManiaSign implements Sign {
     
     public void addBrackets() {
         for (int i = 0; i < getNumLines(); i++) {
-            if (!getLine(i).isEmpty() && getLine(i).length() < 14) {
+            if (!getLine(i).isEmpty() && (getLine(i).length() < 14)) {
                 setLine(i, WordUtils.capitalize(StringUtils.addBrackets((getLine(i)))));
             }
         }
@@ -81,11 +82,11 @@ public class MinecartManiaSign implements Sign {
         return DirectionUtils.getSignFacingDirection(getSign());
     }
     
-    public final Object getDataValue(Object key) {
+    public final Object getDataValue(final Object key) {
         return data.get(key);
     }
     
-    public final void setDataValue(Object key, Object value) {
+    public final void setDataValue(final Object key, final Object value) {
         if (value != null) {
             data.put(key, value);
         } else {
@@ -93,23 +94,23 @@ public class MinecartManiaSign implements Sign {
         }
     }
     
-    public void update(org.bukkit.block.Sign sign) {
+    public void update(final org.bukkit.block.Sign sign) {
         lines = sign.getLines();
         actions = new HashSet<SignAction>();
     }
     
-    public void copy(Sign sign) {
+    public void copy(final Sign sign) {
         if (sign instanceof MinecartManiaSign) {
-            MinecartManiaSign temp = (MinecartManiaSign) sign;
-            temp.data = this.data;
-            temp.lines = this.lines;
-            temp.actions = this.actions;
+            final MinecartManiaSign temp = (MinecartManiaSign) sign;
+            temp.data = data;
+            temp.lines = lines;
+            temp.actions = actions;
             update();
         }
         
     }
     
-    private int hashCode(String[] lines) {
+    private int hashCode(final String[] lines) {
         int hash = getBlock().hashCode();
         for (int i = 0; i < lines.length; i++) {
             if (!lines[i].isEmpty()) {
@@ -125,40 +126,38 @@ public class MinecartManiaSign implements Sign {
     }
     
     @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof Sign) {
+    public boolean equals(final Object obj) {
+        if (obj instanceof Sign)
             return hashCode() == ((Sign) obj).hashCode();
-        } else if (obj instanceof org.bukkit.block.Sign) {
+        else if (obj instanceof org.bukkit.block.Sign)
             return hashCode() == hashCode(((org.bukkit.block.Sign) obj).getLines());
-        }
         return false;
     }
     
-    public void addSignAction(SignAction action) {
+    public void addSignAction(final SignAction action) {
         actions.add(action);
     }
     
-    public boolean removeSignAction(SignAction action) {
+    public boolean removeSignAction(final SignAction action) {
         return actions.remove(action);
     }
     
-    public boolean hasSignAction(SignAction action) {
+    public boolean hasSignAction(final SignAction action) {
         return actions.contains(action);
     }
     
-    public boolean hasSignAction(Class<? extends SignAction> action) {
-        Iterator<SignAction> i = actions.iterator();
+    public boolean hasSignAction(final Class<? extends SignAction> action) {
+        final Iterator<SignAction> i = actions.iterator();
         while (i.hasNext()) {
-            SignAction executor = i.next();
-            if (action.isInstance(executor)) {
+            final SignAction executor = i.next();
+            if (action.isInstance(executor))
                 return true;
-            }
         }
         return false;
     }
     
-    public boolean executeActions(MinecartManiaMinecart minecart, boolean sync) {
-        for (SignAction action : actions) {
+    public boolean executeActions(final MinecartManiaMinecart minecart, final boolean sync) {
+        for (final SignAction action : actions) {
             if (!sync && action.async()) {
                 (new SignActionThread(minecart, action)).start();
             } else {
@@ -168,16 +167,15 @@ public class MinecartManiaSign implements Sign {
         return actions.size() > 0;
     }
     
-    public boolean executeActions(MinecartManiaMinecart minecart) {
+    public boolean executeActions(final MinecartManiaMinecart minecart) {
         return executeActions(minecart, false);
     }
     
-    public boolean executeAction(MinecartManiaMinecart minecart,
-            Class<? extends SignAction> action) {
-        Iterator<SignAction> i = actions.iterator();
+    public boolean executeAction(final MinecartManiaMinecart minecart, final Class<? extends SignAction> action) {
+        final Iterator<SignAction> i = actions.iterator();
         boolean success = false;
         while (i.hasNext()) {
-            SignAction executor = i.next();
+            final SignAction executor = i.next();
             if (action.isInstance(executor)) {
                 if (executor.execute(minecart)) {
                     success = true;
@@ -193,13 +191,13 @@ public class MinecartManiaSign implements Sign {
     }
     
     protected final void update() {
-        if (this.updateId == -1) {
-            this.updateId = Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(MinecartManiaCore.getInstance(), new SignTextUpdater(getBlock()), 5);
+        if (updateId == -1) {
+            updateId = Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(MinecartManiaCore.getInstance(), new SignTextUpdater(getBlock()), 5);
         }
     }
     
     public final void updated() {
-        this.updateId = -1;
+        updateId = -1;
     }
     
     public Location getLocation() {

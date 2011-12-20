@@ -20,35 +20,34 @@ import com.afforess.minecartmaniacore.world.Item;
 import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
 import com.griefcraft.lwc.LWCPlugin;
 
-public class MinecartManiaChest extends MinecartManiaSingleContainer implements
-        MinecartManiaInventory {
+public class MinecartManiaChest extends MinecartManiaSingleContainer implements MinecartManiaInventory {
     
     public static int SPAWN_DELAY = 1000;
     private long lastSpawnTime = -1;
     private final Location chest;
     private boolean redstonePower;
-    private ConcurrentHashMap<String, Object> data = new ConcurrentHashMap<String, Object>();
+    private final ConcurrentHashMap<String, Object> data = new ConcurrentHashMap<String, Object>();
     
-    public MinecartManiaChest(Chest chest) {
+    public MinecartManiaChest(final Chest chest) {
         super(chest.getInventory());
         this.chest = chest.getBlock().getLocation().clone();
         setRedstonePower(MinecartManiaWorld.isBlockIndirectlyPowered(chest.getWorld(), getX(), getY(), getZ()));
     }
     
     public int getX() {
-        return this.chest.getBlockX();
+        return chest.getBlockX();
     }
     
     public int getY() {
-        return this.chest.getBlockY();
+        return chest.getBlockY();
     }
     
     public int getZ() {
-        return this.chest.getBlockZ();
+        return chest.getBlockZ();
     }
     
     public World getWorld() {
-        return this.chest.getWorld();
+        return chest.getWorld();
     }
     
     public Location getLocation() {
@@ -74,38 +73,28 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements
      * @return the double chest
      */
     public MinecartManiaDoubleChest getLargeChest() {
-        if (getNeighborChest() != null) {
+        if (getNeighborChest() != null)
             return new MinecartManiaDoubleChest(this, getNeighborChest());
-        }
         return null;
     }
     
     /**
      * Returns the neighbor chest to this chest, or null if none exists
      * 
-     * @param w
-     *            the world to search in
-     * @param x
-     *            coordinate to search
-     * @param y
-     *            coordinate to search
-     * @param z
-     *            coordinate to search
+     * @param w the world to search in
+     * @param x coordinate to search
+     * @param y coordinate to search
+     * @param z coordinate to search
      */
-    public static MinecartManiaChest getNeighborChest(World w, int x, int y,
-            int z) {
-        if (MinecartManiaWorld.getBlockAt(w, x - 1, y, z).getTypeId() == Item.CHEST.getId()) {
+    public static MinecartManiaChest getNeighborChest(final World w, final int x, final int y, final int z) {
+        if (MinecartManiaWorld.getBlockAt(w, x - 1, y, z).getTypeId() == Item.CHEST.getId())
             return MinecartManiaWorld.getMinecartManiaChest((Chest) MinecartManiaWorld.getBlockAt(w, x - 1, y, z).getState());
-        }
-        if (MinecartManiaWorld.getBlockAt(w, x + 1, y, z).getTypeId() == Item.CHEST.getId()) {
+        if (MinecartManiaWorld.getBlockAt(w, x + 1, y, z).getTypeId() == Item.CHEST.getId())
             return MinecartManiaWorld.getMinecartManiaChest((Chest) MinecartManiaWorld.getBlockAt(w, x + 1, y, z).getState());
-        }
-        if (MinecartManiaWorld.getBlockAt(w, x, y, z - 1).getTypeId() == Item.CHEST.getId()) {
+        if (MinecartManiaWorld.getBlockAt(w, x, y, z - 1).getTypeId() == Item.CHEST.getId())
             return MinecartManiaWorld.getMinecartManiaChest((Chest) MinecartManiaWorld.getBlockAt(w, x, y, z - 1).getState());
-        }
-        if (MinecartManiaWorld.getBlockAt(w, x, y, z + 1).getTypeId() == Item.CHEST.getId()) {
+        if (MinecartManiaWorld.getBlockAt(w, x, y, z + 1).getTypeId() == Item.CHEST.getId())
             return MinecartManiaWorld.getMinecartManiaChest((Chest) MinecartManiaWorld.getBlockAt(w, x, y, z + 1).getState());
-        }
         
         return null;
     }
@@ -113,26 +102,22 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements
     /**
      * Returns the value from the loaded data
      * 
-     * @param key
-     *            the string key the data value is associated with
+     * @param key the string key the data value is associated with
      * @return the object stored by the key
      */
-    public Object getDataValue(String key) {
-        if (data.containsKey(key)) {
+    public Object getDataValue(final String key) {
+        if (data.containsKey(key))
             return data.get(key);
-        }
         return null;
     }
     
     /**
      ** Creates a new data value if it does not already exists, or resets an existing value
      ** 
-     * @param key
-     *            the data value is associated with
-     ** @param value
-     *            to store
+     * @param key the data value is associated with
+     ** @param value to store
      **/
-    public void setDataValue(String key, Object value) {
+    public void setDataValue(final String key, final Object value) {
         if (value == null) {
             data.remove(key);
         } else {
@@ -142,49 +127,43 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements
     
     public String getOwner() {
         if (MinecartManiaCore.isLocketteEnabled()) {
-            if (Lockette.isProtected(getLocation().getBlock())) {
+            if (Lockette.isProtected(getLocation().getBlock()))
                 return Lockette.getProtectedOwner(getLocation().getBlock());
-            }
         }
         if (MinecartManiaCore.isLWCEnabled()) {
-            LWCPlugin lock = (LWCPlugin) Bukkit.getServer().getPluginManager().getPlugin("LWC");
-            if (lock.getLWC().findProtection(getLocation().getBlock()) != null) {
+            final LWCPlugin lock = (LWCPlugin) Bukkit.getServer().getPluginManager().getPlugin("LWC");
+            if (lock.getLWC().findProtection(getLocation().getBlock()) != null)
                 return lock.getLWC().findProtection(getLocation().getBlock()).getOwner();
-            }
         }
         return null;
     }
     
     private boolean isIgnoreProtection() {
-        ArrayList<Sign> signs = SignUtils.getAdjacentMinecartManiaSignList(getLocation(), 1);
-        for (Sign sign : signs) {
-            if (sign.executeAction(null, ForceUnlockChestAction.class)) {
+        final ArrayList<Sign> signs = SignUtils.getAdjacentMinecartManiaSignList(getLocation(), 1);
+        for (final Sign sign : signs) {
+            if (sign.executeAction(null, ForceUnlockChestAction.class))
                 return true;
-            }
         }
         return false;
     }
     
-    public boolean canAccess(String player) {
-        if (isIgnoreProtection() || player == null) {
+    public boolean canAccess(final String player) {
+        if (isIgnoreProtection() || (player == null))
             return true;
-        }
         if (MinecartManiaCore.isLocketteEnabled()) {
             if (Lockette.isProtected(getLocation().getBlock())) {
-                if (player != null) {
+                if (player != null)
                     return Lockette.getProtectedOwner(getLocation().getBlock()).equals(player);
-                }
                 return false;
             }
         }
         if (MinecartManiaCore.isLWCEnabled()) {
-            LWCPlugin lock = (LWCPlugin) Bukkit.getServer().getPluginManager().getPlugin("LWC");
+            final LWCPlugin lock = (LWCPlugin) Bukkit.getServer().getPluginManager().getPlugin("LWC");
             if (lock.getLWC().findProtection(getLocation().getBlock()) != null) {
                 if (player != null) {
-                    Player ply = Bukkit.getServer().getPlayer(player);
-                    if (ply != null) {
+                    final Player ply = Bukkit.getServer().getPlayer(player);
+                    if (ply != null)
                         return lock.getLWC().canAccessProtection(ply, getLocation().getBlock());
-                    }
                 }
                 return false;
             }
@@ -192,20 +171,19 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements
         return true;
     }
     
-    public boolean canAddItem(ItemStack item, Player player) {
-        if (!canAccess(player != null ? player.getName() : null)) {
+    @Override
+    public boolean canAddItem(final ItemStack item, final Player player) {
+        if (!canAccess(player != null ? player.getName() : null))
             return false;
-        }
         
         return super.canAddItem(item, player);
     }
     
-    public boolean canRemoveItem(int type, int amount, short durability,
-            Player player) {
+    @Override
+    public boolean canRemoveItem(final int type, final int amount, final short durability, final Player player) {
         if (player != null) {
-            if (!canAccess(player.getName())) {
+            if (!canAccess(player.getName()))
                 return false;
-            }
         }
         
         return super.canRemoveItem(type, amount, durability, player);
@@ -214,32 +192,29 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements
     /**
      * Attempts to add an itemstack to this chest. It adds items in a 'smart' manner, merging with existing itemstacks, until they reach the maximum size (64). If it fails, it will not alter the chest's previous contents.
      * 
-     * @param item
-     *            to add
+     * @param item to add
      */
     @Override
-    public boolean addItem(ItemStack item, Player player) {
-        if (!canAddItem(item, player)) {
+    public boolean addItem(ItemStack item, final Player player) {
+        if (!canAddItem(item, player))
             return false;
-        }
-        if (item == null) {
+        if (item == null)
             return true;
-        }
         //Backup contents
-        ItemStack[] backup = getContents().clone();
-        ItemStack backupItem = new ItemStack(item.getTypeId(), item.getAmount(), item.getDurability());
+        final ItemStack[] backup = getContents().clone();
+        final ItemStack backupItem = new ItemStack(item.getTypeId(), item.getAmount(), item.getDurability());
         
-        int max = MinecartManiaWorld.getMaxStackSize(item);
+        final int max = MinecartManiaWorld.getMaxStackSize(item);
         
         //First attempt to merge the itemstack with existing item stacks that aren't full (< 64)
         for (int i = 0; i < size(); i++) {
             if (getItem(i) != null) {
-                if (getItem(i).getTypeId() == item.getTypeId() && getItem(i).getDurability() == item.getDurability()) {
-                    if (getItem(i).getAmount() + item.getAmount() <= max) {
+                if ((getItem(i).getTypeId() == item.getTypeId()) && (getItem(i).getDurability() == item.getDurability())) {
+                    if ((getItem(i).getAmount() + item.getAmount()) <= max) {
                         setItem(i, new ItemStack(item.getTypeId(), getItem(i).getAmount() + item.getAmount(), item.getDurability()));
                         return true;
                     } else {
-                        int diff = getItem(i).getAmount() + item.getAmount() - max;
+                        final int diff = (getItem(i).getAmount() + item.getAmount()) - max;
                         setItem(i, new ItemStack(item.getTypeId(), max, item.getDurability()));
                         item = new ItemStack(item.getTypeId(), diff, item.getDurability());
                     }
@@ -248,7 +223,7 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements
         }
         
         //Attempt to add the item to an empty slot
-        int emptySlot = firstEmpty();
+        final int emptySlot = firstEmpty();
         if (emptySlot > -1) {
             setItem(emptySlot, item);
             update();
@@ -256,7 +231,7 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements
         }
         
         //Try to merge the itemstack with the neighbor chest, if we have one
-        MinecartManiaChest neighbor = getNeighborChest();
+        final MinecartManiaChest neighbor = getNeighborChest();
         if (neighbor != null) {
             //flag to prevent infinite recursion
             if (getDataValue("neighbor") == null) {
@@ -280,29 +255,25 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements
     /**
      * Attempts to remove the specified amount of an item type from this chest. If it fails, it will not alter the chests previous contents.
      * 
-     * @param type
-     *            to remove
-     * @param amount
-     *            to remove
-     * @param durability
-     *            of the item to remove
+     * @param type to remove
+     * @param amount to remove
+     * @param durability of the item to remove
      */
-    public boolean removeItem(int type, int amount, short durability,
-            Player player) {
-        if (!canRemoveItem(type, amount, durability, player)) {
+    @Override
+    public boolean removeItem(final int type, int amount, final short durability, final Player player) {
+        if (!canRemoveItem(type, amount, durability, player))
             return false;
-        }
         //Backup contents
-        ItemStack[] backup = getContents().clone();
+        final ItemStack[] backup = getContents().clone();
         
         for (int i = 0; i < size(); i++) {
             if (getItem(i) != null) {
-                if (getItem(i).getTypeId() == type && (durability == -1 || (getItem(i).getDurability() == durability))) {
-                    if (getItem(i).getAmount() - amount > 0) {
+                if ((getItem(i).getTypeId() == type) && ((durability == -1) || (getItem(i).getDurability() == durability))) {
+                    if ((getItem(i).getAmount() - amount) > 0) {
                         setItem(i, new ItemStack(type, getItem(i).getAmount() - amount, durability));
                         update();
                         return true;
-                    } else if (getItem(i).getAmount() - amount == 0) {
+                    } else if ((getItem(i).getAmount() - amount) == 0) {
                         setItem(i, null);
                         update();
                         return true;
@@ -314,7 +285,7 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements
             }
         }
         
-        MinecartManiaChest neighbor = getNeighborChest();
+        final MinecartManiaChest neighbor = getNeighborChest();
         if (neighbor != null) {
             //flag to prevent infinite recursion
             if (getDataValue("neighbor") == null) {
@@ -334,7 +305,7 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements
         return false;
     }
     
-    public void setRedstonePower(boolean redstonePower) {
+    public void setRedstonePower(final boolean redstonePower) {
         this.redstonePower = redstonePower;
     }
     
@@ -346,16 +317,18 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements
         getChest().update();
     }
     
+    @Override
     public String toString() {
         return "[" + getX() + ":" + getY() + ":" + getZ() + "]";
     }
     
+    @Override
     public Inventory getInventory() {
         return getChest().getInventory();
     }
     
     public boolean canSpawnMinecart() {
-        if (lastSpawnTime == -1 || Math.abs(System.currentTimeMillis() - lastSpawnTime) > SPAWN_DELAY) {
+        if ((lastSpawnTime == -1) || (Math.abs(System.currentTimeMillis() - lastSpawnTime) > SPAWN_DELAY)) {
             lastSpawnTime = System.currentTimeMillis();
             return true;
         }

@@ -14,9 +14,9 @@ import org.bukkit.block.Block;
  * 
  */
 public class SpecificMaterial {
-    public SpecificMaterial(int id, int data) {
+    public SpecificMaterial(final int id, final int data) {
         this.id = id;
-        this.durability = data;
+        durability = data;
     }
     
     public int id = 0;
@@ -25,21 +25,20 @@ public class SpecificMaterial {
     @Override
     public int hashCode() {
         int hash = 1;
-        hash = hash * 31 + id;
-        hash = hash * 31 + durability;
+        hash = (hash * 31) + id;
+        hash = (hash * 31) + durability;
         return hash;
     }
     
-    public static Collection<? extends SpecificMaterial> convertToSpecific(
-            List<Material> asList) {
-        ArrayList<SpecificMaterial> mats = new ArrayList<SpecificMaterial>();
-        for (Material mat : asList) {
+    public static Collection<? extends SpecificMaterial> convertToSpecific(final List<Material> asList) {
+        final ArrayList<SpecificMaterial> mats = new ArrayList<SpecificMaterial>();
+        for (final Material mat : asList) {
             mats.add(new SpecificMaterial(mat.getId(), (short) 0));
         }
         return mats;
     }
     
-    public static SpecificMaterial convertBlock(Block b) {
+    public static SpecificMaterial convertBlock(final Block b) {
         return new SpecificMaterial(b.getTypeId(), b.getData());
     }
     
@@ -51,6 +50,7 @@ public class SpecificMaterial {
         return durability;
     }
     
+    @Override
     public String toString() {
         return String.format("%d:%d", id, durability);
     }

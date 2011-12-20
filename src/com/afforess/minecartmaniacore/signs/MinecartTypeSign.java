@@ -10,14 +10,14 @@ public class MinecartTypeSign extends MinecartManiaSign {
     protected boolean storage = false;
     protected boolean calculated = false;
     
-    public MinecartTypeSign(Sign sign) {
+    public MinecartTypeSign(final Sign sign) {
         super(sign.getBlock());
         sign.copy(this);
     }
     
-    public boolean canDispenseMinecartType(Material item) {
+    public boolean canDispenseMinecartType(final Material item) {
         if (!calculated) {
-            for (String line : lines) {
+            for (final String line : lines) {
                 if (line.toLowerCase().contains("empty") || line.toLowerCase().contains("standard")) {
                     standard = true;
                 } else if (line.toLowerCase().contains("powered")) {
@@ -28,36 +28,33 @@ public class MinecartTypeSign extends MinecartManiaSign {
             }
             calculated = true;
         }
-        if (item == Material.MINECART) {
+        if (item == Material.MINECART)
             return standard;
-        }
-        if (item == Material.POWERED_MINECART) {
+        if (item == Material.POWERED_MINECART)
             return powered;
-        }
-        if (item == Material.STORAGE_MINECART) {
+        if (item == Material.STORAGE_MINECART)
             return storage;
-        }
         return false;
     }
     
     @Override
-    public void update(org.bukkit.block.Sign sign) {
+    public void update(final org.bukkit.block.Sign sign) {
         calculated = false;
         super.update(sign);
     }
     
     @Override
-    public void copy(Sign sign) {
+    public void copy(final Sign sign) {
         if (sign instanceof MinecartTypeSign) {
-            ((MinecartTypeSign) sign).calculated = this.calculated;
-            ((MinecartTypeSign) sign).standard = this.standard;
-            ((MinecartTypeSign) sign).powered = this.powered;
-            ((MinecartTypeSign) sign).storage = this.storage;
+            ((MinecartTypeSign) sign).calculated = calculated;
+            ((MinecartTypeSign) sign).standard = standard;
+            ((MinecartTypeSign) sign).powered = powered;
+            ((MinecartTypeSign) sign).storage = storage;
         }
         super.copy(sign);
     }
     
-    public static boolean isMinecartTypeSign(Sign sign) {
+    public static boolean isMinecartTypeSign(final Sign sign) {
         MinecartManiaLogger.getInstance().debug("Testing Sign For Minecart Type Sign, Line 0: " + sign.getLine(0));
         if (sign.getLine(0).contains("[Dispenser]")) {
             sign.setLine(0, "minecart type");

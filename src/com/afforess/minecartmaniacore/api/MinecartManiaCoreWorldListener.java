@@ -12,11 +12,12 @@ import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
 public class MinecartManiaCoreWorldListener extends WorldListener {
     public static final int CHUNK_RANGE = 4;
     
-    public void onChunkUnload(ChunkUnloadEvent event) {
+    @Override
+    public void onChunkUnload(final ChunkUnloadEvent event) {
         if (!event.isCancelled()) {
             if (MinecartManiaConfiguration.isKeepMinecartsLoaded()) {
-                ArrayList<MinecartManiaMinecart> minecarts = MinecartManiaWorld.getMinecartManiaMinecartList();
-                for (MinecartManiaMinecart minecart : minecarts) {
+                final ArrayList<MinecartManiaMinecart> minecarts = MinecartManiaWorld.getMinecartManiaMinecartList();
+                for (final MinecartManiaMinecart minecart : minecarts) {
                     if (Math.abs(event.getChunk().getX() - minecart.minecart.getLocation().getBlock().getChunk().getX()) > CHUNK_RANGE) {
                         continue;
                     }

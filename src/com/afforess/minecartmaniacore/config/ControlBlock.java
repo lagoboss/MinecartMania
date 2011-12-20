@@ -31,6 +31,7 @@ public class ControlBlock {
     private RedstoneState elevatorState = RedstoneState.Default;
     public boolean updateToPoweredRail = false; //temporary, remove for MC 1.6
     private double ejectY = 0;
+    
     public ControlBlock() {
     }
     
@@ -42,15 +43,15 @@ public class ControlBlock {
         return multipliers;
     }
     
-    protected void setSpeedMultipliers(List<SpeedMultiplier> list) {
-        this.multipliers = list;
+    protected void setSpeedMultipliers(final List<SpeedMultiplier> list) {
+        multipliers = list;
     }
     
     public boolean isCatcherBlock() {
         return catcher;
     }
     
-    protected void setCatcherBlock(boolean val) {
+    protected void setCatcherBlock(final boolean val) {
         catcher = val;
     }
     
@@ -58,7 +59,7 @@ public class ControlBlock {
         return catcherState;
     }
     
-    protected void setCatcherState(RedstoneState state) {
+    protected void setCatcherState(final RedstoneState state) {
         catcherState = state;
     }
     
@@ -66,11 +67,11 @@ public class ControlBlock {
         return launchSpeed;
     }
     
-    protected void setLauncherSpeed(double d) {
+    protected void setLauncherSpeed(final double d) {
         launchSpeed = d;
     }
     
-    protected void setLauncherState(RedstoneState launcherState) {
+    protected void setLauncherState(final RedstoneState launcherState) {
         this.launcherState = launcherState;
     }
     
@@ -82,11 +83,11 @@ public class ControlBlock {
         return ejector;
     }
     
-    protected void setEjectorBlock(boolean val) {
+    protected void setEjectorBlock(final boolean val) {
         ejector = val;
     }
     
-    protected void setEjectorState(RedstoneState ejectorState) {
+    protected void setEjectorState(final RedstoneState ejectorState) {
         this.ejectorState = ejectorState;
     }
     
@@ -98,11 +99,11 @@ public class ControlBlock {
         return platform;
     }
     
-    protected void setPlatformBlock(boolean val) {
+    protected void setPlatformBlock(final boolean val) {
         platform = val;
     }
     
-    protected void setPlatformState(RedstoneState platformState) {
+    protected void setPlatformState(final RedstoneState platformState) {
         this.platformState = platformState;
     }
     
@@ -114,7 +115,7 @@ public class ControlBlock {
         return platformRange;
     }
     
-    protected void setPlatformRange(double range) {
+    protected void setPlatformRange(final double range) {
         platformRange = range;
     }
     
@@ -122,7 +123,7 @@ public class ControlBlock {
         return ejectY;
     }
     
-    protected void setEjectY(double ejectY) {
+    protected void setEjectY(final double ejectY) {
         this.ejectY = ejectY;
     }
     
@@ -130,11 +131,11 @@ public class ControlBlock {
         return station;
     }
     
-    protected void setStationBlock(boolean val) {
+    protected void setStationBlock(final boolean val) {
         station = val;
     }
     
-    protected void setStationState(RedstoneState stationState) {
+    protected void setStationState(final RedstoneState stationState) {
         this.stationState = stationState;
     }
     
@@ -146,11 +147,11 @@ public class ControlBlock {
         return spawnMinecart;
     }
     
-    protected void setSpawnMinecart(boolean val) {
+    protected void setSpawnMinecart(final boolean val) {
         spawnMinecart = val;
     }
     
-    protected void setSpawnState(RedstoneState spawnState) {
+    protected void setSpawnState(final RedstoneState spawnState) {
         this.spawnState = spawnState;
     }
     
@@ -162,11 +163,11 @@ public class ControlBlock {
         return killMinecart;
     }
     
-    protected void setKillMinecart(boolean val) {
+    protected void setKillMinecart(final boolean val) {
         killMinecart = val;
     }
     
-    protected void setKillState(RedstoneState killState) {
+    protected void setKillState(final RedstoneState killState) {
         this.killState = killState;
     }
     
@@ -178,11 +179,11 @@ public class ControlBlock {
         return elevator;
     }
     
-    protected void setElevatorBlock(boolean val) {
+    protected void setElevatorBlock(final boolean val) {
         elevator = val;
     }
     
-    protected void setElevatorState(RedstoneState elevatorState) {
+    protected void setElevatorState(final RedstoneState elevatorState) {
         this.elevatorState = elevatorState;
     }
     
@@ -190,20 +191,20 @@ public class ControlBlock {
         return elevatorState;
     }
     
+    @Override
     public String toString() {
         return "[" + matchers[0].toString() + ":" + isCatcherBlock() + ":" + getLauncherSpeed() + ":" + isEjectorBlock() + ":" + isPlatformBlock() + ":" + isStationBlock() + "]";
     }
-
-    public void setMatchers(ItemMatcher[] matchers) {
-        this.matchers=matchers;
+    
+    public void setMatchers(final ItemMatcher[] matchers) {
+        this.matchers = matchers;
     }
     
-    public boolean match(SpecificMaterial mat) {
-        ItemStack is = new ItemStack(mat.id,1,(short)mat.durability);
-        for(ItemMatcher matcher : matchers) {
-            if(!matcher.match(is)) {
+    public boolean match(final SpecificMaterial mat) {
+        final ItemStack is = new ItemStack(mat.id, 1, (short) mat.durability);
+        for (final ItemMatcher matcher : matchers) {
+            if (!matcher.match(is))
                 return false;
-            }
         }
         return true;
     }

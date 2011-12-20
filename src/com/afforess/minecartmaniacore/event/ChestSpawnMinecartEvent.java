@@ -5,16 +5,14 @@ import org.bukkit.event.Cancellable;
 
 import com.afforess.minecartmaniacore.inventory.MinecartManiaChest;
 
-public class ChestSpawnMinecartEvent extends MinecartManiaEvent implements
-        Cancellable {
+public class ChestSpawnMinecartEvent extends MinecartManiaEvent implements Cancellable {
     private static final long serialVersionUID = 725637829972458807L;
-    private MinecartManiaChest chest;
+    private final MinecartManiaChest chest;
     private Location spawnLocation;
     private boolean cancelled = false;
     private int type;
     
-    public ChestSpawnMinecartEvent(MinecartManiaChest chest,
-            Location spawnLocation, int type) {
+    public ChestSpawnMinecartEvent(final MinecartManiaChest chest, final Location spawnLocation, final int type) {
         super("ChestPoweredEvent");
         this.chest = chest;
         this.spawnLocation = spawnLocation;
@@ -29,7 +27,7 @@ public class ChestSpawnMinecartEvent extends MinecartManiaEvent implements
         return spawnLocation.clone();
     }
     
-    public void setSpawnLocation(Location l) {
+    public void setSpawnLocation(final Location l) {
         spawnLocation = l;
     }
     
@@ -45,7 +43,7 @@ public class ChestSpawnMinecartEvent extends MinecartManiaEvent implements
     /**
      * Sets the type of minecart to be spawned. 0 - Standard. 1 - Powered. 2 - Storage.
      */
-    public void setMinecartType(int type) {
+    public void setMinecartType(final int type) {
         this.type = type;
     }
     
@@ -53,7 +51,7 @@ public class ChestSpawnMinecartEvent extends MinecartManiaEvent implements
         return cancelled;
     }
     
-    public void setCancelled(boolean cancel) {
+    public void setCancelled(final boolean cancel) {
         cancelled = cancel;
     }
     

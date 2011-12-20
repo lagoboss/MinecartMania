@@ -6,7 +6,7 @@ public class SignActionThread extends Thread {
     protected MinecartManiaMinecart minecart;
     protected SignAction action;
     
-    protected SignActionThread(MinecartManiaMinecart minecart, SignAction action) {
+    protected SignActionThread(final MinecartManiaMinecart minecart, final SignAction action) {
         this.minecart = minecart;
         this.action = action;
     }

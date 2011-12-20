@@ -377,47 +377,46 @@ public enum Item {
     }
     
     public ItemStack toItemStack() {
-        ItemStack item = new ItemStack(id, 1, (short) 0);
-        if (hasData())
+        final ItemStack item = new ItemStack(id, 1, (short) 0);
+        if (hasData()) {
             item.setDurability(data);
+        }
         return item;
     }
     
-    public boolean equals(Item i, boolean allowWildcards) {
-        return i != null && i.getId() == id && (data == i.getData());
+    public boolean equals(final Item i, final boolean allowWildcards) {
+        return (i != null) && (i.getId() == id) && (data == i.getData());
     }
     
-    public boolean equals(Material m) {
-        return m != null && m.getId() == id;
+    public boolean equals(final Material m) {
+        return (m != null) && (m.getId() == id);
     }
     
-    public boolean equals(int id, short data) {
-        return id == this.id && (data == this.data);
+    public boolean equals(final int id, final short data) {
+        return (id == this.id) && (data == this.data);
     }
     
-    public boolean equals(int id) {
+    public boolean equals(final int id) {
         return id == this.id;
     }
     
-    public boolean equals(AbstractItem item) {
+    public boolean equals(final AbstractItem item) {
         return equals(item.type());
     }
     
     /**
      * Attempts to get the Item with the given ID and data value
      * 
-     * @param id
-     *            ID of the Item to get
-     * @param the
-     *            data value of the Item to get
+     * @param id ID of the Item to get
+     * @param the data value of the Item to get
      * @return Item if found, or null
      */
-    public static Item getItem(final int id, int data) {
-        boolean wc = wildcards.contains(id);
-        ArrayList<Integer> a = new ArrayList<Integer>(2);
+    public static Item getItem(final int id, final int data) {
+        final boolean wc = wildcards.contains(id);
+        final ArrayList<Integer> a = new ArrayList<Integer>(2);
         a.add(id);
         a.add((wc) ? 0 : data);
-        Item i = lookupId.get(a);
+        final Item i = lookupId.get(a);
         if (wc) {
             i.setData(data);
         }
@@ -427,14 +426,13 @@ public enum Item {
     /**
      * Attempts to get the list of items with the given id
      * 
-     * @param id
-     *            ID of the list of Items to get
+     * @param id ID of the list of Items to get
      * @return Items if found, or empty arraylist
      */
     public static ArrayList<Item> getItem(final int id) {
-        ArrayList<Item> list = new ArrayList<Item>();
-        for (Integer data : validData.get(Integer.valueOf(id))) {
-            Item temp = getItem(id, data);
+        final ArrayList<Item> list = new ArrayList<Item>();
+        for (final Integer data : validData.get(Integer.valueOf(id))) {
+            final Item temp = getItem(id, data);
             if (temp != null) {
                 list.add(temp);
             }
@@ -445,28 +443,25 @@ public enum Item {
     /**
      * Attempts to get the item associated with this block
      * 
-     * @param block
-     *            to get the Item of
+     * @param block to get the Item of
      * @return Item if found
      */
-    public static Item getItem(Block block) {
-        ArrayList<Item> list = getItem(block.getTypeId());
-        if (list.size() == 1) {
+    public static Item getItem(final Block block) {
+        final ArrayList<Item> list = getItem(block.getTypeId());
+        if (list.size() == 1)
             return list.get(0);
-        }
         return getItem(block.getTypeId(), block.getData());
     }
     
     /**
      * Attempts to get the item associated with this ItemStack
      * 
-     * @param item
-     *            to get the Item of
+     * @param item to get the Item of
      * @return Item if found
      */
-    public static Item getItem(ItemStack item) {
+    public static Item getItem(final ItemStack item) {
         Item i = null;
-        ArrayList<Item> list = getItem(item.getTypeId());
+        final ArrayList<Item> list = getItem(item.getTypeId());
         if (list.size() == 1) {
             i = list.get(0);
         } else {
@@ -478,8 +473,7 @@ public enum Item {
     /**
      * Attempts to get the Item with the given name. This is a normal lookup, names must be the precise name they are given in the enum.
      * 
-     * @param name
-     *            Name of the Item to get
+     * @param name Name of the Item to get
      * @return Item if found, or null
      */
     public static Item getItem(final String name) {
@@ -491,20 +485,20 @@ public enum Item {
      * 
      * @return the Item if found, or null
      */
-    public static Item materialToItem(Material m) {
-        ArrayList<Integer> a = new ArrayList<Integer>(2);
+    public static Item materialToItem(final Material m) {
+        final ArrayList<Integer> a = new ArrayList<Integer>(2);
         a.add(m.getId());
         a.add(0);
-        Item i = lookupId.get(a);
+        final Item i = lookupId.get(a);
         return i;
     }
     
     static {
-        for (Item i : values()) {
+        for (final Item i : values()) {
             if (i.isWildcard) {
                 wildcards.add(i.id);
             }
-            ArrayList<Integer> a = new ArrayList<Integer>(2);
+            final ArrayList<Integer> a = new ArrayList<Integer>(2);
             a.add(i.getId());
             a.add(i.getData());
             lookupId.put(a, i);
@@ -516,7 +510,7 @@ public enum Item {
         }
     }
     
-    public void setData(int data) {
+    public void setData(final int data) {
         this.data = (short) data;
     }
 }

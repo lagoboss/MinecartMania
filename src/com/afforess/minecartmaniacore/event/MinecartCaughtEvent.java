@@ -2,13 +2,12 @@ package com.afforess.minecartmaniacore.event;
 
 import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
 
-public class MinecartCaughtEvent extends MinecartManiaEvent implements
-        MinecartEvent {
+public class MinecartCaughtEvent extends MinecartManiaEvent implements MinecartEvent {
     private static final long serialVersionUID = 91568375046621L;
-    private MinecartManiaMinecart minecart;
+    private final MinecartManiaMinecart minecart;
     private boolean action = false;
     
-    public MinecartCaughtEvent(MinecartManiaMinecart cart) {
+    public MinecartCaughtEvent(final MinecartManiaMinecart cart) {
         super("MinecartLaunchedEvent");
         minecart = cart;
     }
@@ -21,7 +20,7 @@ public class MinecartCaughtEvent extends MinecartManiaEvent implements
         return action;
     }
     
-    public void setActionTaken(boolean Action) {
-        this.action = Action;
+    public void setActionTaken(final boolean Action) {
+        action = Action;
     }
 }

@@ -8,18 +8,18 @@ import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 public class SignTextUpdater implements Runnable {
-    private Block sign;
+    private final Block sign;
     
-    public SignTextUpdater(Block block) {
+    public SignTextUpdater(final Block block) {
         sign = block;
     }
     
     public void run() {
-        Sign sign = SignManager.getSignAt(this.sign);
-        if (sign != null && sign instanceof MinecartManiaSign) {
+        final Sign sign = SignManager.getSignAt(this.sign);
+        if ((sign != null) && (sign instanceof MinecartManiaSign)) {
             ((MinecartManiaSign) sign).updated();
-            Packet130UpdateSign update = new Packet130UpdateSign(sign.getX(), sign.getY(), sign.getZ(), sign.getLines());
-            for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+            final Packet130UpdateSign update = new Packet130UpdateSign(sign.getX(), sign.getY(), sign.getZ(), sign.getLines());
+            for (final Player player : Bukkit.getServer().getOnlinePlayers()) {
                 ((CraftPlayer) player).getHandle().netServerHandler.sendPacket(update);
             }
         } else {

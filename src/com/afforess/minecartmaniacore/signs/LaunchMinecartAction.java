@@ -11,20 +11,18 @@ public class LaunchMinecartAction implements SignAction {
     private volatile boolean previous = false;
     protected Sign sign;
     
-    public LaunchMinecartAction(Sign sign) {
+    public LaunchMinecartAction(final Sign sign) {
         this.sign = sign;
     }
     
-    public boolean execute(MinecartManiaMinecart minecart) {
-        if (ControlBlockList.getLaunchSpeed(minecart.getSpecificMaterialBeneath()) == 1.0D) {
+    public boolean execute(final MinecartManiaMinecart minecart) {
+        if (ControlBlockList.getLaunchSpeed(minecart.getSpecificMaterialBeneath()) == 1.0D)
             return false;
-        }
-        if (minecart.isMoving()) {
+        if (minecart.isMoving())
             return false;
-        }
-        Vector launch = calculateLaunchSpeed(false);
+        final Vector launch = calculateLaunchSpeed(false);
         if (previous) {
-            if (minecart.getPreviousDirectionOfMotion() != null && minecart.getPreviousDirectionOfMotion() != CompassDirection.NO_DIRECTION) {
+            if ((minecart.getPreviousDirectionOfMotion() != null) && (minecart.getPreviousDirectionOfMotion() != CompassDirection.NO_DIRECTION)) {
                 minecart.setMotion(minecart.getPreviousDirectionOfMotion(), 0.6D);
             }
         } else {
@@ -34,8 +32,8 @@ public class LaunchMinecartAction implements SignAction {
         return true;
     }
     
-    private Vector calculateLaunchSpeed(boolean force) {
-        if (launchSpeed == null || force) {
+    private Vector calculateLaunchSpeed(final boolean force) {
+        if ((launchSpeed == null) || force) {
             previous = false;
             launchSpeed = null;
             for (int i = 0; i < sign.getNumLines(); i++) {
@@ -59,7 +57,7 @@ public class LaunchMinecartAction implements SignAction {
                     break;
                 }
             }
-            if (launchSpeed != null || previous) {
+            if ((launchSpeed != null) || previous) {
                 sign.addBrackets();
             }
         }
@@ -70,9 +68,9 @@ public class LaunchMinecartAction implements SignAction {
         return true;
     }
     
-    public boolean valid(Sign sign) {
+    public boolean valid(final Sign sign) {
         calculateLaunchSpeed(true);
-        return launchSpeed != null || previous;
+        return (launchSpeed != null) || previous;
     }
     
     public String getName() {

@@ -10,27 +10,27 @@ import org.bukkit.inventory.Inventory;
 public class MinecartManiaBrewingStand extends MinecartManiaSingleContainer implements MinecartManiaInventory {
     
     private final Location location;
-    private ConcurrentHashMap<String, Object> data = new ConcurrentHashMap<String, Object>();
+    private final ConcurrentHashMap<String, Object> data = new ConcurrentHashMap<String, Object>();
     
-    public MinecartManiaBrewingStand(BrewingStand brewingStand) {
-    	super(brewingStand.getInventory());
-        this.location = brewingStand.getBlock().getLocation();
+    public MinecartManiaBrewingStand(final BrewingStand brewingStand) {
+        super(brewingStand.getInventory());
+        location = brewingStand.getBlock().getLocation();
     }
     
     public int getX() {
-        return this.location.getBlockX();
+        return location.getBlockX();
     }
     
     public int getY() {
-        return this.location.getBlockY();
+        return location.getBlockY();
     }
     
     public int getZ() {
-        return this.location.getBlockZ();
+        return location.getBlockZ();
     }
     
     public World getWorld() {
-        return this.location.getWorld();
+        return location.getWorld();
     }
     
     public Location getLocation() {
@@ -38,30 +38,27 @@ public class MinecartManiaBrewingStand extends MinecartManiaSingleContainer impl
     }
     
     public BrewingStand getBrewingStand() {
-    	return (BrewingStand) location.getBlock().getState();
+        return (BrewingStand) location.getBlock().getState();
     }
+    
     /**
      ** Returns the value from the loaded data
      ** 
-     * @param the
-     *            string key the data value is associated with
+     * @param the string key the data value is associated with
      **/
-    public Object getDataValue(String key) {
-        if (data.containsKey(key)) {
+    public Object getDataValue(final String key) {
+        if (data.containsKey(key))
             return data.get(key);
-        }
         return null;
     }
     
     /**
      ** Creates a new data value if it does not already exists, or resets an existing value
      ** 
-     * @param the
-     *            string key the data value is associated with
-     ** @param the
-     *            value to store
+     * @param the string key the data value is associated with
+     ** @param the value to store
      **/
-    public void setDataValue(String key, Object value) {
+    public void setDataValue(final String key, final Object value) {
         if (value == null) {
             data.remove(key);
         } else {
@@ -69,8 +66,8 @@ public class MinecartManiaBrewingStand extends MinecartManiaSingleContainer impl
         }
     }
     
+    @Override
     public Inventory getInventory() {
-    	return getBrewingStand().getInventory();
+        return getBrewingStand().getInventory();
     }
 }
-

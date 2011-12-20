@@ -5,11 +5,11 @@ import com.afforess.minecartmaniacore.signs.Sign;
 
 public class MinecartMeetsConditionEvent extends MinecartManiaEvent {
     private static final long serialVersionUID = -8654123734496448310L;
-    private MinecartManiaMinecart minecart;
-    private Sign sign;
+    private final MinecartManiaMinecart minecart;
+    private final Sign sign;
     private boolean condition = false;
     
-    public MinecartMeetsConditionEvent(MinecartManiaMinecart minecart, Sign sign) {
+    public MinecartMeetsConditionEvent(final MinecartManiaMinecart minecart, final Sign sign) {
         super("MinecartMeetsConditionEvent");
         this.minecart = minecart;
         this.sign = sign;
@@ -27,7 +27,7 @@ public class MinecartMeetsConditionEvent extends MinecartManiaEvent {
         return condition;
     }
     
-    public void setMeetCondition(boolean condition) {
+    public void setMeetCondition(final boolean condition) {
         this.condition = condition;
     }
     

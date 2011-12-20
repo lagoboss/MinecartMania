@@ -6,7 +6,7 @@ import com.afforess.minecartmaniacore.debug.DebugTimer;
 public abstract class MinecartManiaEvent extends org.bukkit.event.Event {
     private final DebugTimer timer;
     
-    protected MinecartManiaEvent(String name) {
+    protected MinecartManiaEvent(final String name) {
         super(name);
         timer = new DebugTimer(name);
     }

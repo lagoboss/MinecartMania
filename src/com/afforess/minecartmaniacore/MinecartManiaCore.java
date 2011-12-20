@@ -59,16 +59,17 @@ public class MinecartManiaCore extends JavaPlugin {
     public static boolean LWC = false;
     private static final int DATABASE_VERSION = 3;
     
+    @Override
     public void onLoad() {
         setNaggable(false);
     }
     
     public void onEnable() {
-        server = this.getServer();
-        description = this.getDescription();
+        server = getServer();
+        description = getDescription();
         instance = this;
         data = getDataFolder();
-        MinecartManiaCore = this.getFile();
+        MinecartManiaCore = getFile();
         
         //manage external plugins
         WormholeXTreme = getServer().getPluginManager().getPlugin("WormholeXTreme") != null;
@@ -92,16 +93,16 @@ public class MinecartManiaCore extends JavaPlugin {
         getServer().getPluginManager().registerEvent(Event.Type.PLAYER_JOIN, playerListener, Priority.Monitor, this);
         
         //database setup
-        File ebeans = new File(new File(this.getDataFolder().getParent()).getParent(), "ebean.properties");
+        final File ebeans = new File(new File(getDataFolder().getParent()).getParent(), "ebean.properties");
         if (!ebeans.exists()) {
             try {
                 ebeans.createNewFile();
-                PrintWriter pw = new PrintWriter(ebeans);
+                final PrintWriter pw = new PrintWriter(ebeans);
                 pw.append("# General logging level: (none, explicit, all)");
                 pw.append('\n');
                 pw.append("ebean.logging=none");
                 pw.close();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
@@ -119,15 +120,15 @@ public class MinecartManiaCore extends JavaPlugin {
     
     private void writeItemsFile() {
         try {
-            File items = new File(dataDirectory + File.separator + "items.txt");
-            PrintWriter pw = new PrintWriter(items);
+            final File items = new File(dataDirectory + File.separator + "items.txt");
+            final PrintWriter pw = new PrintWriter(items);
             pw.append("This file is a list of all the data values, and matching item names for Minecart Mania. \nThis list is never used, and changes made to this file will be ignored");
             pw.append("\n");
             pw.append("\n");
             pw.append("Items:");
             pw.append("\n");
-            for (Item item : Item.values()) {
-                String name = "Item Name: " + item.toString();
+            for (final Item item : Item.values()) {
+                final String name = "Item Name: " + item.toString();
                 pw.append(name);
                 String id = "";
                 for (int i = name.length() - 1; i < 40; i++) {
@@ -145,24 +146,24 @@ public class MinecartManiaCore extends JavaPlugin {
                 pw.append("\n");
             }
             pw.close();
-        } catch (Exception e) {
+        } catch (final Exception e) {
         }
     }
     
     private int getDatabaseVersion() {
         try {
             getDatabase().find(MinecartOwner.class).findRowCount();
-        } catch (PersistenceException ex) {
+        } catch (final PersistenceException ex) {
             return 0;
         }
         try {
             getDatabase().find(MinecartManiaMinecartDataTable.class).findRowCount();
-        } catch (PersistenceException ex) {
+        } catch (final PersistenceException ex) {
             return 1;
         }
         try {
             getDatabase().find(MinecartManiaMinecartDataTable.class).findList();
-        } catch (PersistenceException ex) {
+        } catch (final PersistenceException ex) {
             return 2;
         }
         return DATABASE_VERSION;
@@ -172,14 +173,14 @@ public class MinecartManiaCore extends JavaPlugin {
         try {
             getDatabase().find(MinecartOwner.class).findRowCount();
             getDatabase().find(MinecartManiaMinecartDataTable.class).findRowCount();
-        } catch (PersistenceException ex) {
+        } catch (final PersistenceException ex) {
             log.info("Installing database");
             installDDL();
         }
     }
     
     protected void setupDatabase() {
-        int version = getDatabaseVersion();
+        final int version = getDatabaseVersion();
         switch (version) {
             case 0:
                 setupInitialDatabase();
@@ -195,10 +196,10 @@ public class MinecartManiaCore extends JavaPlugin {
         }
     }
     
-    private void upgradeDatabase(int current) {
+    private void upgradeDatabase(final int current) {
         log.info(String.format("Upgrading database from version %d to version %d", current, DATABASE_VERSION));
-        if (current == 1 || current == 2) {
-            this.removeDDL();
+        if ((current == 1) || (current == 2)) {
+            removeDDL();
             setupInitialDatabase();
         }
         /*
@@ -208,7 +209,7 @@ public class MinecartManiaCore extends JavaPlugin {
     
     @Override
     public List<Class<?>> getDatabaseClasses() {
-        List<Class<?>> list = new ArrayList<Class<?>>();
+        final List<Class<?>> list = new ArrayList<Class<?>>();
         list.add(MinecartOwner.class);
         list.add(MinecartManiaMinecartDataTable.class);
         return list;
@@ -250,7 +251,7 @@ public class MinecartManiaCore extends JavaPlugin {
         return LWC;
     }
     
-    public static void callEvent(Event event) {
+    public static void callEvent(final Event event) {
         //We go first
         actionListener.onCustomEvent(event);
         //now everyone else goes

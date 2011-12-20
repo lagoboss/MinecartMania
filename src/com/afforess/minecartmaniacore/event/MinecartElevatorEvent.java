@@ -5,30 +5,28 @@ import org.bukkit.event.Cancellable;
 
 import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
 
-public class MinecartElevatorEvent extends MinecartManiaEvent implements
-        Cancellable {
+public class MinecartElevatorEvent extends MinecartManiaEvent implements Cancellable {
     
     private static final long serialVersionUID = -514535876514879428L;
-    private MinecartManiaMinecart minecart;
+    private final MinecartManiaMinecart minecart;
     private boolean cancelled = false;
     private Location location;
     
-    public MinecartElevatorEvent(MinecartManiaMinecart minecart,
-            Location teleport) {
+    public MinecartElevatorEvent(final MinecartManiaMinecart minecart, final Location teleport) {
         super("MinecartElevatorEvent");
         this.minecart = minecart;
-        this.location = teleport;
+        location = teleport;
     }
     
     public MinecartManiaMinecart getMinecart() {
-        return this.minecart;
+        return minecart;
     }
     
     public Location getTeleportLocation() {
         return location.clone();
     }
     
-    public void setTeleportLocation(Location location) {
+    public void setTeleportLocation(final Location location) {
         this.location = location;
     }
     
@@ -36,7 +34,7 @@ public class MinecartElevatorEvent extends MinecartManiaEvent implements
         return cancelled;
     }
     
-    public void setCancelled(boolean cancel) {
+    public void setCancelled(final boolean cancel) {
         cancelled = cancel;
     }
 }

@@ -4,16 +4,16 @@ import com.afforess.minecartmaniacore.inventory.MinecartManiaChest;
 
 public class ChestPoweredEvent extends MinecartManiaEvent {
     private static final long serialVersionUID = 458967445158658060L;
-    private MinecartManiaChest chest;
-    private boolean powered;
-    private boolean wasPowered;
+    private final MinecartManiaChest chest;
+    private final boolean powered;
+    private final boolean wasPowered;
     private boolean action = false;
     
-    public ChestPoweredEvent(MinecartManiaChest chest, boolean powered) {
+    public ChestPoweredEvent(final MinecartManiaChest chest, final boolean powered) {
         super("ChestPoweredEvent");
         this.chest = chest;
         this.powered = powered;
-        this.wasPowered = chest.isRedstonePower();
+        wasPowered = chest.isRedstonePower();
     }
     
     public MinecartManiaChest getChest() {
@@ -32,7 +32,7 @@ public class ChestPoweredEvent extends MinecartManiaEvent {
         return action;
     }
     
-    public void setActionTaken(boolean b) {
+    public void setActionTaken(final boolean b) {
         action = b;
     }
 }

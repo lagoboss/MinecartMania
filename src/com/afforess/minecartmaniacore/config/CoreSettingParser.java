@@ -4,10 +4,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
 import java.util.ListIterator;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -43,24 +40,24 @@ public class CoreSettingParser implements SettingParser {
     private static final double version = 1.53;
     private static MinecartManiaLogger log = MinecartManiaLogger.getInstance();
     /**
-     * USED ONLY FOR CONFIGURATION.  USE ItemUtils.preparsed FOR ACTUAL ALIASES
+     * USED ONLY FOR CONFIGURATION. USE ItemUtils.preparsed FOR ACTUAL ALIASES
      */
     public ConcurrentHashMap<String, ArrayList<SpecificMaterial>> aliases = new ConcurrentHashMap<String, ArrayList<SpecificMaterial>>();
     
     //This not only will tell true/false if the document is up to date, but will try to update it before it answers.
     //This will only try to update existing settings and add ones where necessary.
     //It will not create new blocks or anything. It will try its best to keep settings exactly the same
-    public boolean isUpToDate(Document document) {
+    public boolean isUpToDate(final Document document) {
         try {
             NodeList list = document.getElementsByTagName("version");
             Double version = MinecartManiaConfigurationParser.toDouble(list.item(0).getChildNodes().item(0).getNodeValue(), 0);
             log.debug("Core Config read: version: " + list.item(0).getTextContent());
-            if (version == 1.3 || version == 1.4) {
+            if ((version == 1.3) || (version == 1.4)) {
                 //do changes to make this 1.3 or 1.4 into a 1.51 structure.
                 //NOTE: this will not reset it to the new default, only update it while preserving data.
                 list = document.getElementsByTagName("ControlBlock");
                 for (int idx = 0; idx < list.getLength(); idx++) {
-                    Node controlBlock = list.item(idx);
+                    final Node controlBlock = list.item(idx);
                     //Add the Elevator option to each Control block
                     Element newNode = document.createElement("Elevator");
                     controlBlock.appendChild(newNode);
@@ -72,14 +69,14 @@ public class CoreSettingParser implements SettingParser {
                 //convert the speedMultiplier node to the new structure
                 list = document.getElementsByTagName("SpeedMultiplier");
                 for (int idx = list.getLength() - 1; idx >= 0; idx--) { //go in descending order so our list doesn't disappear from under us when we replace nodes.
-                    Node oldNode = list.item(idx);
-                    String oldNodeValue = oldNode.getTextContent();
-                    Node oldRedstone = oldNode.getAttributes().getNamedItem("redstone");
-                    String oldNodeRedstoneValue = (oldRedstone == null ? "default" : oldRedstone.getNodeValue());
+                    final Node oldNode = list.item(idx);
+                    final String oldNodeValue = oldNode.getTextContent();
+                    final Node oldRedstone = oldNode.getAttributes().getNamedItem("redstone");
+                    final String oldNodeRedstoneValue = (oldRedstone == null ? "default" : oldRedstone.getNodeValue());
                     //Add the SpeedMultipliers structure
-                    Element speedMultipliers = document.createElement("SpeedMultipliers");
+                    final Element speedMultipliers = document.createElement("SpeedMultipliers");
                     if (oldNodeValue != "") {
-                        Element speedMultiplier = document.createElement("SpeedMultiplier");
+                        final Element speedMultiplier = document.createElement("SpeedMultiplier");
                         Element speedMultiplierNode = document.createElement("Redstone");
                         speedMultiplierNode.appendChild(document.createTextNode(oldNodeRedstoneValue));
                         //Append the child node
@@ -112,7 +109,7 @@ public class CoreSettingParser implements SettingParser {
                         speedMultipliers.appendChild(speedMultiplier);
                     }
                     //Replace the speedMultiplier node
-                    Node parent = oldNode.getParentNode();
+                    final Node parent = oldNode.getParentNode();
                     parent.replaceChild(speedMultipliers, oldNode);
                 }
                 list = document.getElementsByTagName("version");
@@ -120,19 +117,19 @@ public class CoreSettingParser implements SettingParser {
                 list.item(0).setTextContent(version.toString());
             }
             if (version == 1.51) {
-                Node root = document.getElementsByTagName("MinecartManiaConfiguration").item(0);
-                Node last = document.getElementsByTagName("ControlBlocks").item(0);
+                final Node root = document.getElementsByTagName("MinecartManiaConfiguration").item(0);
+                final Node last = document.getElementsByTagName("ControlBlocks").item(0);
                 root.insertBefore(document.createComment("Minecarts that are destroyed will not drop an item if they are destroyed"), last);
                 root.insertBefore(document.createTextNode("\n\t"), last);
                 
-                Element removeDeadMinecarts = document.createElement("RemoveDeadMinecarts");
+                final Element removeDeadMinecarts = document.createElement("RemoveDeadMinecarts");
                 removeDeadMinecarts.appendChild(document.createTextNode("false"));
                 root.insertBefore(removeDeadMinecarts, last);
                 
                 root.insertBefore(document.createComment("MM only searchs under or parallel to rails for signs, harshly limiting the search radius. \n\t" + "This will improve performance, but will restrict sign placement."), last);
                 root.insertBefore(document.createTextNode("\n\t"), last);
                 
-                Element limitedSignRange = document.createElement("LimitedSignRange");
+                final Element limitedSignRange = document.createElement("LimitedSignRange");
                 limitedSignRange.appendChild(document.createTextNode("false"));
                 root.insertBefore(limitedSignRange, last);
                 
@@ -140,12 +137,12 @@ public class CoreSettingParser implements SettingParser {
                 list.item(0).setTextContent(version.toString());
             }
             if (version == 1.52) {
-                Node root = document.getElementsByTagName("MinecartManiaConfiguration").item(0);
-                Node last = document.getElementsByTagName("ControlBlocks").item(0);
+                final Node root = document.getElementsByTagName("MinecartManiaConfiguration").item(0);
+                final Node last = document.getElementsByTagName("ControlBlocks").item(0);
                 root.insertBefore(document.createComment("Minecarts Disappear on disconnect. Players who are inside of a minecart will cause the minecart to \"disconnect\" " + "\n\tas well, and re-join when the player does. Minecarts will re-appear and retain their previous settings and speed on reconnecting."), last);
                 root.insertBefore(document.createTextNode("\n\t"), last);
                 
-                Element dissappearOnDisconnect = document.createElement("DisappearOnDisconnect");
+                final Element dissappearOnDisconnect = document.createElement("DisappearOnDisconnect");
                 dissappearOnDisconnect.appendChild(document.createTextNode("true"));
                 root.insertBefore(dissappearOnDisconnect, last);
                 
@@ -153,13 +150,13 @@ public class CoreSettingParser implements SettingParser {
                 list.item(0).setTextContent(version.toString());
             }
             return version == CoreSettingParser.version;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             return false;
         }
     }
     
     //This will read the configuration document passed in and set values based on the nodes it finds
-    public boolean read(Document document) {
+    public boolean read(final Document document) {
         //Set the default configuration before we try to read anything.
         setDefaultConfiguration();
         
@@ -171,7 +168,7 @@ public class CoreSettingParser implements SettingParser {
             String elementChildValue = ""; //holds the value of the node
             //loop through each of the child nodes of the document
             for (int idx = 0; idx < list.getLength(); idx++) {
-                Node elementChild = list.item(idx); //extract the node
+                final Node elementChild = list.item(idx); //extract the node
                 elementChildName = ""; //reset the child name
                 elementChildValue = null; //reset the child value
                 //do we have a valid element node
@@ -182,19 +179,19 @@ public class CoreSettingParser implements SettingParser {
                         //get the first child node - this should give us the true/false/value within a single node
                         elementChildValue = getNodeValue(elementChild.getChildNodes().item(0));
                     }
-                    if (elementChildValue != null && elementChildValue != "") {
+                    if ((elementChildValue != null) && (elementChildValue != "")) {
                         //Handle the possible nodes we have at this level.
                         if (elementChildName == "version") {
                             if (elementChildValue != String.valueOf(version)) { /* documentUpgrade(document); */
                             }
                         } else if (elementChildName == "LoggingMode") {
-                            DebugMode mode = DebugMode.debugModeFromString(elementChildValue);
+                            final DebugMode mode = DebugMode.debugModeFromString(elementChildValue);
                             MinecartManiaLogger.getInstance().switchDebugMode(mode);
                             log.debug("Core Config read: " + elementChildName + " = " + elementChildValue);
-                        } else if (elementChildName == "MinecartsKillMobs" || elementChildName == "KeepMinecartsLoaded" || elementChildName == "MinecartsReturnToOwner" || elementChildName == "StackAllItems" || elementChildName == "RemoveDeadMinecarts" || elementChildName == "LimitedSignRange" || elementChildName == "DisappearOnDisconnect") {
+                        } else if ((elementChildName == "MinecartsKillMobs") || (elementChildName == "KeepMinecartsLoaded") || (elementChildName == "MinecartsReturnToOwner") || (elementChildName == "StackAllItems") || (elementChildName == "RemoveDeadMinecarts") || (elementChildName == "LimitedSignRange") || (elementChildName == "DisappearOnDisconnect")) {
                             MinecartManiaWorld.getConfiguration().put(elementChildName, MinecartManiaConfigurationParser.toBool(elementChildValue));
                             log.debug("Core Config read: " + elementChildName + " = " + (MinecartManiaConfigurationParser.toBool(elementChildValue) ? "true" : "false"));
-                        } else if (elementChildName == "MinecartsClearRails" || elementChildName == "MaximumMinecartSpeedPercent" || elementChildName == "DefaultMinecartSpeedPercent" || elementChildName == "Range" || elementChildName == "RangeY" || elementChildName == "MaximumRange") {
+                        } else if ((elementChildName == "MinecartsClearRails") || (elementChildName == "MaximumMinecartSpeedPercent") || (elementChildName == "DefaultMinecartSpeedPercent") || (elementChildName == "Range") || (elementChildName == "RangeY") || (elementChildName == "MaximumRange")) {
                             MinecartManiaWorld.getConfiguration().put(elementChildName, MinecartManiaConfigurationParser.toInt(elementChildValue, getDefaultConfigurationIntegerValue(elementChildName)));
                             log.debug("Core Config read: " + elementChildName + " = " + elementChildValue);
                         } else if (elementChildName == "ControlBlocks") {
@@ -209,7 +206,7 @@ public class CoreSettingParser implements SettingParser {
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
             return false;
         }
@@ -218,7 +215,7 @@ public class CoreSettingParser implements SettingParser {
     }
     
     //This will read the Control blocks in the Configuration file
-    private boolean readControlBlocks(NodeList list) {
+    private boolean readControlBlocks(final NodeList list) {
         try {
             ControlBlockList.controlBlocks = new ArrayList<ControlBlock>(); //init where we store the control blocks
             ControlBlock cb; //create a holder for our control blocks that will be injected into the controlBlocks list
@@ -233,9 +230,9 @@ public class CoreSettingParser implements SettingParser {
             
             //Loop through each node in the list looking for a control block
             for (int temp = 0; temp < list.getLength(); temp++) {
-                Node element = list.item(temp);
+                final Node element = list.item(temp);
                 //Make sure it is a ControlBlock element node
-                if (element.getNodeType() == Node.ELEMENT_NODE && element.getNodeName() == "ControlBlock") {
+                if ((element.getNodeType() == Node.ELEMENT_NODE) && (element.getNodeName() == "ControlBlock")) {
                     cb = new ControlBlock(); //initialize our new control block object
                     elementChildren = element.getChildNodes(); //get the children of this ControlBlock node
                     //Loop through each of the control block modifiers.
@@ -249,8 +246,9 @@ public class CoreSettingParser implements SettingParser {
                         if (elementChild.getNodeType() == Node.ELEMENT_NODE) {
                             elementChildName = elementChild.getNodeName(); //get the specific modifier node name.
                             //Get the child node value if this node has children
-                            if (elementChild.getChildNodes() != null)
+                            if (elementChild.getChildNodes() != null) {
                                 elementChildValue = getNodeValue(elementChild.getChildNodes().item(0));
+                            }
                             //Do special handling of the SpeedMultipliers node
                             if (elementChildName == "SpeedMultipliers") {
                                 if (elementChildName != "BlockType") {
@@ -290,8 +288,8 @@ public class CoreSettingParser implements SettingParser {
                                     }
                                     if (elementChildName == "BlockType") {
                                         log.debug("Core Config read:   ControlBlock: " + elementChildValue);
-                                        cb.setMatchers(ItemUtils.getItemStringToMatchers(elementChildValue,CompassDirection.NO_DIRECTION));
-                                        log.debug("Core Config read:   ControlBlock matchers: "+cb.getMatchers()[0].toString());
+                                        cb.setMatchers(ItemUtils.getItemStringToMatchers(elementChildValue, CompassDirection.NO_DIRECTION));
+                                        log.debug("Core Config read:   ControlBlock matchers: " + cb.getMatchers()[0].toString());
                                     } else if (elementChildName == "Catch") {
                                         cb.setCatcherState(attributeRedstone);
                                         cb.setCatcherBlock(MinecartManiaConfigurationParser.toBool(elementChildValue));
@@ -336,15 +334,15 @@ public class CoreSettingParser implements SettingParser {
                     log.info("Core Config read unknown node in ControlBlocks: " + element.getNodeName());
                 }
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             return false;
         }
         return true;
     }
     
     //This will read the SpeedMultiplier Modifiers
-    private boolean readSpeedMultiplierModifiers(ControlBlock cb, NodeList list) {
-        ArrayList<SpeedMultiplier> speedMultipliers = new ArrayList<SpeedMultiplier>(); //init where we store the speed multiplier settings
+    private boolean readSpeedMultiplierModifiers(final ControlBlock cb, final NodeList list) {
+        final ArrayList<SpeedMultiplier> speedMultipliers = new ArrayList<SpeedMultiplier>(); //init where we store the speed multiplier settings
         NodeList elementChildren; //Holder for the children of the SpeedMultiplier node we are processing
         Node elementChild; //A specific child node being processed
         String elementChildName; //The name of a child node
@@ -353,11 +351,11 @@ public class CoreSettingParser implements SettingParser {
         try {
             //Loop through each node in the list looking for a SpeedMultiplier
             for (int temp = 0; temp < list.getLength(); temp++) {
-                Node element = list.item(temp); //extract the single node from the list
+                final Node element = list.item(temp); //extract the single node from the list
                 //Make sure it is a ControlBlock element node
-                if (element.getNodeType() == Node.ELEMENT_NODE && element.getNodeName() == "SpeedMultiplier") {
+                if ((element.getNodeType() == Node.ELEMENT_NODE) && (element.getNodeName() == "SpeedMultiplier")) {
                     elementChildren = element.getChildNodes(); //get the children of this ControlBlock node
-                    SpeedMultiplier speed = new SpeedMultiplier(); //Create a new SpeedMultiplier
+                    final SpeedMultiplier speed = new SpeedMultiplier(); //Create a new SpeedMultiplier
                     //set default values
                     speed.redstone = RedstoneState.Default;
                     speed.multiplier = 1.0;
@@ -372,8 +370,9 @@ public class CoreSettingParser implements SettingParser {
                         if (elementChild.getNodeType() == Node.ELEMENT_NODE) {
                             elementChildName = elementChild.getNodeName(); //get the specific modifier node name.
                             //Get the child node value if this node has children
-                            if (elementChild.getChildNodes() != null)
+                            if (elementChild.getChildNodes() != null) {
                                 elementChildValue = getNodeValue(elementChild.getChildNodes().item(0));
+                            }
                             if (elementChildName == "MinecartTypes") {
                                 readSpeedMultiplierModifiersMinecartTypes(speed, elementChild.getChildNodes());
                             } else {
@@ -404,29 +403,29 @@ public class CoreSettingParser implements SettingParser {
                 }
             }
             cb.setSpeedMultipliers(speedMultipliers);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             return false;
         }
         return true;
     }
     
     //This will read the MinecartTypes in the SpeedMultiplier modifier.
-    private boolean readSpeedMultiplierModifiersMinecartTypes(
-            SpeedMultiplier speed, NodeList list) {
+    private boolean readSpeedMultiplierModifiersMinecartTypes(final SpeedMultiplier speed, final NodeList list) {
         String elementValue; //The value of a child node
         
         try {
             //Loop through each node in the list looking for a MinecartType node
-            boolean types[] = new boolean[3]; //declare return value for the function
+            final boolean types[] = new boolean[3]; //declare return value for the function
             log.debug("Core Config read:                     MinecartTypes");
             for (int temp = 0; temp < list.getLength(); temp++) {
-                Node element = list.item(temp); //extract the single node from the list
+                final Node element = list.item(temp); //extract the single node from the list
                 //Make sure it is a MinecartType element node
-                if (element.getNodeType() == Node.ELEMENT_NODE && element.getNodeName() == "MinecartType") {
+                if ((element.getNodeType() == Node.ELEMENT_NODE) && (element.getNodeName() == "MinecartType")) {
                     elementValue = null;
                     //Get the element value
-                    if (element.getChildNodes() != null)
+                    if (element.getChildNodes() != null) {
                         elementValue = getNodeValue(element.getChildNodes().item(0));
+                    }
                     log.debug("Core Config read:                             Type:" + elementValue);
                     //Record the element value in one of the possible types
                     if (elementValue.equalsIgnoreCase("standard")) {
@@ -443,7 +442,7 @@ public class CoreSettingParser implements SettingParser {
                 }
             }
             speed.types = types;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             return false;
         }
         return true;
@@ -454,32 +453,32 @@ public class CoreSettingParser implements SettingParser {
      * @param list
      * @return
      */
-    private boolean readItemAliases(NodeList list) {
+    private boolean readItemAliases(final NodeList list) {
         try {
             for (int temp = 0; temp < list.getLength(); temp++) {
-                Node n = list.item(temp);
+                final Node n = list.item(temp);
                 if (n.getNodeType() == Node.ELEMENT_NODE) {
                     if (n.getNodeName() == "ItemAlias") {
                         // Create a new ItemMatcher
-                        ItemMatcher matcher = new ItemMatcher();
+                        final ItemMatcher matcher = new ItemMatcher();
                         
                         // Get the current element
-                        Element element = (Element) n;
+                        final Element element = (Element) n;
                         
                         // And its children
-                        NodeList elementChildren = element.getChildNodes();
+                        final NodeList elementChildren = element.getChildNodes();
                         
                         String elementChildName = "";
                         String elementChildValue = null;
                         String aliasName = "";
-                        ArrayList<String> aliasMaterials=new ArrayList<String>();
+                        final ArrayList<String> aliasMaterials = new ArrayList<String>();
                         
                         // Make a new OR statement
-                        MatchOR or = new MatchOR();
+                        final MatchOR or = new MatchOR();
                         
                         // For each child,
                         for (int idx = 0; idx < elementChildren.getLength(); idx++) {
-                            Node elementChild = elementChildren.item(idx);
+                            final Node elementChild = elementChildren.item(idx);
                             // Check if it's an element
                             if (elementChild.getNodeType() == Node.ELEMENT_NODE) {
                                 
@@ -494,20 +493,20 @@ public class CoreSettingParser implements SettingParser {
                                     aliasName = elementChildValue;
                                 } else if (elementChildName == "ItemType") {
                                     //special case: all items
-                                    if (elementChildValue != null && elementChildValue.toLowerCase().contains("all item")) {
+                                    if ((elementChildValue != null) && elementChildValue.toLowerCase().contains("all item")) {
                                         log.debug("Core Config read:         Block: " + elementChildValue);
                                         or.addExpression(new MatchAll());
                                     } else {
-                                        SpecificMaterial item = MinecartManiaConfigurationParser.toSpecificMaterial(elementChildValue);
+                                        final SpecificMaterial item = MinecartManiaConfigurationParser.toSpecificMaterial(elementChildValue);
                                         if (item != null) {
                                             log.debug("Core Config read:         Block: " + elementChildValue);
-                                            MatchConstant type = new MatchConstant(MatchField.TYPE_ID,item.id);
-                                            if(elementChildValue.contains(";")) {
+                                            final MatchConstant type = new MatchConstant(MatchField.TYPE_ID, item.id);
+                                            if (elementChildValue.contains(";")) {
                                                 // Create a new constant token and add it to an AND
                                                 // This basically becomes "... || (typeID=={whatever} && data=={whatever}
-                                                MatchAND and = new MatchAND();
+                                                final MatchAND and = new MatchAND();
                                                 and.addExpression(type);
-                                                and.addExpression(new MatchConstant(MatchField.DURABILITY,item.durability));
+                                                and.addExpression(new MatchConstant(MatchField.DURABILITY, item.durability));
                                                 or.addExpression(and);
                                             } else {
                                                 or.addExpression(type);
@@ -523,12 +522,12 @@ public class CoreSettingParser implements SettingParser {
                             }
                         }
                         matcher.addExpression(or);
-                        log.debug("Core Config read:         Alias %s:\n%s",aliasName,matcher);
-                        ItemUtils.addParserAlias(aliasName,matcher);
+                        log.debug("Core Config read:         Alias %s:\n%s", aliasName, matcher);
+                        ItemUtils.addParserAlias(aliasName, matcher);
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             return false;
         }
         return true;
@@ -536,62 +535,73 @@ public class CoreSettingParser implements SettingParser {
     
     private void debugShowConfigs() {
         //Display global configuration values
-        for (Enumeration<String> ConfigKeys = MinecartManiaWorld.getConfiguration().keys(); ConfigKeys.hasMoreElements();) {
-            String temp = ConfigKeys.nextElement();
-            String value = MinecartManiaWorld.getConfigurationValue(temp) != null ? MinecartManiaWorld.getConfigurationValue(temp).toString() : "null";
+        for (final Enumeration<String> ConfigKeys = MinecartManiaWorld.getConfiguration().keys(); ConfigKeys.hasMoreElements();) {
+            final String temp = ConfigKeys.nextElement();
+            final String value = MinecartManiaWorld.getConfigurationValue(temp) != null ? MinecartManiaWorld.getConfigurationValue(temp).toString() : "null";
             log.debug("Core Config: " + temp + " = " + value);
         }
         //Display the control blocks
-        ListIterator<ControlBlock> li = ControlBlockList.getControlBlockList().listIterator();
+        final ListIterator<ControlBlock> li = ControlBlockList.getControlBlockList().listIterator();
         log.debug("Core Config: ControlBlocks");
         while (li.hasNext()) {
-            ControlBlock cb = li.next();
+            final ControlBlock cb = li.next();
             //log.debug("Core Config:   ControlBlock: " + cb.getType());
-            if (cb.isCatcherBlock())
+            if (cb.isCatcherBlock()) {
                 log.debug("Core Config:       Modifier: Catch (redstone = " + cb.getCatcherState().toString() + ")");
-            if (cb.isEjectorBlock())
+            }
+            if (cb.isEjectorBlock()) {
                 log.debug("Core Config:       Modifier: Eject (redstone = " + cb.getEjectorState().toString() + ", ejecty = " + cb.getEjectY() + ")");
-            if (cb.isPlatformBlock())
+            }
+            if (cb.isPlatformBlock()) {
                 log.debug("Core Config:       Modifier: Platform (redstone = " + cb.getPlatformState().toString() + ", range = " + cb.getPlatformRange() + ")");
-            if (cb.isStationBlock())
+            }
+            if (cb.isStationBlock()) {
                 log.debug("Core Config:       Modifier: Station (redstone = " + cb.getStationState().toString() + ")");
-            if (cb.isSpawnMinecart())
+            }
+            if (cb.isSpawnMinecart()) {
                 log.debug("Core Config:       Modifier: SpawnMinecart (redstone = " + cb.getSpawnState().toString() + ")");
-            if (cb.isKillMinecart())
+            }
+            if (cb.isKillMinecart()) {
                 log.debug("Core Config:       Modifier: KillMinecart (redstone = " + cb.getKillState().toString() + ")");
-            if (cb.isElevatorBlock())
+            }
+            if (cb.isElevatorBlock()) {
                 log.debug("Core Config:       Modifier: Elevator (redstone = " + cb.getElevatorState().toString() + ")");
-            if (cb.updateToPoweredRail)
+            }
+            if (cb.updateToPoweredRail) {
                 log.debug("Core Config:       Modifier: UpdateToPoweredRail = true");
+            }
             if (cb.getSpeedMultipliers().listIterator().hasNext()) {
-                ListIterator<SpeedMultiplier> smli = cb.getSpeedMultipliers().listIterator();
+                final ListIterator<SpeedMultiplier> smli = cb.getSpeedMultipliers().listIterator();
                 log.debug("Core Config:       Modifier: SpeedMultipliers");
                 while (smli.hasNext()) {
-                    SpeedMultiplier sm = smli.next();
+                    final SpeedMultiplier sm = smli.next();
                     log.debug("Core Config:                   SpeedMultiplier");
-                    if (sm.redstone == RedstoneState.Default)
+                    if (sm.redstone == RedstoneState.Default) {
                         log.debug("Core Config:                     Redstone: Default");
-                    else if (sm.redstone == RedstoneState.Enables)
+                    } else if (sm.redstone == RedstoneState.Enables) {
                         log.debug("Core Config:                     Redstone: Enables");
-                    else if (sm.redstone == RedstoneState.Disables)
+                    } else if (sm.redstone == RedstoneState.Disables) {
                         log.debug("Core Config:                     Redstone: Disables");
+                    }
                     log.debug("Core Config:                     Multiplier: " + String.valueOf(sm.multiplier));
-                    if (sm.direction == CompassDirection.NO_DIRECTION)
+                    if (sm.direction == CompassDirection.NO_DIRECTION) {
                         log.debug("Core Config:                     Direction: Any");
-                    else if (sm.direction == CompassDirection.NORTH)
+                    } else if (sm.direction == CompassDirection.NORTH) {
                         log.debug("Core Config:                     Direction: North");
-                    else if (sm.direction == CompassDirection.SOUTH)
+                    } else if (sm.direction == CompassDirection.SOUTH) {
                         log.debug("Core Config:                     Direction: South");
-                    else if (sm.direction == CompassDirection.EAST)
+                    } else if (sm.direction == CompassDirection.EAST) {
                         log.debug("Core Config:                     Direction: East");
-                    else if (sm.direction == CompassDirection.WEST)
+                    } else if (sm.direction == CompassDirection.WEST) {
                         log.debug("Core Config:                     Direction: West");
-                    if (sm.passenger == PassengerState.Default)
+                    }
+                    if (sm.passenger == PassengerState.Default) {
                         log.debug("Core Config:                     Passenger: Default");
-                    else if (sm.passenger == PassengerState.Enables)
+                    } else if (sm.passenger == PassengerState.Enables) {
                         log.debug("Core Config:                     Passenger: Enables");
-                    else if (sm.passenger == PassengerState.Disables)
+                    } else if (sm.passenger == PassengerState.Disables) {
                         log.debug("Core Config:                     Passenger: Disables");
+                    }
                     log.debug("Core Config:                     MinecartTypes: " + (sm.types[0] ? "Standard," : "") + (sm.types[0] ? "Powered," : "") + (sm.types[0] ? "Storage" : ""));
                 }
             }
@@ -617,7 +627,6 @@ public class CoreSettingParser implements SettingParser {
         MinecartManiaWorld.getConfiguration().put("LimitedSignRange", false);
         MinecartManiaWorld.getConfiguration().put("DisappearOnDisconnect", true);
         
-
         ItemUtils.prefillAliases(this);
         
         //Create Ores Alias
@@ -642,7 +651,7 @@ public class CoreSettingParser implements SettingParser {
     }
     
     //This will return the default integer values to be used for configuration
-    private int getDefaultConfigurationIntegerValue(String ConfigName) {
+    private int getDefaultConfigurationIntegerValue(final String ConfigName) {
         if (ConfigName == "MinecartsClearRails")
             return (1);
         if (ConfigName == "MaximumMinecartSpeedPercent")
@@ -658,39 +667,39 @@ public class CoreSettingParser implements SettingParser {
         return 0;
     }
     
-    public boolean write(File configFile, Document document) {
+    public boolean write(final File configFile, Document document) {
         try {
             if (document == null) {
                 //we do not have a document to write, so read one from disk.
-                JarFile jar = new JarFile(MinecartManiaCore.getMinecartManiaCoreJar());
-                JarEntry entry = jar.getJarEntry("MinecartManiaConfiguration.xml");
-                InputStream is = jar.getInputStream(entry);
-                DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-                DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+                final JarFile jar = new JarFile(MinecartManiaCore.getMinecartManiaCoreJar());
+                final JarEntry entry = jar.getJarEntry("MinecartManiaConfiguration.xml");
+                final InputStream is = jar.getInputStream(entry);
+                final DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+                final DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
                 document = dBuilder.parse(is);
             }
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
+            final TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            final Transformer transformer = transformerFactory.newTransformer();
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
-            DOMSource source = new DOMSource(document);
-            StreamResult result = new StreamResult(configFile);
+            final DOMSource source = new DOMSource(document);
+            final StreamResult result = new StreamResult(configFile);
             transformer.transform(source, result);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
             return false;
         }
         return true;
     }
     
-    private String getNodeValue(Node node) {
+    private String getNodeValue(final Node node) {
         if (node == null)
             return null;
         return node.getNodeValue();
     }
     
-    private CompassDirection parseDirectionState(String str) {
-        if (str == null || str.equalsIgnoreCase("any"))
+    private CompassDirection parseDirectionState(final String str) {
+        if ((str == null) || str.equalsIgnoreCase("any"))
             return CompassDirection.NO_DIRECTION;
         if (str.equalsIgnoreCase("north"))
             return CompassDirection.NORTH;
@@ -703,8 +712,8 @@ public class CoreSettingParser implements SettingParser {
         return CompassDirection.NO_DIRECTION;
     }
     
-    private RedstoneState parseRedstoneState(String str) {
-        if (str == null || str.equalsIgnoreCase("default"))
+    private RedstoneState parseRedstoneState(final String str) {
+        if ((str == null) || str.equalsIgnoreCase("default"))
             return RedstoneState.Default;
         if (str.toLowerCase().contains("enable"))
             return RedstoneState.Enables;
@@ -713,8 +722,8 @@ public class CoreSettingParser implements SettingParser {
         return RedstoneState.Default;
     }
     
-    private PassengerState parsePassengerState(String str) {
-        if (str == null || str.equalsIgnoreCase("default"))
+    private PassengerState parsePassengerState(final String str) {
+        if ((str == null) || str.equalsIgnoreCase("default"))
             return PassengerState.Default;
         if (str.toLowerCase().contains("enable"))
             return PassengerState.Enables;

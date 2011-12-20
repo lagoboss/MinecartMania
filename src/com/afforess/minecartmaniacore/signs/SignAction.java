@@ -12,8 +12,7 @@ public interface SignAction {
     /**
      * Executes the action
      * 
-     * @param minecart
-     *            used in executing this action
+     * @param minecart used in executing this action
      * @return true if an action was exectued
      */
     public boolean execute(MinecartManiaMinecart minecart);
@@ -28,8 +27,7 @@ public interface SignAction {
     /**
      * Whether the sign is valid for this SignAction
      * 
-     * @param sign
-     *            to check against
+     * @param sign to check against
      * @return true if the sign is valid
      */
     public boolean valid(Sign sign);

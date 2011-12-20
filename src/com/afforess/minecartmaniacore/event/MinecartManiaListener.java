@@ -11,8 +11,7 @@ import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
 
 import de.luricos.bukkit.WormholeXTreme.Wormhole.events.StargateMinecartTeleportEvent;
 
-public class MinecartManiaListener extends CustomEventListener implements
-        Listener {
+public class MinecartManiaListener extends CustomEventListener implements Listener {
     
     public MinecartManiaListener() {
         
@@ -23,7 +22,7 @@ public class MinecartManiaListener extends CustomEventListener implements
      * 
      * @param event
      */
-    public void onMinecartActionEvent(MinecartActionEvent event) {
+    public void onMinecartActionEvent(final MinecartActionEvent event) {
         
     }
     
@@ -32,7 +31,7 @@ public class MinecartManiaListener extends CustomEventListener implements
      * 
      * @param event
      */
-    public void onMinecartTimeEvent(MinecartTimeEvent event) {
+    public void onMinecartTimeEvent(final MinecartTimeEvent event) {
         
     }
     
@@ -41,7 +40,7 @@ public class MinecartManiaListener extends CustomEventListener implements
      * 
      * @param event
      */
-    public void onMinecartMotionStartEvent(MinecartMotionStartEvent event) {
+    public void onMinecartMotionStartEvent(final MinecartMotionStartEvent event) {
         
     }
     
@@ -50,7 +49,7 @@ public class MinecartManiaListener extends CustomEventListener implements
      * 
      * @param event
      */
-    public void onMinecartMotionStopEvent(MinecartMotionStopEvent event) {
+    public void onMinecartMotionStopEvent(final MinecartMotionStopEvent event) {
         
     }
     
@@ -59,7 +58,7 @@ public class MinecartManiaListener extends CustomEventListener implements
      * 
      * @param event
      */
-    public void onMinecartIntersectionEvent(MinecartIntersectionEvent event) {
+    public void onMinecartIntersectionEvent(final MinecartIntersectionEvent event) {
         
     }
     
@@ -68,7 +67,7 @@ public class MinecartManiaListener extends CustomEventListener implements
      * 
      * @param event
      */
-    public void onChestPoweredEvent(ChestPoweredEvent event) {
+    public void onChestPoweredEvent(final ChestPoweredEvent event) {
         
     }
     
@@ -77,8 +76,7 @@ public class MinecartManiaListener extends CustomEventListener implements
      * 
      * @param event
      */
-    public void onMinecartManiaMinecartDestroyedEvent(
-            MinecartManiaMinecartDestroyedEvent event) {
+    public void onMinecartManiaMinecartDestroyedEvent(final MinecartManiaMinecartDestroyedEvent event) {
         
     }
     
@@ -87,8 +85,7 @@ public class MinecartManiaListener extends CustomEventListener implements
      * 
      * @param event
      */
-    public void onMinecartManiaMinecartCreatedEvent(
-            MinecartManiaMinecartCreatedEvent event) {
+    public void onMinecartManiaMinecartCreatedEvent(final MinecartManiaMinecartCreatedEvent event) {
         
     }
     
@@ -97,7 +94,7 @@ public class MinecartManiaListener extends CustomEventListener implements
      * 
      * @param event
      */
-    public void onMinecartLaunchedEvent(MinecartLaunchedEvent event) {
+    public void onMinecartLaunchedEvent(final MinecartLaunchedEvent event) {
         
     }
     
@@ -106,7 +103,7 @@ public class MinecartManiaListener extends CustomEventListener implements
      * 
      * @param event
      */
-    public void onChestSpawnMinecartEvent(ChestSpawnMinecartEvent event) {
+    public void onChestSpawnMinecartEvent(final ChestSpawnMinecartEvent event) {
         
     }
     
@@ -115,7 +112,7 @@ public class MinecartManiaListener extends CustomEventListener implements
      * 
      * @param event
      */
-    public void onMinecartClickedEvent(MinecartClickedEvent event) {
+    public void onMinecartClickedEvent(final MinecartClickedEvent event) {
         
     }
     
@@ -124,7 +121,7 @@ public class MinecartManiaListener extends CustomEventListener implements
      * 
      * @param event
      */
-    public void onMinecartCaughtEvent(MinecartCaughtEvent event) {
+    public void onMinecartCaughtEvent(final MinecartCaughtEvent event) {
         
     }
     
@@ -133,7 +130,7 @@ public class MinecartManiaListener extends CustomEventListener implements
      * 
      * @param event
      */
-    public void onMinecartElevatorEvent(MinecartElevatorEvent event) {
+    public void onMinecartElevatorEvent(final MinecartElevatorEvent event) {
         
     }
     
@@ -142,8 +139,7 @@ public class MinecartManiaListener extends CustomEventListener implements
      * 
      * @param event
      */
-    public void onMinecartDirectionChangeEvent(
-            MinecartDirectionChangeEvent event) {
+    public void onMinecartDirectionChangeEvent(final MinecartDirectionChangeEvent event) {
         
     }
     
@@ -152,8 +148,7 @@ public class MinecartManiaListener extends CustomEventListener implements
      * 
      * @param event
      */
-    public void onMinecartSpeedMultiplierEvent(
-            MinecartSpeedMultiplierEvent event) {
+    public void onMinecartSpeedMultiplierEvent(final MinecartSpeedMultiplierEvent event) {
         
     }
     
@@ -162,7 +157,7 @@ public class MinecartManiaListener extends CustomEventListener implements
      * 
      * @param event
      */
-    public void onMinecartKillEvent(MinecartKillEvent event) {
+    public void onMinecartKillEvent(final MinecartKillEvent event) {
         
     }
     
@@ -171,7 +166,7 @@ public class MinecartManiaListener extends CustomEventListener implements
      * 
      * @param event
      */
-    public void onMinecartSpawnEvent(MinecartSpawnEvent event) {
+    public void onMinecartSpawnEvent(final MinecartSpawnEvent event) {
         
     }
     
@@ -180,7 +175,7 @@ public class MinecartManiaListener extends CustomEventListener implements
      * 
      * @param event
      */
-    public void onMinecartManiaSignFoundEvent(MinecartManiaSignFoundEvent event) {
+    public void onMinecartManiaSignFoundEvent(final MinecartManiaSignFoundEvent event) {
         
     }
     
@@ -189,11 +184,11 @@ public class MinecartManiaListener extends CustomEventListener implements
      * 
      * @param event
      */
-    public void onMinecartMeetConditionEvent(MinecartMeetsConditionEvent event) {
+    public void onMinecartMeetConditionEvent(final MinecartMeetsConditionEvent event) {
         
     }
     
-    public void onMinecartPassengerEjectEvent(MinecartPassengerEjectEvent event) {
+    public void onMinecartPassengerEjectEvent(final MinecartPassengerEjectEvent event) {
         
     }
     
@@ -202,30 +197,31 @@ public class MinecartManiaListener extends CustomEventListener implements
      * 
      * @param event
      */
-    public void onCustomEvent(Event event) {
+    @Override
+    public void onCustomEvent(final Event event) {
         //Special case
         if (MinecartManiaCore.isWormholeXTremeEnabled()) {
             try {
                 if (event instanceof StargateMinecartTeleportEvent) {
-                    StargateMinecartTeleportEvent e = (StargateMinecartTeleportEvent) event;
-                    MinecartManiaMinecart oldMinecart = MinecartManiaWorld.getMinecartManiaMinecart(e.getOldMinecart());
+                    final StargateMinecartTeleportEvent e = (StargateMinecartTeleportEvent) event;
+                    final MinecartManiaMinecart oldMinecart = MinecartManiaWorld.getMinecartManiaMinecart(e.getOldMinecart());
                     oldMinecart.copy(e.getNewMinecart());
                     oldMinecart.kill(false);
                     return;
                 }
-            } catch (Exception e) {
+            } catch (final Exception e) {
             }
         }
         if (MinecartManiaCore.isNethrarEnabled()) {
             try {
                 if (event instanceof NethrarMinecartTeleportEvent) {
-                    NethrarMinecartTeleportEvent e = (NethrarMinecartTeleportEvent) event;
-                    MinecartManiaMinecart oldMinecart = MinecartManiaWorld.getMinecartManiaMinecart(e.getOldCart());
+                    final NethrarMinecartTeleportEvent e = (NethrarMinecartTeleportEvent) event;
+                    final MinecartManiaMinecart oldMinecart = MinecartManiaWorld.getMinecartManiaMinecart(e.getOldCart());
                     oldMinecart.copy(e.getNewCart());
                     oldMinecart.kill(false);
                     return;
                 }
-            } catch (Exception e) {
+            } catch (final Exception e) {
             }
         }
         

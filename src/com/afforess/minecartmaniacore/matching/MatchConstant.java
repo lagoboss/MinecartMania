@@ -5,16 +5,16 @@ import org.bukkit.inventory.ItemStack;
 import com.afforess.minecartmaniacore.utils.StringUtils;
 
 public class MatchConstant implements MatchToken {
-    private int value;
-    private MatchField field;
+    private final int value;
+    private final MatchField field;
     
-    public MatchConstant(MatchField field, int constant) {
+    public MatchConstant(final MatchField field, final int constant) {
         this.field = field;
-        this.value = constant;
+        value = constant;
     }
     
-    public boolean match(ItemStack item) {
-        int value = field.getFieldValue(item);
+    public boolean match(final ItemStack item) {
+        final int value = field.getFieldValue(item);
         return (this.value == value);
     }
     
@@ -30,8 +30,8 @@ public class MatchConstant implements MatchToken {
         return false;
     }
     
-    public String toString(int i) {
-        return StringUtils.indent(String.format("%s == %d", field.name(),value), i);
+    public String toString(final int i) {
+        return StringUtils.indent(String.format("%s == %d", field.name(), value), i);
     }
     
 }

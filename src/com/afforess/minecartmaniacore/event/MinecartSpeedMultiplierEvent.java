@@ -4,43 +4,42 @@ import org.bukkit.event.Cancellable;
 
 import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
 
-public class MinecartSpeedMultiplierEvent extends MinecartManiaEvent implements
-        Cancellable {
+public class MinecartSpeedMultiplierEvent extends MinecartManiaEvent implements Cancellable {
     
     private static final long serialVersionUID = -514535531614879428L;
-    private MinecartManiaMinecart minecart;
+    private final MinecartManiaMinecart minecart;
     private double multiplier;
     private final double origMultiplier;
     
-    public MinecartSpeedMultiplierEvent(MinecartManiaMinecart minecart,
-            double multiplier) {
+    public MinecartSpeedMultiplierEvent(final MinecartManiaMinecart minecart, final double multiplier) {
         super("MinecartSpeedAlterEvent");
         this.minecart = minecart;
         this.multiplier = multiplier;
-        this.origMultiplier = multiplier;
+        origMultiplier = multiplier;
     }
     
     public MinecartManiaMinecart getMinecart() {
-        return this.minecart;
+        return minecart;
     }
     
     public double getSpeedMultiplier() {
-        return this.multiplier;
+        return multiplier;
     }
     
-    public void setSpeedMultiplier(double multiplier) {
+    public void setSpeedMultiplier(final double multiplier) {
         this.multiplier = multiplier;
     }
     
     public boolean isCancelled() {
-        return this.multiplier == 1.0D;
+        return multiplier == 1.0D;
     }
     
-    public void setCancelled(boolean cancelled) {
-        if (cancelled)
-            this.multiplier = 1.0D;
-        else
-            this.multiplier = this.origMultiplier;
+    public void setCancelled(final boolean cancelled) {
+        if (cancelled) {
+            multiplier = 1.0D;
+        } else {
+            multiplier = origMultiplier;
+        }
     }
     
 }

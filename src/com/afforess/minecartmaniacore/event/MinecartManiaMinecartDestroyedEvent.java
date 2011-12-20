@@ -4,9 +4,9 @@ import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
 
 public class MinecartManiaMinecartDestroyedEvent extends MinecartManiaEvent {
     private static final long serialVersionUID = 7543954124417132875L;
-    private MinecartManiaMinecart minecart;
+    private final MinecartManiaMinecart minecart;
     
-    public MinecartManiaMinecartDestroyedEvent(MinecartManiaMinecart cart) {
+    public MinecartManiaMinecartDestroyedEvent(final MinecartManiaMinecart cart) {
         super("MinecartManiaMinecartDestroyedEvent");
         minecart = cart;
     }

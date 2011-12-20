@@ -5,10 +5,10 @@ import java.util.List;
 
 public class ListUtils {
     
-    public static ArrayList<?> toArrayList(List<?> list) {
+    public static ArrayList<?> toArrayList(final List<?> list) {
         if (!(list instanceof ArrayList)) {
-            ArrayList<Object> newList = new ArrayList<Object>(list.size());
-            for (Object c : list) {
+            final ArrayList<Object> newList = new ArrayList<Object>(list.size());
+            for (final Object c : list) {
                 newList.add(c);
             }
             return newList;

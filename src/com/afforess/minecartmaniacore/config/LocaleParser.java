@@ -20,29 +20,29 @@ public class LocaleParser implements SettingParser {
     private final double version = 1.02;
     private static final ConcurrentHashMap<String, String> textKeys = new ConcurrentHashMap<String, String>();
     
-    public boolean isUpToDate(Document document) {
+    public boolean isUpToDate(final Document document) {
         try {
-            NodeList list = document.getElementsByTagName("version");
-            Double version = MinecartManiaConfigurationParser.toDouble(list.item(0).getChildNodes().item(0).getNodeValue(), 0);
+            final NodeList list = document.getElementsByTagName("version");
+            final Double version = MinecartManiaConfigurationParser.toDouble(list.item(0).getChildNodes().item(0).getNodeValue(), 0);
             return version == this.version;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             return false;
         }
     }
     
-    public boolean read(Document document) {
-        NodeList list = document.getElementsByTagName("TextKey");
+    public boolean read(final Document document) {
+        final NodeList list = document.getElementsByTagName("TextKey");
         for (int temp = 0; temp < list.getLength(); temp++) {
-            Node n = list.item(temp);
+            final Node n = list.item(temp);
             if (n.getNodeType() == Node.ELEMENT_NODE) {
-                Element element = (Element) n;
+                final Element element = (Element) n;
                 NodeList templist = element.getElementsByTagName("Key").item(0).getChildNodes();
-                Node tempNode = (Node) templist.item(0);
-                String key = getNodeValue(tempNode);
+                Node tempNode = templist.item(0);
+                final String key = getNodeValue(tempNode);
                 templist = element.getElementsByTagName("Text").item(0).getChildNodes();
-                tempNode = (Node) templist.item(0);
-                String text = getNodeValue(tempNode);
-                if (key != null && text != null) {
+                tempNode = templist.item(0);
+                final String text = getNodeValue(tempNode);
+                if ((key != null) && (text != null)) {
                     MinecartManiaLogger.getInstance().debug("Added Text Key Key: %s Text: %s", key, text);
                     textKeys.put(key, text);
                 } else {
@@ -53,41 +53,40 @@ public class LocaleParser implements SettingParser {
         return true;
     }
     
-    public boolean write(File config, Document document) {
+    public boolean write(final File config, final Document document) {
         try {
-            JarFile jar = new JarFile(MinecartManiaCore.getMinecartManiaCoreJar());
-            JarEntry entry = jar.getJarEntry("MinecartManiaLocale.xml");
-            InputStream is = jar.getInputStream(entry);
-            FileOutputStream os = new FileOutputStream(config);
-            byte[] buf = new byte[(int) entry.getSize()];
+            final JarFile jar = new JarFile(MinecartManiaCore.getMinecartManiaCoreJar());
+            final JarEntry entry = jar.getJarEntry("MinecartManiaLocale.xml");
+            final InputStream is = jar.getInputStream(entry);
+            final FileOutputStream os = new FileOutputStream(config);
+            final byte[] buf = new byte[(int) entry.getSize()];
             is.read(buf, 0, (int) entry.getSize());
             os.write(buf);
             os.close();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             return false;
         }
         return true;
     }
     
     public static String parseColors(String str) {
-        for (ChatColor color : ChatColor.values()) {
-            String name = "\\[" + color.name().toUpperCase() + "]";
+        for (final ChatColor color : ChatColor.values()) {
+            final String name = "\\[" + color.name().toUpperCase() + "]";
             str = str.replaceAll(name, color.toString());
         }
         return str;
     }
     
-    public static String getTextKey(String key, Object... args) {
-        String value = textKeys.get(key);
-        if (value == null) {
+    public static String getTextKey(final String key, final Object... args) {
+        final String value = textKeys.get(key);
+        if (value == null)
             return "Missing Text Key: " + key;
-        }
-        String result = String.format(parseColors(value), (Object[]) args);
+        String result = String.format(parseColors(value), args);
         result = result.replace("\\n", "\n");
         return result;
     }
     
-    private String getNodeValue(Node node) {
+    private String getNodeValue(final Node node) {
         if (node == null)
             return null;
         return node.getNodeValue();

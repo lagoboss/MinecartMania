@@ -5,7 +5,6 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map.Entry;
 
 import org.bukkit.Material;
@@ -37,9 +36,9 @@ public class ItemUtils {
      * 
      * @return material found, or null
      */
-    public static SpecificMaterial getFirstItemStringToMaterial(String str) {
-        String[] list = { str };
-        SpecificMaterial items[] = getItemStringListToMaterial(list);
+    public static SpecificMaterial getFirstItemStringToMaterial(final String str) {
+        final String[] list = { str };
+        final SpecificMaterial items[] = getItemStringListToMaterial(list);
         return items.length == 0 ? null : items[0];
     }
     
@@ -48,28 +47,32 @@ public class ItemUtils {
      * 
      * @return materials found, or an empty array
      */
-    public static SpecificMaterial[] getItemStringToMaterial(String str) {
-        String[] list = { str };
+    public static SpecificMaterial[] getItemStringToMaterial(final String str) {
+        final String[] list = { str };
         return getItemStringListToMaterial(list);
     }
     
-    public static SpecificMaterial[] getItemStringListToMaterial(String[] list) {
+    public static SpecificMaterial[] getItemStringListToMaterial(final String[] list) {
         return getItemStringListToMaterial(list, null);
     }
     
-    public static CompassDirection getLineItemDirection(String str) {
+    public static CompassDirection getLineItemDirection(final String str) {
         CompassDirection direction = CompassDirection.NO_DIRECTION;
-        int index = str.indexOf("+");
+        final int index = str.indexOf("+");
         if (index == 1) {
-            String dir = str.substring(0, 1);
-            if (dir.equalsIgnoreCase("n"))
+            final String dir = str.substring(0, 1);
+            if (dir.equalsIgnoreCase("n")) {
                 direction = CompassDirection.NORTH;
-            if (dir.equalsIgnoreCase("s"))
+            }
+            if (dir.equalsIgnoreCase("s")) {
                 direction = CompassDirection.SOUTH;
-            if (dir.equalsIgnoreCase("e"))
+            }
+            if (dir.equalsIgnoreCase("e")) {
                 direction = CompassDirection.EAST;
-            if (dir.equalsIgnoreCase("w"))
+            }
+            if (dir.equalsIgnoreCase("w")) {
                 direction = CompassDirection.WEST;
+            }
         }
         return direction;
     }
@@ -79,68 +82,70 @@ public class ItemUtils {
      * 
      * @return materials found, or an empty array
      */
-    public static SpecificMaterial[] getItemStringListToMaterial(String[] list,
-            CompassDirection facing) {
-        ArrayList<SpecificMaterial> items = new ArrayList<SpecificMaterial>();
-        for (int line = 0; line < list.length; line++) {
-            String str = StringUtils.removeBrackets(list[line].toLowerCase());
+    public static SpecificMaterial[] getItemStringListToMaterial(final String[] list, final CompassDirection facing) {
+        final ArrayList<SpecificMaterial> items = new ArrayList<SpecificMaterial>();
+        for (final String element : list) {
+            String str = StringUtils.removeBrackets(element.toLowerCase());
             str = str.trim();
             if (str.isEmpty()) {
                 continue;
             }
             
             //Check the given direction and intended direction from the sign
-            CompassDirection direction = getLineItemDirection(str);
+            final CompassDirection direction = getLineItemDirection(str);
             if (direction != CompassDirection.NO_DIRECTION) {
                 str = str.substring(2, str.length()); // remove the direction for further parsing.
             }
-            if (facing != null && direction != facing && direction != CompassDirection.NO_DIRECTION) {
+            if ((facing != null) && (direction != facing) && (direction != CompassDirection.NO_DIRECTION)) {
                 continue;
             }
             
             //short circuit if it's everything
             if (str.contains("all items")) {
-                for (Material m : Material.values()) {
+                for (final Material m : Material.values()) {
                     if (!items.contains(m)) {
                         items.add(new SpecificMaterial(m.getId(), (short) 0));
                     }
                 }
             }
-            String[] keys = str.split(":");
+            final String[] keys = str.split(":");
             
-            for (int i = 0; i < keys.length; i++) {
-                String part = keys[i].trim();
+            for (final String key : keys) {
+                final String part = key.trim();
                 ItemMatcher matcher = null;
                 // Cache parsed strings
                 if (preparsed.containsKey(part.toLowerCase())) {
                     matcher = preparsed.get(part.toLowerCase());
                 }
-                if (matcher == null)
+                if (matcher == null) {
                     matcher = parsePart(part);
+                }
                 
-                if (matcher == null)
+                if (matcher == null) {
                     continue;
+                }
                 
                 preparsed.put(part.toLowerCase(), matcher);
                 saveDebugMap();
                 
-                for (Material mat : Material.values()) {
-                    if (matcher.match(new ItemStack(mat)))
+                for (final Material mat : Material.values()) {
+                    if (matcher.match(new ItemStack(mat))) {
                         items.add(new SpecificMaterial(mat.getId(), (short) 0));
+                    }
                 }
             }
         }
         
         //Remove Air from the list
-        Iterator<SpecificMaterial> i = items.iterator();
+        final Iterator<SpecificMaterial> i = items.iterator();
         while (i.hasNext()) {
-            SpecificMaterial type = i.next();
-            if (type == null || type.equals(Material.AIR)) {
+            final SpecificMaterial type = i.next();
+            if ((type == null) || type.equals(Material.AIR)) {
                 i.remove();
             }
         }
         
-        SpecificMaterial itemList[] = new SpecificMaterial[items.size()];
+        final SpecificMaterial itemList[] = new SpecificMaterial[items.size()];
         return items.toArray(itemList);
     }
     
@@ -153,7 +158,7 @@ public class ItemUtils {
         
         private final String tag;
         
-        TYPE(String tag) {
+        TYPE(final String tag) {
             this.tag = tag;
         }
         
@@ -166,7 +171,7 @@ public class ItemUtils {
             return tag;
         }
         
-        public static TYPE getType(String part) {
+        public static TYPE getType(final String part) {
             if (part.contains(RANGE.getTag())) // Range is parsed first Always!
                 return RANGE;
             if (part.contains(REMOVE.getTag())) // since this 1 doesn't need special priority handling
@@ -188,14 +193,9 @@ public class ItemUtils {
                 case DATA:
                     itemMatcher = parseData(part);
                     break;
-                    /*
-                case DATA_BITON:
-                    itemMatcher = parseBit(part,true);
-                    break;
-                case DATA_BITOFF:
-                    itemMatcher = parseBit(part,false);
-                    break;
-                    */
+                /*
+                 * case DATA_BITON: itemMatcher = parseBit(part,true); break; case DATA_BITOFF: itemMatcher = parseBit(part,false); break;
+                 */
                 case REMOVE:
                     itemMatcher = parseNegative(part);
                     break;
@@ -207,7 +207,7 @@ public class ItemUtils {
                     break;
             }
             return itemMatcher;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             MinecartManiaLogger.getInstance().severe("Error when generating ItemMatcher for \"%s\":\n" + e.toString(), true, part);
             e.printStackTrace();
             return null;
@@ -216,11 +216,11 @@ public class ItemUtils {
     
     private static void saveDebugMap() {
         try {
-            File items = new File(MinecartManiaCore.dataDirectory + File.separator + "ItemMatchingTable.txt");
-            PrintWriter out = new PrintWriter(items);
+            final File items = new File(MinecartManiaCore.dataDirectory + File.separator + "ItemMatchingTable.txt");
+            final PrintWriter out = new PrintWriter(items);
             // Create file 
             out.write("This simply craps out the structure of Minecart Mania's internal Item Matching criteria.  It's not read by MM, and it's going to be overwritten as minecarts find new stuff.");
-            for (Entry<String, ItemMatcher> matcher : preparsed.entrySet()) {
+            for (final Entry<String, ItemMatcher> matcher : preparsed.entrySet()) {
                 if (matcher.getValue() == null) {
                     out.write(String.format("\n\n%s:\n(null)", matcher.getKey()));
                 } else {
@@ -229,16 +229,16 @@ public class ItemUtils {
             }
             //Close the output stream
             out.close();
-        } catch (Exception e) {//Catch exception if any
+        } catch (final Exception e) {//Catch exception if any
             System.err.println("Error: " + e.getMessage());
         }
     }
     
-    private static ItemMatcher parseAmount(String part) {
-        String[] split = part.split(TYPE.AMOUNT.getTag());
-        ItemMatcher matcher = parsePart(split[0]);
+    private static ItemMatcher parseAmount(final String part) {
+        final String[] split = part.split(TYPE.AMOUNT.getTag());
+        final ItemMatcher matcher = parsePart(split[0]);
         
-        int amount = Integer.parseInt(split[1]);
+        final int amount = Integer.parseInt(split[1]);
         if (amount > 0) {
             matcher.setAmount(amount);
         }
@@ -248,7 +248,7 @@ public class ItemUtils {
     
     private static ItemMatcher parseNegative(String part) {
         part = part.replace(TYPE.REMOVE.getTag(), "");
-        ItemMatcher items = parsePart(part);
+        final ItemMatcher items = parsePart(part);
         items.addExpression(new MatchNOT(items.getTokens()));
         //MinecartManiaLogger.getInstance().debug("Removing Item: " + item.type());
         return items;
@@ -260,16 +260,16 @@ public class ItemUtils {
      * @param part
      * @return
      */
-    private static ItemMatcher parseRange(String part) {
+    private static ItemMatcher parseRange(final String part) {
         // Split into components
-        String[] split = part.split(TYPE.RANGE.getTag());
-        ItemMatcher matcher = new ItemMatcher();
-        ItemMatcher start = parsePart(split[0]);
-        ItemMatcher end = parsePart(split[1]);
-        ItemStack startitem = start.toItemStack();
+        final String[] split = part.split(TYPE.RANGE.getTag());
+        final ItemMatcher matcher = new ItemMatcher();
+        final ItemMatcher start = parsePart(split[0]);
+        final ItemMatcher end = parsePart(split[1]);
+        final ItemStack startitem = start.toItemStack();
         if (startitem == null)
             return null;
-        ItemStack enditem = end.toItemStack();
+        final ItemStack enditem = end.toItemStack();
         if (enditem == null)
             return null;
         
@@ -299,67 +299,53 @@ public class ItemUtils {
         return matcher;
     }
     
-    private static ItemMatcher parseData(String part) {
-        String[] split = part.split(TYPE.DATA.getTag());
-        ItemMatcher item = parsePart(split[0]);
-        int data = Integer.parseInt(split[1]);
+    private static ItemMatcher parseData(final String part) {
+        final String[] split = part.split(TYPE.DATA.getTag());
+        final ItemMatcher item = parsePart(split[0]);
+        final int data = Integer.parseInt(split[1]);
         item.addConstant(MatchField.DURABILITY, data);
         return item;
     }
     
-    private static ItemMatcher parseNormal(String part) {
-        ItemMatcher matcher = new ItemMatcher();
+    private static ItemMatcher parseNormal(final String part) {
+        final ItemMatcher matcher = new ItemMatcher();
         try {
             matcher.addConstant(MatchField.TYPE_ID, Integer.parseInt(part));
             return matcher;
-        } catch (NumberFormatException exception) {
-            Material mat = Material.matchMaterial(part);
-            if (mat == null) // Can't find the material
+        } catch (final NumberFormatException exception) {
+            final Material mat = Material.matchMaterial(part);
+            if (mat == null) {
                 matcher.addConstant(MatchField.TYPE_ID, -1); // Force the match to fail every time.
-            else {
+            } else {
                 matcher.addConstant(MatchField.TYPE_ID, mat.getId());
             }
             return matcher;
         }
     }
     
-    private static ItemMatcher materialListToItemMatcher(
-            List<SpecificMaterial> materials) {
-        MatchOR or = new MatchOR();
-        for (SpecificMaterial m : materials) {
-            or.addExpression(new MatchConstant(MatchField.TYPE_ID, m.id));
-        }
-        ItemMatcher match = new ItemMatcher();
-        match.addExpression(or);
-        return match;
-    }
-    
-    public static ItemMatcher[] getItemStringToMatchers(String line,
-            CompassDirection facing) {
+    public static ItemMatcher[] getItemStringToMatchers(final String line, final CompassDirection facing) {
         
         String str = StringUtils.removeBrackets(line).toLowerCase();
         str = str.trim();
-        if (str.isEmpty()) {
+        if (str.isEmpty())
             return new ItemMatcher[0];
-        }
         
         //Check the given direction and intended direction from the sign
-        CompassDirection direction = getLineItemDirection(str);
+        final CompassDirection direction = getLineItemDirection(str);
         if (direction != CompassDirection.NO_DIRECTION) {
             str = str.substring(2, str.length()); // remove the direction for further parsing.
         }
-        if (facing != null && direction != facing && direction != CompassDirection.NO_DIRECTION) {
+        if ((facing != null) && (direction != facing) && (direction != CompassDirection.NO_DIRECTION))
             return new ItemMatcher[0];
-        }
         ItemMatcher matcher = new ItemMatcher();
         if (str.contains("all items")) {
             matcher.addExpression(new MatchAll());
         }
         
-        String[] lines = str.split(":");
-        ArrayList<ItemMatcher> matchers = new ArrayList<ItemMatcher>();
-        ArrayList<MatchNOT> not = new ArrayList<MatchNOT>();
-        for (String part : lines) {
+        final String[] lines = str.split(":");
+        final ArrayList<ItemMatcher> matchers = new ArrayList<ItemMatcher>();
+        final ArrayList<MatchNOT> not = new ArrayList<MatchNOT>();
+        for (final String part : lines) {
             
             if (preparsed.containsKey(part.trim().toLowerCase())) {
                 matchers.add(preparsed.get(part.trim().toLowerCase()));
@@ -372,19 +358,19 @@ public class ItemUtils {
             }
         }
         
-        for (ItemMatcher m : matchers) {
-            for (MatchToken mt : m.getTokens()) {
+        for (final ItemMatcher m : matchers) {
+            for (final MatchToken mt : m.getTokens()) {
                 if (mt instanceof MatchNOT) {
                     not.add((MatchNOT) mt);
                 }
             }
         }
-        Iterator<ItemMatcher> it = matchers.iterator();
+        final Iterator<ItemMatcher> it = matchers.iterator();
         while (it.hasNext()) {
-            ItemMatcher m = it.next();
+            final ItemMatcher m = it.next();
             boolean isNot = false;
             
-            for (MatchToken mt : m.getTokens()) {
+            for (final MatchToken mt : m.getTokens()) {
                 if (mt instanceof MatchNOT) {
                     isNot = true;
                     break;
@@ -395,63 +381,62 @@ public class ItemUtils {
                 continue;
             }
             
-            for (MatchNOT mn : not) {
+            for (final MatchNOT mn : not) {
                 m.addExpression(mn);
             }
         }
-        ItemMatcher[] ret = new ItemMatcher[matchers.size()];
+        final ItemMatcher[] ret = new ItemMatcher[matchers.size()];
         matchers.toArray(ret);
         return ret;
     }
     
-    public static ItemMatcher[] getItemStringListToMatchers(String[] lines,
-            CompassDirection facing) {
-        ArrayList<ItemMatcher> matchers = new ArrayList<ItemMatcher>();
-        for (String line : lines) {
-            for (ItemMatcher matcher : getItemStringToMatchers(line, facing))
-                if (matcher != null)
+    public static ItemMatcher[] getItemStringListToMatchers(final String[] lines, final CompassDirection facing) {
+        final ArrayList<ItemMatcher> matchers = new ArrayList<ItemMatcher>();
+        for (final String line : lines) {
+            for (final ItemMatcher matcher : getItemStringToMatchers(line, facing))
+                if (matcher != null) {
                     matchers.add(matcher);
+                }
         }
         
-        ItemMatcher[] ret = new ItemMatcher[matchers.size()];
+        final ItemMatcher[] ret = new ItemMatcher[matchers.size()];
         matchers.toArray(ret);
         return ret;
     }
     
-    public static ItemMatcher[] getItemStringListToMatchers(String[] lines) {
+    public static ItemMatcher[] getItemStringListToMatchers(final String[] lines) {
         return getItemStringListToMatchers(lines, CompassDirection.NO_DIRECTION);
     }
     
-    public static void prefillAliases(CoreSettingParser csp) {
-        for (Item item : Item.values()) {
+    public static void prefillAliases(final CoreSettingParser csp) {
+        for (final Item item : Item.values()) {
             if (item.hasData()) {
-                ItemMatcher matcher = new ItemMatcher();
+                final ItemMatcher matcher = new ItemMatcher();
                 matcher.addConstant(MatchField.TYPE_ID, item.getId());
                 matcher.addConstant(MatchField.DURABILITY, item.getData());
                 preparsed.put(item.name().toLowerCase(), matcher);
-                ArrayList<SpecificMaterial> mats = new ArrayList<SpecificMaterial>();
+                final ArrayList<SpecificMaterial> mats = new ArrayList<SpecificMaterial>();
                 mats.add(new SpecificMaterial(item.getId(), (short) item.getData()));
                 csp.aliases.put(item.name(), mats);
             }
         }
     }
     
-    public static void addParserAlias(String aliasName, ItemMatcher matcher) {
+    public static void addParserAlias(final String aliasName, final ItemMatcher matcher) {
         preparsed.put(aliasName.toLowerCase(), matcher);
     }
     
-    public static void addParserAlias(String aliasName,
-            ArrayList<SpecificMaterial> values) {
+    public static void addParserAlias(final String aliasName, final ArrayList<SpecificMaterial> values) {
         // Create a new ItemMatcher
-        ItemMatcher matcher = new ItemMatcher();
+        final ItemMatcher matcher = new ItemMatcher();
         // Make a new OR statement
-        MatchOR or = new MatchOR();
-        for (SpecificMaterial mat : values) {
-            MatchConstant type = new MatchConstant(MatchField.TYPE_ID, mat.id);
+        final MatchOR or = new MatchOR();
+        for (final SpecificMaterial mat : values) {
+            final MatchConstant type = new MatchConstant(MatchField.TYPE_ID, mat.id);
             if (mat.durability != -1) {
                 // Create a new constant token and add it to an AND
                 // This basically becomes "... || (typeID=={whatever} && data=={whatever}
-                MatchAND and = new MatchAND();
+                final MatchAND and = new MatchAND();
                 and.addExpression(type);
                 and.addExpression(new MatchConstant(MatchField.DURABILITY, mat.durability));
                 or.addExpression(and);

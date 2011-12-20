@@ -5,11 +5,11 @@ import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
 public class LaunchPlayerAction implements SignAction {
     protected Sign sign;
     
-    public LaunchPlayerAction(Sign sign) {
+    public LaunchPlayerAction(final Sign sign) {
         this.sign = sign;
     }
     
-    public boolean execute(MinecartManiaMinecart minecart) {
+    public boolean execute(final MinecartManiaMinecart minecart) {
         minecart.launchCart();
         minecart.setDataValue("hold sign data", null);
         return true;
@@ -19,8 +19,8 @@ public class LaunchPlayerAction implements SignAction {
         return true;
     }
     
-    public boolean valid(Sign sign) {
-        for (String line : sign.getLines()) {
+    public boolean valid(final Sign sign) {
+        for (final String line : sign.getLines()) {
             if (line.toLowerCase().contains("launch player")) {
                 sign.addBrackets();
                 return true;
