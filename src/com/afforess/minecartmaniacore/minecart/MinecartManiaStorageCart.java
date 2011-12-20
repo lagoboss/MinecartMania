@@ -102,6 +102,17 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
         return null;
     }
     
+    private ItemMatcher getMatchingMinRule(final int id, final short data) {
+        final ItemStack item = new ItemStack(id, 1, data);
+        if (minimumContents != null) {
+            for (final ItemMatcher match : minimumContents.values()) {
+                if (match.match(item))
+                    return match;
+            }
+        }
+        return null;
+    }
+    
     /*
      * public void setMaximumItem(Item item, int amount) { setMaximumItem(item.getId(),(short) item.getData(),amount); }
      */
@@ -273,10 +284,10 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
     public boolean canRemoveItem(final int type, final int amount, final short durability, final Player player) {
         
         final ItemStack item = new ItemStack(type, amount, durability);
-        final ItemMatcher matcher = getMatchingMaxRule(item.getTypeId(), item.getDurability());
+        final ItemMatcher matcher = getMatchingMinRule(item.getTypeId(), item.getDurability());
         if (matcher != null) {
             final int found = amount(matcher);
-            MinecartManiaLogger.getInstance().info("canAddItem: max %s = %d, %d found", item, matcher.getAmount(-1), found);
+            MinecartManiaLogger.getInstance().info("canRemoveItem: max %s = %d, %d found", item, matcher.getAmount(-1), found);
             if ((found - item.getAmount()) < matcher.getAmount(-1))
                 return false;
         }
