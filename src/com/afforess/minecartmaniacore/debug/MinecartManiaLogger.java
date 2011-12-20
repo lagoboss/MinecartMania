@@ -1,6 +1,7 @@
 package com.afforess.minecartmaniacore.debug;
 
 import java.util.LinkedList;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class MinecartManiaLogger {
@@ -59,7 +60,7 @@ public class MinecartManiaLogger {
     public void log(final String s, final boolean toConsole, final Object... args) {
         if ((mode == DebugMode.DEBUG) || (mode == DebugMode.NORMAL) || (mode == DebugMode.TIMER)) {
             if (toConsole) {
-                log.info(prefix + s);
+                log.log(Level.INFO,prefix + s,args);
             } else {
                 queue(prefix + s);
             }
