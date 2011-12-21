@@ -15,6 +15,7 @@ import com.afforess.minecartmaniacore.config.CoreSettingParser;
 import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
 import com.afforess.minecartmaniacore.matching.MatchAND;
 import com.afforess.minecartmaniacore.matching.MatchAll;
+import com.afforess.minecartmaniacore.matching.MatchBit;
 import com.afforess.minecartmaniacore.matching.MatchConstant;
 import com.afforess.minecartmaniacore.matching.MatchField;
 import com.afforess.minecartmaniacore.matching.MatchNOT;
@@ -154,6 +155,7 @@ public class ItemUtils {
         REMOVE("!"),
         RANGE("-"),
         DATA(";"),
+        BIT("&"),
         NONE("");
         
         private final String tag;
@@ -190,12 +192,11 @@ public class ItemUtils {
                 case RANGE:
                     itemMatcher = parseRange(part);
                     break;
+                case BIT:
+                    itemMatcher = parseBit(part); break;
                 case DATA:
                     itemMatcher = parseData(part);
                     break;
-                /*
-                 * case DATA_BITON: itemMatcher = parseBit(part,true); break; case DATA_BITOFF: itemMatcher = parseBit(part,false); break;
-                 */
                 case REMOVE:
                     itemMatcher = parseNegative(part);
                     break;
@@ -304,6 +305,19 @@ public class ItemUtils {
         final ItemMatcher item = parsePart(split[0]);
         final int data = Integer.parseInt(split[1]);
         item.addConstant(MatchField.DURABILITY, data);
+        return item;
+    }
+    
+    private static ItemMatcher parseBit(final String part) {
+        final String[] split = part.split(TYPE.BIT.getTag());
+        boolean bitState=true;
+        if(split[1].startsWith("~")) {
+            split[1]=split[1].substring(1);
+            bitState=false;
+        }
+        final ItemMatcher item = parsePart(split[0]);
+        final int data = Integer.parseInt(split[1]);
+        item.addExpression(new MatchBit(MatchField.DURABILITY, data, bitState));
         return item;
     }
     
