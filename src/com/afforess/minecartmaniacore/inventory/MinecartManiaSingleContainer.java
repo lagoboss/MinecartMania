@@ -16,6 +16,7 @@ import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
  */
 public abstract class MinecartManiaSingleContainer implements MinecartManiaInventory {
     private Inventory inventory;
+    private String failureReason="";
     
     public MinecartManiaSingleContainer(final Inventory i) {
         inventory = i;
@@ -183,6 +184,7 @@ public abstract class MinecartManiaSingleContainer implements MinecartManiaInven
         
         //if we fail, reset the inventory back to previous values
         setContents(backup);
+        setFailureReason("No room");
         return false;
     }
     
@@ -409,5 +411,13 @@ public abstract class MinecartManiaSingleContainer implements MinecartManiaInven
                 return false;
         }
         return true;
+    }
+
+    public String getFailureReason() {
+        return failureReason;
+    }
+
+    private void setFailureReason(String failureReason) {
+        this.failureReason = failureReason;
     }
 }

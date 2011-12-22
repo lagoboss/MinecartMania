@@ -61,12 +61,11 @@ public interface MinecartManiaInventory {
     
     public boolean isEmpty();
     
-    //Just is just a kindness, but not nessecary.
-    //public Inventory getInventory();
-    
     public ItemStack[] getContents();
     
     public void setContents(ItemStack[] contents);
     
     public int amount(ItemMatcher matcher);
+    
+    public String getFailureReason();
 }

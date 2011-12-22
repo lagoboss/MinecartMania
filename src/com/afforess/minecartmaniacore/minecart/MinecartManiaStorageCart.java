@@ -24,6 +24,7 @@ import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
 public class MinecartManiaStorageCart extends MinecartManiaMinecart implements MinecartManiaInventory {
     private final ConcurrentHashMap<String, ItemMatcher> maximumContents = new ConcurrentHashMap<String, ItemMatcher>();
     private final ConcurrentHashMap<String, ItemMatcher> minimumContents = new ConcurrentHashMap<String, ItemMatcher>();
+    private String failureReason="";
     
     /**
      * Creates a storage minecart from the given bukkit minecart
@@ -280,8 +281,11 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
         if (matcher != null) {
             final int found = amount(matcher);
             MinecartManiaLogger.getInstance().info(String.format("(Cart @ %s) canRemoveItem: min %s;%d = %d, %d found", this.getLocation().toVector().toString(), item.getType().name(), item.getDurability(), matcher.getAmount(-1), found));
-            if ((found - item.getAmount()) < matcher.getAmount(-1))
+            int min = matcher.getAmount(-1);
+            if (min > -1 && (found - amount) < min) {
+                setFailureReason(String.format("Cannot remove any more of this type (%d-%d < %d)",found,amount,min));
                 return false;
+            }
         }
         return true;
     }
@@ -300,8 +304,9 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
      * @return true if the items were successfully removed
      */
     public boolean removeItem(final int type, int amount, final short durability, final Player player) {
-        if (!canRemoveItem(type, amount, durability))
+        if (!canRemoveItem(type, amount, durability)) {
             return false;
+        }
         
         //Backup contents
         final ItemStack[] backup = getContents().clone();
@@ -325,6 +330,7 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
         
         //if we fail, reset the inventory back to previous values
         setContents(backup);
+        setFailureReason("No room");
         return false;
     }
     
@@ -547,5 +553,13 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
     
     public void setMinimumItem(final ItemMatcher matcher) {
         minimumContents.put(matcher.toString(), matcher);
+    }
+
+    public String getFailureReason() {
+        return failureReason;
+    }
+
+    public void setFailureReason(String failureReason) {
+        this.failureReason = failureReason;
     }
 }

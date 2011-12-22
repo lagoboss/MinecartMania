@@ -27,6 +27,7 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements 
     private final Location chest;
     private boolean redstonePower;
     private final ConcurrentHashMap<String, Object> data = new ConcurrentHashMap<String, Object>();
+    private String failureReason;
     
     public MinecartManiaChest(final Chest chest) {
         super(chest.getInventory());
@@ -182,8 +183,10 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements 
     @Override
     public boolean canRemoveItem(final int type, final int amount, final short durability, final Player player) {
         if (player != null) {
-            if (!canAccess(player.getName()))
+            if (!canAccess(player.getName())) {
+                failureReason=player.getName()+" cannot access this chest";
                 return false;
+            }
         }
         
         return super.canRemoveItem(type, amount, durability, player);
