@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import com.afforess.minecartmaniacore.utils.ItemMatcher;
 import com.afforess.minecartmaniacore.world.Item;
 
 /**
@@ -326,6 +327,10 @@ public class MinecartManiaDoubleChest implements MinecartManiaInventory {
     
     public int amount(final int type, final short durability) {
         return chest1.amount(type, durability) + chest2.amount(type, durability);
+    }
+    
+    public int amount(final ItemMatcher matcher) {
+        return chest1.amount(matcher) + chest2.amount(matcher);
     }
     
 }

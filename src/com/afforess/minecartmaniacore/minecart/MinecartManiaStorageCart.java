@@ -171,14 +171,14 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
         final ItemMatcher matcher = getMatchingMaxRule(item.getTypeId(), item.getDurability());
         if (matcher != null) {
             final int found = amount(matcher);
-            MinecartManiaLogger.getInstance().info(String.format("canAddItem: max %s;%d = %d, %d found", item.getType().name(),item.getDurability(), matcher.getAmount(-1), found));
+            MinecartManiaLogger.getInstance().info(String.format("canAddItem: max %s;%d = %d, %d found", item.getType().name(), item.getDurability(), matcher.getAmount(-1), found));
             if ((found + item.getAmount()) > matcher.getAmount(-1))
                 return false;
         }
         return true;
     }
     
-    private int amount(final ItemMatcher matcher) {
+    public int amount(final ItemMatcher matcher) {
         int count = 0;
         for (final ItemStack i : getContents()) {
             if (i != null) {
@@ -287,7 +287,7 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
         final ItemMatcher matcher = getMatchingMinRule(item.getTypeId(), item.getDurability());
         if (matcher != null) {
             final int found = amount(matcher);
-            MinecartManiaLogger.getInstance().info(String.format("canRemoveItem: min %s;%d = %d, %d found", item.getType().name(),item.getDurability(), matcher.getAmount(-1), found));
+            MinecartManiaLogger.getInstance().info(String.format("canRemoveItem: min %s;%d = %d, %d found", item.getType().name(), item.getDurability(), matcher.getAmount(-1), found));
             if ((found - item.getAmount()) < matcher.getAmount(-1))
                 return false;
         }

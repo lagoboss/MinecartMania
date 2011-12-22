@@ -5,6 +5,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import com.afforess.minecartmaniacore.utils.ItemMatcher;
+
 public interface MinecartManiaInventory {
     
     public Inventory getBukkitInventory();
@@ -65,4 +67,6 @@ public interface MinecartManiaInventory {
     public ItemStack[] getContents();
     
     public void setContents(ItemStack[] contents);
+    
+    public int amount(ItemMatcher matcher);
 }

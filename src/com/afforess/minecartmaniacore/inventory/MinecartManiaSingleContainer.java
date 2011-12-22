@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import com.afforess.minecartmaniacore.utils.ItemMatcher;
 import com.afforess.minecartmaniacore.world.Item;
 import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
 
@@ -329,6 +330,18 @@ public abstract class MinecartManiaSingleContainer implements MinecartManiaInven
             }
         }
         return -1;
+    }
+    
+    public int amount(final ItemMatcher matcher) {
+        int count = 0;
+        for (final ItemStack i : getContents()) {
+            if (i != null) {
+                if (matcher.match(i)) {
+                    count += i.getAmount();
+                }
+            }
+        }
+        return count;
     }
     
     public int amount(final int type, final short durability) {

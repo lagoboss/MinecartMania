@@ -193,7 +193,8 @@ public class ItemUtils {
                     itemMatcher = parseRange(part);
                     break;
                 case BIT:
-                    itemMatcher = parseBit(part); break;
+                    itemMatcher = parseBit(part);
+                    break;
                 case DATA:
                     itemMatcher = parseData(part);
                     break;
@@ -310,10 +311,10 @@ public class ItemUtils {
     
     private static ItemMatcher parseBit(final String part) {
         final String[] split = part.split(TYPE.BIT.getTag());
-        boolean bitState=true;
-        if(split[1].startsWith("~")) {
-            split[1]=split[1].substring(1);
-            bitState=false;
+        boolean bitState = true;
+        if (split[1].startsWith("~")) {
+            split[1] = split[1].substring(1);
+            bitState = false;
         }
         final ItemMatcher item = parsePart(split[0]);
         final int data = Integer.parseInt(split[1]);

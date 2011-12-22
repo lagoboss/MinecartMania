@@ -60,7 +60,7 @@ public class MinecartManiaLogger {
     public void log(final String s, final boolean toConsole, final Object... args) {
         if ((mode == DebugMode.DEBUG) || (mode == DebugMode.NORMAL) || (mode == DebugMode.TIMER)) {
             if (toConsole) {
-                log.log(Level.INFO,prefix + s,args);
+                log.log(Level.INFO, prefix + s, args);
             } else {
                 queue(prefix + s);
             }
