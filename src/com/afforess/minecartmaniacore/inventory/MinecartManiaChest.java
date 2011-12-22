@@ -59,6 +59,11 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements 
         return (Chest) chest.getBlock().getState();
     }
     
+    @Override
+    public String getFailureReason() {
+        return failureReason;
+    }
+    
     /**
      * Returns the neighbor chest to this chest, or null if none exists
      * 
@@ -184,7 +189,7 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements 
     public boolean canRemoveItem(final int type, final int amount, final short durability, final Player player) {
         if (player != null) {
             if (!canAccess(player.getName())) {
-                failureReason=player.getName()+" cannot access this chest";
+                failureReason = player.getName() + " cannot access this chest";
                 return false;
             }
         }
@@ -305,6 +310,7 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements 
         
         //if we fail, reset the inventory back to previous values
         getChest().getInventory().setContents(backup);
+        failureReason = "None left";
         return false;
     }
     

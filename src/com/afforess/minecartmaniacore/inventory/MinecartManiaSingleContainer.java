@@ -16,7 +16,7 @@ import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
  */
 public abstract class MinecartManiaSingleContainer implements MinecartManiaInventory {
     private Inventory inventory;
-    private String failureReason="";
+    private String failureReason = "";
     
     public MinecartManiaSingleContainer(final Inventory i) {
         inventory = i;
@@ -82,9 +82,6 @@ public abstract class MinecartManiaSingleContainer implements MinecartManiaInven
         //First attempt to merge the itemstack with existing item stacks that aren't full (< 64)
         for (int i = 0; i < size(); i++) {
             if (getItem(i) != null) {
-                if ((item.getTypeId() == 373) && (getItem(i).getTypeId() == item.getTypeId())) {
-                    System.out.println(String.format("[addItem] 373:%d => 373:%d", item.getDurability(), getItem(i).getDurability()));
-                }
                 if ((getItem(i).getTypeId() == item.getTypeId()) && (getItem(i).getDurability() == item.getDurability())) {
                     if ((getItem(i).getAmount() + item.getAmount()) <= max) {
                         setItem(i, new ItemStack(item.getTypeId(), getItem(i).getAmount() + item.getAmount(), item.getDurability()));
@@ -184,7 +181,7 @@ public abstract class MinecartManiaSingleContainer implements MinecartManiaInven
         
         //if we fail, reset the inventory back to previous values
         setContents(backup);
-        setFailureReason("No room");
+        setFailureReason("None left");
         return false;
     }
     
@@ -412,12 +409,12 @@ public abstract class MinecartManiaSingleContainer implements MinecartManiaInven
         }
         return true;
     }
-
+    
     public String getFailureReason() {
         return failureReason;
     }
-
-    private void setFailureReason(String failureReason) {
+    
+    private void setFailureReason(final String failureReason) {
         this.failureReason = failureReason;
     }
 }

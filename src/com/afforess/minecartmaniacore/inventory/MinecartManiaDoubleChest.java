@@ -334,7 +334,7 @@ public class MinecartManiaDoubleChest implements MinecartManiaInventory {
     }
     
     public String getFailureReason() {
-        return chest1.getFailureReason()+chest2.getFailureReason();
+        return chest1.getFailureReason() + chest2.getFailureReason();
     }
     
 }
