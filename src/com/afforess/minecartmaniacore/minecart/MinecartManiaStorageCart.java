@@ -165,8 +165,9 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
         if (matcher != null) {
             final int found = amount(matcher);
             MinecartManiaLogger.getInstance().info(String.format("(Cart @ %s) canAddItem: max %s;%d = %d, %d found", getLocation().toVector().toString(), item.getType().name(), item.getDurability(), matcher.getAmount(-1), found));
-            if ((found + item.getAmount()) > matcher.getAmount(-1))
+            if ((found + item.getAmount()) > matcher.getAmount(-1)) {
                 return false;
+            }
         }
         return true;
     }
@@ -214,7 +215,14 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
         //First attempt to merge the itemstack with existing item stacks that aren't full (< 64)
         for (int i = 0; i < size(); i++) {
             if (getItem(i) != null) {
-                if ((getItem(i).getTypeId() == item.getTypeId()) && (getItem(i).getDurability() == item.getDurability())) {
+                if ((getItem(i).getTypeId() == item.getTypeId()) && (getItem(i).getDurability() == item.getDurability()) && getItem(i).getEnchantments().equals(item.getEnchantments())) {
+                    if (getItem(i).getAmount() > max) {
+                        // Slot has more than the max stack size...?!
+                        int diff = max - getItem(i).getAmount();
+                        setItem(i, new ItemStack(item.getTypeId(), max, item.getDurability()));
+                        item = new ItemStack(item.getTypeId(), item.getAmount() + diff, item.getDurability());
+                        continue;
+                    }
                     if ((getItem(i).getAmount() + item.getAmount()) <= max) {
                         setItem(i, new ItemStack(item.getTypeId(), getItem(i).getAmount() + item.getAmount(), item.getDurability()));
                         return true;
