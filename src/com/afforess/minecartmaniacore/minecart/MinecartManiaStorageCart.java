@@ -200,8 +200,10 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
             return true;
         if (!canAddItem(item))
             return false;
-        if (item.getAmount() == -1)
-            throw new Exception("Cannot set a minecart slot to -1!");
+        if (item.getAmount() <= -1)
+            throw new Exception("Cannot set a minecart slot to negative values!");
+        if (item.getAmount() > size() * MinecartManiaWorld.getMaxStackSize(item))
+            throw new Exception("Trying to add more items than there are slots!");
         
         //Backup contents
         final ItemStack[] backup = getContents().clone();
