@@ -57,7 +57,7 @@ public class ItemMatcher {
         final MatchOR or = new MatchOR();
         for (String part : expression.split(":")) {
             MatchToken expr = null;
-            int amt = 0;
+            int amt = -1;
             if (part.contains(TYPE.AMOUNT.getTag())) {
                 final String[] parts = part.split(TYPE.AMOUNT.getTag());
                 part = parts[0];
