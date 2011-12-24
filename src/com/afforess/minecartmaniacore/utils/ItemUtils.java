@@ -16,9 +16,7 @@ import com.afforess.minecartmaniacore.matching.MatchAND;
 import com.afforess.minecartmaniacore.matching.MatchAll;
 import com.afforess.minecartmaniacore.matching.MatchConstant;
 import com.afforess.minecartmaniacore.matching.MatchField;
-import com.afforess.minecartmaniacore.matching.MatchNOT;
 import com.afforess.minecartmaniacore.matching.MatchOR;
-import com.afforess.minecartmaniacore.matching.MatchToken;
 import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
 import com.afforess.minecartmaniacore.world.Item;
 import com.afforess.minecartmaniacore.world.SpecificMaterial;
@@ -365,7 +363,6 @@ public class ItemUtils {
         
         final String[] lines = str.split(":");
         final ArrayList<ItemMatcher> matchers = new ArrayList<ItemMatcher>();
-        final ArrayList<MatchNOT> not = new ArrayList<MatchNOT>();
         //for (final String part : lines) {
         String joinedPart = StringUtils.join(lines, 0, ":");
         if (preparsed.containsKey(joinedPart.trim().toLowerCase())) {
@@ -378,14 +375,6 @@ public class ItemUtils {
             matchers.add(matcher);
         }
         //}
-        
-        for (final ItemMatcher m : matchers) {
-            for (final MatchToken mt : m.getTokens()) {
-                if (mt instanceof MatchNOT) {
-                    not.add((MatchNOT) mt);
-                }
-            }
-        }
         final ItemMatcher[] ret = new ItemMatcher[matchers.size()];
         matchers.toArray(ret);
         return ret;

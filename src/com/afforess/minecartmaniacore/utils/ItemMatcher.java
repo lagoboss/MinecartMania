@@ -10,6 +10,7 @@ import com.afforess.minecartmaniacore.matching.MatchConstant;
 import com.afforess.minecartmaniacore.matching.MatchField;
 import com.afforess.minecartmaniacore.matching.MatchInRange;
 import com.afforess.minecartmaniacore.matching.MatchNOT;
+import com.afforess.minecartmaniacore.matching.MatchOR;
 import com.afforess.minecartmaniacore.matching.MatchToken;
 import com.afforess.minecartmaniacore.utils.ItemUtils.TYPE;
 
@@ -53,6 +54,7 @@ public class ItemMatcher {
     }
     
     public boolean parse(final String expression) {
+        MatchOR or = new MatchOR();
         for (String part : expression.split(":")) {
             MatchToken expr = null;
             int amt = 0;
@@ -80,11 +82,13 @@ public class ItemMatcher {
             if (expr != null) {
                 expr.setAmount(amt);
                 if (NOT) {
-                    expr = new MatchNOT(expr);
+                    addExpression(new MatchNOT(expr));
+                } else {
+                    or.addExpression(expr);
                 }
-                addExpression(expr);
             }
         }
+        addExpression(or);
         return true;
     }
     
