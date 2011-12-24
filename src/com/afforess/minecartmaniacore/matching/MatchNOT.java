@@ -8,6 +8,7 @@ import com.afforess.minecartmaniacore.utils.StringUtils;
 
 public class MatchNOT implements MatchToken {
     MatchToken token = null;
+    private int amount;
     
     public MatchNOT(final List<MatchToken> tokens) {
         if (tokens.size() > 1) {
@@ -20,6 +21,10 @@ public class MatchNOT implements MatchToken {
         } else if (tokens.size() == 1) {
             token = tokens.get(0);
         }
+    }
+    
+    public MatchNOT(final MatchToken expr) {
+        token = expr;
     }
     
     /**
@@ -41,6 +46,14 @@ public class MatchNOT implements MatchToken {
         sb.append("\n");
         sb.append(StringUtils.indent("}", i));
         return sb.toString();
+    }
+    
+    public int getAmount() {
+        return amount;
+    }
+    
+    public void setAmount(final int amt) {
+        amount = amt;
     }
     
 }

@@ -16,4 +16,8 @@ public interface MatchToken {
     boolean isComplex();
     
     String toString(int i);
+    
+    int getAmount();
+    
+    void setAmount(int amt);
 }

@@ -5,10 +5,13 @@ import java.util.List;
 
 import org.bukkit.inventory.ItemStack;
 
+import com.afforess.minecartmaniacore.matching.MatchBit;
 import com.afforess.minecartmaniacore.matching.MatchConstant;
 import com.afforess.minecartmaniacore.matching.MatchField;
 import com.afforess.minecartmaniacore.matching.MatchInRange;
+import com.afforess.minecartmaniacore.matching.MatchNOT;
 import com.afforess.minecartmaniacore.matching.MatchToken;
+import com.afforess.minecartmaniacore.utils.ItemUtils.TYPE;
 
 /**
  * An efficient system for matching items based on criteria provided by signs.
@@ -49,6 +52,38 @@ public class ItemMatcher {
         matchTokens.add(token);
     }
     
+    public boolean parse(final String expression) {
+        for (String part : expression.split(":")) {
+            MatchToken expr = null;
+            int amt = 0;
+            if (part.contains(TYPE.AMOUNT.getTag())) {
+                final String[] parts = part.split(TYPE.AMOUNT.getTag());
+                part = parts[0];
+                amt = Integer.parseInt(parts[1]);
+            }
+            boolean NOT = false;
+            if (part.startsWith(TYPE.REMOVE.getTag())) {
+                NOT = true;
+            }
+            switch (TYPE.getType(part)) {
+                case RANGE:
+                    expr = new MatchInRange(part);
+                    break;
+                case BIT:
+                    expr = MatchBit.parseAll(part);
+                    break;
+                default:
+                    expr = MatchConstant.parseAll(part);
+                    break;
+            }
+            expr.setAmount(amt);
+            if (NOT) {
+                expr = new MatchNOT(expr);
+            }
+        }
+        return true;
+    }
+    
     /**
      * See if them item fits ALL of the criteria listed in matchTokens.
      * 
@@ -72,7 +107,7 @@ public class ItemMatcher {
      */
     public ItemStack toItemStack() {
         final ItemStack item = new ItemStack(0, 1, (short) -1);
-        final boolean foundID = false;
+        boolean foundID = false;
         for (final MatchToken matcher : matchTokens) {
             if (matcher.isComplex())
                 return null;
@@ -82,6 +117,7 @@ public class ItemMatcher {
                 switch (constant.getField()) {
                     case TYPE_ID:
                         item.setTypeId(v);
+                        foundID = true;
                         break;
                     case DURABILITY:
                         item.setDurability((short) v);

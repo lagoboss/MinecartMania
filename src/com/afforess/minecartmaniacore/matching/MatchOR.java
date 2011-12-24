@@ -8,6 +8,7 @@ import com.afforess.minecartmaniacore.utils.StringUtils;
 
 public class MatchOR implements MatchToken {
     ArrayList<MatchToken> tokens = new ArrayList<MatchToken>();
+    private int amount;
     
     public void addExpression(final MatchToken token) {
         tokens.add(token);
@@ -18,8 +19,10 @@ public class MatchOR implements MatchToken {
      */
     public boolean match(final ItemStack item) {
         for (final MatchToken match : tokens) {
-            if (match.match(item))
+            if (match.match(item)) {
+                amount = (match.getAmount());
                 return true;
+            }
         }
         return false;
     }
@@ -37,5 +40,13 @@ public class MatchOR implements MatchToken {
         }
         sb.append(StringUtils.indent("}", i));
         return sb.toString();
+    }
+    
+    public int getAmount() {
+        return amount;
+    }
+    
+    public void setAmount(final int amt) {
+        ;
     }
 }

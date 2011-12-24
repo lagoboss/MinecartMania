@@ -6,6 +6,8 @@ import com.afforess.minecartmaniacore.utils.StringUtils;
 
 public class MatchAll implements MatchToken {
     
+    private int amount;
+    
     public boolean match(final ItemStack item) {
         return true;
     }
@@ -16,6 +18,14 @@ public class MatchAll implements MatchToken {
     
     public String toString(final int i) {
         return StringUtils.indent("ALL ITEMS", i);
+    }
+    
+    public int getAmount() {
+        return amount;
+    }
+    
+    public void setAmount(final int amt) {
+        amount = amt;
     }
     
 }

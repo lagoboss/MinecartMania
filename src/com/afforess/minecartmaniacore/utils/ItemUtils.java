@@ -150,7 +150,7 @@ public class ItemUtils {
         return items.toArray(itemList);
     }
     
-    protected enum TYPE {
+    public enum TYPE {
         AMOUNT("@"),
         REMOVE("!"),
         RANGE("-"),
@@ -353,7 +353,7 @@ public class ItemUtils {
         if ((facing != null) && (direction != facing) && (direction != CompassDirection.NO_DIRECTION))
             return new ItemMatcher[0];
         ItemMatcher matcher = new ItemMatcher();
-        if (str.contains("all items")) {
+        if (str.equalsIgnoreCase("all items")) {
             matcher.addExpression(new MatchAll());
         }
         

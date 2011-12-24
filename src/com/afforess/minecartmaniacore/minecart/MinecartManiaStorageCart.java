@@ -165,9 +165,8 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
         if (matcher != null) {
             final int found = amount(matcher);
             MinecartManiaLogger.getInstance().info(String.format("(Cart @ %s) canAddItem: max %s;%d = %d, %d found", getLocation().toVector().toString(), item.getType().name(), item.getDurability(), matcher.getAmount(-1), found));
-            if ((found + item.getAmount()) > matcher.getAmount(-1)) {
+            if ((found + item.getAmount()) > matcher.getAmount(-1))
                 return false;
-            }
         }
         return true;
     }
@@ -203,7 +202,7 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
             return false;
         if (item.getAmount() <= -1)
             throw new Exception("Cannot set a minecart slot to negative values!");
-        if (item.getAmount() > size() * MinecartManiaWorld.getMaxStackSize(item))
+        if (item.getAmount() > (size() * MinecartManiaWorld.getMaxStackSize(item)))
             throw new Exception("Trying to add more items than there are slots!");
         
         //Backup contents
@@ -218,7 +217,7 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
                 if ((getItem(i).getTypeId() == item.getTypeId()) && (getItem(i).getDurability() == item.getDurability()) && getItem(i).getEnchantments().equals(item.getEnchantments())) {
                     if (getItem(i).getAmount() > max) {
                         // Slot has more than the max stack size...?!
-                        int diff = max - getItem(i).getAmount();
+                        final int diff = max - getItem(i).getAmount();
                         setItem(i, new ItemStack(item.getTypeId(), max, item.getDurability()));
                         item = new ItemStack(item.getTypeId(), item.getAmount() + diff, item.getDurability());
                         continue;

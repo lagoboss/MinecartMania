@@ -9,11 +9,18 @@ public class MatchBit implements MatchToken {
     private final boolean state;
     private final int bit;
     private final MatchField field;
+    private int amount;
     
     public MatchBit(final MatchField field, final int bit, final boolean state) {
         this.field = field;
         this.bit = bit;
         this.state = state;
+    }
+    
+    public MatchBit(final String part) {
+        field = MatchField.DURABILITY;
+        state = !part.startsWith("~");
+        bit = Integer.parseInt(part.substring(state ? 0 : 1));
     }
     
     public boolean match(final ItemStack item) {
@@ -28,6 +35,28 @@ public class MatchBit implements MatchToken {
     
     public String toString(final int i) {
         return StringUtils.indent(String.format("BIT %s IS %s", bit, (state) ? "on" : "off"), i);
+    }
+    
+    public static MatchToken parseAll(final String expression) {
+        final MatchAND and = new MatchAND();
+        for (final String part : expression.split(",")) {
+            and.addExpression(new MatchBit(part));
+        }
+        if (and.tokens.size() == 1)
+            return and.tokens.get(0);
+        return and;
+    }
+    
+    public int getAmount() {
+        return amount;
+    }
+    
+    public void setAmount(final int amt) {
+        amount = amt;
+    }
+    
+    public boolean parse(final String part) {
+        return false;
     }
     
 }
