@@ -43,4 +43,25 @@ public class TestMatching extends TestCase {
         assertFalse("Failed to NOT match 17;0", m.match(new ItemStack(17, 1, (short) 0)));
         assertTrue("Failed to match 373;8196", m.match(new ItemStack(373, 1, (short) 8196)));
     }
+    
+    public void testRange() {
+        // Should match 1 through 5, but NOT 2 through 3.
+        ItemMatcher m = new ItemMatcher();
+        m.parse("1-5:!2-3");
+        System.out.println(m.toString());
+        assertTrue("Failed to match 1;0", m.match(new ItemStack(1, 1, (short) 0)));
+        assertFalse("Failed to NOT match 2;0", m.match(new ItemStack(2, 1, (short) 0)));
+        assertFalse("Failed to NOT match 3;0", m.match(new ItemStack(3, 1, (short) 0)));
+        assertTrue("Failed to match 4;0", m.match(new ItemStack(4, 1, (short) 0)));
+        assertTrue("Failed to match 5;0", m.match(new ItemStack(5, 1, (short) 0)));
+    }
+    
+    public void testBitOperators() {
+        // Bit 1 must be set.  Bit 2 must NOT be set. (Therefore it must be 1 and not 3.)
+        ItemMatcher m = new ItemMatcher();
+        m.parse("373&1,~2");
+        System.out.println(m.toString());
+        assertTrue("Failed to match 373;1", m.match(new ItemStack(373, 1, (short) 1)));
+        assertFalse("Failed to NOT match 373;3", m.match(new ItemStack(2, 1, (short) 3)));
+    }
 }
