@@ -12,10 +12,8 @@ import org.bukkit.inventory.ItemStack;
 
 import com.afforess.minecartmaniacore.MinecartManiaCore;
 import com.afforess.minecartmaniacore.config.CoreSettingParser;
-import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
 import com.afforess.minecartmaniacore.matching.MatchAND;
 import com.afforess.minecartmaniacore.matching.MatchAll;
-import com.afforess.minecartmaniacore.matching.MatchBit;
 import com.afforess.minecartmaniacore.matching.MatchConstant;
 import com.afforess.minecartmaniacore.matching.MatchField;
 import com.afforess.minecartmaniacore.matching.MatchNOT;
@@ -190,42 +188,43 @@ public class ItemUtils {
         }
     }
     
-    public static ItemMatcher parsePart(String part) {
-        
-        part = StringUtils.removeBrackets(part);
-        try {
-            ItemMatcher itemMatcher = null;
-            switch (TYPE.getType(part)) {
-                case RANGE:
-                    itemMatcher = parseRange(part);
-                    break;
-                case BIT:
-                    itemMatcher = parseBit(part);
-                    break;
-                case DATA:
-                    itemMatcher = parseData(part);
-                    break;
-                case REMOVE:
-                    itemMatcher = parseNegative(part);
-                    break;
-                case AMOUNT:
-                    itemMatcher = parseAmount(part);
-                    break;
-                default:
-                    itemMatcher = parseNormal(part);
-                    break;
-            }
-            return itemMatcher;
-        } catch (final Exception e) {
-            MinecartManiaLogger.getInstance().severe("Error when generating ItemMatcher for \"%s\":\n" + e.toString(), true, part);
-            e.printStackTrace();
-            return null;
-        }
-    }
+    //    
+    //    public static ItemMatcher parsePart(String part) {
+    //        
+    //        part = StringUtils.removeBrackets(part);
+    //        try {
+    //            ItemMatcher itemMatcher = null;
+    //            switch (TYPE.getType(part)) {
+    //                case RANGE:
+    //                    itemMatcher = parseRange(part);
+    //                    break;
+    //                case BIT:
+    //                    itemMatcher = parseBit(part);
+    //                    break;
+    //                case DATA:
+    //                    itemMatcher = parseData(part);
+    //                    break;
+    //                case REMOVE:
+    //                    itemMatcher = parseNegative(part);
+    //                    break;
+    //                case AMOUNT:
+    //                    itemMatcher = parseAmount(part);
+    //                    break;
+    //                default:
+    //                    itemMatcher = parseNormal(part);
+    //                    break;
+    //            }
+    //            return itemMatcher;
+    //        } catch (final Exception e) {
+    //            MinecartManiaLogger.getInstance().severe("Error when generating ItemMatcher for \"%s\":\n" + e.toString(), true, part);
+    //            e.printStackTrace();
+    //            return null;
+    //        }
+    //    }
     
     private static void saveDebugMap() {
         try {
-            final File items = new File(MinecartManiaCore.dataDirectory + File.separator + "ItemMatchingTable.txt");
+            final File items = new File(MinecartManiaCore.getDataDirectoryRelativePath() + File.separator + "ItemMatchingTable.txt");
             final PrintWriter out = new PrintWriter(items);
             // Create file 
             out.write("This simply craps out the structure of Minecart Mania's internal Item Matching criteria.  It's not read by MM, and it's going to be overwritten as minecarts find new stuff.");
@@ -243,25 +242,25 @@ public class ItemUtils {
         }
     }
     
-    private static ItemMatcher parseAmount(final String part) {
-        final String[] split = part.split(TYPE.AMOUNT.getTag());
-        final ItemMatcher matcher = parsePart(split[0]);
-        
-        final int amount = Integer.parseInt(split[1]);
-        if (amount > 0) {
-            matcher.setAmount(amount);
-        }
-        
-        return matcher;
-    }
-    
-    private static ItemMatcher parseNegative(String part) {
-        part = part.replace(TYPE.REMOVE.getTag(), "");
-        final ItemMatcher items = parsePart(part);
-        items.addExpression(new MatchNOT(items.getTokens()));
-        //MinecartManiaLogger.getInstance().debug("Removing Item: " + item.type());
-        return items;
-    }
+    //    private static ItemMatcher parseAmount(final String part) {
+    //        final String[] split = part.split(TYPE.AMOUNT.getTag());
+    //        final ItemMatcher matcher = parsePart(split[0]);
+    //        
+    //        final int amount = Integer.parseInt(split[1]);
+    //        if (amount > 0) {
+    //            matcher.setAmount(amount);
+    //        }
+    //        
+    //        return matcher;
+    //    }
+    //    
+    //    private static ItemMatcher parseNegative(String part) {
+    //        part = part.replace(TYPE.REMOVE.getTag(), "");
+    //        final ItemMatcher items = parsePart(part);
+    //        items.addExpression(new MatchNOT(items.getTokens()));
+    //        //MinecartManiaLogger.getInstance().debug("Removing Item: " + item.type());
+    //        return items;
+    //    }
     
     /**
      * Get list of item matchers, given a range.
@@ -269,81 +268,81 @@ public class ItemUtils {
      * @param part
      * @return
      */
-    private static ItemMatcher parseRange(final String part) {
-        // Split into components
-        final String[] split = part.split(TYPE.RANGE.getTag());
-        final ItemMatcher matcher = new ItemMatcher();
-        final ItemMatcher start = parsePart(split[0]);
-        final ItemMatcher end = parsePart(split[1]);
-        final ItemStack startitem = start.toItemStack();
-        if (startitem == null)
-            return null;
-        final ItemStack enditem = end.toItemStack();
-        if (enditem == null)
-            return null;
-        
-        // If the ID is the same on both...
-        if (startitem.getTypeId() == enditem.getTypeId()) {
-            // Add a constant matcher.
-            matcher.addConstant(MatchField.TYPE_ID, startitem.getTypeId());
-        } else {
-            // Add a range matcher.
-            matcher.addRange(MatchField.TYPE_ID, startitem.getTypeId(), enditem.getTypeId());
-        }
-        
-        // If the DATA value is the same on both...
-        if (startitem.getDurability() == enditem.getDurability()) {
-            // Add a constant matcher.
-            matcher.addConstant(MatchField.DURABILITY, startitem.getDurability());
-        } else {
-            // Add a range matcher.
-            matcher.addRange(MatchField.DURABILITY, startitem.getDurability(), enditem.getDurability());
-        }
-        
-        if (startitem.getAmount() != -1) {
-            matcher.setAmount(startitem.getAmount());
-        } else if (enditem.getAmount() != -1) {
-            matcher.setAmount(enditem.getAmount());
-        }
-        return matcher;
-    }
+    //    private static ItemMatcher parseRange(final String part) {
+    //        // Split into components
+    //        final String[] split = part.split(TYPE.RANGE.getTag());
+    //        final ItemMatcher matcher = new ItemMatcher();
+    //        final ItemMatcher start = parsePart(split[0]);
+    //        final ItemMatcher end = parsePart(split[1]);
+    //        final ItemStack startitem = start.toItemStack();
+    //        if (startitem == null)
+    //            return null;
+    //        final ItemStack enditem = end.toItemStack();
+    //        if (enditem == null)
+    //            return null;
+    //        
+    //        // If the ID is the same on both...
+    //        if (startitem.getTypeId() == enditem.getTypeId()) {
+    //            // Add a constant matcher.
+    //            matcher.addConstant(MatchField.TYPE_ID, startitem.getTypeId());
+    //        } else {
+    //            // Add a range matcher.
+    //            matcher.addRange(MatchField.TYPE_ID, startitem.getTypeId(), enditem.getTypeId());
+    //        }
+    //        
+    //        // If the DATA value is the same on both...
+    //        if (startitem.getDurability() == enditem.getDurability()) {
+    //            // Add a constant matcher.
+    //            matcher.addConstant(MatchField.DURABILITY, startitem.getDurability());
+    //        } else {
+    //            // Add a range matcher.
+    //            matcher.addRange(MatchField.DURABILITY, startitem.getDurability(), enditem.getDurability());
+    //        }
+    //        
+    //        if (startitem.getAmount() != -1) {
+    //            matcher.setAmount(startitem.getAmount());
+    //        } else if (enditem.getAmount() != -1) {
+    //            matcher.setAmount(enditem.getAmount());
+    //        }
+    //        return matcher;
+    //    }
     
-    private static ItemMatcher parseData(final String part) {
-        final String[] split = part.split(TYPE.DATA.getTag());
-        final ItemMatcher item = parsePart(split[0]);
-        final int data = Integer.parseInt(split[1]);
-        item.addConstant(MatchField.DURABILITY, data);
-        return item;
-    }
-    
-    private static ItemMatcher parseBit(final String part) {
-        final String[] split = part.split(TYPE.BIT.getTag());
-        boolean bitState = true;
-        if (split[1].startsWith("~")) {
-            split[1] = split[1].substring(1);
-            bitState = false;
-        }
-        final ItemMatcher item = parsePart(split[0]);
-        final int data = Integer.parseInt(split[1]);
-        item.addExpression(new MatchBit(MatchField.DURABILITY, data, bitState));
-        return item;
-    }
-    
-    private static ItemMatcher parseNormal(final String part) {
-        final ItemMatcher matcher = new ItemMatcher();
-        try {
-            matcher.addConstant(MatchField.TYPE_ID, Integer.parseInt(part));
-            return matcher;
-        } catch (final NumberFormatException exception) {
-            final Material mat = Material.matchMaterial(part);
-            if (mat == null) {
-                matcher.addConstant(MatchField.TYPE_ID, -1); // Force the match to fail every time.
-            } else {
-                matcher.addConstant(MatchField.TYPE_ID, mat.getId());
-            }
-            return matcher;
-        }
-    }
+    //    private static ItemMatcher parseData(final String part) {
+    //        final String[] split = part.split(TYPE.DATA.getTag());
+    //        final ItemMatcher item = parsePart(split[0]);
+    //        final int data = Integer.parseInt(split[1]);
+    //        item.addConstant(MatchField.DURABILITY, data);
+    //        return item;
+    //    }
+    //    
+    //    private static ItemMatcher parseBit(final String part) {
+    //        final String[] split = part.split(TYPE.BIT.getTag());
+    //        boolean bitState = true;
+    //        if (split[1].startsWith("~")) {
+    //            split[1] = split[1].substring(1);
+    //            bitState = false;
+    //        }
+    //        final ItemMatcher item = parsePart(split[0]);
+    //        final int data = Integer.parseInt(split[1]);
+    //        item.addExpression(new MatchBit(MatchField.DURABILITY, data, bitState));
+    //        return item;
+    //    }
+    //    
+    //    private static ItemMatcher parseNormal(final String part) {
+    //        final ItemMatcher matcher = new ItemMatcher();
+    //        try {
+    //            matcher.addConstant(MatchField.TYPE_ID, Integer.parseInt(part));
+    //            return matcher;
+    //        } catch (final NumberFormatException exception) {
+    //            final Material mat = Material.matchMaterial(part);
+    //            if (mat == null) {
+    //                matcher.addConstant(MatchField.TYPE_ID, -1); // Force the match to fail every time.
+    //            } else {
+    //                matcher.addConstant(MatchField.TYPE_ID, mat.getId());
+    //            }
+    //            return matcher;
+    //        }
+    //    }
     
     public static ItemMatcher[] getItemStringToMatchers(final String line, final CompassDirection facing) {
         

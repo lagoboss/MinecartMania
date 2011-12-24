@@ -1,5 +1,6 @@
 package com.afforess.minecartmaniacore.matching;
 
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import com.afforess.minecartmaniacore.utils.ItemUtils.TYPE;
@@ -62,7 +63,17 @@ public class MatchConstant implements MatchToken {
                 if (part.equalsIgnoreCase("all items")) {
                     return new MatchAll();
                 } else {
-                    return new MatchConstant(MatchField.TYPE_ID, Integer.parseInt(part));
+                    try {
+                        return new MatchConstant(MatchField.TYPE_ID, Integer.parseInt(part));
+                        
+                    } catch (final NumberFormatException exception) {
+                        final Material mat = Material.matchMaterial(part);
+                        if (mat == null) {
+                            return new MatchConstant(MatchField.TYPE_ID, -1); // Force the match to fail every time.
+                        } else {
+                            return new MatchConstant(MatchField.TYPE_ID, mat.getId());
+                        }
+                    }
                 }
         }
         return null;
