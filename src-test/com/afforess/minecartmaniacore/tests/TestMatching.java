@@ -1,8 +1,10 @@
-package com.afforess.minecartmaniacore.utils;
+package com.afforess.minecartmaniacore.tests;
 
 import junit.framework.TestCase;
 
 import org.bukkit.inventory.ItemStack;
+
+import com.afforess.minecartmaniacore.utils.ItemMatcher;
 
 public class TestMatching extends TestCase {
     
@@ -90,5 +92,14 @@ public class TestMatching extends TestCase {
         assertTrue("Failed to match 73;0", m.match(new ItemStack(73, 1, (short) 0)));
         assertTrue("Failed to match 74;0", m.match(new ItemStack(74, 1, (short) 0)));
         assertFalse("Failed to NOT match 373;0", m.match(new ItemStack(373, 1, (short) 0)));
+    }
+    
+    public void testDefaultAmount() {
+        // Ensure we're getting the correct amount out of this.
+        final ItemMatcher m = new ItemMatcher();
+        m.parse("373;0");
+        System.out.println(m.toString());
+        assertTrue("Failed to match 373;0", m.match(new ItemStack(373, 1, (short) 0)));
+        assertEquals("Failed to get an amount of -1", -1, m.getAmount(-1));
     }
 }
