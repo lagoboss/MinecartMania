@@ -21,6 +21,10 @@ public class MatchOR implements MatchToken {
         for (final MatchToken match : tokens) {
             if (match.match(item)) {
                 amount = (match.getAmount());
+                if (amount == 0) {
+                    Exception e = new Exception("amount == 0 FROM " + match.toString(0));
+                    e.printStackTrace();
+                }
                 return true;
             }
         }
