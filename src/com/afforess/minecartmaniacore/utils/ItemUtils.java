@@ -341,7 +341,7 @@ public class ItemUtils {
     //        }
     //    }
     
-    public static ItemMatcher[] getItemStringToMatchers(final String line, final CompassDirection facing) {
+    public static ItemMatcher[] getItemStringToMatchers(String line, final CompassDirection facing) {
         
         String str = StringUtils.removeBrackets(line).toLowerCase();
         str = str.trim();
@@ -355,19 +355,24 @@ public class ItemUtils {
         }
         if ((facing != null) && (direction != facing) && (direction != CompassDirection.NO_DIRECTION))
             return new ItemMatcher[0];
+        
         ItemMatcher matcher = new ItemMatcher();
         final ArrayList<ItemMatcher> matchers = new ArrayList<ItemMatcher>();
-        //for (final String part : lines) {
-        if (preparsed.containsKey(line.trim().toLowerCase())) {
-            matchers.add(preparsed.get(line.trim().toLowerCase()));
+        
+        String[] parts = line.split(":");
+        for (int i = 0; i < parts.length; i++) {
+            parts[i] = StringUtils.removeBrackets(parts[i]).toLowerCase().trim();
         }
-        matcher = new ItemMatcher();
-        if (matcher.parse(line.trim())) {
-            preparsed.put(line.trim().toLowerCase(), matcher);
+        line = StringUtils.join(parts, 0, ":");
+        
+        if (preparsed.containsKey(line)) {
+            matchers.add(preparsed.get(line));
+        }
+        if (matcher.parse(line)) {
+            preparsed.put(line, matcher);
             saveDebugMap();
             matchers.add(matcher);
         }
-        //}
         final ItemMatcher[] ret = new ItemMatcher[matchers.size()];
         matchers.toArray(ret);
         return ret;
