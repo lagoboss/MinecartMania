@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Chest;
 import org.bukkit.entity.Player;
@@ -16,7 +17,6 @@ import com.afforess.minecartmaniacore.MinecartManiaCore;
 import com.afforess.minecartmaniacore.signs.ForceUnlockChestAction;
 import com.afforess.minecartmaniacore.signs.Sign;
 import com.afforess.minecartmaniacore.utils.SignUtils;
-import com.afforess.minecartmaniacore.world.Item;
 import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
 import com.griefcraft.lwc.LWCPlugin;
 
@@ -93,13 +93,13 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements 
      * @param z coordinate to search
      */
     public static MinecartManiaChest getNeighborChest(final World w, final int x, final int y, final int z) {
-        if (MinecartManiaWorld.getBlockAt(w, x - 1, y, z).getTypeId() == Item.CHEST.getId())
+        if (MinecartManiaWorld.getBlockAt(w, x - 1, y, z).getTypeId() == Material.CHEST.getId())
             return MinecartManiaWorld.getMinecartManiaChest((Chest) MinecartManiaWorld.getBlockAt(w, x - 1, y, z).getState());
-        if (MinecartManiaWorld.getBlockAt(w, x + 1, y, z).getTypeId() == Item.CHEST.getId())
+        if (MinecartManiaWorld.getBlockAt(w, x + 1, y, z).getTypeId() == Material.CHEST.getId())
             return MinecartManiaWorld.getMinecartManiaChest((Chest) MinecartManiaWorld.getBlockAt(w, x + 1, y, z).getState());
-        if (MinecartManiaWorld.getBlockAt(w, x, y, z - 1).getTypeId() == Item.CHEST.getId())
+        if (MinecartManiaWorld.getBlockAt(w, x, y, z - 1).getTypeId() == Material.CHEST.getId())
             return MinecartManiaWorld.getMinecartManiaChest((Chest) MinecartManiaWorld.getBlockAt(w, x, y, z - 1).getState());
-        if (MinecartManiaWorld.getBlockAt(w, x, y, z + 1).getTypeId() == Item.CHEST.getId())
+        if (MinecartManiaWorld.getBlockAt(w, x, y, z + 1).getTypeId() == Material.CHEST.getId())
             return MinecartManiaWorld.getMinecartManiaChest((Chest) MinecartManiaWorld.getBlockAt(w, x, y, z + 1).getState());
         
         return null;
@@ -160,7 +160,6 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements 
             if (Lockette.isProtected(getLocation().getBlock())) {
                 if (player != null)
                     return Lockette.getProtectedOwner(getLocation().getBlock()).equals(player);
-                return false;
             }
         }
         if (MinecartManiaCore.isLWCEnabled()) {

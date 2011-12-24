@@ -10,7 +10,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import com.afforess.minecartmaniacore.utils.ItemMatcher;
-import com.afforess.minecartmaniacore.world.Item;
 
 /**
  * A temporary object that allows for easy use of accessing and altering the contents of a double chest. References are not safe, do not store them for later retrieval. Create them only as needed.
@@ -236,16 +235,6 @@ public class MinecartManiaDoubleChest implements MinecartManiaInventory {
     }
     
     /**
-     * Get's the first slot containing the given item, or -1 if none contain it
-     * 
-     * @param item to search for
-     * @return the first slot with the given item
-     */
-    public int first(final Item item) {
-        return first(item.getId(), (short) (item.hasData() ? item.getData() : -1));
-    }
-    
-    /**
      * Get's the first slot containing the given type id, or -1 if none contain it
      * 
      * @param type id to search for
@@ -292,16 +281,6 @@ public class MinecartManiaDoubleChest implements MinecartManiaInventory {
      */
     public boolean contains(final Material material) {
         return (chest1.contains(material) || chest2.contains(material));
-    }
-    
-    /**
-     * Searches the inventory for any items that match the given Item
-     * 
-     * @param item to search for
-     * @return true if the Item is found
-     */
-    public boolean contains(final Item item) {
-        return (chest1.contains(item) || chest2.contains(item));
     }
     
     /**
