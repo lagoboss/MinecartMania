@@ -70,7 +70,7 @@ public class TestMatching extends TestCase {
         ItemMatcher m = new ItemMatcher();
         m.parse("373;0@64");
         System.out.println(m.toString());
-        assertTrue("Failed to match 373;0", m.match(new ItemStack(373, 1, (short) 1)));
-        assertEquals("Failed to get an amount of 64", m.getAmount(-1));
+        assertTrue("Failed to match 373;0", m.match(new ItemStack(373, 1, (short) 0)));
+        assertEquals("Failed to get an amount of 64", 64, m.getAmount(-1));
     }
 }
