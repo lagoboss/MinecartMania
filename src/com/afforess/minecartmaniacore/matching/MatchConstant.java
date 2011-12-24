@@ -60,19 +60,18 @@ public class MatchConstant implements MatchToken {
                 ((MatchAND) expr).addExpression(new MatchBit(MatchField.DURABILITY, bit, state));
                 return expr;
             case NONE:
-                if (part.equalsIgnoreCase("all items")) {
+                if (part.equalsIgnoreCase("all items"))
                     return new MatchAll();
-                } else {
+                else {
                     try {
                         return new MatchConstant(MatchField.TYPE_ID, Integer.parseInt(part));
                         
                     } catch (final NumberFormatException exception) {
                         final Material mat = Material.matchMaterial(part);
-                        if (mat == null) {
+                        if (mat == null)
                             return new MatchConstant(MatchField.TYPE_ID, -1); // Force the match to fail every time.
-                        } else {
+                        else
                             return new MatchConstant(MatchField.TYPE_ID, mat.getId());
-                        }
                     }
                 }
         }

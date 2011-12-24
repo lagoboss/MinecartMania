@@ -173,14 +173,13 @@ public class ItemUtils {
             if (part.contains(BIT.getTag())) // Parse bit before data.
                 return BIT;
             
-            if (part.lastIndexOf(DATA.getTag()) > part.lastIndexOf(AMOUNT.getTag())) {
+            if (part.lastIndexOf(DATA.getTag()) > part.lastIndexOf(AMOUNT.getTag()))
                 return DATA;
-            } else {
-                if (part.contains(AMOUNT.getTag())) {
+            else {
+                if (part.contains(AMOUNT.getTag()))
                     return AMOUNT;
-                } else {
+                else
                     return NONE;
-                }
             }
         }
     }
@@ -356,10 +355,10 @@ public class ItemUtils {
         if ((facing != null) && (direction != facing) && (direction != CompassDirection.NO_DIRECTION))
             return new ItemMatcher[0];
         
-        ItemMatcher matcher = new ItemMatcher();
+        final ItemMatcher matcher = new ItemMatcher();
         final ArrayList<ItemMatcher> matchers = new ArrayList<ItemMatcher>();
         
-        String[] parts = line.split(":");
+        final String[] parts = line.split(":");
         for (int i = 0; i < parts.length; i++) {
             parts[i] = StringUtils.removeBrackets(parts[i]).toLowerCase().trim();
         }

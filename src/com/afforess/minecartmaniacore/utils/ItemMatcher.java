@@ -54,7 +54,7 @@ public class ItemMatcher {
     }
     
     public boolean parse(final String expression) {
-        MatchOR or = new MatchOR();
+        final MatchOR or = new MatchOR();
         for (String part : expression.split(":")) {
             MatchToken expr = null;
             int amt = 0;
@@ -104,8 +104,9 @@ public class ItemMatcher {
         for (final MatchToken matcher : matchTokens) {
             if (!matcher.match(item))
                 return false;
-            else
-                this.amount = matcher.getAmount();
+            else {
+                amount = matcher.getAmount();
+            }
         }
         return true;
     }

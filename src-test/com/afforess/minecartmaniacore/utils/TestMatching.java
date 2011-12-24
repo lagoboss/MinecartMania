@@ -8,7 +8,7 @@ public class TestMatching extends TestCase {
     
     public void testParserInsensitiveDurability() {
         // Should match all types of logs.
-        ItemMatcher m = new ItemMatcher();
+        final ItemMatcher m = new ItemMatcher();
         m.parse("17");
         System.out.println(m.toString());
         assertTrue("Failed to match 17;0", m.match(new ItemStack(17, 1, (short) 0)));
@@ -18,7 +18,7 @@ public class TestMatching extends TestCase {
     
     public void testParserDurabilitySensitivity() {
         // Should match only match 17;0.
-        ItemMatcher m = new ItemMatcher();
+        final ItemMatcher m = new ItemMatcher();
         m.parse("17;0");
         System.out.println(m.toString());
         assertTrue("Failed to match 17;0", m.match(new ItemStack(17, 1, (short) 0)));
@@ -28,7 +28,7 @@ public class TestMatching extends TestCase {
     
     public void testAllItemsDirective() {
         // Should match everything.
-        ItemMatcher m = new ItemMatcher();
+        final ItemMatcher m = new ItemMatcher();
         m.parse("all items");
         System.out.println(m.toString());
         assertTrue("Failed to match 17;0", m.match(new ItemStack(17, 1, (short) 0)));
@@ -37,7 +37,7 @@ public class TestMatching extends TestCase {
     
     public void testAllItemsPlusNOTDirective() {
         // Should match everything BUT logs.
-        ItemMatcher m = new ItemMatcher();
+        final ItemMatcher m = new ItemMatcher();
         m.parse("all items:!17;0");
         System.out.println(m.toString());
         assertFalse("Failed to NOT match 17;0", m.match(new ItemStack(17, 1, (short) 0)));
@@ -46,7 +46,7 @@ public class TestMatching extends TestCase {
     
     public void testRange() {
         // Should match 1 through 5, but NOT 2 through 3.
-        ItemMatcher m = new ItemMatcher();
+        final ItemMatcher m = new ItemMatcher();
         m.parse("1-5:!2-3");
         System.out.println(m.toString());
         assertTrue("Failed to match 1;0", m.match(new ItemStack(1, 1, (short) 0)));
@@ -58,7 +58,7 @@ public class TestMatching extends TestCase {
     
     public void testBitOperators() {
         // Bit 1 must be set.  Bit 2 must NOT be set. (Therefore it must be 1 and not 3.)
-        ItemMatcher m = new ItemMatcher();
+        final ItemMatcher m = new ItemMatcher();
         m.parse("373&1,~2");
         System.out.println(m.toString());
         assertTrue("Failed to match 373;1", m.match(new ItemStack(373, 1, (short) 1)));
@@ -67,7 +67,7 @@ public class TestMatching extends TestCase {
     
     public void testAmount() {
         // Ensure we're getting the correct amount out of this.
-        ItemMatcher m = new ItemMatcher();
+        final ItemMatcher m = new ItemMatcher();
         m.parse("373;0@64");
         System.out.println(m.toString());
         assertTrue("Failed to match 373;0", m.match(new ItemStack(373, 1, (short) 0)));
@@ -77,7 +77,7 @@ public class TestMatching extends TestCase {
     public void testComplex() {
         // What I generally use for my autominer setup.
         // Rock, cobble, all ores + gravel and sand
-        ItemMatcher m = new ItemMatcher();
+        final ItemMatcher m = new ItemMatcher();
         m.parse("1:4:12-16:21:56:73-74");
         System.out.println(m.toString());
         assertTrue("Failed to match 1;0", m.match(new ItemStack(1, 1, (short) 0)));
