@@ -73,4 +73,22 @@ public class TestMatching extends TestCase {
         assertTrue("Failed to match 373;0", m.match(new ItemStack(373, 1, (short) 0)));
         assertEquals("Failed to get an amount of 64", 64, m.getAmount(-1));
     }
+    
+    public void testComplex() {
+        // What I generally use for my autominer setup.
+        // Rock, cobble, all ores + gravel and sand
+        ItemMatcher m = new ItemMatcher();
+        m.parse("1:4:12-16:21:56:73-74");
+        System.out.println(m.toString());
+        assertTrue("Failed to match 1;0", m.match(new ItemStack(1, 1, (short) 0)));
+        assertTrue("Failed to match 4;0", m.match(new ItemStack(4, 1, (short) 0)));
+        assertTrue("Failed to match 12;0", m.match(new ItemStack(12, 1, (short) 0)));
+        assertTrue("Failed to match 13;0", m.match(new ItemStack(13, 1, (short) 0)));
+        assertTrue("Failed to match 16;0", m.match(new ItemStack(16, 1, (short) 0)));
+        assertTrue("Failed to match 21;0", m.match(new ItemStack(373, 1, (short) 0)));
+        assertTrue("Failed to match 56;0", m.match(new ItemStack(373, 1, (short) 0)));
+        assertTrue("Failed to match 73;0", m.match(new ItemStack(373, 1, (short) 0)));
+        assertTrue("Failed to match 74;0", m.match(new ItemStack(373, 1, (short) 0)));
+        assertFalse("Failed to NOT match 373;0", m.match(new ItemStack(373, 1, (short) 0)));
+    }
 }
