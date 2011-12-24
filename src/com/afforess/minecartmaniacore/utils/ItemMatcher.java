@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.bukkit.inventory.ItemStack;
 
+import com.afforess.minecartmaniacore.matching.MatchAll;
 import com.afforess.minecartmaniacore.matching.MatchBit;
 import com.afforess.minecartmaniacore.matching.MatchConstant;
 import com.afforess.minecartmaniacore.matching.MatchField;
@@ -56,6 +57,9 @@ public class ItemMatcher {
         for (String part : expression.split(":")) {
             MatchToken expr = null;
             int amt = 0;
+            if (expression.equalsIgnoreCase("all items")) {
+                addExpression(new MatchAll());
+            }
             if (part.contains(TYPE.AMOUNT.getTag())) {
                 final String[] parts = part.split(TYPE.AMOUNT.getTag());
                 part = parts[0];
@@ -80,6 +84,8 @@ public class ItemMatcher {
             if (NOT) {
                 expr = new MatchNOT(expr);
             }
+            if (expr != null)
+                addExpression(expr);
         }
         return true;
     }
