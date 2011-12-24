@@ -20,7 +20,7 @@ public class MatchBit implements MatchToken {
     public MatchBit(final String part) {
         field = MatchField.DURABILITY;
         state = !part.startsWith("~");
-        bit = Integer.parseInt(part.substring(state ? 0 : 1));
+        bit = Integer.parseInt(part.substring(state ? 0 : 1)) - 1;
     }
     
     public boolean match(final ItemStack item) {
@@ -34,7 +34,7 @@ public class MatchBit implements MatchToken {
     }
     
     public String toString(final int i) {
-        return StringUtils.indent(String.format("BIT %d (%d) IS %s", bit, 1 << bit, (state) ? "ON" : "OFF"), i);
+        return StringUtils.indent(String.format("BIT %d (%d) IS %s", bit + 1, 1 << bit, (state) ? "ON" : "OFF"), i);
     }
     
     public static MatchToken parseAll(final String expression) {
