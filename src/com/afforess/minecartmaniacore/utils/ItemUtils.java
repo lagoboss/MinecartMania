@@ -119,11 +119,8 @@ public class ItemUtils {
                     matcher = preparsed.get(part.toLowerCase());
                 }
                 if (matcher == null) {
-                    matcher = parsePart(part);
-                }
-                
-                if (matcher == null) {
-                    continue;
+                    matcher = new ItemMatcher();
+                    matcher.parse(part);
                 }
                 
                 preparsed.put(part.toLowerCase(), matcher);
@@ -370,44 +367,24 @@ public class ItemUtils {
         final String[] lines = str.split(":");
         final ArrayList<ItemMatcher> matchers = new ArrayList<ItemMatcher>();
         final ArrayList<MatchNOT> not = new ArrayList<MatchNOT>();
-        for (final String part : lines) {
-            
-            if (preparsed.containsKey(part.trim().toLowerCase())) {
-                matchers.add(preparsed.get(part.trim().toLowerCase()));
-            }
-            matcher = parsePart(part.trim());
-            if (matcher != null) {
-                preparsed.put(part.trim().toLowerCase(), matcher);
-                saveDebugMap();
-                matchers.add(matcher);
-            }
+        //for (final String part : lines) {
+        String joinedPart = StringUtils.join(lines, 0, ":");
+        if (preparsed.containsKey(joinedPart.trim().toLowerCase())) {
+            matchers.add(preparsed.get(joinedPart.trim().toLowerCase()));
         }
+        matcher = new ItemMatcher();
+        if (matcher.parse(joinedPart.trim())) {
+            preparsed.put(joinedPart.trim().toLowerCase(), matcher);
+            saveDebugMap();
+            matchers.add(matcher);
+        }
+        //}
         
         for (final ItemMatcher m : matchers) {
             for (final MatchToken mt : m.getTokens()) {
                 if (mt instanceof MatchNOT) {
                     not.add((MatchNOT) mt);
                 }
-            }
-        }
-        final Iterator<ItemMatcher> it = matchers.iterator();
-        while (it.hasNext()) {
-            final ItemMatcher m = it.next();
-            boolean isNot = false;
-            
-            for (final MatchToken mt : m.getTokens()) {
-                if (mt instanceof MatchNOT) {
-                    isNot = true;
-                    break;
-                }
-            }
-            if (isNot) {
-                it.remove();
-                continue;
-            }
-            
-            for (final MatchNOT mn : not) {
-                m.addExpression(mn);
             }
         }
         final ItemMatcher[] ret = new ItemMatcher[matchers.size()];

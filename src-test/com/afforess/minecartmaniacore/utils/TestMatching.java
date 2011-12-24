@@ -64,4 +64,13 @@ public class TestMatching extends TestCase {
         assertTrue("Failed to match 373;1", m.match(new ItemStack(373, 1, (short) 1)));
         assertFalse("Failed to NOT match 373;3", m.match(new ItemStack(373, 1, (short) 3)));
     }
+    
+    public void testAmount() {
+        // Ensure we're getting the correct amount out of this.
+        ItemMatcher m = new ItemMatcher();
+        m.parse("373;0@64");
+        System.out.println(m.toString());
+        assertTrue("Failed to match 373;0", m.match(new ItemStack(373, 1, (short) 1)));
+        assertEquals("Failed to get an amount of 64", m.getAmount(-1));
+    }
 }
