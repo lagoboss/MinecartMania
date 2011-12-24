@@ -105,10 +105,19 @@ public class ItemMatcher {
             if (!matcher.match(item))
                 return false;
             else {
-                amount = matcher.getAmount();
+                internalSetAmount(matcher.getAmount());
             }
         }
         return true;
+    }
+    
+    // Performs some sanity checks
+    private void internalSetAmount(int amount2) {
+        if (amount2 == 0) {
+            Exception e = new Exception("amount == 0");
+            e.printStackTrace();
+        }
+        amount = amount2;
     }
     
     /**
