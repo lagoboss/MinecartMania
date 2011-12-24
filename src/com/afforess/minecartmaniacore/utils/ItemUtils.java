@@ -13,7 +13,6 @@ import org.bukkit.inventory.ItemStack;
 import com.afforess.minecartmaniacore.MinecartManiaCore;
 import com.afforess.minecartmaniacore.config.CoreSettingParser;
 import com.afforess.minecartmaniacore.matching.MatchAND;
-import com.afforess.minecartmaniacore.matching.MatchAll;
 import com.afforess.minecartmaniacore.matching.MatchConstant;
 import com.afforess.minecartmaniacore.matching.MatchField;
 import com.afforess.minecartmaniacore.matching.MatchOR;
@@ -357,20 +356,14 @@ public class ItemUtils {
         if ((facing != null) && (direction != facing) && (direction != CompassDirection.NO_DIRECTION))
             return new ItemMatcher[0];
         ItemMatcher matcher = new ItemMatcher();
-        if (str.equalsIgnoreCase("all items")) {
-            matcher.addExpression(new MatchAll());
-        }
-        
-        final String[] lines = str.split(":");
         final ArrayList<ItemMatcher> matchers = new ArrayList<ItemMatcher>();
         //for (final String part : lines) {
-        String joinedPart = StringUtils.join(lines, 0, ":");
-        if (preparsed.containsKey(joinedPart.trim().toLowerCase())) {
-            matchers.add(preparsed.get(joinedPart.trim().toLowerCase()));
+        if (preparsed.containsKey(line.trim().toLowerCase())) {
+            matchers.add(preparsed.get(line.trim().toLowerCase()));
         }
         matcher = new ItemMatcher();
-        if (matcher.parse(joinedPart.trim())) {
-            preparsed.put(joinedPart.trim().toLowerCase(), matcher);
+        if (matcher.parse(line.trim())) {
+            preparsed.put(line.trim().toLowerCase(), matcher);
             saveDebugMap();
             matchers.add(matcher);
         }
