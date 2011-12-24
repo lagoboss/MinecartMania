@@ -105,16 +105,16 @@ public class ItemMatcher {
             if (!matcher.match(item))
                 return false;
             else {
-                internalSetAmount(matcher.getAmount());
+                internalSetAmount(matcher, matcher.getAmount());
             }
         }
         return true;
     }
     
     // Performs some sanity checks
-    private void internalSetAmount(int amount2) {
+    private void internalSetAmount(MatchToken responsibleParty, int amount2) {
         if (amount2 == 0) {
-            Exception e = new Exception("amount == 0");
+            Exception e = new Exception("amount == 0 FROM " + responsibleParty.toString(0));
             e.printStackTrace();
         }
         amount = amount2;
