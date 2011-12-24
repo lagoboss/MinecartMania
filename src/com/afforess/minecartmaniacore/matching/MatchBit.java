@@ -39,7 +39,8 @@ public class MatchBit implements MatchToken {
     
     public static MatchToken parseAll(final String expression) {
         final MatchAND and = new MatchAND();
-        for (final String part : expression.split(",")) {
+        String[] split = expression.split("&");
+        for (final String part : split[1].split(",")) {
             and.addExpression(new MatchBit(part));
         }
         if (and.tokens.size() == 1)
