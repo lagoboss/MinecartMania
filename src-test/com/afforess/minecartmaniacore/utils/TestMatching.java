@@ -85,10 +85,10 @@ public class TestMatching extends TestCase {
         assertTrue("Failed to match 12;0", m.match(new ItemStack(12, 1, (short) 0)));
         assertTrue("Failed to match 13;0", m.match(new ItemStack(13, 1, (short) 0)));
         assertTrue("Failed to match 16;0", m.match(new ItemStack(16, 1, (short) 0)));
-        assertTrue("Failed to match 21;0", m.match(new ItemStack(373, 1, (short) 0)));
-        assertTrue("Failed to match 56;0", m.match(new ItemStack(373, 1, (short) 0)));
-        assertTrue("Failed to match 73;0", m.match(new ItemStack(373, 1, (short) 0)));
-        assertTrue("Failed to match 74;0", m.match(new ItemStack(373, 1, (short) 0)));
+        assertTrue("Failed to match 21;0", m.match(new ItemStack(21, 1, (short) 0)));
+        assertTrue("Failed to match 56;0", m.match(new ItemStack(56, 1, (short) 0)));
+        assertTrue("Failed to match 73;0", m.match(new ItemStack(73, 1, (short) 0)));
+        assertTrue("Failed to match 74;0", m.match(new ItemStack(74, 1, (short) 0)));
         assertFalse("Failed to NOT match 373;0", m.match(new ItemStack(373, 1, (short) 0)));
     }
 }
