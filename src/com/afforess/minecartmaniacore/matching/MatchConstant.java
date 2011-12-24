@@ -43,7 +43,7 @@ public class MatchConstant implements MatchToken {
             case DATA:
                 chunks = part.split(TYPE.DATA.getTag());
                 expr = new MatchAND();
-                ((MatchAND) expr).addExpression(new MatchConstant(MatchField.TYPE_ID, Integer.parseInt(chunks[0])));
+                ((MatchAND) expr).addExpression(parseAll(chunks[0]));
                 ((MatchAND) expr).addExpression(new MatchConstant(MatchField.DURABILITY, Integer.parseInt(chunks[1])));
                 return expr;
             case BIT:
@@ -55,11 +55,15 @@ public class MatchConstant implements MatchToken {
                     state = false;
                 }
                 final int bit = Integer.parseInt(chunks[1]);
-                ((MatchAND) expr).addExpression(new MatchConstant(MatchField.TYPE_ID, Integer.parseInt(chunks[0])));
+                ((MatchAND) expr).addExpression(parseAll(chunks[0]));
                 ((MatchAND) expr).addExpression(new MatchBit(MatchField.DURABILITY, bit, state));
                 return expr;
             case NONE:
-                return new MatchConstant(MatchField.TYPE_ID, Integer.parseInt(part));
+                if (part.equalsIgnoreCase("all items")) {
+                    return new MatchAll();
+                } else {
+                    return new MatchConstant(MatchField.TYPE_ID, Integer.parseInt(part));
+                }
         }
         return null;
     }
