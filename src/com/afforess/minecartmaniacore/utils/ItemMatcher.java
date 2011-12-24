@@ -100,6 +100,8 @@ public class ItemMatcher {
         for (final MatchToken matcher : matchTokens) {
             if (!matcher.match(item))
                 return false;
+            else
+                this.amount = matcher.getAmount();
         }
         return true;
     }
