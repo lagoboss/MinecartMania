@@ -90,6 +90,7 @@
 
     <build>
         <sourceDirectory>${basedir}/src/</sourceDirectory>
+        <testSourceDirectory>${basedir}/src-test/</testSourceDirectory>
 
         <!-- Resources -->
         <resources>
@@ -149,7 +150,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <skipTests>true</skipTests>
+        <!-- <skipTests>true</skipTests> -->
     </properties>
 
 </project>

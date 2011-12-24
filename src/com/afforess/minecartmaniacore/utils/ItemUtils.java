@@ -183,7 +183,7 @@ public class ItemUtils {
         }
     }
     
-    private static ItemMatcher parsePart(String part) {
+    public static ItemMatcher parsePart(String part) {
         
         part = StringUtils.removeBrackets(part);
         try {
