@@ -62,6 +62,6 @@ public class TestMatching extends TestCase {
         m.parse("373&1,~2");
         System.out.println(m.toString());
         assertTrue("Failed to match 373;1", m.match(new ItemStack(373, 1, (short) 1)));
-        assertFalse("Failed to NOT match 373;3", m.match(new ItemStack(2, 1, (short) 3)));
+        assertFalse("Failed to NOT match 373;3", m.match(new ItemStack(373, 1, (short) 3)));
     }
 }

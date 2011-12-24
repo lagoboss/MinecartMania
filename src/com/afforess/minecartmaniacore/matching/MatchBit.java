@@ -25,7 +25,7 @@ public class MatchBit implements MatchToken {
     
     public boolean match(final ItemStack item) {
         final int value = field.getFieldValue(item);
-        final int flag = 1 >> bit;
+        final int flag = 1 << bit;
         return (value & flag) == ((state) ? flag : 0);
     }
     
@@ -34,7 +34,7 @@ public class MatchBit implements MatchToken {
     }
     
     public String toString(final int i) {
-        return StringUtils.indent(String.format("BIT %s IS %s", bit, (state) ? "on" : "off"), i);
+        return StringUtils.indent(String.format("BIT %d (%d) IS %s", bit, 1 << bit, (state) ? "ON" : "OFF"), i);
     }
     
     public static MatchToken parseAll(final String expression) {

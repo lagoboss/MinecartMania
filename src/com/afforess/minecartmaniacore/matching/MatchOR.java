@@ -33,7 +33,8 @@ public class MatchOR implements MatchToken {
     
     public String toString(final int i) {
         final StringBuilder sb = new StringBuilder();
-        sb.append(StringUtils.indent("OR:\n{\n", i));
+        sb.append(StringUtils.indent("OR:\n", i));
+        sb.append(StringUtils.indent("{\n", i));
         for (final MatchToken mt : tokens) {
             sb.append(mt.toString(i + 1));
             sb.append("\n");
