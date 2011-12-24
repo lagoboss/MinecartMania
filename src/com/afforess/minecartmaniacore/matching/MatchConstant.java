@@ -9,7 +9,7 @@ import com.afforess.minecartmaniacore.utils.StringUtils;
 public class MatchConstant implements MatchToken {
     private final int value;
     private final MatchField field;
-    private int amount;
+    private int amount = -1;
     
     public MatchConstant(final MatchField field, final int constant) {
         this.field = field;

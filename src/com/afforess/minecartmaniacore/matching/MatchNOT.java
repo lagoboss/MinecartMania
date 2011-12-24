@@ -8,7 +8,7 @@ import com.afforess.minecartmaniacore.utils.StringUtils;
 
 public class MatchNOT implements MatchToken {
     MatchToken token = null;
-    private int amount;
+    private int amount = -1;
     
     public MatchNOT(final List<MatchToken> tokens) {
         if (tokens.size() > 1) {

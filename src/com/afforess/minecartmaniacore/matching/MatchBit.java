@@ -9,7 +9,7 @@ public class MatchBit implements MatchToken {
     private final boolean state;
     private final int bit;
     private final MatchField field;
-    private int amount;
+    private int amount = -1;
     
     public MatchBit(final MatchField field, final int bit, final boolean state) {
         this.field = field;

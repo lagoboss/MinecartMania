@@ -8,7 +8,7 @@ import com.afforess.minecartmaniacore.utils.StringUtils;
 
 public class MatchAND implements MatchToken {
     ArrayList<MatchToken> tokens = new ArrayList<MatchToken>();
-    private int amount;
+    private int amount = -1;
     
     public void addExpression(final MatchToken token) {
         tokens.add(token);

@@ -9,7 +9,7 @@ public class MatchInRange implements MatchToken {
     private final MatchField field;
     private final int start;
     private final int end;
-    private int amount;
+    private int amount = -1;
     
     public MatchInRange(final MatchField field, final int start, final int end) {
         this.field = field;

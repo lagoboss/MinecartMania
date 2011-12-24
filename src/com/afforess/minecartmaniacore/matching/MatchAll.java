@@ -6,7 +6,7 @@ import com.afforess.minecartmaniacore.utils.StringUtils;
 
 public class MatchAll implements MatchToken {
     
-    private int amount;
+    private int amount = -1;
     
     public boolean match(final ItemStack item) {
         return true;
