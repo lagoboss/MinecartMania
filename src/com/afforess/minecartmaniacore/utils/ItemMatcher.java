@@ -63,6 +63,7 @@ public class ItemMatcher {
             }
             boolean NOT = false;
             if (part.startsWith(TYPE.REMOVE.getTag())) {
+                part = part.substring(1);
                 NOT = true;
             }
             switch (TYPE.getType(part)) {
@@ -76,12 +77,13 @@ public class ItemMatcher {
                     expr = MatchConstant.parseAll(part);
                     break;
             }
-            expr.setAmount(amt);
-            if (NOT) {
-                expr = new MatchNOT(expr);
-            }
-            if (expr != null)
+            if (expr != null) {
+                expr.setAmount(amt);
+                if (NOT) {
+                    expr = new MatchNOT(expr);
+                }
                 addExpression(expr);
+            }
         }
         return true;
     }
