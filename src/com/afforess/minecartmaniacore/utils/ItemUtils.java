@@ -178,8 +178,18 @@ public class ItemUtils {
                 return RANGE;
             if (part.contains(REMOVE.getTag())) // since this 1 doesn't need special priority handling
                 return REMOVE;
+            if (part.contains(BIT.getTag())) // Parse bit before data.
+                return BIT;
             
-            return (part.lastIndexOf(DATA.getTag()) > part.lastIndexOf(AMOUNT.getTag()) ? DATA : (part.contains(AMOUNT.getTag()) ? AMOUNT : NONE));
+            if (part.lastIndexOf(DATA.getTag()) > part.lastIndexOf(AMOUNT.getTag())) {
+                return DATA;
+            } else {
+                if (part.contains(AMOUNT.getTag())) {
+                    return AMOUNT;
+                } else {
+                    return NONE;
+                }
+            }
         }
     }
     
