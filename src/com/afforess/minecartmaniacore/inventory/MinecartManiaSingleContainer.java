@@ -397,11 +397,11 @@ public abstract class MinecartManiaSingleContainer implements MinecartManiaInven
         this.failureReason = failureReason;
     }
     
-    public boolean contains(ItemMatcher matcher) {
+    public boolean contains(final ItemMatcher matcher) {
         return first(matcher) != -1;
     }
     
-    public int first(ItemMatcher matcher) {
+    public int first(final ItemMatcher matcher) {
         for (int i = 0; i < size(); i++) {
             if (getItem(i) != null) {
                 if (matcher.match(getItem(i)))

@@ -22,7 +22,7 @@ public class MatchOR implements MatchToken {
             if (match.match(item)) {
                 amount = (match.getAmount());
                 if (amount == 0) {
-                    Exception e = new Exception("amount == 0 FROM " + match.toString(0));
+                    final Exception e = new Exception("amount == 0 FROM " + match.toString(0));
                     e.printStackTrace();
                 }
                 return true;

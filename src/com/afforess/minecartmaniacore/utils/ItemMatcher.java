@@ -112,9 +112,9 @@ public class ItemMatcher {
     }
     
     // Performs some sanity checks
-    private void internalSetAmount(MatchToken responsibleParty, int amount2) {
+    private void internalSetAmount(final MatchToken responsibleParty, final int amount2) {
         if (amount2 == 0) {
-            Exception e = new Exception("amount == 0 FROM " + responsibleParty.toString(0));
+            final Exception e = new Exception("amount == 0 FROM " + responsibleParty.toString(0));
             e.printStackTrace();
         }
         amount = amount2;
