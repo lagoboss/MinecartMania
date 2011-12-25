@@ -316,4 +316,18 @@ public class MinecartManiaDoubleChest implements MinecartManiaInventory {
         return chest1.getFailureReason() + chest2.getFailureReason();
     }
     
+    public boolean contains(ItemMatcher matcher) {
+        return first(matcher) != -1;
+    }
+    
+    public int first(ItemMatcher matcher) {
+        int buf = chest1.first(matcher);
+        if (buf != -1)
+            return buf;
+        buf = chest2.first(matcher);
+        if (buf != -1)
+            return buf;
+        return -1;
+    }
+    
 }

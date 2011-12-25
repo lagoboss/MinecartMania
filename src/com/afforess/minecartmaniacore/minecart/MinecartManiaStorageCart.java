@@ -193,17 +193,16 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
      * @param item to add
      * @param player who is adding the item
      * @return true if the item was successfully added
-     * @throws Exception
      */
-    public boolean addItem(ItemStack item, final Player player) throws Exception {
+    public boolean addItem(ItemStack item, final Player player) {
         if (item == null)
             return true;
         if (!canAddItem(item))
             return false;
         if (item.getAmount() <= -1)
-            throw new Exception("Cannot set a minecart slot to negative values!");
+            return false;// ("Cannot set a minecart slot to negative values!");
         if (item.getAmount() > (size() * MinecartManiaWorld.getMaxStackSize(item)))
-            throw new Exception("Trying to add more items than there are slots!");
+            return false;
         
         //Backup contents
         final ItemStack[] backup = getContents().clone();
@@ -569,5 +568,19 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
     
     public void setFailureReason(final String failureReason) {
         this.failureReason = failureReason;
+    }
+    
+    public boolean contains(ItemMatcher matcher) {
+        return first(matcher) != -1;
+    }
+    
+    public int first(ItemMatcher matcher) {
+        for (int i = 0; i < size(); i++) {
+            if (getItem(i) != null) {
+                if (matcher.match(getItem(i)))
+                    return i;
+            }
+        }
+        return -1;
     }
 }

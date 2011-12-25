@@ -396,4 +396,18 @@ public abstract class MinecartManiaSingleContainer implements MinecartManiaInven
     private void setFailureReason(final String failureReason) {
         this.failureReason = failureReason;
     }
+    
+    public boolean contains(ItemMatcher matcher) {
+        return first(matcher) != -1;
+    }
+    
+    public int first(ItemMatcher matcher) {
+        for (int i = 0; i < size(); i++) {
+            if (getItem(i) != null) {
+                if (matcher.match(getItem(i)))
+                    return i;
+            }
+        }
+        return -1;
+    }
 }

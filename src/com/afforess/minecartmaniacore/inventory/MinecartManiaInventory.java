@@ -11,9 +11,7 @@ public interface MinecartManiaInventory {
     
     public Inventory getBukkitInventory();
     
-    public boolean contains(Material m);
-    
-    //    public boolean contains(Item i);
+    public boolean contains(ItemMatcher matcher);
     
     public boolean contains(int type);
     
@@ -25,7 +23,7 @@ public interface MinecartManiaInventory {
     
     public boolean canAddItem(ItemStack item, Player player);
     
-    public boolean addItem(ItemStack item, Player player) throws Exception;
+    public boolean addItem(ItemStack item, Player player);
     
     public boolean addItem(ItemStack item);
     
@@ -68,4 +66,6 @@ public interface MinecartManiaInventory {
     public int amount(ItemMatcher matcher);
     
     public String getFailureReason();
+    
+    public int first(ItemMatcher matcher);
 }
