@@ -70,7 +70,12 @@ public class ItemMatcher {
             }
             switch (TYPE.getType(part)) {
                 case RANGE:
-                    expr = new MatchInRange(part);
+                    try {
+                        expr = new MatchInRange(part);
+                    } catch (NumberFormatException e) {
+                        // It doesn't like negative numbers.
+                        continue;
+                    }
                     break;
                 case BIT:
                     expr = MatchBit.parseAll(part);
