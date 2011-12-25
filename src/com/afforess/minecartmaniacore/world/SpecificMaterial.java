@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * A "struct" for storing Type and Data together, more or less.
@@ -53,5 +54,17 @@ public class SpecificMaterial {
     @Override
     public String toString() {
         return String.format("%d:%d", id, durability);
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof SpecificMaterial) {
+            // Just compare HashCodes.
+            return this.hashCode() == o.hashCode();
+        } else if (o instanceof ItemStack) {
+            ItemStack item = (ItemStack) o;
+            return (item.getTypeId() == id && (durability == -1 || item.getDurability() == durability));
+        }
+        return false;
     }
 }

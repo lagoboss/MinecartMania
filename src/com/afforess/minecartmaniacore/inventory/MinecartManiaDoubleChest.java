@@ -324,7 +324,7 @@ public class MinecartManiaDoubleChest implements MinecartManiaInventory {
         int buf = chest1.first(matcher);
         if (buf != -1)
             return buf;
-        buf = chest2.first(matcher);
+        buf = chest2.first(matcher) + chest1.size();
         if (buf != -1)
             return buf;
         return -1;
