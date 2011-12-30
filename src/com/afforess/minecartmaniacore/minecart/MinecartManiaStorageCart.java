@@ -9,11 +9,9 @@ import org.bukkit.entity.StorageMinecart;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
 import com.afforess.minecartmaniacore.inventory.MinecartManiaInventory;
 import com.afforess.minecartmaniacore.matching.MatchField;
 import com.afforess.minecartmaniacore.utils.ItemMatcher;
-import com.afforess.minecartmaniacore.world.Item;
 import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
 
 /**
@@ -164,7 +162,7 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
         final ItemMatcher matcher = getMatchingMaxRule(item.getTypeId(), item.getDurability());
         if (matcher != null) {
             final int found = amount(matcher);
-            MinecartManiaLogger.getInstance().info(String.format("(Cart @ %s) canAddItem: max %s;%d = %d, %d found", getLocation().toVector().toString(), item.getType().name(), item.getDurability(), matcher.getAmount(-1), found));
+            //MinecartManiaLogger.getInstance().info(String.format("(Cart @ %s) canAddItem: max %s;%d = %d, %d found", getLocation().toVector().toString(), item.getType().name(), item.getDurability(), matcher.getAmount(-1), found));
             if ((found + item.getAmount()) > matcher.getAmount(-1))
                 return false;
         }
@@ -288,7 +286,7 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
         final ItemMatcher matcher = getMatchingMinRule(item.getTypeId(), item.getDurability());
         if (matcher != null) {
             final int found = amount(matcher);
-            MinecartManiaLogger.getInstance().info(String.format("(Cart @ %s) canRemoveItem: min %s;%d = %d, %d found", getLocation().toVector().toString(), item.getType().name(), item.getDurability(), matcher.getAmount(-1), found));
+            //MinecartManiaLogger.getInstance().info(String.format("(Cart @ %s) canRemoveItem: min %s;%d = %d, %d found", getLocation().toVector().toString(), item.getType().name(), item.getDurability(), matcher.getAmount(-1), found));
             final int min = matcher.getAmount(-1);
             if ((min > -1) && ((found - amount) < min)) {
                 setFailureReason(String.format("Cannot remove any more of this type (%d-%d < %d)", found, amount, min));
@@ -451,16 +449,6 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
     }
     
     /**
-     * Get's the first slot containing the given item, or -1 if none contain it
-     * 
-     * @param item to search for
-     * @return the first slot with the given item
-     */
-    public int first(final Item item) {
-        return first(item.getId(), (short) (item.hasData() ? item.getData() : -1));
-    }
-    
-    /**
      * Get's the first slot containing the given type id, or -1 if none contain it
      * 
      * @param type id to search for
@@ -495,16 +483,6 @@ public class MinecartManiaStorageCart extends MinecartManiaMinecart implements M
      */
     public boolean contains(final Material material) {
         return first(material) != -1;
-    }
-    
-    /**
-     * Searches the inventory for any items that match the given Item
-     * 
-     * @param item to search for
-     * @return true if the Item is found
-     */
-    public boolean contains(final Item item) {
-        return first(item) != -1;
     }
     
     /**
