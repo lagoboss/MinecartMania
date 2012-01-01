@@ -65,6 +65,7 @@ public class TestMatching extends TestCase {
         System.out.println(m.toString());
         assertTrue("Failed to match 373;1", m.match(new ItemStack(373, 1, (short) 1)));
         assertFalse("Failed to NOT match 373;3", m.match(new ItemStack(373, 1, (short) 3)));
+        assertFalse("Failed to NOT match 331;1", m.match(new ItemStack(331, 1, (short) 1)));
     }
     
     public void testAmount() {

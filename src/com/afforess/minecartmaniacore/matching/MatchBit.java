@@ -43,8 +43,14 @@ public class MatchBit implements MatchToken {
         for (final String part : split[1].split(",")) {
             and.addExpression(new MatchBit(part));
         }
-        if (and.tokens.size() == 1)
-            return and.tokens.get(0);
+        
+        MatchConstant mc = new MatchConstant(MatchField.TYPE_ID, -1); // Fail to match by default.
+        try {
+            mc = new MatchConstant(MatchField.TYPE_ID, Integer.parseInt(split[0]));
+            and.addExpression(mc);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
         return and;
     }
     
