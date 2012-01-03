@@ -63,16 +63,17 @@ public class MinecartManiaMinecart {
     protected volatile int rangeY = 4;
     protected volatile boolean dead = false;
     protected ConcurrentHashMap<String, Object> data = new ConcurrentHashMap<String, Object>();
-    private final ChunkManager chunkManager = new ChunkManager();
     
     public MinecartManiaMinecart(final Minecart cart) {
         minecart = cart;
+        ChunkManager.Init(cart.getWorld());
         findOwner();
         initialize();
     }
     
     public MinecartManiaMinecart(final Minecart cart, final String owner) {
         minecart = cart;
+        ChunkManager.Init(cart.getWorld());
         this.owner = new MinecartOwner(owner);
         this.owner.setId(minecart.getEntityId());
         this.owner.setWorld(minecart.getWorld().getName());
@@ -975,7 +976,7 @@ public class MinecartManiaMinecart {
             final MinecartManiaMinecartDestroyedEvent mmmee = new MinecartManiaMinecartDestroyedEvent(this);
             MinecartManiaCore.callEvent(mmmee);
             
-            chunkManager.unloadChunks(getLocation());
+            ChunkManager.unloadChunks(minecart);
             
             minecart.remove();
             dead = true;
@@ -1000,7 +1001,7 @@ public class MinecartManiaMinecart {
     
     public void updateChunks() {
         if (MinecartManiaConfiguration.isKeepMinecartsLoaded()) {
-            chunkManager.updateChunks(getLocation());
+            ChunkManager.updateChunks(minecart);
         }
     }
     

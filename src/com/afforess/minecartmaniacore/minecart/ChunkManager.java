@@ -1,61 +1,127 @@
 package com.afforess.minecartmaniacore.minecart;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+
+import net.minecraft.server.ChunkCoordIntPair;
 
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.CraftWorld;
+import org.bukkit.entity.Entity;
 
-@SuppressWarnings("unused")
+import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
+
 public class ChunkManager {
-    protected HashSet<Chunk> loaded = new HashSet<Chunk>();
+    protected ConcurrentHashMap<ChunkCoordIntPair, List<Integer>> loaded = new ConcurrentHashMap<ChunkCoordIntPair, List<Integer>>();
+    protected static ConcurrentHashMap<UUID, ChunkManager> worlds = new ConcurrentHashMap<UUID, ChunkManager>();
+    private final CraftWorld world;
+    private final int range = 4;
     
-    public void updateChunks(final Location location) {
+    public static void Init(World w) {
+        if (!worlds.contains(w.getUID())) {
+            worlds.put(w.getUID(), new ChunkManager(w));
+        }
+    }
+    
+    public ChunkManager(World world) {
+        this.world = (CraftWorld) world;
+    }
+    
+    public static void updateChunks(Entity ent) {
+        worlds.get(ent.getWorld()).updateChunks(ent.getEntityId(), ent.getLocation());
+    }
+    
+    public static void unloadChunks(Entity ent) {
+        worlds.get(ent.getWorld()).unloadChunks(ent.getEntityId());
+    }
+    
+    public void updateChunks(final int entityID, final Location location) {
         final Chunk center = location.getBlock().getChunk();
-        final World world = center.getWorld();
-        final int range = 4;
         for (int dx = -(range); dx <= range; dx++) {
             for (int dz = -(range); dz <= range; dz++) {
-                final Chunk chunk = world.getChunkAt(center.getX() + dx, center.getZ() + dz);
-                world.loadChunk(chunk);
-                //if (!loaded.contains(chunk)) {
-                //loaded.add(chunk);
-                //}
+                final ChunkCoordIntPair cpos = new ChunkCoordIntPair(center.getX() + dx, center.getZ() + dz);
+                if (!loaded.contains(cpos)) {
+                    final Chunk chunk = world.getChunkAt(center.getX() + dx, center.getZ() + dz);
+                    world.loadChunk(chunk);
+                    loaded.put(cpos, new ArrayList<Integer>());
+                }
+                if (!loaded.get(cpos).contains(entityID)) {
+                    loaded.get(cpos).add(entityID);
+                }
             }
         }
-        /*
-         * Iterator<Chunk> i = loaded.iterator(); while(i.hasNext()) { Chunk old = i.next(); if (old.getX() > center.getX()+range || old.getX() < center.getX()-range) { if (unloadChunk(old)) { i.remove(); } else if (spawnChunk(old)) { i.remove(); } } else if (old.getZ() > center.getZ()+range || old.getZ() < center.getZ()-range) { if (unloadChunk(old)) {
-         * 
-         * i.remove(); } else if (spawnChunk(old)) { i.remove(); } } }
-         */
+        trimLoadedChunks(-1);
     }
     
-    public void unloadChunks(final Location location) {
-        /*
-         * Iterator<Chunk> i = loaded.iterator(); while(i.hasNext()) { Chunk old = i.next(); if (unloadChunk(old)) { i.remove(); } }
-         */
+    private void trimLoadedChunks(int unloadByOwner) {
+        Iterator<Entry<ChunkCoordIntPair, List<Integer>>> iterate = loaded.entrySet().iterator();
+        
+        int unloadedChunks = 0;
+        while (iterate.hasNext()) {
+            Entry<ChunkCoordIntPair, List<Integer>> e = iterate.next();
+            // Remove ourselves from the list of owners, if applicable.
+            if (unloadByOwner != 0 && e.getValue().contains(unloadByOwner)) {
+                e.getValue().remove(unloadByOwner);
+            }
+            
+            boolean unload = false;
+            
+            if (!unload && e.getValue().size() > 0) {
+                for (int owner : e.getValue()) {
+                    net.minecraft.server.Entity ent = world.getHandle().getEntity(owner);
+                    if (ent == null) {
+                        MinecartManiaLogger.getInstance().severe("[ChunkManager] Can't find owner " + Integer.toString(owner), true, new Object[] {});
+                        continue;
+                    }
+                    int chunkX = e.getKey().x;
+                    int chunkZ = e.getKey().z;
+                    int ownerX = ent.getBukkitEntity().getLocation().getChunk().getX();
+                    int ownerZ = ent.getBukkitEntity().getLocation().getChunk().getZ();
+                    if (Math.abs(chunkX - ownerX) > range || Math.abs(chunkZ - ownerZ) > range) {
+                        unload = true;
+                        break;
+                    }
+                }
+            }
+            
+            // If we don't own it, unload it.
+            // If the chunk's not in range of the cart, also unload it.
+            if (unload) {
+                unloadChunk(e.getKey().x, e.getKey().z);
+                unloadedChunks++;
+                iterate.remove();
+            }
+        }
+        MinecartManiaLogger.getInstance().info("[ChunkManager] Unloaded " + unloadedChunks + ".");
     }
     
-    private static boolean spawnChunk(final Chunk chunk) {
+    public void unloadChunks(final int entityID) {
+        trimLoadedChunks(entityID);
+    }
+    
+    private boolean spawnChunk(final int x, final int z) {
         //copied from MC Server code
-        final int k = (chunk.getX() * 16) + 8;
-        final int l = (chunk.getZ() * 16) + 8;
+        final int k = (x * 16) + 8;
+        final int l = (z * 16) + 8;
         final short short1 = 128;
         if ((k < -short1) || (k > short1) || (l < -short1) || (l > short1))
             return false;
         return true;
     }
     
-    private static boolean unloadChunk(final Chunk chunk) {
-        final CraftWorld world = (CraftWorld) chunk.getWorld();
+    private boolean unloadChunk(final int x, final int z) {
         //Spawn must never be unloaded
-        if (spawnChunk(chunk))
+        if (spawnChunk(x, z))
             return false;
-        if (!world.isChunkInUse(chunk.getX(), chunk.getZ())) {
-            if (world.unloadChunk(chunk.getX(), chunk.getZ(), true, false))
+        if (!world.isChunkInUse(x, z)) {
+            if (world.unloadChunk(x, z, true, false))
                 return true;
-            
         }
         return false;
     }
