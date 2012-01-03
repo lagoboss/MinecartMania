@@ -34,11 +34,11 @@ public class ChunkManager {
     }
     
     public static void updateChunks(final Entity ent) {
-        worlds.get(ent.getWorld()).updateChunks(ent.getEntityId(), ent.getLocation());
+        worlds.get(ent.getWorld().getUID()).updateChunks(ent.getEntityId(), ent.getLocation());
     }
     
     public static void unloadChunks(final Entity ent) {
-        worlds.get(ent.getWorld()).unloadChunks(ent.getEntityId());
+        worlds.get(ent.getWorld().getUID()).unloadChunks(ent.getEntityId());
     }
     
     public void updateChunks(final int entityID, final Location location) {
