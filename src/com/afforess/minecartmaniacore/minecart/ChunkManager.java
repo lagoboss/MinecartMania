@@ -23,21 +23,21 @@ public class ChunkManager {
     private final CraftWorld world;
     private final int range = 4;
     
-    public static void Init(World w) {
+    public static void Init(final World w) {
         if (!worlds.contains(w.getUID())) {
             worlds.put(w.getUID(), new ChunkManager(w));
         }
     }
     
-    public ChunkManager(World world) {
+    public ChunkManager(final World world) {
         this.world = (CraftWorld) world;
     }
     
-    public static void updateChunks(Entity ent) {
+    public static void updateChunks(final Entity ent) {
         worlds.get(ent.getWorld()).updateChunks(ent.getEntityId(), ent.getLocation());
     }
     
-    public static void unloadChunks(Entity ent) {
+    public static void unloadChunks(final Entity ent) {
         worlds.get(ent.getWorld()).unloadChunks(ent.getEntityId());
     }
     
@@ -59,31 +59,31 @@ public class ChunkManager {
         trimLoadedChunks(-1);
     }
     
-    private void trimLoadedChunks(int unloadByOwner) {
-        Iterator<Entry<ChunkCoordIntPair, List<Integer>>> iterate = loaded.entrySet().iterator();
+    private void trimLoadedChunks(final int unloadByOwner) {
+        final Iterator<Entry<ChunkCoordIntPair, List<Integer>>> iterate = loaded.entrySet().iterator();
         
         int unloadedChunks = 0;
         while (iterate.hasNext()) {
-            Entry<ChunkCoordIntPair, List<Integer>> e = iterate.next();
+            final Entry<ChunkCoordIntPair, List<Integer>> e = iterate.next();
             // Remove ourselves from the list of owners, if applicable.
-            if (unloadByOwner != 0 && e.getValue().contains(unloadByOwner)) {
+            if ((unloadByOwner != 0) && e.getValue().contains(unloadByOwner)) {
                 e.getValue().remove(unloadByOwner);
             }
             
             boolean unload = false;
             
-            if (!unload && e.getValue().size() > 0) {
-                for (int owner : e.getValue()) {
-                    net.minecraft.server.Entity ent = world.getHandle().getEntity(owner);
+            if (!unload && (e.getValue().size() > 0)) {
+                for (final int owner : e.getValue()) {
+                    final net.minecraft.server.Entity ent = world.getHandle().getEntity(owner);
                     if (ent == null) {
                         MinecartManiaLogger.getInstance().severe("[ChunkManager] Can't find owner " + Integer.toString(owner), true, new Object[] {});
                         continue;
                     }
-                    int chunkX = e.getKey().x;
-                    int chunkZ = e.getKey().z;
-                    int ownerX = ent.getBukkitEntity().getLocation().getChunk().getX();
-                    int ownerZ = ent.getBukkitEntity().getLocation().getChunk().getZ();
-                    if (Math.abs(chunkX - ownerX) > range || Math.abs(chunkZ - ownerZ) > range) {
+                    final int chunkX = e.getKey().x;
+                    final int chunkZ = e.getKey().z;
+                    final int ownerX = ent.getBukkitEntity().getLocation().getChunk().getX();
+                    final int ownerZ = ent.getBukkitEntity().getLocation().getChunk().getZ();
+                    if ((Math.abs(chunkX - ownerX) > range) || (Math.abs(chunkZ - ownerZ) > range)) {
                         unload = true;
                         break;
                     }

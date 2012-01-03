@@ -72,7 +72,7 @@ public class ItemMatcher {
                 case RANGE:
                     try {
                         expr = new MatchInRange(part);
-                    } catch (NumberFormatException e) {
+                    } catch (final NumberFormatException e) {
                         // It doesn't like negative numbers.
                         continue;
                     }

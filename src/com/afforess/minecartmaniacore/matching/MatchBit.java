@@ -48,7 +48,7 @@ public class MatchBit implements MatchToken {
         try {
             mc = new MatchConstant(MatchField.TYPE_ID, Integer.parseInt(split[0]));
             and.addExpression(mc);
-        } catch (NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             e.printStackTrace();
         }
         return and;
