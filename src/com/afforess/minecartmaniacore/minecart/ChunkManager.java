@@ -46,7 +46,7 @@ public class ChunkManager {
         for (int dx = -(range); dx <= range; dx++) {
             for (int dz = -(range); dz <= range; dz++) {
                 final ChunkCoordIntPair cpos = new ChunkCoordIntPair(center.getX() + dx, center.getZ() + dz);
-                if (!loaded.contains(cpos)) {
+                if (!loaded.containsKey(cpos)) {
                     final Chunk chunk = world.getChunkAt(center.getX() + dx, center.getZ() + dz);
                     world.loadChunk(chunk);
                     loaded.put(cpos, new ArrayList<Integer>());
