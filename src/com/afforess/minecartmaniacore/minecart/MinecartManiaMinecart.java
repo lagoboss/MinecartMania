@@ -66,14 +66,14 @@ public class MinecartManiaMinecart {
     
     public MinecartManiaMinecart(final Minecart cart) {
         minecart = cart;
-        ChunkManager.Init(cart.getWorld());
+        ChunkManager.init(cart.getWorld());
         findOwner();
         initialize();
     }
     
     public MinecartManiaMinecart(final Minecart cart, final String owner) {
         minecart = cart;
-        ChunkManager.Init(cart.getWorld());
+        ChunkManager.init(cart.getWorld());
         this.owner = new MinecartOwner(owner);
         this.owner.setId(minecart.getEntityId());
         this.owner.setWorld(minecart.getWorld().getName());

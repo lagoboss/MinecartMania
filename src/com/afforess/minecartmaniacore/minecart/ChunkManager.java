@@ -21,9 +21,9 @@ public class ChunkManager {
     protected ConcurrentHashMap<ChunkCoordIntPair, List<Integer>> loaded = new ConcurrentHashMap<ChunkCoordIntPair, List<Integer>>();
     protected static ConcurrentHashMap<UUID, ChunkManager> worlds = new ConcurrentHashMap<UUID, ChunkManager>();
     private final CraftWorld world;
-    private final int range = 4;
+    private static final int range = 4;
     
-    public static void Init(final World w) {
+    public static void init(final World w) {
         if (!worlds.contains(w.getUID())) {
             worlds.put(w.getUID(), new ChunkManager(w));
         }
