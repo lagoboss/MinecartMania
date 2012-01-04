@@ -1,9 +1,7 @@
 package com.afforess.minecartmaniacore.minecart;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -69,43 +67,39 @@ public class ChunkManager {
     }
     
     private void trimLoadedChunks(final UUID unloadByOwner) {
-        final Iterator<Entry<ChunkCoordIntPair, List<UUID>>> iterate = loaded.entrySet().iterator();
         
         int unloadedChunks = 0;
-        while (iterate.hasNext()) {
-            final Entry<ChunkCoordIntPair, List<UUID>> e = iterate.next();
+        for (final ChunkCoordIntPair chunk : loaded.keySet()) {
             // Remove ourselves from the list of owners, if applicable.
-            if ((unloadByOwner != null) && e.getValue().contains(unloadByOwner)) {
-                e.getValue().remove(unloadByOwner);
+            if ((unloadByOwner != null) && loaded.get(chunk).contains(unloadByOwner)) {
+                loaded.get(chunk).remove(unloadByOwner);
             }
             
             boolean unload = false;
             
             // If no cart owns the chunk, unload it.
-            if (e.getValue().size() == 0) {
+            if (loaded.get(chunk).size() == 0) {
                 unload = true;
             }
             
             // If at least one cart owns the chunk,
-            if (!unload && (e.getValue().size() > 0)) {
-                Iterator<UUID> i = e.getValue().iterator();
-                while (i.hasNext()) {
+            if (!unload && (loaded.get(chunk).size() > 0)) {
+                for (final UUID owner : loaded.get(chunk)) {
                     // Determine who owns it
-                    final UUID owner = i.next();
                     final MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart(owner);
                     if (minecart == null) {
-                        MinecartManiaLogger.getInstance().severe("[ChunkManager] Can't find owner " + owner.toString() + " of loaded chunk " + e.getKey().x + "," + e.getKey().z, true, new Object[] {});
-                        i.remove();
+                        MinecartManiaLogger.getInstance().severe("[ChunkManager] Can't find owner " + owner.toString() + " of loaded chunk " + chunk.x + "," + chunk.z, true, new Object[] {});
+                        loaded.get(chunk).remove(owner);
                         continue;
                     }
                     
                     // Now see if this chunk is within range of the cart
-                    final int chunkX = e.getKey().x;
-                    final int chunkZ = e.getKey().z;
+                    final int chunkX = chunk.x;
+                    final int chunkZ = chunk.z;
                     final int ownerX = minecart.getLocation().getChunk().getX();
                     final int ownerZ = minecart.getLocation().getChunk().getZ();
                     if ((Math.abs(chunkX - ownerX) > range) || (Math.abs(chunkZ - ownerZ) > range)) {
-                        i.remove();
+                        loaded.get(chunk).remove(owner);
                         continue;
                     }
                 }
@@ -114,9 +108,9 @@ public class ChunkManager {
             // If we don't own it, unload it.
             // If the chunk's not in range of the cart, also unload it.
             if (unload) {
-                if (unloadChunk(e.getKey().x, e.getKey().z)) {
+                if (unloadChunk(chunk.x, chunk.z)) {
                     unloadedChunks++;
-                    iterate.remove();
+                    loaded.remove(chunk);
                 }
             }
         }
