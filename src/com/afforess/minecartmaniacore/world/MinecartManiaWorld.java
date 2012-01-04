@@ -106,7 +106,7 @@ public class MinecartManiaWorld {
     @ThreadSafe
     public static MinecartManiaMinecart getMinecartManiaMinecart(final UUID uuid) {
         prune();
-        Integer id = minecartUUID2EID.get(uuid);
+        final Integer id = minecartUUID2EID.get(uuid);
         if (id == null)
             return null;
         return minecarts.get(id);
