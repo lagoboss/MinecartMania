@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map.Entry;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -46,6 +47,7 @@ import com.afforess.minecartmaniacore.utils.ThreadSafe;
 
 public class MinecartManiaWorld {
     private static ConcurrentHashMap<Integer, MinecartManiaMinecart> minecarts = new ConcurrentHashMap<Integer, MinecartManiaMinecart>();
+    private static ConcurrentHashMap<UUID, Integer> minecartUUID2EID = new ConcurrentHashMap<UUID, Integer>();
     private static ConcurrentHashMap<Location, MinecartManiaChest> chests = new ConcurrentHashMap<Location, MinecartManiaChest>();
     private static ConcurrentHashMap<Location, MinecartManiaDispenser> dispensers = new ConcurrentHashMap<Location, MinecartManiaDispenser>();
     private static ConcurrentHashMap<Location, MinecartManiaFurnace> furnaces = new ConcurrentHashMap<Location, MinecartManiaFurnace>();
@@ -89,10 +91,25 @@ public class MinecartManiaWorld {
                     newCart = new MinecartManiaMinecart(minecart);
                 }
                 minecarts.put(id, newCart);
+                minecartUUID2EID.put(newCart.minecart.getUniqueId(), id);
                 return newCart;
             }
         }
         return testMinecart;
+    }
+    
+    /**
+     * Returns a new MinecartManiaMinecart from storage if it already exists, or creates and stores a new MinecartManiaMinecart object, and returns it
+     * 
+     * @param the minecart to wrap
+     */
+    @ThreadSafe
+    public static MinecartManiaMinecart getMinecartManiaMinecart(final UUID uuid) {
+        prune();
+        Integer id = minecartUUID2EID.get(uuid);
+        if (id == null)
+            return null;
+        return minecarts.get(id);
     }
     
     /**

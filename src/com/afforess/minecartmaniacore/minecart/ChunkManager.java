@@ -15,8 +15,8 @@ import org.bukkit.World;
 import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.entity.Entity;
 
-import com.afforess.minecartmaniacore.MinecartManiaCore;
 import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
+import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
 
 public class ChunkManager {
     protected ConcurrentHashMap<ChunkCoordIntPair, List<UUID>> loaded = new ConcurrentHashMap<ChunkCoordIntPair, List<UUID>>();
@@ -92,8 +92,8 @@ public class ChunkManager {
                 while (i.hasNext()) {
                     // Determine who owns it
                     final UUID owner = i.next();
-                    final Entity ent = MinecartManiaCore.findEntity(owner);
-                    if (ent == null) {
+                    final MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart(owner);
+                    if (minecart == null) {
                         MinecartManiaLogger.getInstance().severe("[ChunkManager] Can't find owner " + owner.toString() + " of loaded chunk " + e.getKey().x + "," + e.getKey().z, true, new Object[] {});
                         i.remove();
                         continue;
@@ -102,11 +102,11 @@ public class ChunkManager {
                     // Now see if this chunk is within range of the cart
                     final int chunkX = e.getKey().x;
                     final int chunkZ = e.getKey().z;
-                    final int ownerX = ent.getLocation().getChunk().getX();
-                    final int ownerZ = ent.getLocation().getChunk().getZ();
+                    final int ownerX = minecart.getLocation().getChunk().getX();
+                    final int ownerZ = minecart.getLocation().getChunk().getZ();
                     if ((Math.abs(chunkX - ownerX) > range) || (Math.abs(chunkZ - ownerZ) > range)) {
-                        unload = true;
-                        break;
+                        i.remove();
+                        continue;
                     }
                 }
             }
@@ -148,7 +148,8 @@ public class ChunkManager {
                 if (world.unloadChunk(x, z, true, false))
                     return true;
             }
-        }
+        } else
+            return true;
         return false;
     }
 }
