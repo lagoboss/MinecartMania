@@ -143,9 +143,11 @@ public class ChunkManager {
         //Spawn must never be unloaded
         if (spawnChunk(x, z))
             return false;
-        if (!world.isChunkInUse(x, z)) {
-            if (world.unloadChunk(x, z, true, false))
-                return true;
+        if (world.getChunkAt(x, z) != null) {
+            if (!world.isChunkInUse(x, z)) {
+                if (world.unloadChunk(x, z, true, false))
+                    return true;
+            }
         }
         return false;
     }
