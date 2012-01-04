@@ -30,6 +30,14 @@ public class ChunkManager {
         }
     }
     
+    public static int chunksLoaded() {
+        int numLoaded = 0;
+        for (UUID wid : worlds.keySet()) {
+            numLoaded += worlds.get(wid).loaded.size();
+        }
+        return numLoaded;
+    }
+    
     public ChunkManager(final World world) {
         this.world = (CraftWorld) world;
     }
@@ -100,9 +108,9 @@ public class ChunkManager {
                 }
             }
         }
-        if (unloadedChunks > 0) {
-            MinecartManiaLogger.getInstance().info("[ChunkManager] Unloaded " + unloadedChunks + ".");
-        }
+        //        if (unloadedChunks > 0) {
+        //            MinecartManiaLogger.getInstance().info("[ChunkManager] Unloaded " + unloadedChunks + ".");
+        //        }
     }
     
     public void unloadChunks(final UUID entityID) {
