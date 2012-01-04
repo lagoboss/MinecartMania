@@ -5,10 +5,13 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import javax.persistence.PersistenceException;
 
 import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.entity.Entity;
 import org.bukkit.event.Event;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.plugin.Plugin;
@@ -244,5 +247,15 @@ public class MinecartManiaCore extends JavaPlugin {
         actionListener.onCustomEvent(event);
         //now everyone else goes
         Bukkit.getServer().getPluginManager().callEvent(event);
+    }
+    
+    public static Entity findEntity(final UUID owner) {
+        for (final World w : getInstance().getServer().getWorlds()) {
+            for (final Entity e : w.getEntities()) {
+                if (e.getUniqueId().equals(owner))
+                    return e;
+            }
+        }
+        return null;
     }
 }

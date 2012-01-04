@@ -15,10 +15,11 @@ import org.bukkit.World;
 import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.entity.Entity;
 
+import com.afforess.minecartmaniacore.MinecartManiaCore;
 import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
 
 public class ChunkManager {
-    protected ConcurrentHashMap<ChunkCoordIntPair, List<Integer>> loaded = new ConcurrentHashMap<ChunkCoordIntPair, List<Integer>>();
+    protected ConcurrentHashMap<ChunkCoordIntPair, List<UUID>> loaded = new ConcurrentHashMap<ChunkCoordIntPair, List<UUID>>();
     protected static ConcurrentHashMap<UUID, ChunkManager> worlds = new ConcurrentHashMap<UUID, ChunkManager>();
     private final CraftWorld world;
     private static final int range = 4;
@@ -34,14 +35,14 @@ public class ChunkManager {
     }
     
     public static void updateChunks(final Entity ent) {
-        worlds.get(ent.getWorld().getUID()).updateChunks(ent.getEntityId(), ent.getLocation());
+        worlds.get(ent.getWorld().getUID()).updateChunks(ent.getUniqueId(), ent.getLocation());
     }
     
     public static void unloadChunks(final Entity ent) {
-        worlds.get(ent.getWorld().getUID()).unloadChunks(ent.getEntityId());
+        worlds.get(ent.getWorld().getUID()).unloadChunks(ent.getUniqueId());
     }
     
-    public void updateChunks(final int entityID, final Location location) {
+    public void updateChunks(final UUID entityID, final Location location) {
         final Chunk center = location.getBlock().getChunk();
         for (int dx = -(range); dx <= range; dx++) {
             for (int dz = -(range); dz <= range; dz++) {
@@ -49,40 +50,40 @@ public class ChunkManager {
                 if (!loaded.containsKey(cpos)) {
                     final Chunk chunk = world.getChunkAt(center.getX() + dx, center.getZ() + dz);
                     world.loadChunk(chunk);
-                    loaded.put(cpos, new ArrayList<Integer>());
+                    loaded.put(cpos, new ArrayList<UUID>());
                 }
                 if (!loaded.get(cpos).contains(entityID)) {
                     loaded.get(cpos).add(entityID);
                 }
             }
         }
-        trimLoadedChunks(-1);
+        trimLoadedChunks(null);
     }
     
-    private void trimLoadedChunks(final int unloadByOwner) {
-        final Iterator<Entry<ChunkCoordIntPair, List<Integer>>> iterate = loaded.entrySet().iterator();
+    private void trimLoadedChunks(final UUID unloadByOwner) {
+        final Iterator<Entry<ChunkCoordIntPair, List<UUID>>> iterate = loaded.entrySet().iterator();
         
         int unloadedChunks = 0;
         while (iterate.hasNext()) {
-            final Entry<ChunkCoordIntPair, List<Integer>> e = iterate.next();
+            final Entry<ChunkCoordIntPair, List<UUID>> e = iterate.next();
             // Remove ourselves from the list of owners, if applicable.
-            if ((unloadByOwner != 0) && e.getValue().contains(unloadByOwner)) {
+            if ((unloadByOwner != null) && e.getValue().contains(unloadByOwner)) {
                 e.getValue().remove(unloadByOwner);
             }
             
             boolean unload = false;
             
             if (!unload && (e.getValue().size() > 0)) {
-                for (final int owner : e.getValue()) {
-                    final net.minecraft.server.Entity ent = world.getHandle().getEntity(owner);
+                for (final UUID owner : e.getValue()) {
+                    final Entity ent = MinecartManiaCore.findEntity(owner);
                     if (ent == null) {
-                        MinecartManiaLogger.getInstance().severe("[ChunkManager] Can't find owner " + Integer.toString(owner), true, new Object[] {});
+                        MinecartManiaLogger.getInstance().severe("[ChunkManager] Can't find owner " + owner.toString(), true, new Object[] {});
                         continue;
                     }
                     final int chunkX = e.getKey().x;
                     final int chunkZ = e.getKey().z;
-                    final int ownerX = ent.getBukkitEntity().getLocation().getChunk().getX();
-                    final int ownerZ = ent.getBukkitEntity().getLocation().getChunk().getZ();
+                    final int ownerX = ent.getLocation().getChunk().getX();
+                    final int ownerZ = ent.getLocation().getChunk().getZ();
                     if ((Math.abs(chunkX - ownerX) > range) || (Math.abs(chunkZ - ownerZ) > range)) {
                         unload = true;
                         break;
@@ -93,15 +94,18 @@ public class ChunkManager {
             // If we don't own it, unload it.
             // If the chunk's not in range of the cart, also unload it.
             if (unload) {
-                unloadChunk(e.getKey().x, e.getKey().z);
-                unloadedChunks++;
-                iterate.remove();
+                if (unloadChunk(e.getKey().x, e.getKey().z)) {
+                    unloadedChunks++;
+                    iterate.remove();
+                }
             }
         }
-        MinecartManiaLogger.getInstance().info("[ChunkManager] Unloaded " + unloadedChunks + ".");
+        if (unloadedChunks > 0) {
+            MinecartManiaLogger.getInstance().info("[ChunkManager] Unloaded " + unloadedChunks + ".");
+        }
     }
     
-    public void unloadChunks(final int entityID) {
+    public void unloadChunks(final UUID entityID) {
         trimLoadedChunks(entityID);
     }
     
