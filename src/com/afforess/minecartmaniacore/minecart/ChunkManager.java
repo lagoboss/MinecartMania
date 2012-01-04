@@ -1,7 +1,6 @@
 package com.afforess.minecartmaniacore.minecart;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -17,7 +16,7 @@ import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
 import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
 
 public class ChunkManager {
-    protected ConcurrentHashMap<ChunkCoordIntPair, List<UUID>> loaded = new ConcurrentHashMap<ChunkCoordIntPair, List<UUID>>();
+    protected ConcurrentHashMap<ChunkCoordIntPair, ArrayList<UUID>> loaded = new ConcurrentHashMap<ChunkCoordIntPair, ArrayList<UUID>>();
     protected static ConcurrentHashMap<UUID, ChunkManager> worlds = new ConcurrentHashMap<UUID, ChunkManager>();
     private final CraftWorld world;
     private static final int range = 4;
@@ -84,7 +83,8 @@ public class ChunkManager {
             
             // If at least one cart owns the chunk,
             if (!unload && (loaded.get(chunk).size() > 0)) {
-                for (final UUID owner : loaded.get(chunk)) {
+                ArrayList<UUID> owners = (ArrayList<UUID>) loaded.get(chunk).clone();
+                for (final UUID owner : owners) {
                     // Determine who owns it
                     final MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart(owner);
                     if (minecart == null) {
