@@ -13,6 +13,7 @@ import com.afforess.minecartmaniacore.matching.MatchNOT;
 import com.afforess.minecartmaniacore.matching.MatchOR;
 import com.afforess.minecartmaniacore.matching.MatchToken;
 import com.afforess.minecartmaniacore.utils.ItemUtils.TYPE;
+import com.afforess.minecartmaniacore.world.SpecificMaterial;
 
 /**
  * An efficient system for matching items based on criteria provided by signs.
@@ -185,5 +186,10 @@ public class ItemMatcher {
     
     public List<MatchToken> getTokens() {
         return matchTokens;
+    }
+    
+    public SpecificMaterial toSpecificMaterial() {
+        final ItemStack is = toItemStack();
+        return new SpecificMaterial(is.getTypeId(), is.getDurability());
     }
 }

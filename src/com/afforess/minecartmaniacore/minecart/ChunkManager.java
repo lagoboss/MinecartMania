@@ -27,6 +27,10 @@ public class ChunkManager {
         }
     }
     
+    /**
+     * How many chunks are currently loaded by MM
+     * @return Number of chunks loaded
+     */
     public static int chunksLoaded() {
         int numLoaded = 0;
         for (final UUID wid : worlds.keySet()) {
