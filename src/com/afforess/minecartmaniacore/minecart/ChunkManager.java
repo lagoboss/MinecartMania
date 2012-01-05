@@ -12,7 +12,6 @@ import org.bukkit.World;
 import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.entity.Entity;
 
-import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
 import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
 
 public class ChunkManager {
@@ -93,7 +92,7 @@ public class ChunkManager {
                     // Determine who owns it
                     final MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart(owner);
                     if (minecart == null) {
-                        MinecartManiaLogger.getInstance().severe("[ChunkManager] Can't find owner " + owner.toString() + " of loaded chunk " + chunk.x + "," + chunk.z, true);
+                        //MinecartManiaLogger.getInstance().severe("[ChunkManager] Can't find owner " + owner.toString() + " of loaded chunk " + chunk.x + "," + chunk.z, true);
                         continue;
                     }
                     
@@ -110,7 +109,7 @@ public class ChunkManager {
                 loaded.put(chunk, owners); // Update upstream list
                 if (owners.size() == 0) {
                     unload = true;
-                    MinecartManiaLogger.getInstance().info("[ChunkManager] Unloading " + chunkX + "," + chunkZ + " due to lack of owners.");
+                    //MinecartManiaLogger.getInstance().info("[ChunkManager] Unloading " + chunkX + "," + chunkZ + " due to lack of owners.");
                 }
             }
             
