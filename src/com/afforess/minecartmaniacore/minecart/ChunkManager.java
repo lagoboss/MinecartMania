@@ -71,7 +71,6 @@ public class ChunkManager {
     
     @SuppressWarnings("unchecked")
     private void trimLoadedChunks(final UUID unloadByOwner) {
-        
         for (final ChunkCoordIntPair chunk : loaded.keySet()) {
             // Remove ourselves from the list of owners, if applicable.
             if ((unloadByOwner != null) && loaded.get(chunk).contains(unloadByOwner)) {
@@ -88,6 +87,8 @@ public class ChunkManager {
             // If at least one cart owns the chunk,
             if (!unload && (loaded.get(chunk).size() > 0)) {
                 final ArrayList<UUID> owners = new ArrayList<UUID>();
+                final int chunkX = chunk.x;
+                final int chunkZ = chunk.z;
                 for (final UUID owner : (ArrayList<UUID>) loaded.get(chunk).clone()) {
                     // Determine who owns it
                     final MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart(owner);
@@ -97,10 +98,8 @@ public class ChunkManager {
                     }
                     
                     // Now see if this chunk is within range of the cart
-                    final int chunkX = chunk.x;
-                    final int chunkZ = chunk.z;
-                    final int ownerX = minecart.getLocation().getChunk().getX();
-                    final int ownerZ = minecart.getLocation().getChunk().getZ();
+                    final int ownerX = minecart.getLocation().getBlockX() >> 4;
+                    final int ownerZ = minecart.getLocation().getBlockZ() >> 4;
                     if ((Math.abs(chunkX - ownerX) > range) || (Math.abs(chunkZ - ownerZ) > range)) {
                         continue;
                     }
@@ -109,6 +108,10 @@ public class ChunkManager {
                     owners.add(owner);
                 }
                 loaded.put(chunk, owners); // Update upstream list
+                if (owners.size() == 0) {
+                    unload = true;
+                    MinecartManiaLogger.getInstance().info("[ChunkManager] Unloading " + chunkX + "," + chunkZ + " due to lack of owners.");
+                }
             }
             
             // If we don't own it, unload it.
@@ -116,6 +119,8 @@ public class ChunkManager {
             if (unload) {
                 if (unloadChunk(chunk.x, chunk.z)) {
                     loaded.remove(chunk);
+                } else {
+                    //MinecartManiaLogger.getInstance().severe("[ChunkManager] FAILED TO UNLOAD " + chunk.x + "," + chunk.z + "!  Reason: ", true);
                 }
             }
         }
@@ -140,8 +145,9 @@ public class ChunkManager {
     
     private boolean unloadChunk(final int x, final int z) {
         //Spawn must never be unloaded
-        if (spawnChunk(x, z))
+        if (spawnChunk(x, z)) {
             return false;
+        }
         if (world.getChunkAt(x, z) != null) {
             if (!world.isChunkInUse(x, z)) {
                 if (world.unloadChunk(x, z, true, false))
