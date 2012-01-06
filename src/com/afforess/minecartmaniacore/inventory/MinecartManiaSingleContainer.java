@@ -225,6 +225,10 @@ public abstract class MinecartManiaSingleContainer implements MinecartManiaInven
      */
     public ItemStack getItem(final int slot) {
         final ItemStack i = getInventory().getItem(slot);
+        if (i.getAmount() < -1) {
+            i.setAmount(64);
+            getInventory().setItem(slot, i);
+        }
         //WTF is it with bukkit and returning air instead of null?
         return i == null ? null : (i.getTypeId() == Material.AIR.getId() ? null : i);
     }
