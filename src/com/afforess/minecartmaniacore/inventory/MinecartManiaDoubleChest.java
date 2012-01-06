@@ -330,4 +330,12 @@ public class MinecartManiaDoubleChest implements MinecartManiaInventory {
         return -1;
     }
     
+    public String getOwner() {
+        return chest1.getOwner();
+    }
+    
+    public Location getLocation() {
+        return chest1.getLocation();
+    }
+    
 }
