@@ -68,7 +68,7 @@ public abstract class DirectionUtils {
             return "No Direction";
         }
         
-        public Vector toVector(double speed) {
+        public Vector toVector(final double speed) {
             switch (this) {
                 case NO_DIRECTION:
                     return new Vector(0, 0, 0);
