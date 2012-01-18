@@ -35,30 +35,22 @@ public class LaunchMinecartAction implements SignAction {
     private Vector calculateLaunchSpeed(final boolean force) {
         if ((launchSpeed == null) || force) {
             previous = false;
-            launchSpeed = null;
+            CompassDirection dir = null;
             for (int i = 0; i < sign.getNumLines(); i++) {
                 if (sign.getLine(i).toLowerCase().contains("previous dir")) {
                     previous = true;
                     break;
                 }
-                if (sign.getLine(i).toLowerCase().contains("launch north")) {
-                    launchSpeed = new Vector(-0.6D, 0, 0);
-                    break;
-                } else if (sign.getLine(i).toLowerCase().contains("launch east")) {
-                    launchSpeed = new Vector(0, 0, -0.6D);
-                    break;
-                }
-                if (sign.getLine(i).toLowerCase().contains("launch south")) {
-                    launchSpeed = new Vector(0.6D, 0, 0);
-                    break;
-                }
-                if (sign.getLine(i).toLowerCase().contains("launch west")) {
-                    launchSpeed = new Vector(0, 0, 0.6D);
-                    break;
+                String line = sign.getLine(i).toLowerCase().trim();
+                if (line.contains("launch")) {
+                    dir = CompassDirection.valueOf(line.substring(7).toUpperCase());
+                    if (dir != null)
+                        break;
                 }
             }
-            if ((launchSpeed != null) || previous) {
+            if ((dir != null) || previous) {
                 sign.addBrackets();
+                launchSpeed = dir.toVector(0.6);
             }
         }
         return launchSpeed;

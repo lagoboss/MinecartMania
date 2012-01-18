@@ -8,6 +8,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
+import org.bukkit.util.Vector;
 
 import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
 
@@ -65,6 +66,30 @@ public abstract class DirectionUtils {
             if (equals(CompassDirection.NORTH_WEST))
                 return "North-West";
             return "No Direction";
+        }
+        
+        public Vector toVector(double speed) {
+            switch (this) {
+                case NO_DIRECTION:
+                    return new Vector(0, 0, 0);
+                case NORTH:
+                    return new Vector(speed, 0, 0);
+                case NORTH_EAST:
+                    return new Vector(speed, 0, -speed);
+                case EAST:
+                    return new Vector(0, 0, -speed);
+                case SOUTH_EAST:
+                    return new Vector(-speed, 0, -speed);
+                case SOUTH:
+                    return new Vector(-speed, 0, 0);
+                case SOUTH_WEST:
+                    return new Vector(-speed, 0, speed);
+                case WEST:
+                    return new Vector(0, 0, speed);
+                case NORTH_WEST:
+                    return new Vector(speed, 0, speed);
+            }
+            return null;
         }
     }
     
