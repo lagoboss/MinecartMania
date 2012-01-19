@@ -136,7 +136,7 @@
 			<AutoConvertToPoweredRails>false</AutoConvertToPoweredRails>
 		</ControlBlock>
 		<ControlBlock>
-			<BlockType>WOOL</BlockType>
+			<BlockType>WOOL;0</BlockType>
 			<SpeedMultipliers>
 				<!-- One control block may have multiple SpeedMultiplier sections -->
 				<SpeedMultiplier>
@@ -216,7 +216,7 @@
 			<Elevator/>
 		</ControlBlock>
 		<ControlBlock>
-			<BlockType>LIGHT_GREEN_WOOL</BlockType>
+			<BlockType>WOOL;5</BlockType>
 			<SpeedMultipliers/>
 			<Catch/>
 			<LauncherSpeed/>
@@ -252,7 +252,7 @@
 			<Elevator/>
 		</ControlBlock>
 		<ControlBlock>
-			<BlockType>RED_WOOL</BlockType>
+			<BlockType>WOOL;14</BlockType>
 			<SpeedMultipliers/>
 			<Catch/>
 			<LauncherSpeed/>
@@ -267,7 +267,7 @@
 	<ItemAliases>
 		<ItemAlias>
 			<!--The Custom Alias for the list of items that follows it. 
-			Not nessecary, but useful for shortening a long list of items into a short phrase.
+			Not necessary, but useful for shortening a long list of items into a short phrase.
 			Avoid using already taken item names, or taken item id's, as the alias will take priority over the existing name!-->
 			<AliasName>Ores</AliasName>
 			<!--The Item Name or Item Id and Data Value-->
