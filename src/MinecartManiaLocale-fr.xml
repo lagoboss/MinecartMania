@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MinecartManiaConfiguration>
+	<version>1.02</version>
+	<!--
+	Keys are mapped to specific locations in MM's code. Do not add or remove keys unless you know what you are doing.
+	The text is the text that is displayed to the user. You are free to change the text to anything to suit your needs.
+	Note: %s, %d, and %f are variable formatting characters. Look up their usage online if you are unsure.
+
+	Colors: 
+	
+	[WHITE]
+	[BLACK]
+	[DARK_BLUE]
+	[DARK_GREEN]
+	[DARK_AQUA]
+	[DARK_PURPLE]
+	[GOLD]
+	[GRAY]
+	[DARK_GRAY]
+	[BLUE]
+	[GREEN]
+	[AQUA]
+	[RED]
+	[LIGHT_PURPLE]
+	[YELLOW]
+	
+	-->
+	<TextKeys>
+		<TextKey>
+			<Key>AutoCartEnteredMessage</Key>
+			<Text>[GREEN]Tapez le wagonnet dans la direction où vous voulez aller</Text>
+		</TextKey>
+		<TextKey>
+			<Key>AdminControlsValidDebugModes</Key>
+			<Text>[RED]Modes débug valides : %s</Text>
+		</TextKey>
+		<TextKey>
+			<Key>AdminControlsDebugMode</Key>
+			<Text>[GREEN]Passé en débug : %s</Text>
+		</TextKey>
+		<TextKey>
+			<Key>AdminControlsNoPlayerFound</Key>
+			<Text>[RED]Aucun joueur de ce nom</Text>
+		</TextKey>
+		<TextKey>
+			<Key>AdminControlsEjectUsage</Key>
+			<Text>[RED]Utilisation : '/eject [nom joueur]'</Text>
+		</TextKey>
+		<TextKey>
+			<Key>AdminControlsPermEjectUsage</Key>
+			<Text>[RED]Utilisation : '/permeject [nom joueur]'</Text>
+		</TextKey>
+		<TextKey>
+			<Key>AdminControlsMinecartsRemoved</Key>
+			<Text>[GREEN]%d wagonnets ont été retirés du serveur.</Text>
+		</TextKey>
+		<TextKey>
+			<Key>AdminControlsInvalidValue</Key>
+			<Text>[RED]Valeur de configuration invalide</Text>
+		</TextKey>
+		<TextKey>
+			<Key>AdminControlsSetConfigKeyUsage</Key>
+			<Text>[RED]Utilisation : '/setconfigkey [clé] [valeur]'. \nAstuce : La clé et la valeur devraient être entre crochets.</Text>
+		</TextKey>
+		<TextKey>
+			<Key>AdminControlsMomentum</Key>
+			<Text>Vitesse X: %.2f \nVitesse Y: %.2f \nVitesse Z: %.2f</Text>
+		</TextKey>
+		<TextKey>
+			<Key>AdminControlsMomentumInvalid</Key>
+			<Text>[RED]Vous ne pouvez avoir de vitesse qu'à l'intérieur d'un wagonnet.</Text>
+		</TextKey>
+		<TextKey>
+			<Key>AdminControlsStation</Key>
+			<Text>[GREEN]Type de station réglé à : %s</Text>
+		</TextKey>
+		<TextKey>
+			<Key>AdminControlsConfigKey</Key>
+			<Text>La valeur de '%s' est '%s'</Text>
+		</TextKey>
+		<TextKey>
+			<Key>AdminControlsConfigKeyUsage</Key>
+			<Text>[RED]Utilisation : '/getconfigkey [clé]'. \nHint: La clé devrait être entre crochets.</Text>
+		</TextKey>
+		<TextKey>
+			<Key>AdminControlsListConfigKeyPageHeader</Key>
+			<Text>Valeurs de configuration Minecart Mania (Page %d sur %d)</Text>
+		</TextKey>
+		<TextKey>
+			<Key>AdminControlsListConfigKey</Key>
+			<Text>Clé : [GREEN]%s [WHITE]Valeur : [GREEN]%s</Text>
+		</TextKey>
+		<TextKey>
+			<Key>AdminControlsSetConfigKey</Key>
+			<Text>Clé '[GREEN]%s[WHITE]' réglée à '[GREEN]%s[WHITE]'</Text>
+		</TextKey>
+		<TextKey>
+			<Key>AdminControlsListConfigKeyPage</Key>
+			<Text>[RED]Il n'y a pas de page %d</Text>
+		</TextKey>
+		<TextKey>
+			<Key>AdminControlsThrottleSet</Key>
+			<Text>[GREEN]Poussée réglée !</Text>
+		</TextKey>
+		<TextKey>
+			<Key>AdminControlsThrottleSetOverdrive</Key>
+			<Text>[GREEN]Overdrive activé !</Text>
+		</TextKey>
+		<TextKey>
+			<Key>AdminControlsThrottleUsage</Key>
+			<Text>[RED]Commande invalide. L'utilisation est /throttle [nombre]</Text>
+		</TextKey>
+		<TextKey>
+			<Key>AdminControlsBlockMinecartEntry</Key>
+			<Text>[RED]L'entrée de ce wagonnet vous été interdite !</Text>
+		</TextKey>
+		<TextKey>
+			<Key>SignCommandsMinecartLocked</Key>
+			<Text>[YELLOW]Votre wagonnet a été verrouillé.</Text>
+		</TextKey>
+		<TextKey>
+			<Key>SignCommandsMinecartUnlocked</Key>
+			<Text>[GREEN]Votre wagonnet a été déverouillé</Text>
+		</TextKey>
+		<TextKey>
+			<Key>SignCommandsMinecartLockedError</Key>
+			<Text>[YELLOW]Votre wagonnet est verouillé. \n[YELLOW]Il se déverouillera à votre destination.</Text>
+		</TextKey>
+		<TextKey>
+			<Key>SignCommandsDestination</Key>
+			<Text>[GREEN]Vous êtes arrivé à destination.</Text>
+		</TextKey>
+		<TextKey>
+			<Key>SignCommandsSensorItemError</Key>
+			<Text>[RED]Les détecteurs d'objets doivent avoir un nom d'objet ou Id valide en ligne 3.</Text>
+		</TextKey>
+		<TextKey>
+			<Key>SignCommandsSensorPlayerNameError</Key>
+			<Text>[RED]Les détecteurs de joueur doivent avoir le nom du joueur à détecter en ligne 3.</Text>
+		</TextKey>
+		<TextKey>
+			<Key>SignCommandsSensorSuccess</Key>
+			<Text>[GREEN]Détecteur créé avec succès.</Text>
+		</TextKey>
+		<TextKey>
+			<Key>StationsTapInDirection</Key>
+			<Text>[YELLOW]Frappez votre wagonnet dans la direction souhaitée.</Text>
+		</TextKey>
+		<TextKey>
+			<Key>StationsInvalidDirection</Key>
+			<Text>[RED]Direction invalide.</Text>
+		</TextKey>
+		<TextKey>
+			<Key>StationsValidDirections</Key>
+			<Text>[YELLOW]Vous pouvez aller vers : %s</Text>
+		</TextKey>
+		<TextKey>
+			<Key>LackPermissionForCommand</Key>
+			<Text>[RED]Vous n'avez pas la permission d'utiliser cette commande.</Text>
+		</TextKey>
+		<TextKey>
+			<Key>LackPermission</Key>
+			<Text>[RED]Vous n'avez pas la permission de faire ça.</Text>
+		</TextKey>
+		<TextKey>
+			<Key>LackPermissionForSign</Key>
+			<Text>[RED]Vous n'aveez pas la permission de créer un %s.</Text>
+		</TextKey>
+		<TextKey>
+			<Key>LackPermissionToRemoveSign</Key>
+			<Text>[RED]Vous n'avez pas la permission de retirer un %s.</Text>
+		</TextKey>
+		<TextKey>
+			<Key>LackPermissionForControlBlock</Key>
+			<Text>[RED]Vous n'avez pas la permission de placer un %s.</Text>
+		</TextKey>
+		<TextKey>
+			<Key>AdminControlsHideMinecarts</Key>
+			<Text>[GREEN]Tous les wagonnets dissimulés.</Text>
+		</TextKey>
+		<TextKey>
+			<Key>AdminControlsRedrawMinecarts</Key>
+			<Text>[GREEN]Tous les wagonnets réaffichés avec succès.</Text>
+		</TextKey>
+		<TextKey>
+			<Key>AdminControlsMMHeader</Key>
+			<Text>[WHITE]----------------[GREEN]Information MinecartMania[WHITE]---------------</Text>
+		</TextKey>
+		<TextKey>
+			<Key>AdminControlsInfoTotalMinecarts</Key>
+			<Text>Total wagonnets : [GREEN]%d</Text>
+		</TextKey>
+		<TextKey>
+			<Key>AdminControlsInfoEmptyMinecarts</Key>
+			<Text>Wagonnets vides : [GREEN]%d</Text>
+		</TextKey>
+		<TextKey>
+			<Key>AdminControlsInfoOccupiedMinecarts</Key>
+			<Text>Wagonnets occupés : [GREEN]%d</Text>
+		</TextKey>
+		<TextKey>
+			<Key>AdminControlsInfoPoweredMinecarts</Key>
+			<Text>Wagonnets moteur : [GREEN]%d</Text>
+		</TextKey>
+		<TextKey>
+			<Key>AdminControlsInfoStorageMinecarts</Key>
+			<Text>Wagonnets coffre : [GREEN]%d</Text>
+		</TextKey>
+		<TextKey>
+			<Key>AdminControlsInfoMovingMinecarts</Key>
+			<Text>Wagonnets en mouvement : [GREEN]%d</Text>
+		</TextKey>
+		<TextKey>
+			<Key>AdminControlsInfoStalledMinecarts</Key>
+			<Text>Wagonnets à l'arrêt : [GREEN]%d</Text>
+		</TextKey>
+		<TextKey>
+			<Key>AdminControlsInfoMostOwnedMinecarts</Key>
+			<Text>Possède le plus de wagonnets : [GREEN]%s [WHITE]([YELLOW]%d[WHITE])</Text>
+		</TextKey>
+	</TextKeys>
+</MinecartManiaConfiguration>
