@@ -1,8 +1,9 @@
 package com.afforess.minecartmaniacore.event;
 
 import org.akrieger.Nethrar.NethrarMinecartTeleportEvent;
-import org.bukkit.event.CustomEventListener;
 import org.bukkit.event.Event;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 import com.afforess.minecartmaniacore.MinecartManiaCore;
@@ -11,7 +12,7 @@ import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
 
 import de.luricos.bukkit.WormholeXTreme.Wormhole.events.StargateMinecartTeleportEvent;
 
-public class MinecartManiaListener extends CustomEventListener implements Listener {
+public class MinecartManiaListener implements Listener {
     
     public MinecartManiaListener() {
         
@@ -22,6 +23,7 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
      * 
      * @param event
      */
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onMinecartActionEvent(final MinecartActionEvent event) {
         
     }
@@ -31,6 +33,7 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
      * 
      * @param event
      */
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onMinecartTimeEvent(final MinecartTimeEvent event) {
         
     }
@@ -40,6 +43,7 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
      * 
      * @param event
      */
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onMinecartMotionStartEvent(final MinecartMotionStartEvent event) {
         
     }
@@ -49,6 +53,7 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
      * 
      * @param event
      */
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onMinecartMotionStopEvent(final MinecartMotionStopEvent event) {
         
     }
@@ -58,6 +63,7 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
      * 
      * @param event
      */
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onMinecartIntersectionEvent(final MinecartIntersectionEvent event) {
         
     }
@@ -67,6 +73,7 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
      * 
      * @param event
      */
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onChestPoweredEvent(final ChestPoweredEvent event) {
         
     }
@@ -76,6 +83,7 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
      * 
      * @param event
      */
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onMinecartManiaMinecartDestroyedEvent(final MinecartManiaMinecartDestroyedEvent event) {
         
     }
@@ -85,6 +93,7 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
      * 
      * @param event
      */
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onMinecartManiaMinecartCreatedEvent(final MinecartManiaMinecartCreatedEvent event) {
         
     }
@@ -94,6 +103,7 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
      * 
      * @param event
      */
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onMinecartLaunchedEvent(final MinecartLaunchedEvent event) {
         
     }
@@ -103,6 +113,7 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
      * 
      * @param event
      */
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onChestSpawnMinecartEvent(final ChestSpawnMinecartEvent event) {
         
     }
@@ -112,6 +123,7 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
      * 
      * @param event
      */
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onMinecartClickedEvent(final MinecartClickedEvent event) {
         
     }
@@ -121,6 +133,7 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
      * 
      * @param event
      */
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onMinecartCaughtEvent(final MinecartCaughtEvent event) {
         
     }
@@ -130,6 +143,7 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
      * 
      * @param event
      */
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onMinecartElevatorEvent(final MinecartElevatorEvent event) {
         
     }
@@ -139,6 +153,7 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
      * 
      * @param event
      */
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onMinecartDirectionChangeEvent(final MinecartDirectionChangeEvent event) {
         
     }
@@ -148,6 +163,7 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
      * 
      * @param event
      */
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onMinecartSpeedMultiplierEvent(final MinecartSpeedMultiplierEvent event) {
         
     }
@@ -157,6 +173,7 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
      * 
      * @param event
      */
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onMinecartKillEvent(final MinecartKillEvent event) {
         
     }
@@ -166,6 +183,7 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
      * 
      * @param event
      */
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onMinecartSpawnEvent(final MinecartSpawnEvent event) {
         
     }
@@ -175,6 +193,7 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
      * 
      * @param event
      */
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onMinecartManiaSignFoundEvent(final MinecartManiaSignFoundEvent event) {
         
     }
@@ -184,10 +203,12 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
      * 
      * @param event
      */
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onMinecartMeetConditionEvent(final MinecartMeetsConditionEvent event) {
         
     }
     
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onMinecartPassengerEjectEvent(final MinecartPassengerEjectEvent event) {
         
     }
@@ -197,7 +218,7 @@ public class MinecartManiaListener extends CustomEventListener implements Listen
      * 
      * @param event
      */
-    @Override
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onCustomEvent(final Event event) {
         //Special case
         if (MinecartManiaCore.isWormholeXTremeEnabled()) {
