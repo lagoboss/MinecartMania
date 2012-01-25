@@ -77,7 +77,7 @@ public class MinecartManiaCoreListener extends MinecartManiaListener {
         }
     }
     
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(final PlayerQuitEvent event) {
         if (MinecartManiaConfiguration.isDisappearOnDisconnect()) {
             final MinecartManiaPlayer player = MinecartManiaWorld.getMinecartManiaPlayer(event.getPlayer());
@@ -95,7 +95,7 @@ public class MinecartManiaCoreListener extends MinecartManiaListener {
         }
     }
     
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoin(final PlayerJoinEvent event) {
         if (MinecartManiaConfiguration.isDisappearOnDisconnect()) {
             final MinecartManiaPlayer player = MinecartManiaWorld.getMinecartManiaPlayer(event.getPlayer());
@@ -127,7 +127,7 @@ public class MinecartManiaCoreListener extends MinecartManiaListener {
         }
     }
     
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onBlockRedstoneChange(final BlockRedstoneEvent event) {
         if ((event.getOldCurrent() > 0) && (event.getNewCurrent() > 0))
             return;
@@ -286,7 +286,7 @@ public class MinecartManiaCoreListener extends MinecartManiaListener {
         }
     }
     
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onVehicleDestroy(final VehicleDestroyEvent event) {
         if ((event.getVehicle() instanceof Minecart) && !event.isCancelled()) {
             final MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart((Minecart) event.getVehicle());
@@ -294,7 +294,7 @@ public class MinecartManiaCoreListener extends MinecartManiaListener {
         }
     }
     
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onVehicleDamage(final VehicleDamageEvent event) {
         if (event.getVehicle() instanceof Minecart) {
             final MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart((Minecart) event.getVehicle());
@@ -361,7 +361,7 @@ public class MinecartManiaCoreListener extends MinecartManiaListener {
         }
     }
     
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onVehicleEnter(final VehicleEnterEvent event) {
         if (event.isCancelled() || !(event.getVehicle() instanceof Minecart))
             return;
