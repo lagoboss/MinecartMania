@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import javax.persistence.PersistenceException;
 
+import org.akrieger.Nethrar.NethrarMinecartTeleportEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -24,6 +25,8 @@ import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
 import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecartDataTable;
 import com.afforess.minecartmaniacore.minecart.MinecartOwner;
 import com.afforess.minecartmaniacore.world.Item;
+
+import de.luricos.bukkit.WormholeXTreme.Wormhole.events.StargateMinecartTeleportEvent;
 
 public class MinecartManiaCore extends JavaPlugin {
     
@@ -239,8 +242,11 @@ public class MinecartManiaCore extends JavaPlugin {
     }
     
     public static void callEvent(final Event event) {
-        //We go first
-        listener.onCustomEvent(event);
+        if (event instanceof NethrarMinecartTeleportEvent) {
+            listener.onNethrarEvent((NethrarMinecartTeleportEvent) event);
+        } else if (event instanceof StargateMinecartTeleportEvent) {
+            listener.onWormholeExtremeEvent((StargateMinecartTeleportEvent) event);
+        }
         //now everyone else goes
         Bukkit.getServer().getPluginManager().callEvent(event);
     }
