@@ -1,6 +1,7 @@
 package com.afforess.minecartmaniacore.event;
 
 import org.bukkit.event.Cancellable;
+import org.bukkit.event.HandlerList;
 
 import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
 
@@ -9,6 +10,16 @@ public class MinecartSpawnEvent extends MinecartManiaEvent implements Cancellabl
     private static final long serialVersionUID = 5782963564694931261L;
     private boolean cancelled = false;
     private final MinecartManiaMinecart minecart;
+    private static final HandlerList handlers = new HandlerList();
+    
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
+    }
+    
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
     
     protected MinecartSpawnEvent(final MinecartManiaMinecart minecart) {
         super("MinecartSpawnEvent");

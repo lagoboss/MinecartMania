@@ -2,6 +2,7 @@ package com.afforess.minecartmaniacore.event;
 
 import org.bukkit.Location;
 import org.bukkit.event.Cancellable;
+import org.bukkit.event.HandlerList;
 
 import com.afforess.minecartmaniacore.inventory.MinecartManiaChest;
 
@@ -11,6 +12,16 @@ public class ChestSpawnMinecartEvent extends MinecartManiaEvent implements Cance
     private Location spawnLocation;
     private boolean cancelled = false;
     private int type;
+    private static final HandlerList handlers = new HandlerList();
+    
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
+    }
+    
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
     
     public ChestSpawnMinecartEvent(final MinecartManiaChest chest, final Location spawnLocation, final int type) {
         super("ChestPoweredEvent");

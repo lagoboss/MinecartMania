@@ -1,6 +1,7 @@
 package com.afforess.minecartmaniacore.event;
 
 import org.bukkit.event.Cancellable;
+import org.bukkit.event.HandlerList;
 
 import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
 
@@ -10,6 +11,16 @@ public class MinecartSpeedMultiplierEvent extends MinecartManiaEvent implements 
     private final MinecartManiaMinecart minecart;
     private double multiplier;
     private final double origMultiplier;
+    private static final HandlerList handlers = new HandlerList();
+    
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
+    }
+    
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
     
     public MinecartSpeedMultiplierEvent(final MinecartManiaMinecart minecart, final double multiplier) {
         super("MinecartSpeedAlterEvent");

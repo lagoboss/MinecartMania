@@ -1,5 +1,6 @@
 package com.afforess.minecartmaniacore.event;
 
+import org.bukkit.event.HandlerList;
 import org.bukkit.util.Vector;
 
 import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
@@ -9,6 +10,16 @@ public class MinecartLaunchedEvent extends MinecartManiaEvent implements Minecar
     private final MinecartManiaMinecart minecart;
     private boolean action = false;
     private Vector launchSpeed;
+    private static final HandlerList handlers = new HandlerList();
+    
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
+    }
+    
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
     
     public MinecartLaunchedEvent(final MinecartManiaMinecart cart, final Vector speed) {
         super("MinecartLaunchedEvent");

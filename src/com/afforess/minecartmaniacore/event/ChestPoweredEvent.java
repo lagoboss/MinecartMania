@@ -1,5 +1,7 @@
 package com.afforess.minecartmaniacore.event;
 
+import org.bukkit.event.HandlerList;
+
 import com.afforess.minecartmaniacore.inventory.MinecartManiaChest;
 
 public class ChestPoweredEvent extends MinecartManiaEvent {
@@ -8,6 +10,16 @@ public class ChestPoweredEvent extends MinecartManiaEvent {
     private final boolean powered;
     private final boolean wasPowered;
     private boolean action = false;
+    private static final HandlerList handlers = new HandlerList();
+    
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
+    }
+    
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
     
     public ChestPoweredEvent(final MinecartManiaChest chest, final boolean powered) {
         super("ChestPoweredEvent");

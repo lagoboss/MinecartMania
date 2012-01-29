@@ -2,6 +2,7 @@ package com.afforess.minecartmaniacore.event;
 
 import org.bukkit.Location;
 import org.bukkit.event.Cancellable;
+import org.bukkit.event.HandlerList;
 
 import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
 
@@ -11,6 +12,16 @@ public class MinecartElevatorEvent extends MinecartManiaEvent implements Cancell
     private final MinecartManiaMinecart minecart;
     private boolean cancelled = false;
     private Location location;
+    private static final HandlerList handlers = new HandlerList();
+    
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
+    }
+    
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
     
     public MinecartElevatorEvent(final MinecartManiaMinecart minecart, final Location teleport) {
         super("MinecartElevatorEvent");
