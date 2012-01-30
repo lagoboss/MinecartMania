@@ -707,16 +707,17 @@ public class MinecartManiaMinecart {
     }
     
     public void setMotion(final CompassDirection direction, final double speed) {
-        if (direction.equals(DirectionUtils.CompassDirection.NORTH)) {
-            setMotionX(-speed);
-        } else if (direction.equals(DirectionUtils.CompassDirection.SOUTH)) {
-            setMotionX(speed);
-        } else if (direction.equals(DirectionUtils.CompassDirection.EAST)) {
-            setMotionZ(-speed);
-        } else if (direction.equals(DirectionUtils.CompassDirection.WEST)) {
-            setMotionZ(speed);
-        } else
-            throw new IllegalArgumentException();
+        setMotion(direction.toVector(speed));
+        //        if (direction.equals(DirectionUtils.CompassDirection.NORTH)) {
+        //            setMotionX(-speed);
+        //        } else if (direction.equals(DirectionUtils.CompassDirection.SOUTH)) {
+        //            setMotionX(speed);
+        //        } else if (direction.equals(DirectionUtils.CompassDirection.EAST)) {
+        //            setMotionZ(-speed);
+        //        } else if (direction.equals(DirectionUtils.CompassDirection.WEST)) {
+        //            setMotionZ(speed);
+        //        } else
+        //            throw new IllegalArgumentException();
     }
     
     public boolean doEjectorBlock() {
