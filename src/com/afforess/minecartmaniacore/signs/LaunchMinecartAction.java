@@ -43,9 +43,13 @@ public class LaunchMinecartAction implements SignAction {
                 }
                 final String line = sign.getLine(i).toLowerCase().trim();
                 if (line.contains("launch")) {
-                    dir = CompassDirection.valueOf(line.substring(7).toUpperCase());
-                    if (dir != null) {
-                        break;
+                    if (line.contains("player")) {
+                        // TODO: Handle "launch player"
+                    } else {
+                        dir = CompassDirection.valueOf(line.substring(7).toUpperCase());
+                        if (dir != null) {
+                            break;
+                        }
                     }
                 }
             }
