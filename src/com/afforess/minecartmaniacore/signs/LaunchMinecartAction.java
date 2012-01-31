@@ -5,6 +5,7 @@ import org.bukkit.util.Vector;
 import com.afforess.minecartmaniacore.config.ControlBlockList;
 import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
 import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
+import com.afforess.minecartmaniacore.utils.StringUtils;
 
 public class LaunchMinecartAction implements SignAction {
     private volatile Vector launchSpeed = null;
@@ -37,11 +38,11 @@ public class LaunchMinecartAction implements SignAction {
             previous = false;
             CompassDirection dir = null;
             for (int i = 0; i < sign.getNumLines(); i++) {
-                if (sign.getLine(i).toLowerCase().contains("previous dir")) {
+                final String line = StringUtils.removeBrackets(sign.getLine(i).trim()).toLowerCase();
+                if (line.contains("previous dir")) {
                     previous = true;
                     break;
                 }
-                final String line = sign.getLine(i).toLowerCase().replaceAll("\\[|\\]", "").trim();
                 if (line.contains("launch")) {
                     if (line.contains("player")) {
                         // TODO: Handle "launch player"
