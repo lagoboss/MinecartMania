@@ -41,7 +41,7 @@ public class LaunchMinecartAction implements SignAction {
                     previous = true;
                     break;
                 }
-                final String line = sign.getLine(i).toLowerCase().trim();
+                final String line = sign.getLine(i).toLowerCase().replaceAll("\\[|\\]", "").trim();
                 if (line.contains("launch")) {
                     if (line.contains("player")) {
                         // TODO: Handle "launch player"
