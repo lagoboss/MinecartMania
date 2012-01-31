@@ -62,7 +62,9 @@ public class ItemMatcher {
             if (part.contains(TYPE.AMOUNT.getTag())) {
                 final String[] parts = part.split(TYPE.AMOUNT.getTag());
                 part = parts[0];
-                if (parts.length > 1) amt = Integer.parseInt(parts[1]);
+                if (parts.length > 1) {
+                    amt = Integer.parseInt(parts[1]);
+                }
             }
             boolean NOT = false;
             if (part.startsWith(TYPE.REMOVE.getTag())) {
