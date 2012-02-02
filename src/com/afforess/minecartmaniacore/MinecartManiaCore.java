@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import javax.persistence.PersistenceException;
 
+import org.akrieger.Nethrar.NethrarMinecartTeleportEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -239,9 +240,13 @@ public class MinecartManiaCore extends JavaPlugin {
     }
     
     public static void callEvent(final Event event) {
+        if (event instanceof NethrarMinecartTeleportEvent) {
+            listener.onNethrarEvent((NethrarMinecartTeleportEvent) event);
+        }
         /*
-         * if (event instanceof NethrarMinecartTeleportEvent) { listener.onNethrarEvent((NethrarMinecartTeleportEvent) event); } else if (event instanceof StargateMinecartTeleportEvent) { listener.onWormholeExtremeEvent((StargateMinecartTeleportEvent) event); }
+         * else if (event instanceof StargateMinecartTeleportEvent) { listener.onWormholeExtremeEvent((StargateMinecartTeleportEvent) event); }
          */
+        
         //now everyone else goes
         Bukkit.getServer().getPluginManager().callEvent(event);
     }
