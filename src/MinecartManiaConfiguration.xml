@@ -275,6 +275,7 @@
 			<ItemType>IRON_ORE</ItemType>
 			<ItemType>COAL_ORE</ItemType>
 			<ItemType>LAPIS_ORE</ItemType>
+			<ItemType>351;4</itemType> <!-- Lapis -->
 		</ItemAlias>
 		<ItemAlias>
 			<AliasName>Food</AliasName>
