@@ -14,6 +14,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Vehicle;
 import org.bukkit.entity.Wolf;
+import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 
 import com.afforess.minecartmaniacore.config.MinecartManiaConfiguration;
@@ -23,6 +24,15 @@ import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
 import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
 
 public class MinecartUtils {
+    private static final CompassDirection[] validDirections = new CompassDirection[] { CompassDirection.NORTH, CompassDirection.EAST, CompassDirection.SOUTH, CompassDirection.WEST };
+    
+    public static boolean validDirection(CompassDirection dir) {
+        for (CompassDirection td : getValiddirections()) {
+            if (td.equals(dir))
+                return true;
+        }
+        return false;
+    }
     
     public static boolean isTrack(final Block block) {
         return isTrack(block.getTypeId());
@@ -71,15 +81,10 @@ public class MinecartUtils {
         }
         range--;
         while (range > 0) {
-            if (direction == CompassDirection.NORTH) {
-                x--;
-            } else if (direction == CompassDirection.EAST) {
-                z--;
-            } else if (direction == CompassDirection.SOUTH) {
-                x++;
-            } else if (direction == CompassDirection.WEST) {
-                z++;
-            }
+            BlockVector bv = direction.toVector(range).toBlockVector();
+            x += bv.getBlockX();
+            z += bv.getBlockZ();
+            
             if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y - 1, z))) {
                 y--;
             } else if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y + 1, z))) {
@@ -88,15 +93,23 @@ public class MinecartUtils {
             if (!isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y, z)))
                 return false;
             
-            if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x - 1, y, z))) {
-                direction = CompassDirection.NORTH;
-            } else if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y, z - 1))) {
-                direction = CompassDirection.EAST;
-            } else if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x + 1, y, z))) {
-                direction = CompassDirection.SOUTH;
-            } else if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y, z + 1))) {
-                direction = CompassDirection.WEST;
+            for (CompassDirection dir : CompassDirection.getCardinalDirections()) {
+                Location loc = new Location(w, x, y, z);
+                loc.add(dir.toVector(1));
+                if (isTrack(loc)) {
+                    direction = dir;
+                }
             }
+            // Old
+            //            if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x - 1, y, z))) {
+            //                direction = CompassDirection.NORTH;
+            //            } else if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y, z - 1))) {
+            //                direction = CompassDirection.EAST;
+            //            } else if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x + 1, y, z))) {
+            //                direction = CompassDirection.SOUTH;
+            //            } else if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y, z + 1))) {
+            //                direction = CompassDirection.WEST;
+            //            }
             range--;
         }
         return true;
@@ -323,5 +336,9 @@ public class MinecartUtils {
             }
         };
         update.start();
+    }
+    
+    public static CompassDirection[] getValiddirections() {
+        return validDirections;
     }
 }

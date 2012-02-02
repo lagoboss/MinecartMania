@@ -91,6 +91,14 @@ public abstract class DirectionUtils {
             }
             return null;
         }
+        
+        /**
+         * Returns all 4 major compass directions.
+         * @returns Major compass headings
+         */
+        public static CompassDirection[] getCardinalDirections() {
+            return new CompassDirection[] { CompassDirection.NORTH, CompassDirection.EAST, CompassDirection.SOUTH, CompassDirection.WEST, };
+        }
     }
     
     public static boolean isEqualOrNoDirection(final CompassDirection e1, final CompassDirection e2) {
