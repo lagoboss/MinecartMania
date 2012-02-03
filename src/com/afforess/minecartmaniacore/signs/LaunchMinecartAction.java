@@ -3,6 +3,7 @@ package com.afforess.minecartmaniacore.signs;
 import org.bukkit.util.Vector;
 
 import com.afforess.minecartmaniacore.config.ControlBlockList;
+import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
 import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
 import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
 import com.afforess.minecartmaniacore.utils.StringUtils;
@@ -46,7 +47,13 @@ public class LaunchMinecartAction implements SignAction {
                     if (line.contains("player")) {
                         // TODO: Handle "launch player"
                     } else {
-                        dir = CompassDirection.valueOf(line.substring(7).toUpperCase());
+                        try {
+                            dir = CompassDirection.valueOf(line.substring(7).toUpperCase());
+                        } catch (final IllegalArgumentException e) {
+                            String fs = String.format("Unknown sign launch direction: %s in: %s at x:%d y:%d z:%d", line.substring(7),sign.getBlock().getWorld().getName().toString(),sign.getX(),sign.getY(),sign.getZ());
+                            MinecartManiaLogger.getInstance().log(fs,true);
+                            dir = CompassDirection.NO_DIRECTION;
+                        }
                         if (dir != CompassDirection.NO_DIRECTION) {
                             break;
                         }
