@@ -23,20 +23,19 @@ public class LaunchMinecartAction implements SignAction {
             return false;
         final Vector launch = calculateLaunchSpeed(false);
         if (previous) {
-            if ((minecart.getPreviousDirectionOfMotion() != null) && (minecart.getPreviousDirectionOfMotion() != CompassDirection.NO_DIRECTION)) {
+            if (minecart.getPreviousDirectionOfMotion() != CompassDirection.NO_DIRECTION) {
                 minecart.setMotion(minecart.getPreviousDirectionOfMotion(), 0.6D);
             }
         } else {
             minecart.minecart.setVelocity(launch);
         }
-        
         return true;
     }
     
     private Vector calculateLaunchSpeed(final boolean force) {
         if ((launchSpeed == null) || force) {
             previous = false;
-            CompassDirection dir = null;
+            CompassDirection dir = CompassDirection.NO_DIRECTION;
             for (int i = 0; i < sign.getNumLines(); i++) {
                 final String line = StringUtils.removeBrackets(sign.getLine(i).trim()).toLowerCase();
                 if (line.contains("previous dir")) {
@@ -48,13 +47,13 @@ public class LaunchMinecartAction implements SignAction {
                         // TODO: Handle "launch player"
                     } else {
                         dir = CompassDirection.valueOf(line.substring(7).toUpperCase());
-                        if (dir != null) {
+                        if (dir != CompassDirection.NO_DIRECTION) {
                             break;
                         }
                     }
                 }
             }
-            if ((dir != null) || previous) {
+            if ((dir != CompassDirection.NO_DIRECTION) || previous) {
                 sign.addBrackets();
                 launchSpeed = dir.toVector(0.6);
             }
