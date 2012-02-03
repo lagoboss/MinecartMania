@@ -73,21 +73,21 @@ public abstract class DirectionUtils {
                 case NO_DIRECTION:
                     return new Vector(0, 0, 0);
                 case NORTH:
-                    return new Vector(speed, 0, 0);
+                    return new Vector(-speed, 0, 0);
                 case NORTH_EAST:
-                    return new Vector(speed, 0, -speed);
+                    return new Vector(-speed, 0, -speed);
                 case EAST:
                     return new Vector(0, 0, -speed);
                 case SOUTH_EAST:
-                    return new Vector(-speed, 0, -speed);
+                    return new Vector(speed, 0, -speed);
                 case SOUTH:
-                    return new Vector(-speed, 0, 0);
+                    return new Vector(speed, 0, 0);
                 case SOUTH_WEST:
-                    return new Vector(-speed, 0, speed);
+                    return new Vector(speed, 0, speed);
                 case WEST:
                     return new Vector(0, 0, speed);
                 case NORTH_WEST:
-                    return new Vector(speed, 0, speed);
+                    return new Vector(-speed, 0, speed);
             }
             return null;
         }
