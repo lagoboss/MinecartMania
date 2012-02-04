@@ -58,11 +58,14 @@
 			<artifactId>LWC</artifactId>
 			<version>3.53</version>
 		</dependency>
+		<!--
+		TODO:  Causes a shitton of errors if Nethrar is not installed (worked before events system overhaul)
+        If you can fix this, please submit a pull.
 		<dependency>
 			<groupId>org.akrieger</groupId>
 			<artifactId>nethrar</artifactId>
 			<version>2.3</version>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>org.yi.acru.bukkit</groupId>
 			<artifactId>Lockette</artifactId>

@@ -1,13 +1,6 @@
 package com.afforess.minecartmaniacore.event;
 
-import org.akrieger.Nethrar.NethrarMinecartTeleportEvent;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-
-import com.afforess.minecartmaniacore.MinecartManiaCore;
-import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
-import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
 
 public class MinecartManiaListener implements Listener {
     
@@ -193,21 +186,22 @@ public class MinecartManiaListener implements Listener {
     /*
      * @EventHandler(priority = EventPriority.NORMAL) public void onWormholeExtremeEvent(final StargateMinecartTeleportEvent event) { //Special case if (MinecartManiaCore.isWormholeXTremeEnabled()) { try { final StargateMinecartTeleportEvent e = event; final MinecartManiaMinecart oldMinecart = MinecartManiaWorld.getMinecartManiaMinecart(e.getOldMinecart()); oldMinecart.copy(e.getNewMinecart()); oldMinecart.kill(false); return; } catch (final Exception e) { } } }
      */
-    
-    @EventHandler(priority = EventPriority.NORMAL)
-    public void onNethrarEvent(final NethrarMinecartTeleportEvent event) {
-        if (MinecartManiaCore.isNethrarEnabled()) {
-            try {
-                if (event instanceof NethrarMinecartTeleportEvent) {
-                    final NethrarMinecartTeleportEvent e = event;
-                    final MinecartManiaMinecart oldMinecart = MinecartManiaWorld.getMinecartManiaMinecart(e.getOldCart());
-                    oldMinecart.copy(e.getNewCart());
-                    oldMinecart.kill(false);
-                    return;
-                }
-            } catch (final Exception e) {
-            }
-        }
-    }
+    // TODO:  Causes a shitton of errors if Nethrar is not installed (worked before events system overhaul)
+    // If you can fix this, please submit a pull.
+    //    @EventHandler(priority = EventPriority.NORMAL)
+    //    public void onNethrarEvent(final NethrarMinecartTeleportEvent event) {
+    //        if (MinecartManiaCore.isNethrarEnabled()) {
+    //            try {
+    //                if (event instanceof NethrarMinecartTeleportEvent) {
+    //                    final NethrarMinecartTeleportEvent e = event;
+    //                    final MinecartManiaMinecart oldMinecart = MinecartManiaWorld.getMinecartManiaMinecart(e.getOldCart());
+    //                    oldMinecart.copy(e.getNewCart());
+    //                    oldMinecart.kill(false);
+    //                    return;
+    //                }
+    //            } catch (final Exception e) {
+    //            }
+    //        }
+    //    }
     
 }
