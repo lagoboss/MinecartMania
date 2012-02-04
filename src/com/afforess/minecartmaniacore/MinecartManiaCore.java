@@ -29,10 +29,6 @@ import com.afforess.minecartmaniacore.world.Item;
 public class MinecartManiaCore extends JavaPlugin {
     
     public static final MinecartManiaCoreListener listener = new MinecartManiaCoreListener();
-    //    public static final MinecartManiaCoreBlockListener blockListener = new MinecartManiaCoreBlockListener();
-    //    public static final MinecartManiaCoreWorldListener worldListener = new MinecartManiaCoreWorldListener();
-    //    public static final MinecartManiaActionListener actionListener = new MinecartManiaActionListener();
-    //    public static final MinecartManiaCorePlayerListener playerListener = new MinecartManiaCorePlayerListener();
     public static MinecartManiaLogger log = MinecartManiaLogger.getInstance();
     private static Plugin instance;
     private static PluginDescriptionFile description;
@@ -51,6 +47,7 @@ public class MinecartManiaCore extends JavaPlugin {
         setNaggable(false);
     }
     
+    @Override
     public void onEnable() {
         description = getDescription();
         instance = this;
@@ -69,16 +66,6 @@ public class MinecartManiaCore extends JavaPlugin {
         MinecartManiaConfigurationParser.read("MinecartManiaLocale.xml", dataDirectory, new LocaleParser());
         
         getServer().getPluginManager().registerEvents(listener, this);
-        
-        //        getServer().getPluginManager().registerEvent(Event.Type.VEHICLE_UPDATE, listener, Priority.Normal, this);
-        //        getServer().getPluginManager().registerEvent(Event.Type.VEHICLE_COLLISION_ENTITY, listener, Priority.Normal, this);
-        //        getServer().getPluginManager().registerEvent(Event.Type.VEHICLE_DAMAGE, listener, Priority.Lowest, this);
-        //        getServer().getPluginManager().registerEvent(Event.Type.VEHICLE_DESTROY, listener, Priority.Lowest, this);
-        //        getServer().getPluginManager().registerEvent(Event.Type.VEHICLE_ENTER, listener, Priority.Monitor, this);
-        //        getServer().getPluginManager().registerEvent(Event.Type.CHUNK_UNLOAD, worldListener, Priority.Normal, this);
-        //        getServer().getPluginManager().registerEvent(Event.Type.REDSTONE_CHANGE, blockListener, Priority.Monitor, this);
-        //        getServer().getPluginManager().registerEvent(Event.Type.PLAYER_QUIT, playerListener, Priority.Monitor, this);
-        //        getServer().getPluginManager().registerEvent(Event.Type.PLAYER_JOIN, playerListener, Priority.Monitor, this);
         
         //database setup
         final File ebeans = new File(new File(getDataFolder().getParent()).getParent(), "ebean.properties");
@@ -101,6 +88,7 @@ public class MinecartManiaCore extends JavaPlugin {
         log.info(description.getName() + " version " + description.getVersion() + " is enabled!");
     }
     
+    @Override
     public void onDisable() {
         getServer().getScheduler().cancelTasks(this);
         log.info(description.getName() + " version " + description.getVersion() + " is disabled!");
