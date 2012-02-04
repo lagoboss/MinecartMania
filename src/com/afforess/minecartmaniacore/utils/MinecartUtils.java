@@ -26,8 +26,8 @@ import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
 public class MinecartUtils {
     private static final CompassDirection[] validDirections = new CompassDirection[] { CompassDirection.NORTH, CompassDirection.EAST, CompassDirection.SOUTH, CompassDirection.WEST };
     
-    public static boolean validDirection(CompassDirection dir) {
-        for (CompassDirection td : getValiddirections()) {
+    public static boolean validDirection(final CompassDirection dir) {
+        for (final CompassDirection td : getValiddirections()) {
             if (td.equals(dir))
                 return true;
         }
@@ -81,7 +81,7 @@ public class MinecartUtils {
         }
         range--;
         while (range > 0) {
-            BlockVector bv = direction.toVector(range).toBlockVector();
+            final BlockVector bv = direction.toVector(range).toBlockVector();
             x += bv.getBlockX();
             z += bv.getBlockZ();
             
@@ -93,8 +93,8 @@ public class MinecartUtils {
             if (!isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y, z)))
                 return false;
             
-            for (CompassDirection dir : CompassDirection.getCardinalDirections()) {
-                Location loc = new Location(w, x, y, z);
+            for (final CompassDirection dir : CompassDirection.getCardinalDirections()) {
+                final Location loc = new Location(w, x, y, z);
                 loc.add(dir.toVector(1));
                 if (isTrack(loc)) {
                     direction = dir;
@@ -237,8 +237,12 @@ public class MinecartUtils {
             
             final double distance = e.getLocation().toVector().distanceSquared(location);
             if (distance < range) {
-                if (minecart.isStorageMinecart() && (e instanceof org.bukkit.entity.Item) && ((MinecartManiaStorageCart) minecart).addItem(((org.bukkit.entity.Item) e).getItemStack())) {
-                    e.remove();
+                if (minecart.isStorageMinecart() && (e instanceof org.bukkit.entity.Item)) {
+                    if (((MinecartManiaStorageCart) minecart).canAddItem(((org.bukkit.entity.Item) e).getItemStack())) {
+                        if (((MinecartManiaStorageCart) minecart).addItem(((org.bukkit.entity.Item) e).getItemStack())) {
+                            e.remove();
+                        }
+                    }
                 }
             }
             
