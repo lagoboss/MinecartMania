@@ -52,11 +52,11 @@ public class MinecartManiaLogger {
         }
         queue(s);
     }
-    
+   /* 
     public void log(final String s, final Object... args) {
         log(s, true, args);
     }
-    
+    */
     public void log(final String s, final boolean toConsole, final Object... args) {
         if ((mode == DebugMode.DEBUG) || (mode == DebugMode.NORMAL) || (mode == DebugMode.TIMER)) {
             if (toConsole) {
@@ -90,7 +90,7 @@ public class MinecartManiaLogger {
     
     public void switchDebugMode(final DebugMode mode) {
         this.mode = mode;
-        log("Debug mode switched to " + mode.name());
+        log.severe("Debug mode switched to " + mode.name());
     }
     
     private final void queue(final String log) {
