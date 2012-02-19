@@ -117,7 +117,7 @@ public class MinecartManiaMinecartDataTable {
             cache.put(player, data);
             return data;
         } catch (final Exception e) {
-            MinecartManiaLogger.getInstance().log("Failed to load the minecart from memory when " + player + " reconnected");
+            MinecartManiaLogger.getInstance().severe("Failed to load the minecart from memory when " + player + " reconnected");
             MinecartManiaLogger.getInstance().log(e.getMessage(), false);
             return null;
         }
