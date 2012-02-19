@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 
 import com.afforess.minecartmaniacore.MinecartManiaCore;
 import com.afforess.minecartmaniacore.config.CoreSettingParser;
+import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
 import com.afforess.minecartmaniacore.matching.MatchAND;
 import com.afforess.minecartmaniacore.matching.MatchConstant;
 import com.afforess.minecartmaniacore.matching.MatchField;
@@ -213,8 +214,15 @@ public class ItemUtils {
         
         //Check the given direction and intended direction from the sign
         final CompassDirection direction = getLineItemDirection(str);
+        
+        //Praitaq - Added to debug Directional Conditions not working.
+        MinecartManiaLogger.getInstance().debug("Direction Returned: " + direction.toString());
+
         if (direction != CompassDirection.NO_DIRECTION) {
             str = str.substring(2, str.length()); // remove the direction for further parsing.
+            
+            //Praitaq - Added to debug Directional Conditions not working.
+            MinecartManiaLogger.getInstance().debug("Line - Direction: "+ str + " Line:" + line);
         }
         if ((facing != null) && (direction != facing) && (direction != CompassDirection.NO_DIRECTION))
             return new ItemMatcher[0];
@@ -222,17 +230,17 @@ public class ItemUtils {
         final ItemMatcher matcher = new ItemMatcher();
         final ArrayList<ItemMatcher> matchers = new ArrayList<ItemMatcher>();
         
-        final String[] parts = line.split(":");
+        final String[] parts = str.split(":");
         for (int i = 0; i < parts.length; i++) {
             parts[i] = StringUtils.removeBrackets(parts[i]).toLowerCase().trim();
         }
-        line = StringUtils.join(parts, 0, ":");
+        str = StringUtils.join(parts, 0, ":");
         
-        if (preparsed.containsKey(line)) {
-            matchers.add(preparsed.get(line));
+        if (preparsed.containsKey(str)) {
+            matchers.add(preparsed.get(str));
         }
-        if (matcher.parse(line)) {
-            preparsed.put(line, matcher);
+        if (matcher.parse(str)) {
+            preparsed.put(str, matcher);
             saveDebugMap();
             matchers.add(matcher);
         }
