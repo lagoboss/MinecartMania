@@ -22,7 +22,10 @@ public class MinecartDirectionChangeEvent extends MinecartManiaEvent {
     }
     
     public MinecartDirectionChangeEvent(final MinecartManiaMinecart minecart, final CompassDirection previous, final CompassDirection current) {
+/* The MinecartmaniaEvent already know it's name
         super("MinecartDirectionChangeEvent");
+*/
+        super();
         this.minecart = minecart;
         this.previous = previous;
         this.current = current;

@@ -22,7 +22,10 @@ public class MinecartSpawnEvent extends MinecartManiaEvent implements Cancellabl
     }
     
     protected MinecartSpawnEvent(final MinecartManiaMinecart minecart) {
+/* The MinecartmaniaEvent already know it's name
         super("MinecartSpawnEvent");
+*/
+        super();
         this.minecart = minecart;
     }
     

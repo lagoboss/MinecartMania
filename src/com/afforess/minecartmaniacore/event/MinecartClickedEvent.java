@@ -20,7 +20,10 @@ public class MinecartClickedEvent extends MinecartManiaEvent implements Minecart
     }
     
     public MinecartClickedEvent(final MinecartManiaMinecart minecart) {
+/* The MinecartmaniaEvent already know it's name
         super("MinecartClickedEvent");
+*/
+        super();
         this.minecart = minecart;
     }
     

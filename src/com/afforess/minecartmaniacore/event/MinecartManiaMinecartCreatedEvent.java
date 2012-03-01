@@ -19,7 +19,10 @@ public class MinecartManiaMinecartCreatedEvent extends MinecartManiaEvent {
     }
     
     public MinecartManiaMinecartCreatedEvent(final MinecartManiaMinecart cart) {
+/* The MinecartmaniaEvent already know it's name
         super("MinecartManiaMinecartCreatedEvent");
+*/
+        super();
         minecart = cart;
     }
     

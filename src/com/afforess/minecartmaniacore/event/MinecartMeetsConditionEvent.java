@@ -22,7 +22,10 @@ public class MinecartMeetsConditionEvent extends MinecartManiaEvent {
     }
     
     public MinecartMeetsConditionEvent(final MinecartManiaMinecart minecart, final Sign sign) {
+/* The MinecartmaniaEvent already know it's name
         super("MinecartMeetsConditionEvent");
+*/
+        super();
         this.minecart = minecart;
         this.sign = sign;
     }

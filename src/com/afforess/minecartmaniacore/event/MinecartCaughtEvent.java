@@ -20,7 +20,10 @@ public class MinecartCaughtEvent extends MinecartManiaEvent implements MinecartE
     }
     
     public MinecartCaughtEvent(final MinecartManiaMinecart cart) {
+/* The MinecartmaniaEvent already know it's name
         super("MinecartLaunchedEvent");
+*/
+        super();
         minecart = cart;
     }
     

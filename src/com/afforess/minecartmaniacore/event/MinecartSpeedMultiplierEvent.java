@@ -23,7 +23,10 @@ public class MinecartSpeedMultiplierEvent extends MinecartManiaEvent implements 
     }
     
     public MinecartSpeedMultiplierEvent(final MinecartManiaMinecart minecart, final double multiplier) {
+/* The MinecartmaniaEvent already know it's name
         super("MinecartSpeedAlterEvent");
+*/
+        super();
         this.minecart = minecart;
         this.multiplier = multiplier;
         origMultiplier = multiplier;

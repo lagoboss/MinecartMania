@@ -22,7 +22,10 @@ public class ChestPoweredEvent extends MinecartManiaEvent {
     }
     
     public ChestPoweredEvent(final MinecartManiaChest chest, final boolean powered) {
+/* The MinecartmaniaEvent already know it's name
         super("ChestPoweredEvent");
+*/
+        super();
         this.chest = chest;
         this.powered = powered;
         wasPowered = chest.isRedstonePower();

@@ -23,7 +23,10 @@ public class MinecartPassengerEjectEvent extends MinecartManiaEvent implements C
     }
     
     public MinecartPassengerEjectEvent(final MinecartManiaMinecart minecart, final Entity passenger) {
+/* The MinecartmaniaEvent already know it's name
         super("MinecartPassengerEjectEvent");
+*/
+        super();
         this.minecart = minecart;
         this.passenger = passenger;
     }
