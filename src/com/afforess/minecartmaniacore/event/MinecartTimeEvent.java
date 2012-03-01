@@ -23,7 +23,10 @@ public class MinecartTimeEvent extends MinecartManiaEvent {
     }
     
     public MinecartTimeEvent(final MinecartManiaMinecart cart, final Calendar oldCal, final Calendar newCal) {
+/* The MinecartmaniaEvent already know it's name
         super("MinecartTimeEvent");
+*/
+        super();
         minecart = cart;
         oldCalendar = oldCal;
         currentCalendar = newCal;

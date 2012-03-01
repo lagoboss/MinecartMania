@@ -24,7 +24,10 @@ public class ChestSpawnMinecartEvent extends MinecartManiaEvent implements Cance
     }
     
     public ChestSpawnMinecartEvent(final MinecartManiaChest chest, final Location spawnLocation, final int type) {
+/* The MinecartmaniaEvent already know it's name
         super("ChestPoweredEvent");
+*/
+        super();
         this.chest = chest;
         this.spawnLocation = spawnLocation;
         this.type = type;

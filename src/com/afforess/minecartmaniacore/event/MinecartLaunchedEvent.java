@@ -22,7 +22,10 @@ public class MinecartLaunchedEvent extends MinecartManiaEvent implements Minecar
     }
     
     public MinecartLaunchedEvent(final MinecartManiaMinecart cart, final Vector speed) {
+/* The MinecartmaniaEvent already know it's name
         super("MinecartLaunchedEvent");
+*/
+        super();
         minecart = cart;
         launchSpeed = speed;
     }

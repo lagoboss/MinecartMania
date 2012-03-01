@@ -24,7 +24,10 @@ public class MinecartElevatorEvent extends MinecartManiaEvent implements Cancell
     }
     
     public MinecartElevatorEvent(final MinecartManiaMinecart minecart, final Location teleport) {
+/* The MinecartmaniaEvent already know it's name
         super("MinecartElevatorEvent");
+*/
+        super();
         this.minecart = minecart;
         location = teleport;
     }
