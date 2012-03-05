@@ -1009,23 +1009,24 @@ public class MinecartManiaMinecart {
         }
     }
     
+    // (Etsija) Directionality fix
     public boolean isApproaching(final Vector v) {
         if (!isMoving())
             return false;
         final CompassDirection direction = getDirectionOfMotion();
-        if (direction == CompassDirection.NORTH) {
+        if (direction == CompassDirection.WEST) {
             if (((minecart.getLocation().getX() - v.getX()) < 3.0D) && ((minecart.getLocation().getX() - v.getX()) > 0.0D))
                 return Math.abs(minecart.getLocation().getZ() - v.getZ()) < 1.5D;
         }
-        if (direction == CompassDirection.SOUTH) {
+        if (direction == CompassDirection.EAST) {
             if (((minecart.getLocation().getX() - v.getX()) > -3.0D) && ((minecart.getLocation().getX() - v.getX()) < 0.0D))
                 return Math.abs(minecart.getLocation().getZ() - v.getZ()) < 1.5D;
         }
-        if (direction == CompassDirection.EAST) {
+        if (direction == CompassDirection.NORTH) {
             if (((minecart.getLocation().getZ() - v.getZ()) < 3.0D) && ((minecart.getLocation().getZ() - v.getZ()) > 0.0D))
                 return Math.abs(minecart.getLocation().getX() - v.getX()) < 1.5D;
         }
-        if (direction == CompassDirection.WEST) {
+        if (direction == CompassDirection.SOUTH) {
             if (((minecart.getLocation().getZ() - v.getZ()) > -3.0D) && ((minecart.getLocation().getZ() - v.getZ()) < 0.0D))
                 return Math.abs(minecart.getLocation().getX() - v.getX()) < 1.5D;
         }
