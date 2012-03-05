@@ -778,14 +778,15 @@ public class MinecartManiaMinecart {
         }
     }
     
+    // (Etsija) Directionality fix
     public MinecartManiaMinecart getAdjacentMinecartFromDirection(final DirectionUtils.CompassDirection direction) {
-        if (direction == DirectionUtils.CompassDirection.NORTH)
-            return MinecartManiaWorld.getMinecartManiaMinecartAt(getX() - 1, getY(), getZ());
-        if (direction == DirectionUtils.CompassDirection.EAST)
-            return MinecartManiaWorld.getMinecartManiaMinecartAt(getX(), getY(), getZ() - 1);
-        if (direction == DirectionUtils.CompassDirection.SOUTH)
-            return MinecartManiaWorld.getMinecartManiaMinecartAt(getX() + 1, getY(), getZ());
         if (direction == DirectionUtils.CompassDirection.WEST)
+            return MinecartManiaWorld.getMinecartManiaMinecartAt(getX() - 1, getY(), getZ());
+        if (direction == DirectionUtils.CompassDirection.NORTH)
+            return MinecartManiaWorld.getMinecartManiaMinecartAt(getX(), getY(), getZ() - 1);
+        if (direction == DirectionUtils.CompassDirection.EAST)
+            return MinecartManiaWorld.getMinecartManiaMinecartAt(getX() + 1, getY(), getZ());
+        if (direction == DirectionUtils.CompassDirection.SOUTH)
             return MinecartManiaWorld.getMinecartManiaMinecartAt(getX(), getY(), getZ() + 1);
         return null;
     }
