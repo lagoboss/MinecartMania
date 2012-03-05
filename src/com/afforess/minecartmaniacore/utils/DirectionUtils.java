@@ -261,6 +261,7 @@ public abstract class DirectionUtils {
         return CompassDirection.NO_DIRECTION;
     }
     
+    // (Etsija) Fixed wrong directions for L and R
     public static CompassDirection getDirectionFromString(final String dir, final CompassDirection facingDir) {
         
         if ((dir.indexOf("W") > -1) || (dir.toLowerCase().indexOf("west") > -1))
@@ -275,9 +276,9 @@ public abstract class DirectionUtils {
             if ((dir.indexOf("STR") > -1) || (dir.toLowerCase().indexOf("straight") > -1))
                 return facingDir;
             if ((dir.indexOf("L") > -1) || (dir.toLowerCase().indexOf("left") > -1))
-                return getRightDirection(facingDir);
-            if ((dir.indexOf("R") > -1) || (dir.toLowerCase().indexOf("right") > -1))
                 return getLeftDirection(facingDir);
+            if ((dir.indexOf("R") > -1) || (dir.toLowerCase().indexOf("right") > -1))
+                return getRightDirection(facingDir);
         }
         
         return CompassDirection.NO_DIRECTION;
