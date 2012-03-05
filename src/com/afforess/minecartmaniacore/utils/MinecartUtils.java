@@ -209,7 +209,25 @@ public class MinecartUtils {
     public static boolean hasTrackConnectedOn(final World w, final int x, final int y, final int z, final BlockFace direction) {
         // (Etsija) Directionality fix
     	final Block base = MinecartManiaWorld.getBlockAt(w, x, y, z);
-        final Block next = base.getRelative(direction);
+        
+        // (Etsija) Temp fix for Bukkit getRelative() method still returning old Notch directions
+        BlockFace corrDirection = direction;
+        switch (direction) {
+        	case NORTH:
+        		corrDirection = BlockFace.EAST;
+        		break;
+        	case EAST:
+        		corrDirection = BlockFace.SOUTH;
+        		break;
+        	case SOUTH:
+        		corrDirection = BlockFace.WEST;
+        		break;
+        	case WEST:
+        		corrDirection = BlockFace.NORTH;
+        		break;
+        }
+        final Block next = base.getRelative(corrDirection); 
+        
         if (isTrack(next)) {
             final byte nextData = next.getData();
             switch (direction) {
