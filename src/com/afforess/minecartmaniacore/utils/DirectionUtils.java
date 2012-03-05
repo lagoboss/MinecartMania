@@ -152,38 +152,39 @@ public abstract class DirectionUtils {
         return null;
     }
     
+    // (Etsija) Directionality fix
     public static int getMinetrackRailDataForDirection(final CompassDirection eOverrideDir, final CompassDirection eFacingDir) {
         if (eFacingDir == CompassDirection.NORTH) {
             if (eOverrideDir == CompassDirection.EAST)
-                return 9;
-            if (eOverrideDir == CompassDirection.NORTH)
-                return 1;
-            if (eOverrideDir == CompassDirection.WEST)
                 return 6;
+            if (eOverrideDir == CompassDirection.NORTH)
+                return 0;
+            if (eOverrideDir == CompassDirection.WEST)
+                return 7;
         }
         if (eFacingDir == CompassDirection.EAST) {
             if (eOverrideDir == CompassDirection.EAST)
-                return 0;
+                return 1;
             if (eOverrideDir == CompassDirection.NORTH)
-                return 7;
+                return 8;
             if (eOverrideDir == CompassDirection.SOUTH)
-                return 6;
+                return 7;
         }
         if (eFacingDir == CompassDirection.WEST) {
             if (eOverrideDir == CompassDirection.WEST)
-                return 0;
+                return 1;
             if (eOverrideDir == CompassDirection.NORTH)
-                return 8;
-            if (eOverrideDir == CompassDirection.SOUTH)
                 return 9;
+            if (eOverrideDir == CompassDirection.SOUTH)
+                return 6;
         }
         if (eFacingDir == CompassDirection.SOUTH) {
             if (eOverrideDir == CompassDirection.WEST)
-                return 7;
-            if (eOverrideDir == CompassDirection.EAST)
                 return 8;
+            if (eOverrideDir == CompassDirection.EAST)
+                return 9;
             if (eOverrideDir == CompassDirection.SOUTH)
-                return 1;
+                return 0;
         }
         return -1;
     }
