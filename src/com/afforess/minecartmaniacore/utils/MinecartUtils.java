@@ -115,13 +115,14 @@ public class MinecartUtils {
         return true;
     }
     
+    // (Etsija) Directionality fix
     public static boolean isAtIntersection(final World w, final int x, final int y, final int z) {
         int paths = 0;
         
         final int data = MinecartManiaWorld.getBlockData(w, x, y, z);
         
         switch (data) {
-            case 0: // west-east straight
+            case 1: // west-east straight
                 if (hasTrackConnectedOn(w, x, y, z, BlockFace.EAST) && hasTrackConnectedOn(w, x, y, z, BlockFace.WEST)) {
                     paths = 2;
                     if (hasTrackConnectedOn(w, x, y, z, BlockFace.NORTH)) {
@@ -132,7 +133,7 @@ public class MinecartUtils {
                     }
                 }
                 break;
-            case 1: // north-south straight
+            case 0: // north-south straight
                 if (hasTrackConnectedOn(w, x, y, z, BlockFace.NORTH) && hasTrackConnectedOn(w, x, y, z, BlockFace.SOUTH)) {
                     paths = 2;
                     if (hasTrackConnectedOn(w, x, y, z, BlockFace.WEST)) {
@@ -143,7 +144,7 @@ public class MinecartUtils {
                     }
                 }
                 break;
-            case 6: // west-south corner
+            case 7: // west-south corner
                 if (hasTrackConnectedOn(w, x, y, z, BlockFace.SOUTH) && hasTrackConnectedOn(w, x, y, z, BlockFace.WEST)) {
                     paths = 2;
                     if (hasTrackConnectedOn(w, x, y, z, BlockFace.NORTH)) {
@@ -154,7 +155,7 @@ public class MinecartUtils {
                     }
                 }
                 break;
-            case 7: // west-north corner
+            case 8: // west-north corner
                 if (hasTrackConnectedOn(w, x, y, z, BlockFace.NORTH) && hasTrackConnectedOn(w, x, y, z, BlockFace.WEST)) {
                     paths = 2;
                     if (hasTrackConnectedOn(w, x, y, z, BlockFace.EAST)) {
@@ -165,7 +166,7 @@ public class MinecartUtils {
                     }
                 }
                 break;
-            case 8: // north-east corner
+            case 9: // north-east corner
                 if (hasTrackConnectedOn(w, x, y, z, BlockFace.NORTH) && hasTrackConnectedOn(w, x, y, z, BlockFace.EAST)) {
                     paths = 2;
                     if (hasTrackConnectedOn(w, x, y, z, BlockFace.SOUTH)) {
@@ -176,7 +177,7 @@ public class MinecartUtils {
                     }
                 }
                 break;
-            case 9: // east-south corner
+            case 6: // east-south corner
                 if (hasTrackConnectedOn(w, x, y, z, BlockFace.EAST) && hasTrackConnectedOn(w, x, y, z, BlockFace.SOUTH)) {
                     paths = 2;
                     if (hasTrackConnectedOn(w, x, y, z, BlockFace.NORTH)) {
