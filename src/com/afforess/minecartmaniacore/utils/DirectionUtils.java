@@ -285,36 +285,37 @@ public abstract class DirectionUtils {
         return CompassDirection.NO_DIRECTION;
     }
     
+    // (Etsija) Directionality fix
     public static CompassDirection getSignFacingDirection(final Sign sign) {
         final int data = MinecartManiaWorld.getBlockData(sign.getWorld(), sign.getX(), sign.getY(), sign.getZ());
         final Block block = sign.getBlock();
         if (block.getType().equals(Material.SIGN_POST)) {
             if (data == 0x0)
-                return DirectionUtils.CompassDirection.WEST;
-            if ((data == 0x1) || (data == 0x2) || (data == 0x3))
-                return DirectionUtils.CompassDirection.NORTH_WEST;
-            if (data == 0x4)
-                return DirectionUtils.CompassDirection.NORTH;
-            if ((data == 0x5) || (data == 0x6) || (data == 0x7))
-                return DirectionUtils.CompassDirection.NORTH_EAST;
-            if (data == 0x8)
-                return DirectionUtils.CompassDirection.EAST;
-            if ((data == 0x9) || (data == 0xA) || (data == 0xB))
-                return DirectionUtils.CompassDirection.SOUTH_EAST;
-            if (data == 0xC)
                 return DirectionUtils.CompassDirection.SOUTH;
-            if ((data == 0xD) || (data == 0xE) || (data == 0xF))
+            if ((data == 0x1) || (data == 0x2) || (data == 0x3))
                 return DirectionUtils.CompassDirection.SOUTH_WEST;
+            if (data == 0x4)
+                return DirectionUtils.CompassDirection.WEST;
+            if ((data == 0x5) || (data == 0x6) || (data == 0x7))
+                return DirectionUtils.CompassDirection.NORTH_WEST;
+            if (data == 0x8)
+                return DirectionUtils.CompassDirection.NORTH;
+            if ((data == 0x9) || (data == 0xA) || (data == 0xB))
+                return DirectionUtils.CompassDirection.NORTH_EAST;
+            if (data == 0xC)
+                return DirectionUtils.CompassDirection.EAST;
+            if ((data == 0xD) || (data == 0xE) || (data == 0xF))
+                return DirectionUtils.CompassDirection.SOUTH_EAST;
             return DirectionUtils.CompassDirection.NO_DIRECTION;
         } else {
             if (data == 0x3)
-                return DirectionUtils.CompassDirection.WEST;
-            if (data == 0x4)
-                return DirectionUtils.CompassDirection.NORTH;
-            if (data == 0x2)
-                return DirectionUtils.CompassDirection.EAST;
-            if (data == 0x5)
                 return DirectionUtils.CompassDirection.SOUTH;
+            if (data == 0x4)
+                return DirectionUtils.CompassDirection.WEST;
+            if (data == 0x2)
+                return DirectionUtils.CompassDirection.NORTH;
+            if (data == 0x5)
+                return DirectionUtils.CompassDirection.EAST;
             
             return DirectionUtils.CompassDirection.NO_DIRECTION;
         }
