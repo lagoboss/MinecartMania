@@ -140,14 +140,15 @@ public abstract class DirectionUtils {
         return CompassDirection.NO_DIRECTION;
     }
     
+    // (Etsija) Directionality fix
     public static Block getBlockTypeAhead(final World w, final CompassDirection efacingDir, final int x, final int y, final int z) {
-        if (efacingDir == CompassDirection.NORTH)
-            return MinecartManiaWorld.getBlockAt(w, x - 1, y, z);
-        if (efacingDir == CompassDirection.EAST)
-            return MinecartManiaWorld.getBlockAt(w, x, y, z - 1);
-        if (efacingDir == CompassDirection.SOUTH)
-            return MinecartManiaWorld.getBlockAt(w, x + 1, y, z);
         if (efacingDir == CompassDirection.WEST)
+            return MinecartManiaWorld.getBlockAt(w, x - 1, y, z);
+        if (efacingDir == CompassDirection.NORTH)
+            return MinecartManiaWorld.getBlockAt(w, x, y, z - 1);
+        if (efacingDir == CompassDirection.EAST)
+            return MinecartManiaWorld.getBlockAt(w, x + 1, y, z);
+        if (efacingDir == CompassDirection.SOUTH)
             return MinecartManiaWorld.getBlockAt(w, x, y, z + 1);
         return null;
     }
