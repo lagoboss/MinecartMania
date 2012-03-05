@@ -835,25 +835,26 @@ public class MinecartManiaMinecart {
         return BlockUtils.getBlocksBeneath(getPrevLocation(), range);
     }
     
+    // (Etsija) Directionality fix
     public boolean isMovingAway(final Location l) {
-        //North of us
+        //West of us
         if ((l.getBlockX() - getX()) < 0) {
-            if (getDirection().equals(CompassDirection.SOUTH))
-                return true;
-        }
-        //South of us
-        if ((l.getBlockX() - getX()) > 0) {
-            if (getDirection().equals(CompassDirection.NORTH))
+            if (getDirection().equals(CompassDirection.WEST))
                 return true;
         }
         //East of us
-        if ((l.getBlockZ() - getZ()) < 0) {
-            if (getDirection().equals(CompassDirection.WEST))
+        if ((l.getBlockX() - getX()) > 0) {
+            if (getDirection().equals(CompassDirection.EAST))
                 return true;
         }
-        //West of us
+        //North of us
+        if ((l.getBlockZ() - getZ()) < 0) {
+            if (getDirection().equals(CompassDirection.NORTH))
+                return true;
+        }
+        //South of us
         if ((l.getBlockZ() + getZ()) > 0) {
-            if (getDirection().equals(CompassDirection.WEST))
+            if (getDirection().equals(CompassDirection.SOUTH))
                 return true;
         }
         
