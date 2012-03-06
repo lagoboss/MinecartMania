@@ -115,13 +115,14 @@ public class MinecartUtils {
         return true;
     }
     
+    // (Etsija) Directionality fix
     public static boolean isAtIntersection(final World w, final int x, final int y, final int z) {
         int paths = 0;
         
         final int data = MinecartManiaWorld.getBlockData(w, x, y, z);
         
         switch (data) {
-            case 0: // west-east straight
+            case 1: // west-east straight
                 if (hasTrackConnectedOn(w, x, y, z, BlockFace.EAST) && hasTrackConnectedOn(w, x, y, z, BlockFace.WEST)) {
                     paths = 2;
                     if (hasTrackConnectedOn(w, x, y, z, BlockFace.NORTH)) {
@@ -132,7 +133,7 @@ public class MinecartUtils {
                     }
                 }
                 break;
-            case 1: // north-south straight
+            case 0: // north-south straight
                 if (hasTrackConnectedOn(w, x, y, z, BlockFace.NORTH) && hasTrackConnectedOn(w, x, y, z, BlockFace.SOUTH)) {
                     paths = 2;
                     if (hasTrackConnectedOn(w, x, y, z, BlockFace.WEST)) {
@@ -143,7 +144,7 @@ public class MinecartUtils {
                     }
                 }
                 break;
-            case 6: // west-south corner
+            case 7: // west-south corner
                 if (hasTrackConnectedOn(w, x, y, z, BlockFace.SOUTH) && hasTrackConnectedOn(w, x, y, z, BlockFace.WEST)) {
                     paths = 2;
                     if (hasTrackConnectedOn(w, x, y, z, BlockFace.NORTH)) {
@@ -154,7 +155,7 @@ public class MinecartUtils {
                     }
                 }
                 break;
-            case 7: // west-north corner
+            case 8: // west-north corner
                 if (hasTrackConnectedOn(w, x, y, z, BlockFace.NORTH) && hasTrackConnectedOn(w, x, y, z, BlockFace.WEST)) {
                     paths = 2;
                     if (hasTrackConnectedOn(w, x, y, z, BlockFace.EAST)) {
@@ -165,7 +166,7 @@ public class MinecartUtils {
                     }
                 }
                 break;
-            case 8: // north-east corner
+            case 9: // north-east corner
                 if (hasTrackConnectedOn(w, x, y, z, BlockFace.NORTH) && hasTrackConnectedOn(w, x, y, z, BlockFace.EAST)) {
                     paths = 2;
                     if (hasTrackConnectedOn(w, x, y, z, BlockFace.SOUTH)) {
@@ -176,7 +177,7 @@ public class MinecartUtils {
                     }
                 }
                 break;
-            case 9: // east-south corner
+            case 6: // east-south corner
                 if (hasTrackConnectedOn(w, x, y, z, BlockFace.EAST) && hasTrackConnectedOn(w, x, y, z, BlockFace.SOUTH)) {
                     paths = 2;
                     if (hasTrackConnectedOn(w, x, y, z, BlockFace.NORTH)) {
@@ -196,7 +197,7 @@ public class MinecartUtils {
      * 
      * valid: =7 L= F= == etc invalid: 7= =L =F =| etc
      * 
-     * Valid track data values for the given directions: NORTH: 1, 6, 9 (3) EAST: 0, 6, 7 (4) SOUTH: 1, 7, 8 (2) WEST: 0, 8, 9 (5) values in braces are for the slanted up track. -- can add a check for the lower level too, but these will probably cause issues anyway -- so just keep the requirement of having flat track
+     * Valid track data values for the given directions: WEST: 1, 6, 9 (3) NORTH: 0, 6, 7 (4) EAST: 1, 7, 8 (2) SOUTH: 0, 8, 9 (5) values in braces are for the slanted up track. -- can add a check for the lower level too, but these will probably cause issues anyway -- so just keep the requirement of having flat track
      * 
      * @param w
      * @param x
@@ -206,18 +207,37 @@ public class MinecartUtils {
      * @return
      */
     public static boolean hasTrackConnectedOn(final World w, final int x, final int y, final int z, final BlockFace direction) {
-        final Block base = MinecartManiaWorld.getBlockAt(w, x, y, z);
-        final Block next = base.getRelative(direction);
+        // (Etsija) Directionality fix
+    	final Block base = MinecartManiaWorld.getBlockAt(w, x, y, z);
+        
+        // (Etsija) Temp fix for Bukkit getRelative() method still returning old Notch directions
+        BlockFace corrDirection = direction;
+        switch (direction) {
+        	case NORTH:
+        		corrDirection = BlockFace.EAST;
+        		break;
+        	case EAST:
+        		corrDirection = BlockFace.SOUTH;
+        		break;
+        	case SOUTH:
+        		corrDirection = BlockFace.WEST;
+        		break;
+        	case WEST:
+        		corrDirection = BlockFace.NORTH;
+        		break;
+        }
+        final Block next = base.getRelative(corrDirection); 
+        
         if (isTrack(next)) {
             final byte nextData = next.getData();
             switch (direction) {
-                case NORTH:
-                    return (nextData == 1) || (nextData == 6) || (nextData == 9);
-                case EAST:
-                    return (nextData == 0) || (nextData == 6) || (nextData == 7);
-                case SOUTH:
-                    return (nextData == 1) || (nextData == 7) || (nextData == 8);
                 case WEST:
+                    return (nextData == 1) || (nextData == 6) || (nextData == 9);
+                case NORTH:
+                    return (nextData == 0) || (nextData == 6) || (nextData == 7);
+                case EAST:
+                    return (nextData == 1) || (nextData == 7) || (nextData == 8);
+                case SOUTH:
                     return (nextData == 0) || (nextData == 8) || (nextData == 9);
             }
         }
