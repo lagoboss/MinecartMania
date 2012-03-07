@@ -16,6 +16,7 @@ public abstract class MinecartManiaEvent extends org.bukkit.event.Event {
         timer = new DebugTimer(name);
 */
     protected MinecartManiaEvent() {
+        super();
         timer = new DebugTimer(getEventName());
     }
     
