@@ -7,11 +7,12 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Wolf;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.vehicle.VehicleDamageEvent;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.event.vehicle.VehicleEntityCollisionEvent;
-import org.bukkit.event.vehicle.VehicleListener;
 import org.bukkit.event.vehicle.VehicleUpdateEvent;
 
 import com.afforess.minecartmaniacore.MinecartManiaCore;
@@ -31,12 +32,12 @@ import com.afforess.minecartmaniacore.utils.MinecartUtils;
 import com.afforess.minecartmaniacore.utils.SignUtils;
 import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
 
-public class MinecartManiaCoreListener extends VehicleListener{
+public class MinecartManiaCoreListener implements Listener{
 	public MinecartManiaCoreListener() {
 
 	}
-	
-	@Override
+
+	@EventHandler
 	public void onVehicleUpdate(VehicleUpdateEvent event) {
 		if (event.getVehicle() instanceof Minecart) {
 			Minecart cart = (Minecart)event.getVehicle();
@@ -108,16 +109,16 @@ public class MinecartManiaCoreListener extends VehicleListener{
 			}
 		}
 	}
-	
-	@Override
+
+	@EventHandler
 	public void onVehicleDestroy(VehicleDestroyEvent event) {
 		if (event.getVehicle() instanceof Minecart && !event.isCancelled()) {
 			MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart((Minecart)event.getVehicle());
 			minecart.kill(false);
 		}
 	}
-	
-	@Override
+
+	@EventHandler
 	public void onVehicleDamage(VehicleDamageEvent event) {
 		if (event.getVehicle() instanceof Minecart) {
 			MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart((Minecart)event.getVehicle());
@@ -155,8 +156,8 @@ public class MinecartManiaCoreListener extends VehicleListener{
 			}
 		}
 	}
-	
-	@Override
+
+	@EventHandler
 	public void onVehicleEntityCollision(VehicleEntityCollisionEvent event) {
 		if (event.getVehicle() instanceof Minecart) {
 			Minecart cart = (Minecart)event.getVehicle();
@@ -185,7 +186,7 @@ public class MinecartManiaCoreListener extends VehicleListener{
 		}
 	}
 
-	@Override
+	@EventHandler
 	public void onVehicleEnter(VehicleEnterEvent event) {
 		if (event.isCancelled() || !(event.getVehicle() instanceof Minecart)) {
 			return;

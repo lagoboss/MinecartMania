@@ -198,7 +198,7 @@ public class MinecartUtils {
 	 */
 	public static boolean hasTrackConnectedOn(World w, int x, int y, int z, BlockFace direction) {
 		Block base = MinecartManiaWorld.getBlockAt(w, x, y, z);
-		Block next = base.getFace(direction);
+		Block next = base.getRelative(direction);
 		if ( isTrack(next) ) {
 			byte nextData = next.getData();
 			switch ( direction ) {

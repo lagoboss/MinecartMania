@@ -10,7 +10,7 @@ import org.bukkit.block.Chest;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.yi.acru.bukkit.Lockette.Lockette;
+//import org.yi.acru.bukkit.Lockette.Lockette;
 
 import com.afforess.minecartmaniacore.MinecartManiaCore;
 import com.afforess.minecartmaniacore.signs.ForceUnlockChestAction;
@@ -18,7 +18,7 @@ import com.afforess.minecartmaniacore.signs.Sign;
 import com.afforess.minecartmaniacore.utils.SignUtils;
 import com.afforess.minecartmaniacore.world.Item;
 import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
-import com.griefcraft.lwc.LWCPlugin;
+//import com.griefcraft.lwc.LWCPlugin;
 
 public class MinecartManiaChest extends MinecartManiaSingleContainer implements MinecartManiaInventory{
 
@@ -128,7 +128,7 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements 
 	 }
 	 
 	 public String getOwner() {
-		 if (MinecartManiaCore.isLocketteEnabled()) {
+		 /*if (MinecartManiaCore.isLocketteEnabled()) {
 			if (Lockette.isProtected(getLocation().getBlock())) {
 				return Lockette.getProtectedOwner(getLocation().getBlock());
 			}
@@ -138,7 +138,7 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements 
 			 if (lock.getLWC().findProtection(getLocation().getBlock()) != null) {
 				 return lock.getLWC().findProtection(getLocation().getBlock()).getOwner();
 			 }
-		 }
+		 }*/
 		return null;
 	 }
 	 
@@ -156,7 +156,7 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements 
 		 if (isIgnoreProtection() && player == null) {
 			return true;
 		 }
-		 if (MinecartManiaCore.isLocketteEnabled()) {
+		 /*if (MinecartManiaCore.isLocketteEnabled()) {
 			if (Lockette.isProtected(getLocation().getBlock())) {
 				if (player != null) {
 					return Lockette.getProtectedOwner(getLocation().getBlock()).equals(player);
@@ -175,7 +175,7 @@ public class MinecartManiaChest extends MinecartManiaSingleContainer implements 
 				 }
 				return false;
 			 }
-		 }
+		 }*/
 		 return true;
 	 }
 	 

@@ -9,7 +9,6 @@ import javax.persistence.PersistenceException;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
-import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -80,15 +79,11 @@ public class MinecartManiaCore extends JavaPlugin {
 		MinecartManiaConfigurationParser.read("MinecartManiaConfiguration.xml", dataDirectory, new CoreSettingParser());
 		MinecartManiaConfigurationParser.read("MinecartManiaLocale.xml", dataDirectory, new LocaleParser());
 
-		getServer().getPluginManager().registerEvent(Event.Type.VEHICLE_UPDATE, listener, Priority.Normal, this);
-		getServer().getPluginManager().registerEvent(Event.Type.VEHICLE_COLLISION_ENTITY, listener, Priority.Normal, this);
-		getServer().getPluginManager().registerEvent(Event.Type.VEHICLE_DAMAGE, listener, Priority.Lowest, this);
-		getServer().getPluginManager().registerEvent(Event.Type.VEHICLE_DESTROY, listener, Priority.Lowest, this);
-		getServer().getPluginManager().registerEvent(Event.Type.VEHICLE_ENTER, listener, Priority.Monitor, this);
-		getServer().getPluginManager().registerEvent(Event.Type.CHUNK_UNLOAD, worldListener, Priority.Normal, this);
-		getServer().getPluginManager().registerEvent(Event.Type.REDSTONE_CHANGE, blockListener, Priority.Monitor, this);
-		getServer().getPluginManager().registerEvent(Event.Type.PLAYER_QUIT, playerListener, Priority.Monitor, this);
-		getServer().getPluginManager().registerEvent(Event.Type.PLAYER_JOIN, playerListener, Priority.Monitor, this);
+		getServer().getPluginManager().registerEvents(listener, this);
+		getServer().getPluginManager().registerEvents(worldListener, this);
+		getServer().getPluginManager().registerEvents(blockListener, this);
+		getServer().getPluginManager().registerEvents(playerListener, this);
+		getServer().getPluginManager().registerEvents(actionListener, this);
 		
 		//database setup
 		File ebeans = new File(new File(this.getDataFolder().getParent()).getParent(), "ebean.properties");
@@ -101,7 +96,6 @@ public class MinecartManiaCore extends JavaPlugin {
 				pw.append("ebean.logging=none");
 				pw.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -245,9 +239,6 @@ public class MinecartManiaCore extends JavaPlugin {
 	}
 	
 	public static void callEvent(Event event) {
-		//We go first
-		actionListener.onCustomEvent(event);
-		//now everyone else goes
 		Bukkit.getServer().getPluginManager().callEvent(event);
 	}
 }

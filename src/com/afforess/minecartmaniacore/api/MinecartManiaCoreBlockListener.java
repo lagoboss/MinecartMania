@@ -6,7 +6,8 @@ import java.util.HashMap;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
-import org.bukkit.event.block.BlockListener;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockRedstoneEvent;
 
 import com.afforess.minecartmaniacore.MinecartManiaCore;
@@ -22,8 +23,10 @@ import com.afforess.minecartmaniacore.utils.SignUtils;
 import com.afforess.minecartmaniacore.world.Item;
 import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
 
-public class MinecartManiaCoreBlockListener extends BlockListener{
+public class MinecartManiaCoreBlockListener implements Listener{
 	private HashMap<Location, Long> lastSpawn = new HashMap<Location, Long>();
+	
+	@EventHandler
     public void onBlockRedstoneChange(BlockRedstoneEvent event) {    
     	if (event.getOldCurrent() > 0 && event.getNewCurrent() > 0) {
     		return;

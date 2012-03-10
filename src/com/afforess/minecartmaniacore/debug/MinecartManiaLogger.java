@@ -22,9 +22,10 @@ public class MinecartManiaLogger {
 	}
 	
 	public void time(String s, Object ...args) {
-		time(s, true);
+		timeCore(s, true);
 	}
-	public void time(String s, boolean toConsole, Object ...args) {
+	
+	public void timeCore(String s, boolean toConsole, Object ...args) {
 		if (mode == DebugMode.TIMER) {
 			s = String.format(s, args);
 			if (toConsole)
@@ -35,10 +36,10 @@ public class MinecartManiaLogger {
 	}
 	
 	public void debug(String s, Object ...args) {
-		debug(s, true);
+		debugCore(s, true);
 	}
 	
-	public void debug(String s, boolean toConsole, Object ...args) {
+	public void debugCore(String s, boolean toConsole, Object ...args) {
 		if (mode == DebugMode.DEBUG || mode == DebugMode.TIMER) {
 			s = String.format(s, args);
 			if (toConsole)
@@ -50,10 +51,10 @@ public class MinecartManiaLogger {
 	}
 	
 	public void log(String s, Object ...args) {
-		log(s, true, args);
+		logCore(s, true, args);
 	}
 	
-	public void log(String s, boolean toConsole, Object ...args) {
+	public void logCore(String s, boolean toConsole, Object ...args) {
 		if (mode == DebugMode.DEBUG || mode == DebugMode.NORMAL || mode == DebugMode.TIMER) {
 			if (toConsole)
 				log.info(prefix + s);
@@ -64,14 +65,14 @@ public class MinecartManiaLogger {
 	}
 	
 	public void info(String s, Object ...args) {
-		log(s, true, args);
+		logCore(s, true, args);
 	}
 	
 	public void severe(String s, Object ...args) {
-		severe(s, true, args);
+		severeCore(s, true, args);
 	}
 	
-	public void severe(String s, boolean toConsole, Object ...args) {
+	public void severeCore(String s, boolean toConsole, Object ...args) {
 		if (mode == DebugMode.DEBUG || mode == DebugMode.NORMAL || mode == DebugMode.SEVERE || mode == DebugMode.TIMER) {
 			s = String.format(s, args);
 			if (toConsole)
