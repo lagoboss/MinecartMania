@@ -436,14 +436,15 @@ public class MinecartManiaMinecart {
      * @return direction
      */
     public CompassDirection getDirectionOfMotion() {
+    	// (Etsija) Directionality fix
         if (getMotionX() < 0.0D)
-            return CompassDirection.NORTH;
-        if (getMotionZ() < 0.0D)
-            return CompassDirection.EAST;
-        if (getMotionX() > 0.0D)
-            return CompassDirection.SOUTH;
-        if (getMotionZ() > 0.0D)
             return CompassDirection.WEST;
+        if (getMotionZ() < 0.0D)
+            return CompassDirection.NORTH;
+        if (getMotionX() > 0.0D)
+            return CompassDirection.EAST;
+        if (getMotionZ() > 0.0D)
+            return CompassDirection.SOUTH;
         return CompassDirection.NO_DIRECTION;
     }
     
@@ -777,14 +778,15 @@ public class MinecartManiaMinecart {
         }
     }
     
+    // (Etsija) Directionality fix
     public MinecartManiaMinecart getAdjacentMinecartFromDirection(final DirectionUtils.CompassDirection direction) {
-        if (direction == DirectionUtils.CompassDirection.NORTH)
-            return MinecartManiaWorld.getMinecartManiaMinecartAt(getX() - 1, getY(), getZ());
-        if (direction == DirectionUtils.CompassDirection.EAST)
-            return MinecartManiaWorld.getMinecartManiaMinecartAt(getX(), getY(), getZ() - 1);
-        if (direction == DirectionUtils.CompassDirection.SOUTH)
-            return MinecartManiaWorld.getMinecartManiaMinecartAt(getX() + 1, getY(), getZ());
         if (direction == DirectionUtils.CompassDirection.WEST)
+            return MinecartManiaWorld.getMinecartManiaMinecartAt(getX() - 1, getY(), getZ());
+        if (direction == DirectionUtils.CompassDirection.NORTH)
+            return MinecartManiaWorld.getMinecartManiaMinecartAt(getX(), getY(), getZ() - 1);
+        if (direction == DirectionUtils.CompassDirection.EAST)
+            return MinecartManiaWorld.getMinecartManiaMinecartAt(getX() + 1, getY(), getZ());
+        if (direction == DirectionUtils.CompassDirection.SOUTH)
             return MinecartManiaWorld.getMinecartManiaMinecartAt(getX(), getY(), getZ() + 1);
         return null;
     }
@@ -833,25 +835,26 @@ public class MinecartManiaMinecart {
         return BlockUtils.getBlocksBeneath(getPrevLocation(), range);
     }
     
+    // (Etsija) Directionality fix
     public boolean isMovingAway(final Location l) {
-        //North of us
+        //West of us
         if ((l.getBlockX() - getX()) < 0) {
-            if (getDirection().equals(CompassDirection.SOUTH))
-                return true;
-        }
-        //South of us
-        if ((l.getBlockX() - getX()) > 0) {
-            if (getDirection().equals(CompassDirection.NORTH))
+            if (getDirection().equals(CompassDirection.WEST))
                 return true;
         }
         //East of us
-        if ((l.getBlockZ() - getZ()) < 0) {
-            if (getDirection().equals(CompassDirection.WEST))
+        if ((l.getBlockX() - getX()) > 0) {
+            if (getDirection().equals(CompassDirection.EAST))
                 return true;
         }
-        //West of us
+        //North of us
+        if ((l.getBlockZ() - getZ()) < 0) {
+            if (getDirection().equals(CompassDirection.NORTH))
+                return true;
+        }
+        //South of us
         if ((l.getBlockZ() + getZ()) > 0) {
-            if (getDirection().equals(CompassDirection.WEST))
+            if (getDirection().equals(CompassDirection.SOUTH))
                 return true;
         }
         
@@ -1006,23 +1009,24 @@ public class MinecartManiaMinecart {
         }
     }
     
+    // (Etsija) Directionality fix
     public boolean isApproaching(final Vector v) {
         if (!isMoving())
             return false;
         final CompassDirection direction = getDirectionOfMotion();
-        if (direction == CompassDirection.NORTH) {
+        if (direction == CompassDirection.WEST) {
             if (((minecart.getLocation().getX() - v.getX()) < 3.0D) && ((minecart.getLocation().getX() - v.getX()) > 0.0D))
                 return Math.abs(minecart.getLocation().getZ() - v.getZ()) < 1.5D;
         }
-        if (direction == CompassDirection.SOUTH) {
+        if (direction == CompassDirection.EAST) {
             if (((minecart.getLocation().getX() - v.getX()) > -3.0D) && ((minecart.getLocation().getX() - v.getX()) < 0.0D))
                 return Math.abs(minecart.getLocation().getZ() - v.getZ()) < 1.5D;
         }
-        if (direction == CompassDirection.EAST) {
+        if (direction == CompassDirection.NORTH) {
             if (((minecart.getLocation().getZ() - v.getZ()) < 3.0D) && ((minecart.getLocation().getZ() - v.getZ()) > 0.0D))
                 return Math.abs(minecart.getLocation().getX() - v.getX()) < 1.5D;
         }
-        if (direction == CompassDirection.WEST) {
+        if (direction == CompassDirection.SOUTH) {
             if (((minecart.getLocation().getZ() - v.getZ()) > -3.0D) && ((minecart.getLocation().getZ() - v.getZ()) < 0.0D))
                 return Math.abs(minecart.getLocation().getX() - v.getX()) < 1.5D;
         }

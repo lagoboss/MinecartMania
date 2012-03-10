@@ -68,26 +68,27 @@ public abstract class DirectionUtils {
             return "No Direction";
         }
         
+        // (Etsija) Directionality fix
         public Vector toVector(final double speed) {
             switch (this) {
                 case NO_DIRECTION:
                     return new Vector(0, 0, 0);
                 case NORTH:
-                    return new Vector(-speed, 0, 0);
-                case NORTH_EAST:
-                    return new Vector(-speed, 0, -speed);
-                case EAST:
                     return new Vector(0, 0, -speed);
-                case SOUTH_EAST:
+                case NORTH_EAST:
                     return new Vector(speed, 0, -speed);
-                case SOUTH:
+                case EAST:
                     return new Vector(speed, 0, 0);
-                case SOUTH_WEST:
+                case SOUTH_EAST:
                     return new Vector(speed, 0, speed);
-                case WEST:
+                case SOUTH:
                     return new Vector(0, 0, speed);
-                case NORTH_WEST:
+                case SOUTH_WEST:
                     return new Vector(-speed, 0, speed);
+                case WEST:
+                    return new Vector(-speed, 0, 0);
+                case NORTH_WEST:
+                    return new Vector(-speed, 0, -speed);
             }
             return null;
         }
@@ -139,50 +140,52 @@ public abstract class DirectionUtils {
         return CompassDirection.NO_DIRECTION;
     }
     
+    // (Etsija) Directionality fix
     public static Block getBlockTypeAhead(final World w, final CompassDirection efacingDir, final int x, final int y, final int z) {
-        if (efacingDir == CompassDirection.NORTH)
-            return MinecartManiaWorld.getBlockAt(w, x - 1, y, z);
-        if (efacingDir == CompassDirection.EAST)
-            return MinecartManiaWorld.getBlockAt(w, x, y, z - 1);
-        if (efacingDir == CompassDirection.SOUTH)
-            return MinecartManiaWorld.getBlockAt(w, x + 1, y, z);
         if (efacingDir == CompassDirection.WEST)
+            return MinecartManiaWorld.getBlockAt(w, x - 1, y, z);
+        if (efacingDir == CompassDirection.NORTH)
+            return MinecartManiaWorld.getBlockAt(w, x, y, z - 1);
+        if (efacingDir == CompassDirection.EAST)
+            return MinecartManiaWorld.getBlockAt(w, x + 1, y, z);
+        if (efacingDir == CompassDirection.SOUTH)
             return MinecartManiaWorld.getBlockAt(w, x, y, z + 1);
         return null;
     }
     
+    // (Etsija) Directionality fix
     public static int getMinetrackRailDataForDirection(final CompassDirection eOverrideDir, final CompassDirection eFacingDir) {
         if (eFacingDir == CompassDirection.NORTH) {
             if (eOverrideDir == CompassDirection.EAST)
-                return 9;
-            if (eOverrideDir == CompassDirection.NORTH)
-                return 1;
-            if (eOverrideDir == CompassDirection.WEST)
                 return 6;
+            if (eOverrideDir == CompassDirection.NORTH)
+                return 0;
+            if (eOverrideDir == CompassDirection.WEST)
+                return 7;
         }
         if (eFacingDir == CompassDirection.EAST) {
             if (eOverrideDir == CompassDirection.EAST)
-                return 0;
+                return 1;
             if (eOverrideDir == CompassDirection.NORTH)
-                return 7;
+                return 8;
             if (eOverrideDir == CompassDirection.SOUTH)
-                return 6;
+                return 7;
         }
         if (eFacingDir == CompassDirection.WEST) {
             if (eOverrideDir == CompassDirection.WEST)
-                return 0;
+                return 1;
             if (eOverrideDir == CompassDirection.NORTH)
-                return 8;
-            if (eOverrideDir == CompassDirection.SOUTH)
                 return 9;
+            if (eOverrideDir == CompassDirection.SOUTH)
+                return 6;
         }
         if (eFacingDir == CompassDirection.SOUTH) {
             if (eOverrideDir == CompassDirection.WEST)
-                return 7;
-            if (eOverrideDir == CompassDirection.EAST)
                 return 8;
+            if (eOverrideDir == CompassDirection.EAST)
+                return 9;
             if (eOverrideDir == CompassDirection.SOUTH)
-                return 1;
+                return 0;
         }
         return -1;
     }
@@ -260,6 +263,7 @@ public abstract class DirectionUtils {
         return CompassDirection.NO_DIRECTION;
     }
     
+    // (Etsija) Fixed wrong directions for L and R
     public static CompassDirection getDirectionFromString(final String dir, final CompassDirection facingDir) {
         
         if ((dir.indexOf("W") > -1) || (dir.toLowerCase().indexOf("west") > -1))
@@ -274,44 +278,45 @@ public abstract class DirectionUtils {
             if ((dir.indexOf("STR") > -1) || (dir.toLowerCase().indexOf("straight") > -1))
                 return facingDir;
             if ((dir.indexOf("L") > -1) || (dir.toLowerCase().indexOf("left") > -1))
-                return getRightDirection(facingDir);
-            if ((dir.indexOf("R") > -1) || (dir.toLowerCase().indexOf("right") > -1))
                 return getLeftDirection(facingDir);
+            if ((dir.indexOf("R") > -1) || (dir.toLowerCase().indexOf("right") > -1))
+                return getRightDirection(facingDir);
         }
         
         return CompassDirection.NO_DIRECTION;
     }
     
+    // (Etsija) Directionality fix
     public static CompassDirection getSignFacingDirection(final Sign sign) {
         final int data = MinecartManiaWorld.getBlockData(sign.getWorld(), sign.getX(), sign.getY(), sign.getZ());
         final Block block = sign.getBlock();
         if (block.getType().equals(Material.SIGN_POST)) {
             if (data == 0x0)
-                return DirectionUtils.CompassDirection.WEST;
-            if ((data == 0x1) || (data == 0x2) || (data == 0x3))
-                return DirectionUtils.CompassDirection.NORTH_WEST;
-            if (data == 0x4)
-                return DirectionUtils.CompassDirection.NORTH;
-            if ((data == 0x5) || (data == 0x6) || (data == 0x7))
-                return DirectionUtils.CompassDirection.NORTH_EAST;
-            if (data == 0x8)
-                return DirectionUtils.CompassDirection.EAST;
-            if ((data == 0x9) || (data == 0xA) || (data == 0xB))
-                return DirectionUtils.CompassDirection.SOUTH_EAST;
-            if (data == 0xC)
                 return DirectionUtils.CompassDirection.SOUTH;
-            if ((data == 0xD) || (data == 0xE) || (data == 0xF))
+            if ((data == 0x1) || (data == 0x2) || (data == 0x3))
                 return DirectionUtils.CompassDirection.SOUTH_WEST;
+            if (data == 0x4)
+                return DirectionUtils.CompassDirection.WEST;
+            if ((data == 0x5) || (data == 0x6) || (data == 0x7))
+                return DirectionUtils.CompassDirection.NORTH_WEST;
+            if (data == 0x8)
+                return DirectionUtils.CompassDirection.NORTH;
+            if ((data == 0x9) || (data == 0xA) || (data == 0xB))
+                return DirectionUtils.CompassDirection.NORTH_EAST;
+            if (data == 0xC)
+                return DirectionUtils.CompassDirection.EAST;
+            if ((data == 0xD) || (data == 0xE) || (data == 0xF))
+                return DirectionUtils.CompassDirection.SOUTH_EAST;
             return DirectionUtils.CompassDirection.NO_DIRECTION;
         } else {
             if (data == 0x3)
-                return DirectionUtils.CompassDirection.WEST;
-            if (data == 0x4)
-                return DirectionUtils.CompassDirection.NORTH;
-            if (data == 0x2)
-                return DirectionUtils.CompassDirection.EAST;
-            if (data == 0x5)
                 return DirectionUtils.CompassDirection.SOUTH;
+            if (data == 0x4)
+                return DirectionUtils.CompassDirection.WEST;
+            if (data == 0x2)
+                return DirectionUtils.CompassDirection.NORTH;
+            if (data == 0x5)
+                return DirectionUtils.CompassDirection.EAST;
             
             return DirectionUtils.CompassDirection.NO_DIRECTION;
         }
