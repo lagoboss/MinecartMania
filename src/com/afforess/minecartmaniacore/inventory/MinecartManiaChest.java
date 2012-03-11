@@ -13,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 //import org.yi.acru.bukkit.Lockette.Lockette;
 
 import com.afforess.minecartmaniacore.MinecartManiaCore;
+import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
 import com.afforess.minecartmaniacore.signs.ForceUnlockChestAction;
 import com.afforess.minecartmaniacore.signs.Sign;
 import com.afforess.minecartmaniacore.utils.SignUtils;
