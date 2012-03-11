@@ -225,6 +225,9 @@ public abstract class MinecartManiaSingleContainer implements MinecartManiaInven
      */
     public ItemStack getItem(final int slot) {
         final ItemStack i = getInventory().getItem(slot);
+        if (i == null) {
+            return null;
+        }
         if (i.getAmount() < -1) {
             i.setAmount(64);
             getInventory().setItem(slot, i);
