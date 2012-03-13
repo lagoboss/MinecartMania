@@ -5,7 +5,6 @@ import org.bukkit.event.HandlerList;
 import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
 
 public class MinecartIntersectionEvent extends MinecartManiaEvent implements MinecartEvent {
-    private static final long serialVersionUID = 207606044414759653L;
     private boolean action = false;
     private final MinecartManiaMinecart minecart;
     private static final HandlerList handlers = new HandlerList();
@@ -20,9 +19,9 @@ public class MinecartIntersectionEvent extends MinecartManiaEvent implements Min
     }
     
     public MinecartIntersectionEvent(final MinecartManiaMinecart cart) {
-/* The MinecartmaniaEvent already know it's name
-        super("MinecartIntersectionEvent");
-*/
+        /*
+         * The MinecartmaniaEvent already know it's name super("MinecartIntersectionEvent");
+         */
         super();
         minecart = cart;
     }

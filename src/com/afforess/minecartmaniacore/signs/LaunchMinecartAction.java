@@ -50,8 +50,8 @@ public class LaunchMinecartAction implements SignAction {
                         try {
                             dir = CompassDirection.valueOf(line.substring(7).toUpperCase());
                         } catch (final IllegalArgumentException e) {
-                            String fs = String.format("Unknown sign launch direction: %s in: %s at x:%d y:%d z:%d", line.substring(7),sign.getBlock().getWorld().getName().toString(),sign.getX(),sign.getY(),sign.getZ());
-                            MinecartManiaLogger.getInstance().log(fs,true);
+                            final String fs = String.format("Unknown sign launch direction: %s in: %s at x:%d y:%d z:%d", line.substring(7), sign.getBlock().getWorld().getName().toString(), sign.getX(), sign.getY(), sign.getZ());
+                            MinecartManiaLogger.getInstance().log(fs, true);
                             dir = CompassDirection.NO_DIRECTION;
                         }
                         if (dir != CompassDirection.NO_DIRECTION) {

@@ -7,7 +7,6 @@ import org.bukkit.event.HandlerList;
 import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
 
 public class MinecartTimeEvent extends MinecartManiaEvent {
-    private static final long serialVersionUID = 506596934934650992L;
     private final MinecartManiaMinecart minecart;
     private final Calendar oldCalendar;
     private final Calendar currentCalendar;
@@ -23,9 +22,9 @@ public class MinecartTimeEvent extends MinecartManiaEvent {
     }
     
     public MinecartTimeEvent(final MinecartManiaMinecart cart, final Calendar oldCal, final Calendar newCal) {
-/* The MinecartmaniaEvent already know it's name
-        super("MinecartTimeEvent");
-*/
+        /*
+         * The MinecartmaniaEvent already know it's name super("MinecartTimeEvent");
+         */
         super();
         minecart = cart;
         oldCalendar = oldCal;

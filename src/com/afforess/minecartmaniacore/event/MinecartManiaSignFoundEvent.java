@@ -6,7 +6,6 @@ import org.bukkit.event.HandlerList;
 import com.afforess.minecartmaniacore.signs.Sign;
 
 public class MinecartManiaSignFoundEvent extends MinecartManiaEvent {
-    private static final long serialVersionUID = -7633052520716796470L;
     private Sign sign;
     private final Player player;
     private static final HandlerList handlers = new HandlerList();
@@ -21,9 +20,9 @@ public class MinecartManiaSignFoundEvent extends MinecartManiaEvent {
     }
     
     public MinecartManiaSignFoundEvent(final Sign sign, final Player player) {
-/* The MinecartmaniaEvent already know it's name
-        super("MinecartManiaSignFoundEvent");
-*/
+        /*
+         * The MinecartmaniaEvent already know it's name super("MinecartManiaSignFoundEvent");
+         */
         super();
         this.sign = sign;
         this.player = player;

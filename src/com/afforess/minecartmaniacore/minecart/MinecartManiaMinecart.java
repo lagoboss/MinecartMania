@@ -436,7 +436,7 @@ public class MinecartManiaMinecart {
      * @return direction
      */
     public CompassDirection getDirectionOfMotion() {
-    	// (Etsija) Directionality fix
+        // (Etsija) Directionality fix
         if (getMotionX() < 0.0D)
             return CompassDirection.WEST;
         if (getMotionZ() < 0.0D)

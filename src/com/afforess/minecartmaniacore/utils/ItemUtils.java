@@ -205,7 +205,7 @@ public class ItemUtils {
         }
     }
     
-    public static ItemMatcher[] getItemStringToMatchers(String line, final CompassDirection facing) {
+    public static ItemMatcher[] getItemStringToMatchers(final String line, final CompassDirection facing) {
         
         String str = StringUtils.removeBrackets(line).toLowerCase();
         str = str.trim();
@@ -217,12 +217,12 @@ public class ItemUtils {
         
         //Praitaq - Added to debug Directional Conditions not working.
         MinecartManiaLogger.getInstance().debug("Direction Returned: " + direction.toString());
-
+        
         if (direction != CompassDirection.NO_DIRECTION) {
             str = str.substring(2, str.length()); // remove the direction for further parsing.
             
             //Praitaq - Added to debug Directional Conditions not working.
-            MinecartManiaLogger.getInstance().debug("Line - Direction: "+ str + " Line:" + line);
+            MinecartManiaLogger.getInstance().debug("Line - Direction: " + str + " Line:" + line);
         }
         if ((facing != null) && (direction != facing) && (direction != CompassDirection.NO_DIRECTION))
             return new ItemMatcher[0];

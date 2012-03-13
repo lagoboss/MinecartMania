@@ -7,7 +7,6 @@ import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
 
 public class MinecartSpawnEvent extends MinecartManiaEvent implements Cancellable {
     
-    private static final long serialVersionUID = 5782963564694931261L;
     private boolean cancelled = false;
     private final MinecartManiaMinecart minecart;
     private static final HandlerList handlers = new HandlerList();
@@ -22,9 +21,9 @@ public class MinecartSpawnEvent extends MinecartManiaEvent implements Cancellabl
     }
     
     protected MinecartSpawnEvent(final MinecartManiaMinecart minecart) {
-/* The MinecartmaniaEvent already know it's name
-        super("MinecartSpawnEvent");
-*/
+        /*
+         * The MinecartmaniaEvent already know it's name super("MinecartSpawnEvent");
+         */
         super();
         this.minecart = minecart;
     }

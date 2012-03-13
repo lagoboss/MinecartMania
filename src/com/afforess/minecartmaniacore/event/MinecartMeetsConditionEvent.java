@@ -6,7 +6,6 @@ import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
 import com.afforess.minecartmaniacore.signs.Sign;
 
 public class MinecartMeetsConditionEvent extends MinecartManiaEvent {
-    private static final long serialVersionUID = -8654123734496448310L;
     private final MinecartManiaMinecart minecart;
     private final Sign sign;
     private boolean condition = false;
@@ -22,9 +21,9 @@ public class MinecartMeetsConditionEvent extends MinecartManiaEvent {
     }
     
     public MinecartMeetsConditionEvent(final MinecartManiaMinecart minecart, final Sign sign) {
-/* The MinecartmaniaEvent already know it's name
-        super("MinecartMeetsConditionEvent");
-*/
+        /*
+         * The MinecartmaniaEvent already know it's name super("MinecartMeetsConditionEvent");
+         */
         super();
         this.minecart = minecart;
         this.sign = sign;

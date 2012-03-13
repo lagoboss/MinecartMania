@@ -8,7 +8,6 @@ import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
 
 public class MinecartElevatorEvent extends MinecartManiaEvent implements Cancellable {
     
-    private static final long serialVersionUID = -514535876514879428L;
     private final MinecartManiaMinecart minecart;
     private boolean cancelled = false;
     private Location location;
@@ -24,9 +23,9 @@ public class MinecartElevatorEvent extends MinecartManiaEvent implements Cancell
     }
     
     public MinecartElevatorEvent(final MinecartManiaMinecart minecart, final Location teleport) {
-/* The MinecartmaniaEvent already know it's name
-        super("MinecartElevatorEvent");
-*/
+        /*
+         * The MinecartmaniaEvent already know it's name super("MinecartElevatorEvent");
+         */
         super();
         this.minecart = minecart;
         location = teleport;

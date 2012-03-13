@@ -7,7 +7,6 @@ import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
 
 public class MinecartSpeedMultiplierEvent extends MinecartManiaEvent implements Cancellable {
     
-    private static final long serialVersionUID = -514535531614879428L;
     private final MinecartManiaMinecart minecart;
     private double multiplier;
     private final double origMultiplier;
@@ -23,9 +22,9 @@ public class MinecartSpeedMultiplierEvent extends MinecartManiaEvent implements 
     }
     
     public MinecartSpeedMultiplierEvent(final MinecartManiaMinecart minecart, final double multiplier) {
-/* The MinecartmaniaEvent already know it's name
-        super("MinecartSpeedAlterEvent");
-*/
+        /*
+         * The MinecartmaniaEvent already know it's name super("MinecartSpeedAlterEvent");
+         */
         super();
         this.minecart = minecart;
         this.multiplier = multiplier;

@@ -6,7 +6,6 @@ import org.bukkit.util.Vector;
 import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
 
 public class MinecartLaunchedEvent extends MinecartManiaEvent implements MinecartEvent {
-    private static final long serialVersionUID = -910085717583704662L;
     private final MinecartManiaMinecart minecart;
     private boolean action = false;
     private Vector launchSpeed;
@@ -22,9 +21,9 @@ public class MinecartLaunchedEvent extends MinecartManiaEvent implements Minecar
     }
     
     public MinecartLaunchedEvent(final MinecartManiaMinecart cart, final Vector speed) {
-/* The MinecartmaniaEvent already know it's name
-        super("MinecartLaunchedEvent");
-*/
+        /*
+         * The MinecartmaniaEvent already know it's name super("MinecartLaunchedEvent");
+         */
         super();
         minecart = cart;
         launchSpeed = speed;

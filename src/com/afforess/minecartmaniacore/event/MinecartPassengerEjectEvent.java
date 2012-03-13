@@ -7,7 +7,6 @@ import org.bukkit.event.HandlerList;
 import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
 
 public class MinecartPassengerEjectEvent extends MinecartManiaEvent implements Cancellable {
-    private static final long serialVersionUID = 7082195004734423157L;
     private final MinecartManiaMinecart minecart;
     private final Entity passenger;
     private boolean cancelled = false;
@@ -23,9 +22,9 @@ public class MinecartPassengerEjectEvent extends MinecartManiaEvent implements C
     }
     
     public MinecartPassengerEjectEvent(final MinecartManiaMinecart minecart, final Entity passenger) {
-/* The MinecartmaniaEvent already know it's name
-        super("MinecartPassengerEjectEvent");
-*/
+        /*
+         * The MinecartmaniaEvent already know it's name super("MinecartPassengerEjectEvent");
+         */
         super();
         this.minecart = minecart;
         this.passenger = passenger;

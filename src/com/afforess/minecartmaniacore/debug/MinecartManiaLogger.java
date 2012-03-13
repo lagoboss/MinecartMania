@@ -52,11 +52,10 @@ public class MinecartManiaLogger {
         }
         queue(s);
     }
-   /* 
-    public void log(final String s, final Object... args) {
-        log(s, true, args);
-    }
-    */
+    
+    /*
+     * public void log(final String s, final Object... args) { log(s, true, args); }
+     */
     public void log(final String s, final boolean toConsole, final Object... args) {
         if ((mode == DebugMode.DEBUG) || (mode == DebugMode.NORMAL) || (mode == DebugMode.TIMER)) {
             if (toConsole) {

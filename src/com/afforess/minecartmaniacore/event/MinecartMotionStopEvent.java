@@ -5,7 +5,6 @@ import org.bukkit.event.HandlerList;
 import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
 
 public class MinecartMotionStopEvent extends MinecartManiaEvent {
-    private static final long serialVersionUID = 664515266475593295L;
     private final MinecartManiaMinecart minecart;
     private static final HandlerList handlers = new HandlerList();
     
@@ -19,9 +18,9 @@ public class MinecartMotionStopEvent extends MinecartManiaEvent {
     }
     
     public MinecartMotionStopEvent(final MinecartManiaMinecart cart) {
-/* The MinecartmaniaEvent already know it's name
-        super("MinecartMotionStopEvent");
-*/
+        /*
+         * The MinecartmaniaEvent already know it's name super("MinecartMotionStopEvent");
+         */
         super();
         minecart = cart;
     }

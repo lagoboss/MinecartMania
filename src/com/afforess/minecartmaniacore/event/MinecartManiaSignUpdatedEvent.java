@@ -6,7 +6,6 @@ import org.bukkit.event.HandlerList;
 import com.afforess.minecartmaniacore.signs.Sign;
 
 public class MinecartManiaSignUpdatedEvent extends MinecartManiaSignFoundEvent {
-    private static final long serialVersionUID = 4073510449721123708L;
     private static final HandlerList handlers = new HandlerList();
     
     @Override
