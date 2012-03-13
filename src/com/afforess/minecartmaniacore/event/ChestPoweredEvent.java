@@ -5,7 +5,6 @@ import org.bukkit.event.HandlerList;
 import com.afforess.minecartmaniacore.inventory.MinecartManiaChest;
 
 public class ChestPoweredEvent extends MinecartManiaEvent {
-    private static final long serialVersionUID = 458967445158658060L;
     private final MinecartManiaChest chest;
     private final boolean powered;
     private final boolean wasPowered;
@@ -22,9 +21,9 @@ public class ChestPoweredEvent extends MinecartManiaEvent {
     }
     
     public ChestPoweredEvent(final MinecartManiaChest chest, final boolean powered) {
-/* The MinecartmaniaEvent already know it's name
-        super("ChestPoweredEvent");
-*/
+        /*
+         * The MinecartmaniaEvent already know it's name super("ChestPoweredEvent");
+         */
         super();
         this.chest = chest;
         this.powered = powered;

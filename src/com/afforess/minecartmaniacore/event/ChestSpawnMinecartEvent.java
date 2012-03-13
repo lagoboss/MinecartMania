@@ -7,7 +7,6 @@ import org.bukkit.event.HandlerList;
 import com.afforess.minecartmaniacore.inventory.MinecartManiaChest;
 
 public class ChestSpawnMinecartEvent extends MinecartManiaEvent implements Cancellable {
-    private static final long serialVersionUID = 725637829972458807L;
     private final MinecartManiaChest chest;
     private Location spawnLocation;
     private boolean cancelled = false;
@@ -24,9 +23,9 @@ public class ChestSpawnMinecartEvent extends MinecartManiaEvent implements Cance
     }
     
     public ChestSpawnMinecartEvent(final MinecartManiaChest chest, final Location spawnLocation, final int type) {
-/* The MinecartmaniaEvent already know it's name
-        super("ChestPoweredEvent");
-*/
+        /*
+         * The MinecartmaniaEvent already know it's name super("ChestPoweredEvent");
+         */
         super();
         this.chest = chest;
         this.spawnLocation = spawnLocation;

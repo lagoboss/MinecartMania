@@ -17,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Wolf;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -37,7 +38,6 @@ import com.afforess.minecartmaniacore.event.MinecartActionEvent;
 import com.afforess.minecartmaniacore.event.MinecartClickedEvent;
 import com.afforess.minecartmaniacore.event.MinecartDirectionChangeEvent;
 import com.afforess.minecartmaniacore.event.MinecartIntersectionEvent;
-import com.afforess.minecartmaniacore.event.MinecartManiaListener;
 import com.afforess.minecartmaniacore.event.MinecartManiaSignFoundEvent;
 import com.afforess.minecartmaniacore.event.MinecartMotionStartEvent;
 import com.afforess.minecartmaniacore.event.MinecartMotionStopEvent;
@@ -54,7 +54,7 @@ import com.afforess.minecartmaniacore.utils.SignUtils;
 import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
 import com.afforess.minecartmaniacore.world.SpecificMaterial;
 
-public class MinecartManiaCoreListener extends MinecartManiaListener {
+public class MinecartManiaCoreListener implements Listener {
     private final HashMap<Location, Long> lastSpawn = new HashMap<Location, Long>();
     public static final int CHUNK_RANGE = 4;
     
@@ -197,7 +197,6 @@ public class MinecartManiaCoreListener extends MinecartManiaListener {
         return Material.MINECART;
     }
     
-    @Override
     @EventHandler(priority = EventPriority.NORMAL)
     public void onMinecartManiaSignFoundEvent(final MinecartManiaSignFoundEvent event) {
         MinecartManiaLogger.getInstance().debug("MinecartManiaCore - Minecart Mania Sign Found Event");
