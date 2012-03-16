@@ -227,16 +227,6 @@ public class MinecartManiaCore extends JavaPlugin {
     }
     
     public static void callEvent(final Event event) {
-        // TODO:  Causes a shitton of errors if Nethrar is not installed (worked before events system overhaul)
-        // If you can fix this, please submit a pull.
-        //        if (event instanceof NethrarMinecartTeleportEvent) {
-        //            listener.onNethrarEvent((NethrarMinecartTeleportEvent) event);
-        //        }
-        /*
-         * else if (event instanceof StargateMinecartTeleportEvent) { listener.onWormholeExtremeEvent((StargateMinecartTeleportEvent) event); }
-         */
-        
-        //now everyone else goes
         Bukkit.getServer().getPluginManager().callEvent(event);
     }
     
