@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -29,13 +30,12 @@ public class SignUtils {
      * @return
      */
     public static Sign getSignAt(final World w, final int x, final int y, final int z) {
-        switch (w.getBlockTypeIdAt(x, y, z)) {
-            case 63:
-            case 68:
-                return (Sign) w.getBlockAt(x, y, z).getState();
-            default:
-                return null;
-        }
+        int blockId = w.getBlockTypeIdAt(x, y, z);
+        if (blockId == Material.SIGN.getId() || blockId == Material.WALL_SIGN.getId())
+            return (Sign) w.getBlockAt(x, y, z).getState();
+        
+        return null;
+        
     }
     
     public static ArrayList<Sign> getAdjacentSignList(final MinecartManiaMinecart minecart, final int range) {
