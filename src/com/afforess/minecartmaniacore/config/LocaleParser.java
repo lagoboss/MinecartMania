@@ -20,7 +20,6 @@ public class LocaleParser implements SettingParser{
 	private final double version = 1.02;
 	private static final ConcurrentHashMap<String, String> textKeys = new ConcurrentHashMap<String, String>();
 
-	@Override
 	public boolean isUpToDate(Document document) {
 		try {
 			NodeList list = document.getElementsByTagName("version");
@@ -32,7 +31,6 @@ public class LocaleParser implements SettingParser{
 		}
 	}
 
-	@Override
 	public boolean read(Document document) {
 		NodeList list = document.getElementsByTagName("TextKey");
 		for (int temp = 0; temp < list.getLength(); temp++) {
@@ -57,7 +55,6 @@ public class LocaleParser implements SettingParser{
 		return true;
 	}
 
-	@Override
 	public boolean write(File config, Document document) {
 		try {
 			JarFile jar = new JarFile(MinecartManiaCore.getMinecartManiaCoreJar());

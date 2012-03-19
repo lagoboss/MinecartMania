@@ -42,17 +42,17 @@ public class MinecartManiaSign implements Sign{
 		return ((org.bukkit.block.Sign)getBlock().getState());
 	}
 
-	@Override
+
 	public final String getLine(int line) {
 		return lines[line];
 	}
 	
-	@Override
+
 	public final void setLine(int line, String text) {
 		setLine(line, text, true);
 	}
 
-	@Override
+
 	public final void setLine(int line, String text, boolean update) {
 		if (text.length() < 16) 
 			lines[line] = text;
@@ -64,12 +64,12 @@ public class MinecartManiaSign implements Sign{
 		}
 	}
 	
-	@Override
+
 	public final int getNumLines() {
 		return lines.length;
 	}
 	
-	@Override
+
 	public void addBrackets() {
 		for (int i = 0; i < getNumLines(); i++) {
 			if (!getLine(i).isEmpty() && getLine(i).length() < 14) {
@@ -78,22 +78,22 @@ public class MinecartManiaSign implements Sign{
 		}
 	}
 
-	@Override
+
 	public final String[] getLines() {
 		return lines;
 	}
 
-	@Override
+
 	public CompassDirection getFacingDirection() {
 		return DirectionUtils.getSignFacingDirection(getSign());
 	}
 
-	@Override
+
 	public final Object getDataValue(Object key) {
 		return data.get(key);
 	}
 
-	@Override
+
 	public final void setDataValue(Object key, Object value) {
 		if (value != null) {
 			data.put(key, value);
@@ -103,13 +103,12 @@ public class MinecartManiaSign implements Sign{
 		}
 	}
 	
-	@Override
+
 	public void update(org.bukkit.block.Sign sign) {
 		lines = sign.getLines();
 		actions = new HashSet<SignAction>();
 	}
-	
-	@Override
+
 	public void copy(Sign sign) {
 		if (sign instanceof MinecartManiaSign) {
 			MinecartManiaSign temp = (MinecartManiaSign)sign;
@@ -131,12 +130,12 @@ public class MinecartManiaSign implements Sign{
 		return hash;
 	}
 	
-	@Override
+
 	public int hashCode() {
 		return hashCode(lines);
 	}
 	
-	@Override
+
 	public boolean equals(Object obj) {
 		if (obj instanceof Sign) {
 			return hashCode() == ((Sign)obj).hashCode();
@@ -147,22 +146,20 @@ public class MinecartManiaSign implements Sign{
 		return false;
 	}
 
-	@Override
 	public void addSignAction(SignAction action) {
 		actions.add(action);
 	}
 
-	@Override
 	public boolean removeSignAction(SignAction action) {
 		return actions.remove(action);
 	}
 
-	@Override
+
 	public boolean hasSignAction(SignAction action) {
 		return actions.contains(action);
 	}
 	
-	@Override
+
 	public boolean hasSignAction(Class<? extends SignAction> action) {
 		Iterator<SignAction> i = actions.iterator();
 		while(i.hasNext()){
@@ -174,7 +171,7 @@ public class MinecartManiaSign implements Sign{
 		return false;
 	}
 	
-	@Override
+
 	public boolean executeActions(MinecartManiaMinecart minecart, boolean sync) {
 		for (SignAction action : actions) {
 			if (!sync && action.async()) {
@@ -187,12 +184,10 @@ public class MinecartManiaSign implements Sign{
 		return actions.size() > 0;
 	}
 
-	@Override
 	public boolean executeActions(MinecartManiaMinecart minecart) {
 		return executeActions(minecart, false);
 	}
 	
-	@Override
 	public boolean executeAction(MinecartManiaMinecart minecart, Class<? extends SignAction> action) {
 		Iterator<SignAction> i = actions.iterator();
 		boolean success = false;
@@ -208,7 +203,6 @@ public class MinecartManiaSign implements Sign{
 	}
 
 	@SuppressWarnings("unchecked")
-	@Override
 	public Collection<SignAction> getSignActions() {
 		return (Collection<SignAction>) actions.clone();
 	}
@@ -223,27 +217,22 @@ public class MinecartManiaSign implements Sign{
 		this.updateId = -1;
 	}
 	
-	@Override
 	public Location getLocation() {
 		return block.getLocation();
 	}
 
-	@Override
 	public Block getBlock() {
 		return block;
 	}
 
-	@Override
 	public int getX() {
 		return getBlock().getX();
 	}
 
-	@Override
 	public int getY() {
 		return getBlock().getY();
 	}
 
-	@Override
 	public int getZ() {
 		return getBlock().getZ();
 	}

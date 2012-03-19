@@ -14,7 +14,6 @@ public class SignTextUpdater implements Runnable{
 		sign = block;
 	}
 
-	@Override
 	public void run() {
 		Sign sign = SignManager.getSignAt(this.sign);
 		if (sign != null && sign instanceof MinecartManiaSign) {

@@ -12,17 +12,14 @@ public class MinecartClickedEvent extends MinecartManiaEvent implements Minecart
 		this.minecart = minecart;
 	}
 
-	@Override
 	public boolean isActionTaken() {
 		return action;
 	}
 
-	@Override
 	public void setActionTaken(boolean Action) {
 		this.action = Action;
 	}
 
-	@Override
 	public MinecartManiaMinecart getMinecart() {
 		return minecart;
 	}

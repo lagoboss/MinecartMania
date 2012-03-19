@@ -29,12 +29,10 @@ public class MinecartElevatorEvent extends MinecartManiaEvent implements Cancell
 		this.location = location;
 	}
 
-	@Override
 	public boolean isCancelled() {
 		return cancelled;
 	}
 
-	@Override
 	public void setCancelled(boolean cancel) {
 		cancelled = cancel;
 	}

@@ -18,12 +18,10 @@ public class MinecartKillEvent extends MinecartManiaEvent implements Cancellable
 		return this.minecart;
 	}
 
-	@Override
 	public boolean isCancelled() {
 		return cancelled;
 	}
 
-	@Override
 	public void setCancelled(boolean cancel) {
 		cancelled = cancel;
 	}
