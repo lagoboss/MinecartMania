@@ -35,9 +35,11 @@ public enum Item {
     LOG(17, 0),
     REDWOOD_LOG(17, 1),
     BIRCH_LOG(17, 2),
+    JUNGLE_LOG(17, 3),
     LEAVES(18, 0),
     REDWOOD_LEAVES(18, 1),
     BIRCH_LEAVES(18, 2),
+    JUNGLE_LEAVES(18, 3),
     SPONGE(19),
     GLASS(20),
     LAPIS_ORE(21),
@@ -48,9 +50,12 @@ public enum Item {
     BED_BLOCK(26),
     POWERED_RAIL(27),
     DETECTOR_RAIL(28),
+    STICKY_PISTON(29),
     WEB(30),
     LONG_GRASS(31),
     DEAD_BUSH(32),
+    PISTON(33), // USES DATA
+    PISTON_EXTENSION(34), // USES DATA
     WOOL(35, 0),
     ORANGE_WOOL(35, 1),
     MAGENTA_WOOL(35, 2),
@@ -67,6 +72,7 @@ public enum Item {
     DARK_GREEN_WOOL(35, 13),
     RED_WOOL(35, 14),
     BLACK_WOOL(35, 15),
+    BLOCK_MOVED_BY_PISTON(36),
     YELLOW_FLOWER(37),
     RED_ROSE(38),
     BROWN_MUSHROOM(39),
@@ -77,10 +83,14 @@ public enum Item {
     SANDSTONE_DOUBLE_STEP(43, 1),
     WOODEN_DOUBLE_STEP(43, 2),
     COBBLESTONE_DOUBLE_STEP(43, 3),
+    BRICK_DOUBLE_STEP(43, 4),
+    STONE_BRICK_DOUBLE_STEP(43, 5),
     STONE_STEP(44, 0),
     SANDSTONE_STEP(44, 1),
     WOODEN_STEP(44, 2),
     COBBLESTONE_STEP(44, 3),
+    BRICK_STEP(44, 4),
+    STONE_BRICK_STEP(44, 5),
     BRICK(45),
     TNT(46),
     BOOKSHELF(47),
@@ -156,8 +166,10 @@ public enum Item {
     ENCHANTMENT_TABLE(116), // USES DATA
     BREWING_STAND_BLOCK(117), // USES DATA
     CAULDRON_BLOCK(118), // USES DATA
-    //AIR_PORTAL(119), // USES DATA
-    //AIR_PORTAL_FRAME(120), // USES DATA
+    //END_PORTAL(119), // USES DATA
+    //END_PORTAL_FRAME(120), // USES DATA
+    REDSTONE_LAMP_OFF(123),
+    REDSTONE_LAMP_ON(124),
     // ----- Item Separator -----
     IRON_SPADE(256),
     IRON_PICKAXE(257),
@@ -277,11 +289,13 @@ public enum Item {
     BED(355),
     DIODE(356),
     COOKIE(357),
-    RAW_BEEF(363),
-    STEAK(364),
+    MAP(358),
+    SHEARS(359),
     MELON_SLICE(360),
     PUMPKIN_SEED(361),
     MELON_SEED(362),
+    RAW_BEEF(363),
+    STEAK(364),
     RAW_CHICKEN(365),
     COOKED_CHICKEN(366),
     ROTTEN_FLESH(367),
@@ -300,9 +314,20 @@ public enum Item {
     CAULDRON(380),
     EYE_OF_ENDER(381),
     GLISTERING_MELON(382),
-    MAP(358),
-    GOLD_RECORD(2256),
-    GREEN_RECORD(2257);
+    //SPAWN_EGG(383),  // USES DATA 
+    EXP_BOTTLE(384),
+    FIRE_CHARGE(385),
+    DISC_13(2256),
+    CAT_DISC(2257),
+    BLOCKS_DISC(2258),
+    CHIRP_DISC(2259),
+    FAR_DISC(2260),
+    MALL_DISC(2261),
+    MELLOHI_DISC(2262),
+    STAL_DISC(2263),
+    STRAD_DISC(2264),
+    WARD_DISC(2265),
+    DISC_11(2266);
     
     private final int id;
     private short data;
