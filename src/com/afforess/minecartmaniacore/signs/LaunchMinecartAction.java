@@ -38,7 +38,7 @@ public class LaunchMinecartAction implements SignAction {
             previous = false;
             CompassDirection dir = CompassDirection.NO_DIRECTION;
             for (int i = 0; i < sign.getNumLines(); i++) {
-                final String line = StringUtils.removeBrackets(sign.getLine(i).trim()).toLowerCase();
+                String line = StringUtils.removeBrackets(sign.getLine(i).trim()).toLowerCase();
                 if (line.contains("previous dir")) {
                     previous = true;
                     break;
@@ -48,9 +48,9 @@ public class LaunchMinecartAction implements SignAction {
                         // TODO: Handle "launch player"
                     } else {
                         try {
-                            dir = CompassDirection.valueOf(line.substring(7).toUpperCase());
+                            dir = CompassDirection.valueOf(line.substring(8).toUpperCase());
                         } catch (final IllegalArgumentException e) {
-                            final String fs = String.format("Unknown sign launch direction: %s in: %s at x:%d y:%d z:%d", line.substring(7), sign.getBlock().getWorld().getName().toString(), sign.getX(), sign.getY(), sign.getZ());
+                            final String fs = String.format("Unknown sign launch direction: \"%s\" in: %s at x:%d y:%d z:%d", line.substring(8), sign.getBlock().getWorld().getName().toString(), sign.getX(), sign.getY(), sign.getZ());
                             MinecartManiaLogger.getInstance().log(fs, true);
                             dir = CompassDirection.NO_DIRECTION;
                         }
