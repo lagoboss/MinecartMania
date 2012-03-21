@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -65,6 +66,8 @@ public class SignUtils {
             signList.addAll(getSignBeneathList(w, x, y, z, 2));
             return signList;
         }
+        if (range == 0)
+            Logger.getLogger("Minecraft").severe("getAdjacentSignList: Range == 0");
         for (int dx = -(range); dx <= range; dx++) {
             for (int dy = -(range); dy <= range; dy++) {
                 for (int dz = -(range); dz <= range; dz++) {
