@@ -260,6 +260,8 @@ public class MinecartManiaCoreListener implements Listener {
             if (minecart.isDead())
                 return;
             
+            System.out.println(String.format("onVehicleUpdate:  Cart %s has updated", minecart.minecart.getUniqueId().toString()));
+            
             minecart.updateCalendar();
             if (minecart.isMoving()) {
                 if (minecart.getDirectionOfMotion() != minecart.getPreviousDirectionOfMotion()) {
