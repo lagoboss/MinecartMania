@@ -25,6 +25,7 @@ import org.bukkit.event.vehicle.VehicleDamageEvent;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.event.vehicle.VehicleEntityCollisionEvent;
+import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.bukkit.event.vehicle.VehicleUpdateEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 
@@ -212,6 +213,41 @@ public class MinecartManiaCoreListener implements Listener {
         action = new LaunchMinecartAction(sign);
         if (action.valid(sign)) {
             sign.addSignAction(action);
+        }
+    }
+    
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onVehicleMove(final VehicleMoveEvent event) {
+        if (event.getVehicle() instanceof Minecart) {
+            final Minecart cart = (Minecart) event.getVehicle();
+            final MinecartManiaMinecart minecart = MinecartManiaWorld.getMinecartManiaMinecart(cart);
+            minecart.updateChunks();
+            if (minecart.isAtIntersection()) {
+                final MinecartIntersectionEvent mie = new MinecartIntersectionEvent(minecart);
+                MinecartManiaCore.callEvent(mie);
+                mie.logProcessTime();
+            }
+            
+            final MinecartActionEvent mae = new MinecartActionEvent(minecart);
+            if (!minecart.createdLastTick) {
+                MinecartManiaCore.callEvent(mae);
+                mae.logProcessTime();
+            }
+            
+            minecart.doSpeedMultiplierBlock();
+            minecart.doCatcherBlock();
+            minecart.doPlatformBlock(); //platform must be after catcher block
+            minecart.doElevatorBlock();
+            minecart.doEjectorBlock();
+            
+            MinecartUtils.updateNearbyItems(minecart);
+            
+            minecart.updateMotion();
+            minecart.updateLocation();
+            
+            //should do last
+            minecart.doKillBlock();
+            minecart.createdLastTick = false;
         }
     }
     
