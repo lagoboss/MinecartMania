@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import javax.persistence.OptimisticLockException;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -260,8 +261,6 @@ public class MinecartManiaCoreListener implements Listener {
             if (minecart.isDead())
                 return;
             
-            System.out.println(String.format("onVehicleUpdate:  Cart %s has updated", minecart.minecart.getUniqueId().toString()));
-            
             minecart.updateCalendar();
             if (minecart.isMoving()) {
                 if (minecart.getDirectionOfMotion() != minecart.getPreviousDirectionOfMotion()) {
@@ -290,6 +289,12 @@ public class MinecartManiaCoreListener implements Listener {
                 minecart.launchCart();
                 minecart.setDataValue("launch", null);
             }
+            
+            ArrayList<String> flags = new ArrayList<String>();
+            flags.add(minecart.hasChangedPosition() ? "INTERSECTION" : "");
+            flags.add(minecart.createdLastTick ? "JUSTCREATED" : "");
+            
+            System.out.println(String.format("onVehicleUpdate:  Cart %s @ (%d,%d,%d):  %s", minecart.minecart.getUniqueId().toString(), minecart.getX(), minecart.getY(), minecart.getZ(), ArrayUtils.toString(flags.toArray())));
             
             if (minecart.hasChangedPosition() || minecart.createdLastTick) {
                 minecart.updateChunks();
