@@ -18,7 +18,7 @@ public enum Item {
 	DIRT(3),
 	COBBLESTONE(4),
 	WOOD(5),
-	SAPLING(6, 1),
+	SAPLING(6, 0),
 	SPRUCE_SAPLING(6, 1),
 	BIRCH_SAPLING(6, 2),
 	JUNGLE_SAPLING(6, 3),
