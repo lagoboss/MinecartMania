@@ -11,8 +11,8 @@
     <!-- Project information -->
     <groupId>com.afforess</groupId>
     <artifactId>minecartmaniacore</artifactId>
-    <name>Minecart Mania Core</name>
-    <url>http://afforess.com</url>
+    <name>MinecartMania Reborn Core</name>
+    <url>http://dev.bukkit.org/server-mods/minecartmania-reborn/</url>
     <description>Minecart Mania Core is the original and official Minecart mod plugin for Bukkit-based Minecraft servers.</description>
 
     <!-- License -->
@@ -41,7 +41,7 @@
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>bukkit</artifactId>
-            <version>1.2.5-R1.2</version>
+            <version>1.2.5-R2.0</version>
       <scope>compile</scope>
       
     </dependency>
@@ -50,7 +50,7 @@
        <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>craftbukkit</artifactId>
-            <version>1.2.5-R1.2</version>
+            <version>1.2.5-R2.0</version>
         </dependency>
 
         <!-- Third-party plugins -->
@@ -138,5 +138,5 @@
 			<url>https://github.com/mze9412/MzeMaven/raw/master/snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
-    <version>1.4.5</version>
+    <version>1.4.7</version>
 </project>

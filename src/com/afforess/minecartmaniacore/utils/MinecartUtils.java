@@ -74,18 +74,50 @@ public class MinecartUtils {
 		}
 		range--;
 		while (range > 0) {
-			if (direction == CompassDirection.NORTH) x--;
-			else if (direction == CompassDirection.EAST) z--;
-			else if (direction == CompassDirection.SOUTH) x++;
-			else if (direction == CompassDirection.WEST) z++;
-			if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y-1, z))) y--;
-			else if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y+1, z))) y++;
-			if (!isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y, z))) return false;
-			
-			if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x-1, y, z))) direction = CompassDirection.NORTH;
-			else if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y, z-1))) direction = CompassDirection.EAST;
-			else if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x+1, y, z))) direction = CompassDirection.SOUTH;
-			else if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y, z+1))) direction = CompassDirection.WEST;
+		    if(MinecartManiaConfiguration.useOldDirections())
+		    {
+    			if (direction == CompassDirection.NORTH) x--;
+    			else if (direction == CompassDirection.EAST) z--;
+    			else if (direction == CompassDirection.SOUTH) x++;
+    			else if (direction == CompassDirection.WEST) z++;
+    			if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y-1, z))) y--;
+    			else if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y+1, z))) y++;
+    			if (!isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y, z))) return false;
+    			
+    			if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x-1, y, z))) direction = CompassDirection.NORTH;
+    			else if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y, z-1))) direction = CompassDirection.EAST;
+    			else if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x+1, y, z))) direction = CompassDirection.SOUTH;
+    			else if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y, z+1))) direction = CompassDirection.WEST;
+		    }
+		    else
+		    {
+		        if (direction == CompassDirection.WEST) {
+	                x--;
+	            } else if (direction == CompassDirection.NORTH) {
+	                z--;
+	            } else if (direction == CompassDirection.EAST) {
+	                x++;
+	            } else if (direction == CompassDirection.SOUTH) {
+	                z++;
+	            }
+	            if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y - 1, z))) {
+	                y--;
+	            } else if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y + 1, z))) {
+	                y++;
+	            }
+	            if (!isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y, z)))
+	                return false;
+	            
+	            if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x - 1, y, z))) {
+	                direction = CompassDirection.WEST;
+	            } else if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y, z - 1))) {
+	                direction = CompassDirection.NORTH;
+	            } else if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x + 1, y, z))) {
+	                direction = CompassDirection.EAST;
+	            } else if (isTrack(MinecartManiaWorld.getBlockIdAt(w, x, y, z + 1))) {
+	                direction = CompassDirection.SOUTH;
+	            }
+		    }
 			range--;
 		}
 		return true;
@@ -96,79 +128,153 @@ public class MinecartUtils {
 
 		int data = MinecartManiaWorld.getBlockData(w, x, y, z);
 		
-		switch (data) {
-			case 0: // west-east straight
-				if ( hasTrackConnectedOn(w, x, y, z, BlockFace.EAST) &&
-					 hasTrackConnectedOn(w, x, y, z, BlockFace.WEST) ) {
-					paths = 2;
-					if ( hasTrackConnectedOn(w, x, y, z, BlockFace.NORTH) ) {
-						paths++;
-					}
-					if ( hasTrackConnectedOn(w, x, y, z, BlockFace.SOUTH) ) {
-						paths++;
-					}
-				}
-				break;
-			case 1: // north-south straight
-				if ( hasTrackConnectedOn(w, x, y, z, BlockFace.NORTH) &&
-					 hasTrackConnectedOn(w, x, y, z, BlockFace.SOUTH) ) {
-					paths = 2;
-					if ( hasTrackConnectedOn(w, x, y, z, BlockFace.WEST) ) {
-						paths++;
-					}
-					if ( hasTrackConnectedOn(w, x, y, z, BlockFace.EAST) ) {
-						paths++;
-					}
-				}
-				break;
-			case 6: // west-south corner
-				if ( hasTrackConnectedOn(w, x, y, z, BlockFace.SOUTH) &&
-					 hasTrackConnectedOn(w, x, y, z, BlockFace.WEST) ) {
-					paths = 2;
-					if ( hasTrackConnectedOn(w, x, y, z, BlockFace.NORTH) ) {
-						paths++;
-					}
-					if ( hasTrackConnectedOn(w, x, y, z, BlockFace.EAST) ) {
-						paths++;
-					}
-				}
-				break;
-			case 7: // west-north corner
-				if ( hasTrackConnectedOn(w, x, y, z, BlockFace.NORTH) &&
-					 hasTrackConnectedOn(w, x, y, z, BlockFace.WEST) ) {
-					paths = 2;
-					if ( hasTrackConnectedOn(w, x, y, z, BlockFace.EAST) ) {
-						paths++;
-					}
-					if ( hasTrackConnectedOn(w, x, y, z, BlockFace.SOUTH) ) {
-						paths++;
-					}
-				}
-				break;
-			case 8: // north-east corner
-				if ( hasTrackConnectedOn(w, x, y, z, BlockFace.NORTH) &&
-					 hasTrackConnectedOn(w, x, y, z, BlockFace.EAST) ) {
-					paths = 2;
-					if ( hasTrackConnectedOn(w, x, y, z, BlockFace.SOUTH) ) {
-						paths++;
-					}
-					if ( hasTrackConnectedOn(w, x, y, z, BlockFace.WEST) ) {
-						paths++;
-					}
-				}
-				break;
-			case 9: // east-south corner
-				if ( hasTrackConnectedOn(w, x, y, z, BlockFace.EAST) &&
-					 hasTrackConnectedOn(w, x, y, z, BlockFace.SOUTH) ) {
-					paths = 2;
-					if ( hasTrackConnectedOn(w, x, y, z, BlockFace.NORTH) ) {
-						paths++;
-					}
-					if ( hasTrackConnectedOn(w, x, y, z, BlockFace.WEST) ) {
-						paths++;
-					}
-				}
-				break;
+		if(MinecartManiaConfiguration.useOldDirections())
+		{
+    		switch (data) {
+    			case 0: // west-east straight
+    				if ( hasTrackConnectedOn(w, x, y, z, BlockFace.EAST) &&
+    					 hasTrackConnectedOn(w, x, y, z, BlockFace.WEST) ) {
+    					paths = 2;
+    					if ( hasTrackConnectedOn(w, x, y, z, BlockFace.NORTH) ) {
+    						paths++;
+    					}
+    					if ( hasTrackConnectedOn(w, x, y, z, BlockFace.SOUTH) ) {
+    						paths++;
+    					}
+    				}
+    				break;
+    			case 1: // north-south straight
+    				if ( hasTrackConnectedOn(w, x, y, z, BlockFace.NORTH) &&
+    					 hasTrackConnectedOn(w, x, y, z, BlockFace.SOUTH) ) {
+    					paths = 2;
+    					if ( hasTrackConnectedOn(w, x, y, z, BlockFace.WEST) ) {
+    						paths++;
+    					}
+    					if ( hasTrackConnectedOn(w, x, y, z, BlockFace.EAST) ) {
+    						paths++;
+    					}
+    				}
+    				break;
+    			case 6: // west-south corner
+    				if ( hasTrackConnectedOn(w, x, y, z, BlockFace.SOUTH) &&
+    					 hasTrackConnectedOn(w, x, y, z, BlockFace.WEST) ) {
+    					paths = 2;
+    					if ( hasTrackConnectedOn(w, x, y, z, BlockFace.NORTH) ) {
+    						paths++;
+    					}
+    					if ( hasTrackConnectedOn(w, x, y, z, BlockFace.EAST) ) {
+    						paths++;
+    					}
+    				}
+    				break;
+    			case 7: // west-north corner
+    				if ( hasTrackConnectedOn(w, x, y, z, BlockFace.NORTH) &&
+    					 hasTrackConnectedOn(w, x, y, z, BlockFace.WEST) ) {
+    					paths = 2;
+    					if ( hasTrackConnectedOn(w, x, y, z, BlockFace.EAST) ) {
+    						paths++;
+    					}
+    					if ( hasTrackConnectedOn(w, x, y, z, BlockFace.SOUTH) ) {
+    						paths++;
+    					}
+    				}
+    				break;
+    			case 8: // north-east corner
+    				if ( hasTrackConnectedOn(w, x, y, z, BlockFace.NORTH) &&
+    					 hasTrackConnectedOn(w, x, y, z, BlockFace.EAST) ) {
+    					paths = 2;
+    					if ( hasTrackConnectedOn(w, x, y, z, BlockFace.SOUTH) ) {
+    						paths++;
+    					}
+    					if ( hasTrackConnectedOn(w, x, y, z, BlockFace.WEST) ) {
+    						paths++;
+    					}
+    				}
+    				break;
+    			case 9: // east-south corner
+    				if ( hasTrackConnectedOn(w, x, y, z, BlockFace.EAST) &&
+    					 hasTrackConnectedOn(w, x, y, z, BlockFace.SOUTH) ) {
+    					paths = 2;
+    					if ( hasTrackConnectedOn(w, x, y, z, BlockFace.NORTH) ) {
+    						paths++;
+    					}
+    					if ( hasTrackConnectedOn(w, x, y, z, BlockFace.WEST) ) {
+    						paths++;
+    					}
+    				}
+    				break;
+    		}
+		}
+		else
+		{
+		    switch (data) {
+                case 0: // north-south straight
+                    if (hasTrackConnectedOn(w, x, y, z, BlockFace.NORTH) && hasTrackConnectedOn(w, x, y, z, BlockFace.SOUTH)) {
+                        paths = 2;
+                        if (hasTrackConnectedOn(w, x, y, z, BlockFace.WEST)) {
+                            paths++;
+                        }
+                        if (hasTrackConnectedOn(w, x, y, z, BlockFace.EAST)) {
+                            paths++;
+                        }
+                    }
+                    break;
+                case 1: // west-east straight
+                    if (hasTrackConnectedOn(w, x, y, z, BlockFace.EAST) && hasTrackConnectedOn(w, x, y, z, BlockFace.WEST)) {
+                        paths = 2;
+                        if (hasTrackConnectedOn(w, x, y, z, BlockFace.NORTH)) {
+                            paths++;
+                        }
+                        if (hasTrackConnectedOn(w, x, y, z, BlockFace.SOUTH)) {
+                            paths++;
+                        }
+                    }
+                    break;
+                case 6: // east-south corner
+                    if (hasTrackConnectedOn(w, x, y, z, BlockFace.EAST) && hasTrackConnectedOn(w, x, y, z, BlockFace.SOUTH)) {
+                        paths = 2;
+                        if (hasTrackConnectedOn(w, x, y, z, BlockFace.NORTH)) {
+                            paths++;
+                        }
+                        if (hasTrackConnectedOn(w, x, y, z, BlockFace.WEST)) {
+                            paths++;
+                        }
+                    }
+                    break;
+                case 7: // west-south corner
+                    if (hasTrackConnectedOn(w, x, y, z, BlockFace.SOUTH) && hasTrackConnectedOn(w, x, y, z, BlockFace.WEST)) {
+                        paths = 2;
+                        if (hasTrackConnectedOn(w, x, y, z, BlockFace.NORTH)) {
+                            paths++;
+                        }
+                        if (hasTrackConnectedOn(w, x, y, z, BlockFace.EAST)) {
+                            paths++;
+                        }
+                    }
+                    break;
+                case 8: // west-north corner
+                    if (hasTrackConnectedOn(w, x, y, z, BlockFace.NORTH) && hasTrackConnectedOn(w, x, y, z, BlockFace.WEST)) {
+                        paths = 2;
+                        if (hasTrackConnectedOn(w, x, y, z, BlockFace.EAST)) {
+                            paths++;
+                        }
+                        if (hasTrackConnectedOn(w, x, y, z, BlockFace.SOUTH)) {
+                            paths++;
+                        }
+                    }
+                    break;
+                case 9: // north-east corner
+                    if (hasTrackConnectedOn(w, x, y, z, BlockFace.NORTH) && hasTrackConnectedOn(w, x, y, z, BlockFace.EAST)) {
+                        paths = 2;
+                        if (hasTrackConnectedOn(w, x, y, z, BlockFace.SOUTH)) {
+                            paths++;
+                        }
+                        if (hasTrackConnectedOn(w, x, y, z, BlockFace.WEST)) {
+                            paths++;
+                        }
+                    }
+                    break;
+            }
 		}
 		return paths > 2;
 	}
@@ -198,18 +304,56 @@ public class MinecartUtils {
 	 */
 	public static boolean hasTrackConnectedOn(World w, int x, int y, int z, BlockFace direction) {
 		Block base = MinecartManiaWorld.getBlockAt(w, x, y, z);
-		Block next = base.getRelative(direction);
+
+        Block next = base.getRelative(direction);
+		if(!MinecartManiaConfiguration.useOldDirections())
+		{
+		 // Temp fix for getRelative() still using old Notch directions
+	        BlockFace corrDirection = direction;
+	        switch (direction) {
+	            case NORTH:
+	                corrDirection = BlockFace.EAST;
+	                break;
+	            case EAST:
+	                corrDirection = BlockFace.SOUTH;
+	                break;
+	            case SOUTH:
+	                corrDirection = BlockFace.WEST;
+	                break;
+	            case WEST:
+	                corrDirection = BlockFace.NORTH;
+	                break;
+	        }
+	        next = base.getRelative(corrDirection);
+		}
+		
 		if ( isTrack(next) ) {
 			byte nextData = next.getData();
-			switch ( direction ) {
-				case NORTH:
-					return nextData == 1 || nextData == 6 || nextData == 9;
-				case EAST:
-					return nextData == 0 || nextData == 6 || nextData == 7;
-				case SOUTH:
-					return nextData == 1 || nextData == 7 || nextData == 8;
-				case WEST:
-					return nextData == 0 || nextData == 8 || nextData == 9;
+			if(MinecartManiaConfiguration.useOldDirections())
+			{
+    			switch ( direction ) {
+    				case NORTH:
+    					return nextData == 1 || nextData == 6 || nextData == 9;
+    				case EAST:
+    					return nextData == 0 || nextData == 6 || nextData == 7;
+    				case SOUTH:
+    					return nextData == 1 || nextData == 7 || nextData == 8;
+    				case WEST:
+    					return nextData == 0 || nextData == 8 || nextData == 9;
+    			}
+			}
+			else
+			{
+			    switch (direction) {
+                    case WEST:
+                        return (nextData == 1) || (nextData == 6) || (nextData == 9);
+                    case NORTH:
+                        return (nextData == 0) || (nextData == 6) || (nextData == 7);
+                    case EAST:
+                        return (nextData == 1) || (nextData == 7) || (nextData == 8);
+                    case SOUTH:
+                        return (nextData == 0) || (nextData == 8) || (nextData == 9);
+			    }
 			}
 		}
 		return false;

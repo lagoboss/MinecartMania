@@ -45,7 +45,6 @@ public enum Item {
 	LAPIS_ORE(21),
 	LAPIS_BLOCK(22),
 	DISPENSER(23),
-	SANDSTONE(24),
 	NOTE_BLOCK(25),
 	BED_BLOCK(26),
 	POWERED_RAIL(27),
@@ -328,7 +327,19 @@ public enum Item {
 	RECORD_8(2263),
 	RECORD_9(2264),
 	RECORD_10(2265),
-	RECORD_11(2266);
+	RECORD_11(2266),
+	
+	//1.2.5
+	SANDSTONE(24, 0),
+	CHISELED_SANDSTONE(24, 1),
+	SMOOTH_SANDSTONE(24, 2),
+	
+	//1.3
+	OAK_DOUBLE_SLAP(125),
+	OAK_SLAP(126),
+	COCOA_PLANT(127),
+	BOOK_AND_QUILL(386),
+	WRITTEN_BOOK(387);
 
 	private final int id;
 	private final short data;

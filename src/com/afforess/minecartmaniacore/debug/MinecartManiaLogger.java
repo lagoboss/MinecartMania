@@ -22,7 +22,7 @@ public class MinecartManiaLogger {
 	}
 	
 	public void time(String s, Object ...args) {
-		timeCore(s, true);
+		timeCore(s, true, args);
 	}
 	
 	public void timeCore(String s, boolean toConsole, Object ...args) {
@@ -36,11 +36,13 @@ public class MinecartManiaLogger {
 	}
 	
 	public void debug(String s, Object ...args) {
-		debugCore(s, true);
+		debugCore(s, true, args);
 	}
 	
 	public void debugCore(String s, boolean toConsole, Object ...args) {
 		if (mode == DebugMode.DEBUG || mode == DebugMode.TIMER) {
+            log.severe("ARGS: " + args.length);
+            log.severe("LALA: " + s);
 			s = String.format(s, args);
 			if (toConsole)
 				log.info(prefix + s);

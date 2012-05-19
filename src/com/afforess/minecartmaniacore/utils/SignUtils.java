@@ -11,6 +11,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 
 import com.afforess.minecartmaniacore.config.MinecartManiaConfiguration;
+import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
 import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
 import com.afforess.minecartmaniacore.signs.SignManager;
 

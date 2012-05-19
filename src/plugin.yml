@@ -1,5 +1,5 @@
-name: MinecartManiaCore
+name: MinecartManiaRebornCore
 main: com.afforess.minecartmaniacore.MinecartManiaCore
-version: 1.4.5
+version: 1.4.7
 author: mze9412, Afforess
 database: true

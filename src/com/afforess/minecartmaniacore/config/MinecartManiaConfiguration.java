@@ -47,9 +47,13 @@ public abstract class MinecartManiaConfiguration {
 	public static boolean isLimitedSignRange() {
 		return (Boolean)MinecartManiaWorld.getConfigurationValue("LimitedSignRange");
 	}
-	
-	public static boolean isDisappearOnDisconnect() {
-		return (Boolean)MinecartManiaWorld.getConfigurationValue("DisappearOnDisconnect");
-	}
+    
+    public static boolean isDisappearOnDisconnect() {
+        return (Boolean)MinecartManiaWorld.getConfigurationValue("DisappearOnDisconnect");
+    }
+    
+    public static boolean useOldDirections() {
+        return (Boolean)MinecartManiaWorld.getConfigurationValue("UseOldDirections");
+    }
 
 }

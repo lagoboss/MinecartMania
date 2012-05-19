@@ -438,10 +438,20 @@ public class MinecartManiaMinecart {
 	 * @return direction
 	 */
 	public CompassDirection getDirectionOfMotion() {
-		if (getMotionX() < 0.0D) return CompassDirection.NORTH;
-		if (getMotionZ() < 0.0D) return CompassDirection.EAST;
-		if (getMotionX() > 0.0D) return CompassDirection.SOUTH;
-		if (getMotionZ() > 0.0D) return CompassDirection.WEST;
+	    if(MinecartManiaConfiguration.useOldDirections())
+	    {
+    		if (getMotionX() < 0.0D) return CompassDirection.NORTH;
+    		if (getMotionZ() < 0.0D) return CompassDirection.EAST;
+    		if (getMotionX() > 0.0D) return CompassDirection.SOUTH;
+    		if (getMotionZ() > 0.0D) return CompassDirection.WEST;
+	    }
+	    else
+	    {
+	        if (getMotionZ() < 0.0D) return CompassDirection.NORTH;
+	        if (getMotionX() > 0.0D) return CompassDirection.EAST;
+	        if (getMotionZ() > 0.0D) return CompassDirection.SOUTH;
+	        if (getMotionX() < 0.0D) return CompassDirection.WEST;
+	    }
 		return CompassDirection.NO_DIRECTION;
 	}
 	
@@ -709,16 +719,32 @@ public class MinecartManiaMinecart {
 	}
 
 	public void setMotion(CompassDirection direction, double speed) {
-		if (direction.equals(DirectionUtils.CompassDirection.NORTH))
-			setMotionX(-speed);	
-		else if (direction.equals(DirectionUtils.CompassDirection.SOUTH))
-			setMotionX(speed);
-		else if (direction.equals(DirectionUtils.CompassDirection.EAST))
-			setMotionZ(-speed);	
-		else if (direction.equals(DirectionUtils.CompassDirection.WEST))
-			setMotionZ(speed);	
-		else
-			throw new IllegalArgumentException();
+	    if(MinecartManiaConfiguration.useOldDirections())
+	    {
+    		if (direction.equals(DirectionUtils.CompassDirection.NORTH))
+    			setMotionX(-speed);	
+    		else if (direction.equals(DirectionUtils.CompassDirection.SOUTH))
+    			setMotionX(speed);
+    		else if (direction.equals(DirectionUtils.CompassDirection.EAST))
+    			setMotionZ(-speed);	
+    		else if (direction.equals(DirectionUtils.CompassDirection.WEST))
+    			setMotionZ(speed);	
+    		else
+    			throw new IllegalArgumentException();
+	    }
+	    else
+	    {
+	        if (direction.equals(DirectionUtils.CompassDirection.NORTH)) {
+	            setMotionZ(-speed);
+	        } else if (direction.equals(DirectionUtils.CompassDirection.SOUTH)) {
+	            setMotionZ(speed);
+	        } else if (direction.equals(DirectionUtils.CompassDirection.EAST)) {
+	            setMotionX(speed);
+	        } else if (direction.equals(DirectionUtils.CompassDirection.WEST)) {
+	            setMotionX(-speed);
+	        } else
+	            throw new IllegalArgumentException();
+	    }
 	}
 	
 
@@ -781,10 +807,20 @@ public class MinecartManiaMinecart {
 	}
 	
 	public MinecartManiaMinecart getAdjacentMinecartFromDirection(DirectionUtils.CompassDirection direction) {
-		if (direction == DirectionUtils.CompassDirection.NORTH) return MinecartManiaWorld.getMinecartManiaMinecartAt(getX()-1, getY(), getZ());
-		if (direction == DirectionUtils.CompassDirection.EAST) return MinecartManiaWorld.getMinecartManiaMinecartAt(getX(), getY(), getZ()-1);
-		if (direction == DirectionUtils.CompassDirection.SOUTH) return MinecartManiaWorld.getMinecartManiaMinecartAt(getX()+1, getY(), getZ());
-		if (direction == DirectionUtils.CompassDirection.WEST) return MinecartManiaWorld.getMinecartManiaMinecartAt(getX(), getY(), getZ()+1);
+	    if(MinecartManiaConfiguration.useOldDirections())
+	    {
+    		if (direction == DirectionUtils.CompassDirection.NORTH) return MinecartManiaWorld.getMinecartManiaMinecartAt(getX()-1, getY(), getZ());
+    		if (direction == DirectionUtils.CompassDirection.EAST) return MinecartManiaWorld.getMinecartManiaMinecartAt(getX(), getY(), getZ()-1);
+    		if (direction == DirectionUtils.CompassDirection.SOUTH) return MinecartManiaWorld.getMinecartManiaMinecartAt(getX()+1, getY(), getZ());
+    		if (direction == DirectionUtils.CompassDirection.WEST) return MinecartManiaWorld.getMinecartManiaMinecartAt(getX(), getY(), getZ()+1);
+	    }
+	    else
+	    {
+	        if (direction == DirectionUtils.CompassDirection.NORTH) return MinecartManiaWorld.getMinecartManiaMinecartAt(getX(), getY(), getZ() - 1);
+	        if (direction == DirectionUtils.CompassDirection.EAST) return MinecartManiaWorld.getMinecartManiaMinecartAt(getX() + 1, getY(), getZ());
+	        if (direction == DirectionUtils.CompassDirection.SOUTH) return MinecartManiaWorld.getMinecartManiaMinecartAt(getX(), getY(), getZ() + 1);
+	        if (direction == DirectionUtils.CompassDirection.WEST) return MinecartManiaWorld.getMinecartManiaMinecartAt(getX() - 1, getY(), getZ());
+	    }
 		return null;
 	}
 	
@@ -833,30 +869,56 @@ public class MinecartManiaMinecart {
 	}
 	
 	public boolean isMovingAway(Location l) {
-		//North of us
-		if (l.getBlockX() - getX() < 0) {
-			if (getDirection().equals(CompassDirection.SOUTH)) {
-				return true;
-			}
-		}
-		//South of us
-		if (l.getBlockX() - getX() > 0) {
-			if (getDirection().equals(CompassDirection.NORTH)) {
-				return true;
-			}
-		}
-		//East of us
-		if (l.getBlockZ() - getZ() < 0) {
-			if (getDirection().equals(CompassDirection.WEST)) {
-				return true;
-			}
-		}
-		//West of us
-		if (l.getBlockZ() + getZ() > 0) {
-			if (getDirection().equals(CompassDirection.WEST)) {
-				return true;
-			}
-		}
+	    if(MinecartManiaConfiguration.useOldDirections())
+    	{
+    		//North of us
+    		if (l.getBlockX() - getX() < 0) {
+    			if (getDirection().equals(CompassDirection.SOUTH)) {
+    				return true;
+    			}
+    		}
+    		//South of us
+    		if (l.getBlockX() - getX() > 0) {
+    			if (getDirection().equals(CompassDirection.NORTH)) {
+    				return true;
+    			}
+    		}
+    		//East of us
+    		if (l.getBlockZ() - getZ() < 0) {
+    			if (getDirection().equals(CompassDirection.WEST)) {
+    				return true;
+    			}
+    		}
+    		//West of us
+    		if (l.getBlockZ() + getZ() > 0) {
+    			if (getDirection().equals(CompassDirection.WEST)) {
+    				return true;
+    			}
+    		}
+    	}
+	    else
+	    {
+	        //West of us
+	        if ((l.getBlockX() - getX()) < 0) {
+	            if (getDirection().equals(CompassDirection.WEST))
+	                return true;
+	        }
+	        //East of us
+	        if ((l.getBlockX() - getX()) > 0) {
+	            if (getDirection().equals(CompassDirection.EAST))
+	                return true;
+	        }
+	        //North of us
+	        if ((l.getBlockZ() - getZ()) < 0) {
+	            if (getDirection().equals(CompassDirection.NORTH))
+	                return true;
+	        }
+	        //South of us
+	        if ((l.getBlockZ() + getZ()) > 0) {
+	            if (getDirection().equals(CompassDirection.SOUTH))
+	                return true;
+	        }
+	    }
 		
 		return false;
 	}
@@ -1019,25 +1081,48 @@ public class MinecartManiaMinecart {
 			return false;
 		}
 		CompassDirection direction = getDirectionOfMotion();
-		if (direction == CompassDirection.NORTH) {
-			if (minecart.getLocation().getX() - v.getX() < 3.0D && minecart.getLocation().getX() - v.getX() > 0.0D) {
-				return Math.abs(minecart.getLocation().getZ() - v.getZ()) < 1.5D;
-			}
+		
+		if(MinecartManiaConfiguration.useOldDirections())
+		{
+    		if (direction == CompassDirection.NORTH) {
+    			if (minecart.getLocation().getX() - v.getX() < 3.0D && minecart.getLocation().getX() - v.getX() > 0.0D) {
+    				return Math.abs(minecart.getLocation().getZ() - v.getZ()) < 1.5D;
+    			}
+    		}
+    		if (direction == CompassDirection.SOUTH) {
+    			if (minecart.getLocation().getX() - v.getX() > -3.0D && minecart.getLocation().getX() - v.getX() < 0.0D) {
+    				return Math.abs(minecart.getLocation().getZ() - v.getZ()) < 1.5D;
+    			}
+    		}
+    		if (direction == CompassDirection.EAST) {
+    			if (minecart.getLocation().getZ() - v.getZ() < 3.0D && minecart.getLocation().getZ() - v.getZ() > 0.0D) {
+    				return Math.abs(minecart.getLocation().getX() - v.getX()) < 1.5D;
+    			}
+    		}
+    		if (direction == CompassDirection.WEST) {
+    			if (minecart.getLocation().getZ() - v.getZ() > -3.0D && minecart.getLocation().getZ() - v.getZ() < 0.0D) {
+    				return Math.abs(minecart.getLocation().getX() - v.getX()) < 1.5D;
+    			}
+    		}
 		}
-		if (direction == CompassDirection.SOUTH) {
-			if (minecart.getLocation().getX() - v.getX() > -3.0D && minecart.getLocation().getX() - v.getX() < 0.0D) {
-				return Math.abs(minecart.getLocation().getZ() - v.getZ()) < 1.5D;
-			}
-		}
-		if (direction == CompassDirection.EAST) {
-			if (minecart.getLocation().getZ() - v.getZ() < 3.0D && minecart.getLocation().getZ() - v.getZ() > 0.0D) {
-				return Math.abs(minecart.getLocation().getX() - v.getX()) < 1.5D;
-			}
-		}
-		if (direction == CompassDirection.WEST) {
-			if (minecart.getLocation().getZ() - v.getZ() > -3.0D && minecart.getLocation().getZ() - v.getZ() < 0.0D) {
-				return Math.abs(minecart.getLocation().getX() - v.getX()) < 1.5D;
-			}
+		else
+		{
+		    if (direction == CompassDirection.WEST) {
+	            if (((minecart.getLocation().getX() - v.getX()) < 3.0D) && ((minecart.getLocation().getX() - v.getX()) > 0.0D))
+	                return Math.abs(minecart.getLocation().getZ() - v.getZ()) < 1.5D;
+	        }
+	        if (direction == CompassDirection.EAST) {
+	            if (((minecart.getLocation().getX() - v.getX()) > -3.0D) && ((minecart.getLocation().getX() - v.getX()) < 0.0D))
+	                return Math.abs(minecart.getLocation().getZ() - v.getZ()) < 1.5D;
+	        }
+	        if (direction == CompassDirection.NORTH) {
+	            if (((minecart.getLocation().getZ() - v.getZ()) < 3.0D) && ((minecart.getLocation().getZ() - v.getZ()) > 0.0D))
+	                return Math.abs(minecart.getLocation().getX() - v.getX()) < 1.5D;
+	        }
+	        if (direction == CompassDirection.SOUTH) {
+	            if (((minecart.getLocation().getZ() - v.getZ()) > -3.0D) && ((minecart.getLocation().getZ() - v.getZ()) < 0.0D))
+	                return Math.abs(minecart.getLocation().getX() - v.getX()) < 1.5D;
+	        }
 		}
 		
 		return false;

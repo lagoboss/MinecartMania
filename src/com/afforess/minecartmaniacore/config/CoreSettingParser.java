@@ -33,7 +33,7 @@ import com.afforess.minecartmaniacore.world.Item;
 import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
 
 public class CoreSettingParser implements SettingParser{
-	private static final double version = 1.53;
+	private static final double version = 1.54;
 	private static MinecartManiaLogger log = MinecartManiaLogger.getInstance();
 
 	//This not only will tell true/false if the document is up to date, but will try to update it before it answers.
@@ -143,6 +143,17 @@ public class CoreSettingParser implements SettingParser{
 				version = 1.53;	//This needs to be updated to the next version of the document.
 				list.item(0).setTextContent(version.toString());
 			}
+			if(version == 1.53)
+			{
+                Node root = document.getElementsByTagName("MinecartManiaConfiguration").item(0); 
+                Node last = root.getLastChild();
+                root.insertBefore(document.createComment("Specifies if the old or new bukkit/minecraft directions should be used. If you have a long existing network (pre MC 1.0) stay with false.") , last);
+                Element useOldDirections = document.createElement("UseOldDirections");
+                useOldDirections.appendChild(document.createTextNode("true"));
+                root.insertBefore(useOldDirections, last);
+                version = 1.54;
+                list.item(0).setTextContent(version.toString());			    
+			}
 			return version == CoreSettingParser.version;
 		}
 		catch (Exception e) {
@@ -188,7 +199,8 @@ public class CoreSettingParser implements SettingParser{
 								|| elementChildName == "StackAllItems"
 								|| elementChildName == "RemoveDeadMinecarts"
 								|| elementChildName == "LimitedSignRange"
-								|| elementChildName == "DisappearOnDisconnect"
+                                || elementChildName == "UseOldDirections"
+                                || elementChildName == "DisappearOnDisconnect"
 								) {
 							MinecartManiaWorld.getConfiguration().put(elementChildName, MinecartManiaConfigurationParser.toBool(elementChildValue));
 							log.debug("Core Config read: " + elementChildName + " = " + (MinecartManiaConfigurationParser.toBool(elementChildValue) ? "true" : "false"));
@@ -589,7 +601,8 @@ public class CoreSettingParser implements SettingParser{
 		MinecartManiaWorld.getConfiguration().put("StackAllItems",					true);
 		MinecartManiaWorld.getConfiguration().put("RemoveDeadMinecarts",			false);
 		MinecartManiaWorld.getConfiguration().put("LimitedSignRange",				false);
-		MinecartManiaWorld.getConfiguration().put("DisappearOnDisconnect",			true);
+        MinecartManiaWorld.getConfiguration().put("DisappearOnDisconnect",          true);
+        MinecartManiaWorld.getConfiguration().put("UseOldDirections",               true);
 		//Create Ores Alias
 		ArrayList<Item> values = new ArrayList<Item>();
 		values.add(MinecartManiaConfigurationParser.toItem("GOLD_ORE"));
