@@ -5,11 +5,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 
-import com.afforess.minecartmaniacore.MinecartManiaCore;
 import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
 import com.afforess.minecartmaniacore.utils.DirectionUtils;
 import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
@@ -59,8 +57,9 @@ public class MinecartManiaSign implements Sign{
 		else
 			lines[line] = text.substring(0, 15);
 		if (update) {
-			getSign().setLine(line, lines[line]);
-			update();
+		    org.bukkit.block.Sign sign = getSign();
+			sign.setLine(line, lines[line]);
+			sign.update();
 		}
 	}
 	
@@ -115,7 +114,16 @@ public class MinecartManiaSign implements Sign{
 			temp.data = this.data;
 			temp.lines = this.lines;
 			temp.actions = this.actions;
-			update();
+			
+			//copy lines
+			for(int i = 0; i < 4; i++)
+			{
+			    String line = "";
+			    if(lines.length < i) {
+			        line = lines[i];
+			    }
+                setLine(i, line);
+			}
 		}
 		
 	}
@@ -205,16 +213,6 @@ public class MinecartManiaSign implements Sign{
 	@SuppressWarnings("unchecked")
 	public Collection<SignAction> getSignActions() {
 		return (Collection<SignAction>) actions.clone();
-	}
-	
-	protected final void update() {
-		if (this.updateId == -1) {
-			this.updateId = Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(MinecartManiaCore.getInstance(), new SignTextUpdater(getBlock()), 5);
-		}
-	}
-	
-	public final void updated() {
-		this.updateId = -1;
 	}
 	
 	public Location getLocation() {
