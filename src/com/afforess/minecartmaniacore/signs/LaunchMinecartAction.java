@@ -3,6 +3,7 @@ package com.afforess.minecartmaniacore.signs;
 import org.bukkit.util.Vector;
 
 import com.afforess.minecartmaniacore.config.ControlBlockList;
+import com.afforess.minecartmaniacore.config.MinecartManiaConfiguration;
 import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
 import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
 
@@ -44,21 +45,43 @@ public class LaunchMinecartAction implements SignAction {
 					previous = true;
 					break;
 				}
-				if (sign.getLine(i).toLowerCase().contains("launch north")) {
-					launchSpeed = new Vector(-0.6D, 0, 0);
-					break;
+				if(MinecartManiaConfiguration.useOldDirections())
+				{
+    				if (sign.getLine(i).toLowerCase().contains("launch north")) {
+    					launchSpeed = new Vector(-0.6D, 0, 0);
+    					break;
+    				}
+    				else if (sign.getLine(i).toLowerCase().contains("launch east")) {
+    					launchSpeed = new Vector(0, 0, -0.6D);
+    					break;
+    				}
+    				if (sign.getLine(i).toLowerCase().contains("launch south")) {
+    					launchSpeed = new Vector(0.6D, 0, 0);
+    					break;
+    				}
+    				if (sign.getLine(i).toLowerCase().contains("launch west")) {
+    					launchSpeed = new Vector(0, 0, 0.6D);
+    					break;
+    				}
 				}
-				else if (sign.getLine(i).toLowerCase().contains("launch east")) {
-					launchSpeed = new Vector(0, 0, -0.6D);
-					break;
-				}
-				if (sign.getLine(i).toLowerCase().contains("launch south")) {
-					launchSpeed = new Vector(0.6D, 0, 0);
-					break;
-				}
-				if (sign.getLine(i).toLowerCase().contains("launch west")) {
-					launchSpeed = new Vector(0, 0, 0.6D);
-					break;
+				else
+				{
+				    if (sign.getLine(i).toLowerCase().contains("launch north")) {
+                        launchSpeed = new Vector(0, 0, -0.6D);
+                        break;
+                    }
+                    else if (sign.getLine(i).toLowerCase().contains("launch east")) {
+                        launchSpeed = new Vector(0.6D, 0, 0);
+                        break;
+                    }
+                    if (sign.getLine(i).toLowerCase().contains("launch south")) {
+                        launchSpeed = new Vector(0, 0, 0.6D);
+                        break;
+                    }
+                    if (sign.getLine(i).toLowerCase().contains("launch west")) {
+                        launchSpeed = new Vector(-0.6D, 0, 0);
+                        break;
+                    }
 				}
 			}
 			if (launchSpeed != null || previous) {

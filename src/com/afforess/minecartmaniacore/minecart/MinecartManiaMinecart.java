@@ -24,6 +24,7 @@ import org.bukkit.util.Vector;
 import com.afforess.minecartmaniacore.MinecartManiaCore;
 import com.afforess.minecartmaniacore.config.ControlBlockList;
 import com.afforess.minecartmaniacore.config.MinecartManiaConfiguration;
+import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
 import com.afforess.minecartmaniacore.event.MinecartCaughtEvent;
 import com.afforess.minecartmaniacore.event.MinecartElevatorEvent;
 import com.afforess.minecartmaniacore.event.MinecartLaunchedEvent;
@@ -392,10 +393,10 @@ public class MinecartManiaMinecart {
 	 */
 	public void multiplyMotion(double multiplier) {
 		if (MAXIMUM_MOMENTUM / Math.abs(multiplier) > Math.abs(getMotionX())) {
-			setMotionX(getMotionX() * multiplier);
+            setMotionX(getMotionX() * multiplier);
 		}
 		if (MAXIMUM_MOMENTUM / Math.abs(multiplier) > Math.abs(getMotionZ())) {
-			setMotionZ(getMotionZ() * multiplier);
+		    setMotionZ(getMotionZ() * multiplier);
 		}
 	}
 	
