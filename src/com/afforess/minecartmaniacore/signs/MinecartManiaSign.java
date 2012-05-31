@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 
+import com.afforess.minecartmaniacore.debug.MinecartManiaLogger;
 import com.afforess.minecartmaniacore.minecart.MinecartManiaMinecart;
 import com.afforess.minecartmaniacore.utils.DirectionUtils;
 import com.afforess.minecartmaniacore.utils.DirectionUtils.CompassDirection;
@@ -114,18 +115,17 @@ public class MinecartManiaSign implements Sign{
 			temp.data = this.data;
 			temp.lines = this.lines;
 			temp.actions = this.actions;
-			
+						
 			//copy lines
 			for(int i = 0; i < 4; i++)
 			{
 			    String line = "";
-			    if(lines.length < i) {
+			    if(lines.length > i) {
 			        line = lines[i];
 			    }
                 setLine(i, line);
 			}
 		}
-		
 	}
 	
 	private int hashCode(String[] lines) {

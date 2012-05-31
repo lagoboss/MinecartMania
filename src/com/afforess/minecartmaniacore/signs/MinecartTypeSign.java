@@ -45,6 +45,7 @@ public class MinecartTypeSign extends MinecartManiaSign{
 	@Override
 	public void update(org.bukkit.block.Sign sign) {
 		calculated = false;
+		MinecartManiaLogger.getInstance().severe("Updating type sign. Text is: " + lines[0]);
 		super.update(sign);
 	}
 	
