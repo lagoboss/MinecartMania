@@ -334,12 +334,18 @@ public enum Item {
 	CHISELED_SANDSTONE(24, 1),
 	SMOOTH_SANDSTONE(24, 2),
 	
-	//1.3
+	//1.3.1
 	OAK_DOUBLE_SLAP(125),
 	OAK_SLAP(126),
 	COCOA_PLANT(127),
 	BOOK_AND_QUILL(386),
-	WRITTEN_BOOK(387);
+	WRITTEN_BOOK(387),
+	EMERALD_ORE(129),
+	EMERALD(388),
+	EMERALD_BLOCK(133),
+    ENDER_CHEST(130),
+    TRIPWIRE_HOOK(131);
+    
 
 	private final int id;
 	private final short data;
