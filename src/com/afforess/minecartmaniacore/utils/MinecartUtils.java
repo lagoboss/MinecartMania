@@ -408,6 +408,11 @@ public class MinecartUtils {
 						return false;
 					}
 				}
+				//do not kill entities in other carts
+				if(entity.isInsideVehicle())
+				{
+				    return false;
+				}
 				return true;
 			}
 		}

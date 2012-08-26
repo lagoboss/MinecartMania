@@ -138,5 +138,5 @@
 			<url>https://github.com/mze9412/MzeMaven/raw/master/snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
-    <version>1.5</version>
+    <version>1.5.1</version>
 </project>
