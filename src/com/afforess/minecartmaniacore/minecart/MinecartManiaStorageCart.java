@@ -1,5 +1,6 @@
 package com.afforess.minecartmaniacore.minecart;
 
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Material;
@@ -10,561 +11,446 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import com.afforess.minecartmaniacore.inventory.MinecartManiaInventory;
-import com.afforess.minecartmaniacore.matching.MatchField;
-import com.afforess.minecartmaniacore.utils.ItemMatcher;
+import com.afforess.minecartmaniacore.world.Item;
 import com.afforess.minecartmaniacore.world.MinecartManiaWorld;
-
 /**
  * This class represents a Minecart Mania Storage Minecart, that wraps a bukkit minecart (which in turn, wraps a Minecraft EntityMinecart)
- * 
  * @author Afforess
  */
-public class MinecartManiaStorageCart extends MinecartManiaMinecart implements MinecartManiaInventory {
-    private final ConcurrentHashMap<String, ItemMatcher> maximumContents = new ConcurrentHashMap<String, ItemMatcher>();
-    private final ConcurrentHashMap<String, ItemMatcher> minimumContents = new ConcurrentHashMap<String, ItemMatcher>();
-    private String failureReason = "";
-    
-    /**
-     * Creates a storage minecart from the given bukkit minecart
-     * 
-     * @param cart to create from
-     */
-    public MinecartManiaStorageCart(final Minecart cart) {
-        super(cart);
-    }
-    
-    /**
-     * The bukkit inventory that this container represents
-     * 
-     * @return the inventory
-     */
-    public Inventory getBukkitInventory() {
-        return getInventory();
-    }
-    
-    /**
-     * Creates a storage minecart from the given bukkit minecart, with the given owner
-     * 
-     * @param cart to create from
-     * @param owner that created the minecart
-     */
-    public MinecartManiaStorageCart(final Minecart cart, final String owner) {
-        super(cart, owner);
-    }
-    
-    public int getItemRange() {
-        if (getDataValue("ItemCollectionRange") != null)
-            return (Integer) getDataValue("ItemCollectionRange");
-        return (Integer) MinecartManiaWorld.getConfigurationValue("ItemCollectionRange");
-    }
-    
-    public void setItemRange(final int range) {
-        setDataValue("ItemCollectionRange", range);
-    }
-    
-    /**
-     * Gets the bukkit inventory for this storage minecart
-     * 
-     * @return bukkit inventory
-     */
-    public Inventory getInventory() {
-        return ((StorageMinecart) minecart).getInventory();
-    }
-    
-    public int getMaximumItem(final Material item, final short data) {
-        return getMaximumItem(item.getId(), data);
-    }
-    
-    public int getMaximumItem(final int id, final short data) {
-        final ItemStack item = new ItemStack(id, 1, data);
-        if (maximumContents != null) {
-            for (final ItemMatcher match : maximumContents.values()) {
-                if (match.match(item))
-                    return match.getAmount(-1);
-            }
-        }
-        return -1;
-    }
-    
-    private ItemMatcher getMatchingMaxRule(final int id, final short data) {
-        final ItemStack item = new ItemStack(id, 1, data);
-        if (maximumContents != null) {
-            for (final ItemMatcher match : maximumContents.values()) {
-                if (match.match(item))
-                    return match;
-            }
-        }
-        return null;
-    }
-    
-    private ItemMatcher getMatchingMinRule(final int id, final short data) {
-        final ItemStack item = new ItemStack(id, 1, data);
-        if (minimumContents != null) {
-            for (final ItemMatcher match : minimumContents.values()) {
-                if (match.match(item))
-                    return match;
-            }
-        }
-        return null;
-    }
-    
-    public void setMaximumItem(final Material item, final int amount) {
-        setMaximumItem(item.getId(), -1, amount);
-    }
-    
-    public void setMaximumItem(final int item, final int durability, final int amount) {
-        if (maximumContents != null) {
-            final ItemMatcher matcher = new ItemMatcher();
-            matcher.addConstant(MatchField.TYPE_ID, item);
-            if (durability != -1) {
-                matcher.addConstant(MatchField.DURABILITY, durability);
-            }
-            matcher.setAmount(amount);
-            maximumContents.put(matcher.toString(), matcher);
-        }
-    }
-    
-    public int getMinimumItem(final Material item) {
-        return getMinimumItem(item.getId(), (short) -1);
-    }
-    
-    public int getMinimumItem(final int id, final short data) {
-        final ItemStack item = new ItemStack(id, 1, data);
-        if (minimumContents != null) {
-            for (final ItemMatcher match : minimumContents.values()) {
-                if (match.match(item))
-                    return match.getAmount(-1);
-            }
-        }
-        return -1;
-    }
-    
-    public void setMinimumItem(final Material item, final int amount) {
-        setMinimumItem(item.getId(), (short) -1, amount);
-    }
-    
-    public void setMinimumItem(final int id, final short data, final int amount) {
-        if (minimumContents != null) {
-            final ItemMatcher matcher = new ItemMatcher();
-            matcher.addConstant(MatchField.TYPE_ID, id);
-            if (data != -1) {
-                matcher.addConstant(MatchField.DURABILITY, data);
-            }
-            matcher.setAmount(amount);
-            minimumContents.put(matcher.toString(), matcher);
-        }
-    }
-    
-    public boolean canAddItem(final ItemStack item, final Player player) {
-        if (item.getTypeId() == Material.AIR.getId())
-            return false;
-        
-        final ItemMatcher matcher = getMatchingMaxRule(item.getTypeId(), item.getDurability());
-        if (matcher != null) {
-            final int found = amount(matcher);
-            //MinecartManiaLogger.getInstance().info(String.format("(Cart @ %s) canAddItem: max %s;%d = %d, %d found", getLocation().toVector().toString(), item.getType().name(), item.getDurability(), matcher.getAmount(-1), found));
-            if ((found + item.getAmount()) > matcher.getAmount(-1))
-                return false;
-        }
-        return true;
-    }
-    
-    public int amount(final ItemMatcher matcher) {
-        int count = 0;
-        for (final ItemStack i : getContents()) {
-            if (i != null) {
-                if (matcher.match(i)) {
-                    count += i.getAmount();
-                }
-            }
-        }
-        return count;
-    }
-    
-    public boolean canAddItem(final ItemStack item) {
-        return canAddItem(item, null);
-    }
-    
-    /**
-     * attempts to add an itemstack to this storage minecart. It adds items in a 'smart' manner, merging with existing itemstacks, until they reach the maximum size (64). If it fails, it will not alter the storage minecart's previous contents.
-     * 
-     * @param item to add
-     * @param player who is adding the item
-     * @return true if the item was successfully added
-     */
-    public boolean addItem(ItemStack item, final Player player) {
-        if (item == null)
-            return true;
-        if (!canAddItem(item))
-            return false;
-        if (item.getAmount() <= -1)
-            return false;// ("Cannot set a minecart slot to negative values!");
-        if (item.getAmount() > (size() * MinecartManiaWorld.getMaxStackSize(item)))
-            return false;
-        
-        //Backup contents
-        final ItemStack[] backup = getContents().clone();
-        final ItemStack backupItem = new ItemStack(item.getTypeId(), item.getAmount(), item.getDurability());
-        
-        final int max = MinecartManiaWorld.getMaxStackSize(item);
-        
-        //First attempt to merge the itemstack with existing item stacks that aren't full (< 64)
-        for (int i = 0; i < size(); i++) {
-            if (getItem(i) != null) {
-                if ((getItem(i).getTypeId() == item.getTypeId()) && (getItem(i).getDurability() == item.getDurability()) && getItem(i).getEnchantments().equals(item.getEnchantments())) {
-                    if (getItem(i).getAmount() > max) {
-                        // Slot has more than the max stack size...?!
-                        final int diff = max - getItem(i).getAmount();
-                        setItem(i, new ItemStack(item.getTypeId(), max, item.getDurability()));
-                        item = new ItemStack(item.getTypeId(), item.getAmount() + diff, item.getDurability());
-                        continue;
-                    }
-                    if ((getItem(i).getAmount() + item.getAmount()) <= max) {
-                        setItem(i, new ItemStack(item.getTypeId(), getItem(i).getAmount() + item.getAmount(), item.getDurability()));
-                        return true;
-                    } else {
-                        final int diff = (getItem(i).getAmount() + item.getAmount()) - max;
-                        setItem(i, new ItemStack(item.getTypeId(), max, item.getDurability()));
-                        item = new ItemStack(item.getTypeId(), diff, item.getDurability());
-                    }
-                }
-            }
-        }
-        
-        //Attempt to add the item to an empty slot
-        final int emptySlot = firstEmpty();
-        if (emptySlot > -1) {
-            setItem(emptySlot, item);
-            return true;
-        }
-        
-        //if we fail, reset the inventory and item back to previous values
-        setContents(backup);
-        item = backupItem;
-        return false;
-    }
-    
-    /**
-     * attempts to add an itemstack to this storage minecart. It adds items in a 'smart' manner, merging with existing itemstacks, until they reach the maximum size (64). If it fails, it will not alter the storage minecart's previous contents.
-     * 
-     * @param item to add
-     * @param player who is adding the item
-     * @return true if the item was successfully added
-     */
-    public boolean addItem(final ItemStack item) {
-        try {
-            return addItem(item, null);
-        } catch (final Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return false;
-    }
-    
-    /**
-     ** attempts to add a single item of the given type to this storage minecart. If it fails, it will not alter the storage minecart's previous contents
-     ** 
-     * @param type to add
-     **/
-    public boolean addItem(final int type) {
-        return addItem(new ItemStack(type, 1));
-    }
-    
-    /**
-     ** attempts to add a given amount of a given type to this storage minecart. If it fails, it will not alter the storage minecart's previous contents
-     ** 
-     * @param type to add
-     ** @param amount to add
-     **/
-    public boolean addItem(final int type, final int amount) {
-        return addItem(new ItemStack(type, amount));
-    }
-    
-    public boolean canRemoveItem(final int type, final int amount, final short durability, final Player player) {
-        
-        final ItemStack item = new ItemStack(type, amount, durability);
-        final ItemMatcher matcher = getMatchingMinRule(item.getTypeId(), item.getDurability());
-        if (matcher != null) {
-            final int found = amount(matcher);
-            //MinecartManiaLogger.getInstance().info(String.format("(Cart @ %s) canRemoveItem: min %s;%d = %d, %d found", getLocation().toVector().toString(), item.getType().name(), item.getDurability(), matcher.getAmount(-1), found));
-            final int min = matcher.getAmount(-1);
-            if ((min > -1) && ((found - amount) < min)) {
-                setFailureReason(String.format("Cannot remove any more of this type (%d-%d < %d)", found, amount, min));
-                return false;
-            }
-        }
-        return true;
-    }
-    
-    public boolean canRemoveItem(final int type, final int amount, final short durability) {
-        return canRemoveItem(type, amount, durability, null);
-    }
-    
-    /**
-     * attempts to remove the specified amount of an item type from this storage minecart. If it fails, it will not alter the storage minecart's previous contents.
-     * 
-     * @param type to remove
-     * @param amount to remove
-     * @param durability of the item to remove (-1 for generic durability)
-     * @param player who is removing the item
-     * @return true if the items were successfully removed
-     */
-    public boolean removeItem(final int type, int amount, final short durability, final Player player) {
-        if (!canRemoveItem(type, amount, durability))
-            return false;
-        
-        //Backup contents
-        final ItemStack[] backup = getContents().clone();
-        for (int i = 0; i < size(); i++) {
-            if (getItem(i) != null) {
-                if ((getItem(i).getTypeId() == type) && ((durability == -1) || (getItem(i).getDurability() == durability))) {
-                    if ((getItem(i).getAmount() - amount) > 0) {
-                        setItem(i, new ItemStack(type, getItem(i).getAmount() - amount, durability));
-                        return true;
-                    } else if ((getItem(i).getAmount() - amount) == 0) {
-                        setItem(i, null);
-                        return true;
-                    } else {
-                        amount -= getItem(i).getAmount();
-                        setItem(i, null);
-                    }
-                }
-            } else {
-            }
-        }
-        
-        //if we fail, reset the inventory back to previous values
-        setContents(backup);
-        setFailureReason("No room");
-        return false;
-    }
-    
-    /**
-     * attempts to remove the specified amount of an item type from this storage minecart. If it fails, it will not alter the storage minecart's previous contents.
-     * 
-     * @param type to remove
-     * @param amount to remove
-     * @param durability of the item to remove (-1 for generic durability)
-     * @return true if the items were successfully removed
-     */
-    public boolean removeItem(final int type, final int amount, final short durability) {
-        return removeItem(type, amount, durability, null);
-    }
-    
-    /**
-     * attempts to remove the specified amount of an item type from this storage minecart. If it fails, it will not alter the storage minecart's previous contents.
-     * 
-     * @param type to remove
-     * @param amount to remove
-     * @return true if the items were successfully removed
-     */
-    public boolean removeItem(final int type, final int amount) {
-        return removeItem(type, amount, (short) -1);
-    }
-    
-    /**
-     * attempts to remove a single item type from this storage minecart. If it fails, it will not alter the storage minecart previous contents.
-     * 
-     * @param type to remove
-     * @return true if the item was successfully removed
-     */
-    public boolean removeItem(final int type) {
-        return removeItem(type, 1);
-    }
-    
-    /**
-     * Gets the size of the inventory of this storage minecart
-     * 
-     * @return the size of the inventory
-     */
-    public int size() {
-        return getInventory().getSize();
-    }
-    
-    /**
-     * Gets an array of the Itemstack's inside this storage minecart. Empty slots are represented by air stacks
-     * 
-     * @return the contents of this inventory
-     */
-    public ItemStack[] getContents() {
-        return getInventory().getContents();
-    }
-    
-    /**
-     * Set's the contents of this inventory with an array of items.
-     * 
-     * @param contents to set as the inventory
-     */
-    public void setContents(final ItemStack[] contents) {
-        getInventory().setContents(contents);
-    }
-    
-    /**
-     * Gets the itemstack at the given slot, or null if empty
-     * 
-     * @param slot to get
-     * @return the itemstack at the given slot
-     */
-    public ItemStack getItem(final int slot) {
-        final ItemStack i = getInventory().getItem(slot);
-        if (i == null)
-            return null;
-        if (i.getAmount() < -1) {
-            i.setAmount(64);
-            getInventory().setItem(slot, i);
-        }
-        //WTF is it with bukkit and returning air instead of null?
-        return i == null ? null : (i.getTypeId() == Material.AIR.getId() ? null : i);
-    }
-    
-    /**
-     * Sets the given slot to the given itemstack. If the itemstack is null, the slot's contents will be cleared.
-     * 
-     * @param slot to set.
-     * @param item to set in the slot
-     */
-    public void setItem(final int slot, final ItemStack item) {
-        if (item == null) {
-            getInventory().clear(slot);
-        } else {
-            getInventory().setItem(slot, item);
-        }
-    }
-    
-    /**
-     * Get's the first empty slot in this storage minecart
-     * 
-     * @return the first empty slot in this storage minecart
-     */
-    public int firstEmpty() {
-        for (int i = 0; i < size(); i++) {
-            if (getItem(i) == null)
-                return i;
-        }
-        return -1;
-    }
-    
-    /**
-     * Get's the first slot containing the given material, or -1 if none contain it
-     * 
-     * @param material to search for
-     * @return the first slot with the given material
-     */
-    public int first(final Material material) {
-        return first(material.getId(), (short) -1);
-    }
-    
-    /**
-     * Get's the first slot containing the given type id, or -1 if none contain it
-     * 
-     * @param type id to search for
-     * @return the first slot with the given item
-     */
-    public int first(final int type) {
-        return first(type, (short) -1);
-    }
-    
-    /**
-     * Get's the first slot containing the given type id and matching durability, or -1 if none contain it. If the durability is -1, it get's the first slot with the matching type id, and ignores durability
-     * 
-     * @param type id to search for
-     * @param durability of the type id to search for
-     * @return the first slot with the given type id and durability
-     */
-    public int first(final int type, final short durability) {
-        for (int i = 0; i < size(); i++) {
-            if (getItem(i) != null) {
-                if ((getItem(i).getTypeId() == type) && (((durability == -1) || (getItem(i).getDurability() == -1)) || (getItem(i).getDurability() == durability)))
-                    return i;
-            }
-        }
-        return -1;
-    }
-    
-    /**
-     * Searches the inventory for any items that match the given Material
-     * 
-     * @param material to search for
-     * @return true if the material is found
-     */
-    public boolean contains(final Material material) {
-        return first(material) != -1;
-    }
-    
-    /**
-     * Searches the inventory for any items that match the given type id
-     * 
-     * @param type id to search for
-     * @return true if an item matching the type id is found
-     */
-    public boolean contains(final int type) {
-        return first(type) != -1;
-    }
-    
-    /**
-     * Searches the inventory for any items that match the given type id and durability
-     * 
-     * @param type id to search for
-     * @param durability to search for
-     * @return true if an item matching the type id and durability is found
-     */
-    public boolean contains(final int type, final short durability) {
-        return first(type, durability) != -1;
-    }
-    
-    /**
-     * Searches the inventory for any items
-     * 
-     * @return true if the inventory contains no items
-     */
-    public boolean isEmpty() {
-        for (final ItemStack i : getContents()) {
-            //I hate you too, air.
-            if ((i != null) && (i.getType() != Material.AIR))
-                return false;
-        }
-        return true;
-    }
-    
-    public int amount(final int item, final short durability) {
-        int count = 0;
-        for (final ItemStack i : getContents()) {
-            if ((i != null) && (i.getTypeId() == item)) {
-                if ((durability == -1) || (durability == i.getDurability())) {
-                    count += i.getAmount();
-                }
-            }
-        }
-        return count;
-    }
-    
-    public void setMaximumItem(final ItemMatcher matcher) {
-        maximumContents.put(matcher.toString(), matcher);
-    }
-    
-    public void setMinimumItem(final ItemMatcher matcher) {
-        minimumContents.put(matcher.toString(), matcher);
-    }
-    
-    public String getFailureReason() {
-        return failureReason;
-    }
-    
-    public void setFailureReason(final String failureReason) {
-        this.failureReason = failureReason;
-    }
-    
-    public boolean contains(final ItemMatcher matcher) {
-        return first(matcher) != -1;
-    }
-    
-    public int first(final ItemMatcher matcher) {
-        for (int i = 0; i < size(); i++) {
-            if (getItem(i) != null) {
-                if (matcher.match(getItem(i)))
-                    return i;
-            }
-        }
-        return -1;
-    }
+public class MinecartManiaStorageCart extends MinecartManiaMinecart implements MinecartManiaInventory{
+	private ConcurrentHashMap<Item, Integer> maximumContents = new ConcurrentHashMap<Item, Integer>();
+	private ConcurrentHashMap<Item, Integer> minimumContents = new ConcurrentHashMap<Item, Integer>();
+
+	/**
+	 * Creates a storage minecart from the given bukkit minecart
+	 * @param cart to create from
+	 */
+	public MinecartManiaStorageCart(Minecart cart) {
+		super(cart);
+	}
+	
+	/**
+	 * The bukkit inventory that this container represents
+	 * 
+	 * @return the inventory
+	 */
+	public Inventory getBukkitInventory() {
+		return getInventory();
+	}
+	
+	/**
+	 * Creates a storage minecart from the given bukkit minecart, with the given owner
+	 * @param cart to create from
+	 * @param owner that created the minecart
+	 */
+	public MinecartManiaStorageCart(Minecart cart, String owner) {
+		super(cart, owner);
+	}
+	
+	public int getItemRange() {
+		if (getDataValue("ItemCollectionRange") != null) {
+			return (Integer)getDataValue("ItemCollectionRange");
+		}
+		return (Integer)MinecartManiaWorld.getConfigurationValue("ItemCollectionRange");
+	}
+	
+	public void setItemRange(int range) {
+		setDataValue("ItemCollectionRange", range);
+	}
+
+	/**
+	 * Gets the bukkit inventory for this storage minecart
+	 * @return bukkit inventory
+	 */
+	public Inventory getInventory() {
+		return ((StorageMinecart)minecart).getInventory();
+	}
+	
+	public int getMaximumItem(Item item) {
+		if (maximumContents != null && maximumContents.containsKey(item)) {
+			return maximumContents.get(item);
+		}
+		return -1;
+	}
+	
+	public void setMaximumItem(Item item, int amount) {
+		if (maximumContents != null) {
+			maximumContents.put(item, amount);
+		}
+	}
+	
+	public int getMinimumItem(Item item) {
+		if (minimumContents != null && minimumContents.containsKey(item)) {
+			return minimumContents.get(item);
+		}
+		return -1;
+	}
+	
+	public void setMinimumItem(Item item, int amount) {
+		if (minimumContents != null) {
+			minimumContents.put(item, amount);
+		}
+	}
+	
+	public boolean canAddItem(ItemStack item, Player player) {
+		if (item.getTypeId() == Item.AIR.getId()) {
+			return false;
+		}
+		
+		//Check if this new item will exceed the maximum allowed
+		ArrayList<Item> list = Item.getItem(item.getTypeId());
+		for (Item i : list) {
+			if (!i.hasData() || i.getData() == item.getDurability()) {
+				if (getMaximumItem(i) != -1) {
+					if (amount(i) + item.getAmount() > getMaximumItem(i)) {
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
+	
+	public boolean canAddItem(ItemStack item) {
+		return canAddItem(item, null);
+	}
+	
+	/**
+	 * attempts to add an itemstack to this storage minecart. It adds items in a 'smart' manner, merging with existing itemstacks, until they
+	 * reach the maximum size (64). If it fails, it will not alter the storage minecart's previous contents.
+	 * @param item to add
+	 * @param player who is adding the item
+	 * @return true if the item was successfully added
+	 */
+	public boolean addItem(ItemStack item, Player player) {
+		if (item == null) {
+			return true;
+		}
+		if (!canAddItem(item)) {
+			return false;
+		}
+
+		//Backup contents
+		ItemStack[] backup = getContents().clone();
+		ItemStack backupItem = new ItemStack(item.getTypeId(), item.getAmount(), item.getDurability());
+		
+		int max = MinecartManiaWorld.getMaxStackSize(item);
+		
+		//First attempt to merge the itemstack with existing item stacks that aren't full (< 64)
+		for (int i = 0; i < size(); i++) {
+			if (getItem(i) != null) {
+				if (getItem(i).getTypeId() == item.getTypeId() && getItem(i).getDurability() == item.getDurability()) {
+					if (getItem(i).getAmount() + item.getAmount() <= max) {
+						setItem(i, new ItemStack(item.getTypeId(), getItem(i).getAmount() + item.getAmount(), item.getDurability()));
+						return true;
+					}
+					else {
+						int diff = getItem(i).getAmount() + item.getAmount() - max;
+						setItem(i, new ItemStack(item.getTypeId(), max, item.getDurability()));
+						item = new ItemStack(item.getTypeId(), diff, item.getDurability());
+					}
+				}
+			}
+		}
+		
+		//Attempt to add the item to an empty slot
+		int emptySlot = firstEmpty();
+		if (emptySlot > -1) {
+			setItem(emptySlot, item);
+			return true;
+		}
+			
+		//if we fail, reset the inventory and item back to previous values
+		setContents(backup);
+		item = backupItem;
+		return false;
+	}
+	
+	/**
+	 * attempts to add an itemstack to this storage minecart. It adds items in a 'smart' manner, merging with existing itemstacks, until they
+	 * reach the maximum size (64). If it fails, it will not alter the storage minecart's previous contents.
+	 * @param item to add
+	 * @param player who is adding the item
+	 * @return true if the item was successfully added
+	 */
+	public boolean addItem(ItemStack item) {
+		return addItem(item, null);
+	}
+	
+	/**
+	 ** attempts to add a single item of the given type to this storage minecart. If it fails, it will not alter the storage minecart's previous contents
+	 ** @param type to add
+	 **/
+	public boolean addItem(int type) {
+		return addItem(new ItemStack(type, 1));
+	}
+	
+	/**
+	 ** attempts to add a given amount of a given type to this storage minecart. If it fails, it will not alter the storage minecart's previous contents
+	 ** @param type to add
+	 ** @param amount to add
+	 **/
+	public boolean addItem(int type, int amount) {
+		return addItem(new ItemStack(type, amount));
+	}
+	
+	public boolean canRemoveItem(int type, int amount, short durability, Player player) {
+		//Check if this will fall below the minimum allowed
+		ArrayList<Item> list = Item.getItem(type);
+		for (Item i : list) {
+			if (!i.hasData() || i.getData() == durability) {
+				if (getMinimumItem(i) != -1) {
+					if (amount(i) - amount < getMinimumItem(i)) {
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
+	
+	public boolean canRemoveItem(int type, int amount, short durability) {
+		return canRemoveItem(type, amount, durability, null);
+	}
+	
+	/**
+	 * attempts to remove the specified amount of an item type from this storage minecart. If it fails, it will not alter the storage minecart's previous contents.
+	 * @param type to remove
+	 * @param amount to remove
+	 * @param durability of the item to remove (-1 for generic durability)
+	 * @param player who is removing the item
+	 * @return true if the items were successfully removed
+	 */
+	public boolean removeItem(int type, int amount, short durability, Player player) {
+		if (!canRemoveItem(type, amount, durability)) {
+			return false;
+		}
+
+		//Backup contents
+		ItemStack[] backup = getContents().clone();
+		
+		for (int i = 0; i < size(); i++) {
+			if (getItem(i) != null) {
+				if (getItem(i).getTypeId() == type && (durability == -1 || (getItem(i).getDurability() == durability))) {
+					if (getItem(i).getAmount() - amount > 0) {
+						setItem(i, new ItemStack(type, getItem(i).getAmount() - amount, durability));
+						return true;
+					}
+					else if (getItem(i).getAmount() - amount == 0) {
+						setItem(i, null);
+						return true;
+					}
+					else{
+						amount -=  getItem(i).getAmount();
+						setItem(i, null);
+					}
+				}
+			}
+		}
+
+		//if we fail, reset the inventory back to previous values
+		setContents(backup);
+		return false;
+	}
+	
+	/**
+	 * attempts to remove the specified amount of an item type from this storage minecart. If it fails, it will not alter the storage minecart's previous contents.
+	 * @param type to remove
+	 * @param amount to remove
+	 * @param durability of the item to remove (-1 for generic durability)
+	 * @return true if the items were successfully removed
+	 */
+	public boolean removeItem(int type, int amount, short durability) {
+		return removeItem(type, amount, durability, null);
+	}
+
+
+	/**
+	 * attempts to remove the specified amount of an item type from this storage minecart. If it fails, it will not alter the storage minecart's previous contents.
+	 * @param type to remove
+	 * @param amount to remove
+	 * @return true if the items were successfully removed
+	 */
+	public boolean removeItem(int type, int amount) {
+		return removeItem(type, amount, (short) -1);
+	}
+	
+	/**
+	 * attempts to remove a single item type from this storage minecart. If it fails, it will not alter the storage minecart previous contents.
+	 * @param type to remove
+	 * @return true if the item was successfully removed
+	 */
+	public boolean removeItem(int type) {
+		return removeItem(type, 1);
+	}
+	
+	/**
+	 * Gets the size of the inventory of this storage minecart
+	 * @return the size of the inventory
+	 */
+	public int size() {
+		return getInventory().getSize();
+	}
+
+	/**
+	 * Gets an array of the Itemstack's inside this storage minecart. Empty slots are represented by air stacks
+	 * @return the contents of this inventory
+	 */
+	public ItemStack[] getContents() {
+		return getInventory().getContents();
+	}
+	
+	/**
+	 * Set's the contents of this inventory with an array of items.
+	 * @param contents to set as the inventory
+	 */
+	public void setContents(ItemStack[] contents) {
+		getInventory().setContents(contents);
+	}
+	
+	/**
+	 * Gets the itemstack at the given slot, or null if empty
+	 * @param slot to get
+	 * @return the itemstack at the given slot
+	 */
+	public ItemStack getItem(int slot) {
+		ItemStack i = getInventory().getItem(slot);
+		//WTF is it with bukkit and returning air instead of null?
+		return i == null ? null : (i.getTypeId() == Material.AIR.getId() ? null : i);
+	}
+
+	/**
+	 * Sets the given slot to the given itemstack. If the itemstack is null, the slot's contents will be cleared.
+	 * @param slot to set.
+	 * @param item to set in the slot
+	 */
+	public void setItem(int slot, ItemStack item) {
+		if (item == null) {
+			getInventory().clear(slot);
+		}
+		else {
+			getInventory().setItem(slot, item);
+		}
+	}
+	
+	/**
+	 * Get's the first empty slot in this storage minecart
+	 * @return the first empty slot in this storage minecart
+	 */
+	public int firstEmpty() {
+		for (int i = 0; i < size(); i++) {
+			if (getItem(i) == null) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	
+	/**
+	 * Get's the first slot containing the given material, or -1 if none contain it
+	 * @param material to search for
+	 * @return the first slot with the given material
+	 */
+	public int first(Material material) {
+		return first(material.getId(), (short) -1);
+	}
+	
+	/**
+	 * Get's the first slot containing the given item, or -1 if none contain it
+	 * @param item to search for
+	 * @return the first slot with the given item
+	 */
+	public int first(Item item) {
+		return first(item.getId(), (short) (item.hasData() ? item.getData() : -1));
+	}
+
+	/**
+	 * Get's the first slot containing the given type id, or -1 if none contain it
+	 * @param type id to search for
+	 * @return the first slot with the given item
+	 */
+	public int first(int type) {
+		return first(type, (short)-1);
+	}
+	
+	/**
+	 * Get's the first slot containing the given type id and matching durability, or -1 if none contain it.
+	 * If the durability is -1, it get's the first slot with the matching type id, and ignores durability
+	 * @param type id to search for
+	 * @param durability of the type id to search for
+	 * @return the first slot with the given type id and durability
+	 */
+	public int first(int type, short durability) {
+		for (int i = 0; i < size(); i++) {
+			if (getItem(i) != null) {
+				if (getItem(i).getTypeId() == type && ((durability == -1 || getItem(i).getDurability() == -1) || (getItem(i).getDurability() == durability))) {
+					return i;
+				}
+			}
+		}
+		return -1;
+	}
+	
+	/**
+	 * Searches the inventory for any items that match the given Material
+	 * @param material to search for
+	 * @return true if the material is found
+	 */
+	public boolean contains(Material material) {
+		return first(material) != -1;
+	}
+	
+	/**
+	 * Searches the inventory for any items that match the given Item
+	 * @param item to search for
+	 * @return true if the Item is found
+	 */
+	public boolean contains(Item item){
+		return first(item) != -1;
+	}
+
+	/**
+	 * Searches the inventory for any items that match the given type id
+	 * @param type id to search for
+	 * @return true if an item matching the type id is found
+	 */
+	public boolean contains(int type) {
+		return first(type) != -1;
+	}
+	
+	/**
+	 * Searches the inventory for any items that match the given type id and durability
+	 * @param type id to search for
+	 * @param durability to search for
+	 * @return true if an item matching the type id and durability is found
+	 */
+	public boolean contains(int type, short durability) {
+		return first(type, durability) != -1;
+	}
+
+	/**
+	 * Searches the inventory for any items
+	 * @return true if the inventory contains no items
+	 */
+	public boolean isEmpty() {
+		for (ItemStack i : getContents()) {
+			//I hate you too, air.
+			if (i != null && i.getType() != Material.AIR) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	public int amount(Item item) {
+		int count = 0;
+		for (ItemStack i : getContents()) {
+			if (i != null && i.getTypeId() == item.getId()){
+				if (!item.hasData() || item.getData() == i.getDurability()) {
+					count += i.getAmount();
+				}
+			}
+		}
+		return count;
+	}
 }

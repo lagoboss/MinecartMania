@@ -128,7 +128,7 @@
 		</TextKey>
 		<TextKey>
 			<Key>SignCommandsDestination</Key>
-			<Text>[GREEN]LOcalYou've arrived at your destination</Text>
+			<Text>[GREEN]You've arrived at your destination</Text>
 		</TextKey>
 		<TextKey>
 			<Key>SignCommandsSensorItemError</Key>
